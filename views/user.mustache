@@ -1,0 +1,34 @@
+{{> header}}
+<h1>{{name}}</h1>
+<h2>Fiche beta.gouv.fr</h2>
+{{#user_infos}}
+<ul>
+  <li>Nom: {{fullname}}</li>
+  <li>Date de début: {{start}}</li>
+  <li>Date de fin: {{end}}</li>
+  <li>Employeur: {{employer}}</li>
+  <li>Github : {{#github}}{{github}}{{/github}}
+  {{^github}}Non renseigné{{/github}}</li>
+</ul>
+{{/user_infos}}
+{{^user_infos}}
+  Inexistante
+{{/user_infos}}
+<h2>Compte mail</h2>
+{{#email_infos}}
+   {{email}}
+{{/email_infos}}
+{{^email_infos}}
+  Inexistant
+{{/email_infos}}
+
+<h2>Redirections</h2>
+<ul>
+{{#redirections}}
+  <li>{{from}} vers {{to}}</li>
+{{/redirections}}
+{{^redirections}}
+   <li>Aucune</li>
+{{/redirections}}
+<ul>
+{{> footer}}

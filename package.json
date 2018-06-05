@@ -1,0 +1,26 @@
+{
+  "name": "secretariat",
+  "version": "1.0.0",
+  "description": "Le secrétariat de l’incubateur",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/betagouv/secretariat.git"
+  },
+  "author": "Julien DAUPHANT",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/betagouv/secretariat/issues"
+  },
+  "homepage": "https://github.com/betagouv/secretariat#readme",
+  "dependencies": {
+    "consolidate": "^0.15.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mustache": "^2.3.0",
+    "ovh": "^2.0.1"
+  }
+}
