@@ -1,0 +1,15 @@
+{{> header}}
+<h1>Login</h1>
+{{#error}}
+<p style="color: red; font-weight: bold">{{error}}<p>
+{{/error}}
+{{#result}}
+<p>{{result}}</p>
+{{/result}}
+{{^result}}
+<form action="/login" method="POST">
+  <p><label><b>Votre email</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+">@beta.gouv.fr</label><br><br>
+  <button>Connexion par email</button></p>
+</form>
+{{/result}}
+{{> footer}}
