@@ -15,7 +15,7 @@ const session = require('express-session')
 const config = {
   secret: process.env.SESSION_SECRET,
   port: process.env.PORT || 8100,
-  secure: process.env.SECURE || true
+  secure: (process.env.SECURE ||"true") === "true"
 }
 
 const mailTransport = nodemailer.createTransport({
