@@ -12,7 +12,8 @@ const flash = require('connect-flash')
 const session = require('express-session')
 
 const config = {
-  secret: process.env.SESSION_SECRET
+  secret: process.env.SESSION_SECRET,
+  port: process.env.PORT || 8100
 }
 
 const mailTransport = nodemailer.createTransport({
@@ -288,4 +289,4 @@ app.post('/users/:name/redirections', function(req, res) {
   })
 })
 
-app.listen(8100);
+app.listen(config.port);
