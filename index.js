@@ -14,7 +14,8 @@ const session = require('express-session')
 
 const config = {
   secret: process.env.SESSION_SECRET,
-  port: process.env.PORT || 8100
+  port: process.env.PORT || 8100,
+  secure: process.env.SECURE || true
 }
 
 const mailTransport = nodemailer.createTransport({
@@ -27,7 +28,7 @@ const mailTransport = nodemailer.createTransport({
 
 var app = express();
 
-app.set('trust proxy', 1);
+app.set('trust proxy', 1)
 
 app.engine('mustache', cons.mustache);
 app.set('view engine', 'mustache');
@@ -161,7 +162,7 @@ app.post('/login', function(req, res) {
     req.flash('error', 'Nom invalid ([a-z0-9_-]+\.[a-z0-9_-]+)')
     return res.redirect('/login')
   } 
-  const domain = `${req.secure?"https":"http"}://${req.hostname}`
+  const domain = `${config.secure?"https":"http"}://${req.hostname}`
   sendLoginEmail(req.body.id, domain).then(function(result){
     renderLogin(req, res, { result: 'Email de connexion envoyé pour '+req.body.id });
   }).catch(function(err) {
@@ -234,7 +235,7 @@ app.post('/users/:id/email', function(req, res) {
     console.log("Email account creation by="+req.user.id+"&email="+email+"&to_email="+req.query.to_email)
     return BetaGouv.create_email(id, password)
       .then(function(result){
-        const url = `${req.secure?"https":"http"}://${req.hostname}/`
+        const url = `${config.secure?"https":"http"}://${req.hostname}/`
         const html = `
             <h1>Ton compte ${id} a été créé !</h1>
             <ul>
