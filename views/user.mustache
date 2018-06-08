@@ -25,6 +25,7 @@
 <h2>Compte mail</h2>
 {{#email_infos}}
    {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@beta.gouv.fr">Webmail</a> )
+    <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises">Infos et tutos sur OVH</a></p>
 {{/email_infos}}
 {{^email_infos}}
   Inexistant
@@ -35,7 +36,8 @@
  <fieldset>
   <legend>Créer le compte mail</legend>
   <label>Envoyer le mot de passe à cette adresse mail : <br> <input name="to_email" type="email" placeholder="{{name}}@gmail.com"></label><br>
-  <label><input type="checkbox" name="create_redirection"> Créer aussi une redirection vers cette adresse</label><br>
+  <label><input type="checkbox" name="create_redirection" value="true"> Créer aussi une redirection vers cette adresse</label><br>
+  <input type="checkbox" name="keep_copy" value="true"> Garder une copie des emails en cas de redirection</label><br>
   <button>Créer un compte</button>
   </fieldset>
 </form>
