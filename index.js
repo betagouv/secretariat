@@ -28,8 +28,6 @@ const mailTransport = nodemailer.createTransport({
 
 var app = express();
 
-app.set('trust proxy', 1)
-
 app.engine('mustache', cons.mustache);
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
@@ -116,7 +114,7 @@ function sendLoginEmail(id, domain) {
     const token = jwt.sign({ id: id }, config.secret, { expiresIn: "10 mins" });
     const url = `${domain}/users?token=${encodeURIComponent(token)}`
     const html = `
-        <h1>Ton lien de connexion !  (Valable 10 mins)</h1>
+        <h1>Ton lien de connexion ! (Valable 10 mins)</h1>
         <a href="${url}">${url}
         </a>`
     return sendMail(email, 'Connexion secrétariat BetaGouv', html)
