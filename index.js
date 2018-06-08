@@ -92,7 +92,8 @@ function sendMail(to_email, subject, html, text){
     from: "Secrétariat BetaGouv <secretariat@beta.gouv.fr>",
     subject: subject,
     html: html,
-    text: html.replace(/<(?:.|\n)*?>/gm, '')
+    text: html.replace(/<(?:.|\n)*?>/gm, ''),
+    headers : { "X-Mailjet-TrackOpen" : "0", "X-Mailjet-TrackClick" : "0"}
   };
   return new Promise(function(resolve, reject) {
     mailTransport.sendMail(mail, (error, info) => {
