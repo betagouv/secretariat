@@ -109,7 +109,7 @@ function sendMail(to_email, subject, html, text){
 function sendLoginEmail(id, domain) {
   return BetaGouv.user_infos_by_id(id).then(function (user){
     if(user === undefined) {
-      throw 'Utilisateur inconnu sur beta.gouv.fr (Avez-vous une fiche sur github ?)'
+      throw 'Utilisateur(trice) '+id+' inconnu(e) sur beta.gouv.fr (Avez-vous une fiche sur github ?)'
     }
     const email = id+'@beta.gouv.fr';
     const token = jwt.sign({ id: id }, config.secret, { expiresIn: "10 mins" });
@@ -127,9 +127,9 @@ function sendLoginEmail(id, domain) {
 
 function userInfos(name,is_current_user) {
   return Promise.join(BetaGouv.user_infos_by_id(name), BetaGouv.email_infos(name), BetaGouv.redirection_for_name(name), function(user_infos, email_infos, redirections) {
-      // On ne peut créé un compte que se la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur connecté qui peut créer son propre compte)
+      // On ne peut créé un compte que se la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
       const can_create_email = user_infos != undefined && email_infos == undefined && (is_current_user || redirections.length === 0) 
-      // On peut créer une redirection que si la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur connecté qui peut créer ces propres redirections)
+      // On peut créer une redirection que si la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur(trice) connecté qui peut créer ces propres redirections)
       const can_create_redirection = user_infos != undefined && (is_current_user || (redirections.length === 0 && email_infos == undefined))
       const result = {
         email_infos: email_infos,
@@ -142,7 +142,7 @@ function userInfos(name,is_current_user) {
       return result
     })
     .catch(function(err) {
-       throw 'Problème pour récupérer les infos de l\'utilisateur'
+       throw 'Problème pour récupérer les infos de l\'utilisateur(trice) '+name
     })
 }
 
@@ -224,14 +224,14 @@ app.post('/users/:id/email', function(req, res) {
   userInfos(id, req.user.id === id)
   .then(function(result) {
     if(result.user_infos == undefined){
-      throw "L'utilisateur n'a pas de fiche sur github: vous ne pouvez pas créer son compte email"
+      throw "L'utilisateur(trice) "+name+" n'a pas de fiche sur github: vous ne pouvez pas créer son compte email"
     }
     if(!result.can_create_email){
       throw "Vous n'avez pas le droits de créer de redirection"
     }
     const password = Math.random().toString(36).slice(-10)
     const email = id+'@beta.gouv.fr'
-    console.log("Email account creation by="+req.user.id+"&email="+email+"&to_email="+req.query.to_email)
+    console.log("Email account creation by="+req.user.id+"&email="+email+"&to_email="+req.query.to_email+"&create_redirection="+req.body.create_redirection+"&keep_copy="+req.body.keep_copy)
     return BetaGouv.create_email(id, password)
       .then(function(result){
         const url = `${config.secure?"https":"http"}://${req.hostname}/`
@@ -272,11 +272,12 @@ app.post('/users/:name/redirections', function(req, res) {
   userInfos(name,req.user.id === name)
   .then(function(result) {
     if(result.user_infos == undefined){
-      throw "L'utilisateur n'a pas de fiche sur github: vous ne pouvez pas créer de redirection"
+      throw "L'utilisateur(trice) "+name+" n'a pas de fiche sur github: vous ne pouvez pas créer de redirection"
     }
     if(!result.can_create_redirection){
       throw "Vous n'avez pas le droits de créer de redirection"
     }
+    console.log("Email account creation by="+req.user.id+"&from_email="+name+"&to_email="+req.query.to_email+"&keep_copy="+req.body.keep_copy)
     return BetaGouv.create_redirection(name + '@beta.gouv.fr', req.body.to_email, req.body.keep_copy == "true").catch(function(err) {
       throw 'Erreur pour créer la redirection: '+err
     })
