@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
 
+
 const config = {
   secret: process.env.SESSION_SECRET,
   port: process.env.PORT || 8100
@@ -25,6 +26,8 @@ const mailTransport = nodemailer.createTransport({
 });
 
 var app = express();
+
+app.set('trust proxy', 1);
 
 app.engine('mustache', cons.mustache);
 app.set('view engine', 'mustache');
