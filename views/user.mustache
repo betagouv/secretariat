@@ -1,5 +1,11 @@
 {{> header}}
 <h1>{{name}}</h1>
+{{#errors}}
+<p style="color: red; font-weight: bold">{{errors}}<p>
+{{/errors}}
+{{#messages}}
+<p><b><i>{{messages}}</i></b></p>
+{{/messages}}
 <h2>Fiche beta.gouv.fr</h2>
 {{#user_infos}}
 <ul>
@@ -10,17 +16,34 @@
   <li>Github : {{#github}}{{github}}{{/github}}
   {{^github}}Non renseigné{{/github}}</li>
 </ul>
+<p><i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/_authors/{{name}}.md">Par ici</a></i></p>
 {{/user_infos}}
 {{^user_infos}}
-  Inexistante
+  Inexistante (Nécessaire pour créer le compte mail)<br>
+<p><i>Vous pouvez créer la fiche sur Github</i></p>
 {{/user_infos}}
 <h2>Compte mail</h2>
 {{#email_infos}}
-   {{email}}
+   {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@beta.gouv.fr">Webmail</a> )
 {{/email_infos}}
 {{^email_infos}}
   Inexistant
 {{/email_infos}}
+{{#can_create_email}}
+<p>
+<form action="/users/{{name}}/email" method="POST">
+ <fieldset>
+  <legend>Créer le compte mail</legend>
+  <label>Envoyer le mot de passe à cette adresse mail : <br> <input name="to_email" type="email" placeholder="{{name}}@gmail.com"></label><br>
+  <label><input type="checkbox" name="create_redirection"> Créer aussi une redirection vers cette adresse</label><br>
+  <button>Créer un compte</button>
+  </fieldset>
+</form>
+</p>
+{{/can_create_email}}
+{{^can_create_email}}
+<p><i>Vous ne pouvez pas créer ou modifier ce compte email</i></p>
+{{/can_create_email}}
 
 <h2>Redirections</h2>
 <ul>
@@ -30,5 +53,20 @@
 {{^redirections}}
    <li>Aucune</li>
 {{/redirections}}
-<ul>
+</ul>
+{{#can_create_redirection}}
+<p>
+<form action="/users/{{name}}/redirections" method="POST">
+ <fieldset>
+  <legend>Créer une redirection email</legend>
+  <label>Rediriger les mails vers : <input name="to_email" type="email" placeholder="{{name}}@gmail.com"></label><br>
+  <label><input type="checkbox" name="keep_copy" value="true"> Garder une copie des emails si un compte existe</label><br>
+  <button>Créer la redirection</button>
+  </fieldset>
+</form>
+</p>
+{{/can_create_redirection}}
+{{^can_create_redirection}}
+<p><i>Vous ne pouvez pas créer ou modifier les redirections</i></p>
+{{/can_create_redirection}}
 {{> footer}}

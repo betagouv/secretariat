@@ -1,14 +1,19 @@
 {{> header}}
 <h1>Login</h1>
-{{#error}}
-<p style="color: red; font-weight: bold">{{error}}<p>
-{{/error}}
+{{#errors}}
+<p style="color: red; font-weight: bold">{{errors}}<p>
+{{/errors}}
 {{#result}}
 <p>{{result}}</p>
 {{/result}}
 {{^result}}
 <form action="/login" method="POST">
-  <p><label><b>Votre email</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+">@beta.gouv.fr</label><br><br>
+  <p><label><b>Votre email</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" list="user_ids">@beta.gouv.fr</label><br><br>
+  <datalist id="user_ids">
+  {{#users}}
+    <option value="{{id}}">
+  {{/users}}
+  </datalist>
   <button>Connexion par email</button></p>
 </form>
 {{/result}}

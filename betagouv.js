@@ -11,15 +11,36 @@ const ovh = require('ovh')({
 module.exports = {
     // /email/domain/{domain}/redirection
     email_infos(name) {
+      const url = '/email/domain/beta.gouv.fr/account/'+name
       return new Promise(function (resolve, reject) { 
-        ovh.requestPromised('GET', '/email/domain/beta.gouv.fr/account/'+name, {}).then(function(response) {
+        ovh.requestPromised('GET', url, {}).then(function(response) {
          resolve(response);
        }).catch(function (err) {
          if(err.error == "404") {
            resolve(null)
          } else {
-           reject('OVH Error on /email/domain/beta.gouv.fr/redirection/:id : '+JSON.stringify(err));
+           reject('OVH Error GET on '+name+'  : '+JSON.stringify(err));
          }
+       })
+      });
+    },
+    create_email(name, password) {
+      const url = '/email/domain/beta.gouv.fr/account'
+      return new Promise(function (resolve, reject) { 
+        ovh.requestPromised('POST', url, { accountName: name, password: password }).then(function(response) {
+         resolve(response);
+       }).catch(function (err) {
+         reject('OVH Error POST on '+url+' : '+JSON.stringify(err));
+       })
+      });
+    },
+    create_redirection(from, to, keep_local) {
+      const url = '/email/domain/beta.gouv.fr/redirection'
+      return new Promise(function (resolve, reject) { 
+        ovh.requestPromised('POST', url, { from: from, to: to, localCopy: keep_local }).then(function(response) {
+         resolve(response);
+       }).catch(function (err) {
+         reject('OVH Error POST on '+url+' : '+JSON.stringify(err));
        })
       });
     },
