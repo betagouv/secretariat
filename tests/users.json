@@ -46,5 +46,28 @@
     ,"end": "2021-04-05"
     ,"employer": "dinsic"
     
+  },
+  {
+    "id": "stephane.legouffe"
+    ,"fullname": "Stéphane Legouffe"
+    ,"start": "2018-03-08"
+    ,"end": "2018-06-08"
+    ,"employer": "independent"
+    ,"github": "slegouffe"
+  },
+  {
+    "id": "sandra.chakroun"
+    ,"fullname": "Sandra Chakroun"
+    ,"start": "2017-05-10"
+    ,"end": "2018-10-05"
+    ,"employer": "independent/octo"
+    
+  },
+  {
+    "id": "loup.wolff"
+    ,"fullname": "Loup Wolff"
+    ,"start": "2018-03-27"
+    ,"end": ""
+    ,"employer": "admin/Ministère de la Culture"  
   }
 ]
