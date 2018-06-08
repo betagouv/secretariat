@@ -236,9 +236,9 @@ app.post('/users/:id/email', function(req, res) {
       .then(function(result){
         const url = `${config.secure?"https":"http"}://${req.hostname}/`
         const html = `
-            <h1>Ton compte ${id} a été créé !</h1>
+            <h1>Ton compte ${email} a été créé !</h1>
             <ul>
-            <li>Identifiant de login : ${id}</li>
+            <li>Identifiant de login : ${email}</li>
             <li>Mot de passe : ${password}</li>
             <li>Comment utiliser ton compte email, voici les infos OVH pour configurer ta boite mail : <a href="https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises">https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises</a></li>
             <li>Gérer son compte mail sur le secrétariat BetaGouv : <a href="${url}">${url}</a></li>
