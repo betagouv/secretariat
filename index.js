@@ -236,7 +236,7 @@ app.post('/users/:id/email', function(req, res) {
             <ul>
             <li>Identifiant de login : ${id}</li>
             <li>Mot de passe : ${password}</li>
-            <li>Comment utiliser son compte email, info et tutos OVH : <a href="https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises">https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises</a></li>
+            <li>Comment utiliser ton compte email, voici les infos OVH pour configurer ta boite mail : <a href="https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises">https://docs.ovh.com/fr/emails/generalites-sur-les-emails-mutualises</a></li>
             <li>Gérer son compte mail sur le secrétariat BetaGouv : <a href="${url}">${url}</a></li>
             </a>`
         return sendMail(req.body.to_email, 'Création compte '+email, html)
