@@ -69,5 +69,22 @@
     ,"start": "2018-03-27"
     ,"end": ""
     ,"employer": "admin/Ministère de la Culture"  
-  }
+  },
+  {
+            "id": "ishan.bhojwani"
+            ,"fullname": "Ishan Bhojwani"
+            ,"start": "2017-05-23"
+            ,"end": "2018-12-31"
+            ,"employer": "independent/octo"
+            ,"github": "IshanB"
+        },
+  
+        {
+            "id": "pierre.de_la_morinerie"
+            ,"fullname": "Pierre de La Morinerie"
+            ,"start": "2017-01-24"
+            ,"end": "2017-07-31"
+            ,"employer": "independent/octo"
+            
+        }
 ]
