@@ -163,7 +163,7 @@ app.post('/login', function(req, res) {
   } 
   const domain = `${config.secure?"https":"http"}://${req.hostname}`
   sendLoginEmail(req.body.id, domain).then(function(result){
-    renderLogin(req, res, { result: 'Email de connexion envoyé pour '+req.body.id });
+    renderLogin(req, res, { message: 'Email de connexion envoyé pour '+req.body.id });
   }).catch(function(err) {
     console.log(err);
     renderLogin(req, res, { errors:  [err] })
@@ -221,6 +221,7 @@ app.get('/users/:name', function(req, res) {
 
 app.post('/users/:id/email', function(req, res) {
   const id = req.params.id;
+  const url = `${config.secure?"https":"http"}://${req.hostname}`;
   userInfos(id, req.user.id === id)
   .then(function(result) {
     if(result.user_infos == undefined){
@@ -232,9 +233,12 @@ app.post('/users/:id/email', function(req, res) {
     const password = Math.random().toString(36).slice(-10)
     const email = id+'@beta.gouv.fr'
     console.log("Email account creation by="+req.user.id+"&email="+email+"&to_email="+req.query.to_email+"&create_redirection="+req.body.create_redirection+"&keep_copy="+req.body.keep_copy)
-    return BetaGouv.create_email(id, password)
+    const message = `A la demande de ${req.user.id} sur <${url}>, je créé un compte mail pour ${id}`
+    return BetaGouv.sendInfoToSlack(message)
+      .then(function(result){ 
+        return BetaGouv.create_email(id, password)
+      })
       .then(function(result){
-        const url = `${config.secure?"https":"http"}://${req.hostname}/`
         const html = `
             <h1>Ton compte ${email} a été créé !</h1>
             <ul>
@@ -267,29 +271,35 @@ app.post('/users/:id/email', function(req, res) {
   })
 })
 
-app.post('/users/:name/redirections', function(req, res) {
-  const name = req.params.name;
-  userInfos(name,req.user.id === name)
+app.post('/users/:id/redirections', function(req, res) {
+  const id = req.params.id;
+  const url = `${config.secure?"https":"http"}://${req.hostname}`;
+  userInfos(id,req.user.id === id)
   .then(function(result) {
     if(result.user_infos == undefined){
-      throw "L'utilisateur(trice) "+name+" n'a pas de fiche sur github: vous ne pouvez pas créer de redirection"
+      throw "L'utilisateur(trice) "+id+" n'a pas de fiche sur github: vous ne pouvez pas créer de redirection"
     }
     if(!result.can_create_redirection){
       throw "Vous n'avez pas le droits de créer de redirection"
     }
-    console.log("Email account creation by="+req.user.id+"&from_email="+name+"&to_email="+req.query.to_email+"&keep_copy="+req.body.keep_copy)
-    return BetaGouv.create_redirection(name + '@beta.gouv.fr', req.body.to_email, req.body.keep_copy == "true").catch(function(err) {
+    console.log("Email account creation by="+req.user.id+"&from_email="+id+"&to_email="+req.query.to_email+"&keep_copy="+req.body.keep_copy)
+    const message = `A la demande de ${req.user.id} sur <${url}>, je créé une redirection mail pour ${id}`
+    return BetaGouv.sendInfoToSlack(message)
+      .then(function(result){
+        return BetaGouv.create_redirection(id + '@beta.gouv.fr', req.body.to_email, req.body.keep_copy == "true")
+      })
+      .catch(function(err) {
       throw 'Erreur pour créer la redirection: '+err
     })
   })
   .then(function (result){
     req.flash('message', 'La redirection a bien été créé')
-    res.redirect('/users/'+name)
+    res.redirect('/users/'+id)
   })
   .catch(function(err) {
     console.log(err);
     req.flash('error', err)
-    res.redirect('/users/'+name)
+    res.redirect('/users/'+id)
   })
 })
 

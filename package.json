@@ -28,6 +28,8 @@
     "jsonwebtoken": "^8.2.2",
     "mustache": "^2.3.0",
     "nodemailer": "^4.6.5",
-    "ovh": "^2.0.1"
+    "ovh": "^2.0.1",
+    "request": "^2.87.0",
+    "request-promise": "^4.2.2"
   }
 }
