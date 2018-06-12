@@ -3,10 +3,10 @@
 {{#errors}}
 <p style="color: red; font-weight: bold">{{errors}}<p>
 {{/errors}}
-{{#result}}
-<p>{{result}}</p>
-{{/result}}
-{{^result}}
+{{#message}}
+<p>{{message}}</p>
+{{/message}}
+{{^message}}
 <form action="/login" method="POST">
   <p><label><b>Votre email</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" list="user_ids">@beta.gouv.fr</label><br><br>
   <datalist id="user_ids">
@@ -16,5 +16,5 @@
   </datalist>
   <button>Connexion par email</button></p>
 </form>
-{{/result}}
+{{/message}}
 {{> footer}}

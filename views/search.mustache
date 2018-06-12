@@ -3,7 +3,7 @@
   <p><label><b>Rechercher un nom</b><br><input name="name" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids"></label><br>
   Si le nom n'apparait pas en autocompletion: c'est que l'utilisateur n'existe pas sur beta.gouv.fr
   <br><br>
-    <datalist id="user_ids">
+  <datalist id="user_ids">
   {{#users}}
     <option value="{{id}}">
   {{/users}}
