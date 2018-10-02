@@ -112,10 +112,10 @@ function sendLoginEmail(id, domain) {
       throw 'Utilisateur(trice) '+id+' inconnu(e) sur beta.gouv.fr (Avez-vous une fiche sur github ?)'
     }
     const email = id+'@beta.gouv.fr';
-    const token = jwt.sign({ id: id }, config.secret, { expiresIn: "10 mins" });
+    const token = jwt.sign({ id: id }, config.secret, { expiresIn: "1 hours" });
     const url = `${domain}/users?token=${encodeURIComponent(token)}`
     const html = `
-        <h1>Ton lien de connexion ! (Valable 10 mins)</h1>
+        <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
         <a href="${url}">${url}
         </a>`
     return sendMail(email, 'Connexion secrétariat BetaGouv', html)
