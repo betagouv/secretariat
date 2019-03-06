@@ -51,6 +51,16 @@ const betaOVH = {
      .catch(function (err) {
         throw 'OVH Error on /email/domain/'+config.domain+'/redirection : '+JSON.stringify(err);
      });
+ },
+ redirections() {
+  return ovh.requestPromised('GET', '/email/domain/'+config.domain+'/redirection').then(function (redirectionIds) {
+      return Promise.map(redirectionIds, function(redirectionId) {
+        return ovh.requestPromised('GET', '/email/domain/'+config.domain+'/redirection/'+redirectionId);
+      })
+    })
+    .catch(function (err) {
+       throw 'OVH Error on /email/domain/'+config.domain+'/redirection : '+JSON.stringify(err);
+    });
  }
 }
 module.exports = {
@@ -72,6 +82,7 @@ module.exports = {
   create_email: betaOVH.create_email,
   create_redirection: betaOVH.create_redirection,
   redirection_for_name: betaOVH.redirection_for_name,
+  redirections: betaOVH.redirections,
    users_infos() {
      return new Promise(function (resolve, reject) {       
        https.get(config.usersAPI, (resp) => {
