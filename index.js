@@ -10,7 +10,8 @@ const nodemailer = require('nodemailer')
 const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
-
+const NodeCache = require( "node-cache" );
+const dataCache = new NodeCache( { stdTTL: 100, checkperiod: 120 } );
 
 const config = {
   secret: process.env.SESSION_SECRET,
@@ -32,8 +33,10 @@ app.engine('mustache', cons.mustache);
 app.set('view engine', 'mustache');
 app.set('views', __dirname + '/views');
 
+app.use('/static', express.static('static'))
+
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 60000 }}));
+app.use(session({ cookie: { maxAge: 300000 }}));
 app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -110,6 +113,10 @@ function sendLoginEmail(id, domain) {
   return BetaGouv.user_infos_by_id(id).then(function (user){
     if(user === undefined) {
       throw 'Utilisateur(trice) '+id+' inconnu(e) sur beta.gouv.fr (Avez-vous une fiche sur github ?)'
+    } 
+    if(user.end !== undefined 
+        && new Date(user.end).getTime() < new Date().getTime()) {
+      throw 'Utilisateur(trice) '+id+' a une date de fin expiré sur Github'
     }
     const email = id+'@beta.gouv.fr';
     const token = jwt.sign({ id: id }, config.secret, { expiresIn: "1 hours" });
@@ -120,6 +127,7 @@ function sendLoginEmail(id, domain) {
         </a>`
     return sendMail(email, 'Connexion secrétariat BetaGouv', html)
      .catch(function(err){
+        console.log(err)
         throw 'Erreur d\'envoi de mail à ton adresse'
      })
   })
@@ -142,6 +150,7 @@ function userInfos(name,is_current_user) {
       return result
     })
     .catch(function(err) {
+      console.log(err)
        throw 'Problème pour récupérer les infos de l\'utilisateur(trice) '+name
     })
 }
@@ -187,6 +196,47 @@ app.get('/users', function(req, res) {
     res.render('search', {
       users: [],
       errors: ['Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'],
+      user: req.user,
+      partials: {
+        header: 'header',
+        footer: 'footer'
+    }});
+  })
+});
+
+function email_with_metadata() {
+  return Promise.join(BetaGouv.accounts(),BetaGouv.redirections(),BetaGouv.users_infos(), function (accounts, redirections, user_infos) {
+    const emails = Array.from(new Set(redirections.filter(r => !r.to.endsWith("beta.gouv.fr")).map(r => r.from).concat(accounts.map(a => `${a}@beta.gouv.fr`)))).sort();
+    const emails_with_metadata = emails.map(email => {
+        const id = email.split("@")[0]
+        const user = user_infos.find(ui => ui.id == id)
+        const result = {
+          "email" : email,
+          "github" : user !== undefined,
+          "redirections" : redirections.filter(r => r.from == email).map(r => r.to),
+          "account" : accounts.includes(id),
+          "expired" : user !== undefined && new Date(user.end).getTime() < new Date().getTime()
+        }
+        return result
+      }
+    )
+    return emails_with_metadata;
+  });
+}
+
+app.get('/emails', function(req, res) {
+  return require('promise-memoize')(email_with_metadata, { maxAge: 120000 })().then(function(emails_with_metadata){
+    res.render('emails', {
+      user: req.user,
+      emails: emails_with_metadata,
+      partials: {
+      header: 'header',
+      footer: 'footer'
+    }});
+  }).catch(function(err) {
+    console.log(err);
+    res.render('emails', {
+      errors: ['Erreur interne'],
       user: req.user,
       partials: {
         header: 'header',

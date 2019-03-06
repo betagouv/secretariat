@@ -11,7 +11,7 @@ const ovh = require('ovh')({
 
 const config = {
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
-  usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v1.3/authors.json',
+  usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v1.6/authors.json',
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL
 }
 
@@ -61,6 +61,17 @@ const betaOVH = {
     .catch(function (err) {
        throw 'OVH Error on /email/domain/'+config.domain+'/redirection : '+JSON.stringify(err);
     });
+ },
+ accounts() {
+  const url = '/email/domain/'+config.domain+'/account'
+  return ovh.requestPromised('GET', url, {})
+  .catch(function (err) {
+     if(err.error == "404") {
+       return null
+     } else {
+       throw 'OVH Error GET on '+name+'  : '+JSON.stringify(err);
+     }
+   })
  }
 }
 module.exports = {
@@ -83,6 +94,7 @@ module.exports = {
   create_redirection: betaOVH.create_redirection,
   redirection_for_name: betaOVH.redirection_for_name,
   redirections: betaOVH.redirections,
+  accounts: betaOVH.accounts,
    users_infos() {
      return new Promise(function (resolve, reject) {       
        https.get(config.usersAPI, (resp) => {
