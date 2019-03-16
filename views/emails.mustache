@@ -24,7 +24,7 @@
 <tr>
   <td>{{email}}</td>
   <td>{{#github}}✔ Oui{{/github}}{{^github}}❌ Non !{{/github}}</td>
-  <td>{{#expired}}✔ Oui{{/expired}}{{^expired}}❌ Non !{{/expired}}</td>
+  <td>{{^expired}}✔ Oui{{/expired}}{{#expired}}❌ Non !{{/expired}}</td>
   <td>{{#account}}✔ Oui{{/account}}{{^account}}Non{{/account}}</td>
   <td><ul>{{#redirections}}
     <li>{{.}}</li>
