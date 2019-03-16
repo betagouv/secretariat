@@ -1,6 +1,22 @@
 # secretariat
 Le secrétariat de l’incubateur
 
+## Dev
+
+- Variables d'environnement nécessaires :
+   - OVH_APP_KEY
+   - OVH_APP_SECRET
+   - OVH_CONSUMER_KEY
+   - SESSION_SECRET (clé de 32 caractère aléatoires, important en prod)
+   - MAIL_SERVICE (service géré par nodemailer, `mailjet` est dispo)
+   - MAIL_USER
+   - MAIL_PASS
+   - SECURE (true si https sinon false)
+   - SLACK_WEBHOOK_URL (adresse d'envoit des notifs : https://hooks.slack.com/services/...)
+- Récupérer les dépendances avec npm
+- Lancer l'app : `node index.js`
+- Ouvrir `http://localhost:8100` (8100 est le port par défaut, vous pouvez le changer avec la variable d'env PORT)
+
 ## Script
 
 # Générer le graphe des redirections emails
