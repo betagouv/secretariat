@@ -10,9 +10,7 @@ const nodemailer = require('nodemailer')
 const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
-const NodeCache = require( "node-cache" );
 const PromiseMemoize = require('promise-memoize')
-const dataCache = new NodeCache( { stdTTL: 100, checkperiod: 120 } );
 
 const config = {
   secret: process.env.SESSION_SECRET,
