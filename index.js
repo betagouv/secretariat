@@ -11,6 +11,7 @@ const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
 const session = require('express-session')
 const NodeCache = require( "node-cache" );
+const PromiseMemoize = require('promise-memoize')
 const dataCache = new NodeCache( { stdTTL: 100, checkperiod: 120 } );
 
 const config = {
@@ -20,6 +21,7 @@ const config = {
 }
 
 const mailTransport = nodemailer.createTransport({
+  debug: process.env.MAIL_DEBUG || false,
   service: process.env.MAIL_SERVICE,
   auth: {
     user: process.env.MAIL_USER,
@@ -206,7 +208,14 @@ app.get('/users', function(req, res) {
 
 function email_with_metadata() {
   return Promise.join(BetaGouv.accounts(),BetaGouv.redirections(),BetaGouv.users_infos(), function (accounts, redirections, user_infos) {
-    const emails = Array.from(new Set(redirections.filter(r => !r.to.endsWith("beta.gouv.fr")).map(r => r.from).concat(accounts.map(a => `${a}@beta.gouv.fr`)))).sort();
+    const emails = Array.from(
+      new Set(
+        redirections
+        .filter(r => !r.to.endsWith("beta.gouv.fr"))
+        .map(r => r.from)
+        .concat(accounts.map(a => `${a}@beta.gouv.fr`))
+      )
+    ).sort();
     const emails_with_metadata = emails.map(email => {
         const id = email.split("@")[0]
         const user = user_infos.find(ui => ui.id == id)
@@ -215,7 +224,7 @@ function email_with_metadata() {
           "github" : user !== undefined,
           "redirections" : redirections.filter(r => r.from == email).map(r => r.to),
           "account" : accounts.includes(id),
-          "expired" : user !== undefined && new Date(user.end).getTime() < new Date().getTime()
+          "expired" : user && user.end && new Date(user.end).getTime() < new Date().getTime()
         }
         return result
       }
@@ -225,7 +234,7 @@ function email_with_metadata() {
 }
 
 app.get('/emails', function(req, res) {
-  return require('promise-memoize')(email_with_metadata, { maxAge: 120000 })().then(function(emails_with_metadata){
+  return PromiseMemoize(email_with_metadata, { maxAge: 120000 })().then(function(emails_with_metadata){
     res.render('emails', {
       user: req.user,
       emails: emails_with_metadata,
