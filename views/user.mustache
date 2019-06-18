@@ -35,7 +35,7 @@
 <form action="/users/{{name}}/email" method="POST">
  <fieldset>
   <legend>Créer le compte mail</legend>
-  <label>Envoyer le mot de passe à cette adresse mail : <br> <input name="to_email" type="email" placeholder="{{name}}@gmail.com"></label><br>
+  <label>Envoyer le mot de passe à cette adresse mail : <br> <input name="to_email" type="email" required></label><br>
   <label><input type="checkbox" name="create_redirection" value="true"> Créer aussi une redirection vers cette adresse</label><br>
   <input type="checkbox" name="keep_copy" value="true"> Garder une copie des emails en cas de redirection</label><br>
   <button>Créer un compte</button>
@@ -61,7 +61,7 @@
 <form action="/users/{{name}}/redirections" method="POST">
  <fieldset>
   <legend>Créer une redirection email</legend>
-  <label>Rediriger les mails vers : <input name="to_email" type="email" placeholder="{{name}}@gmail.com"></label><br>
+  <label>Rediriger les mails vers : <input name="to_email" type="email" required></label><br>
   <label><input type="checkbox" name="keep_copy" value="true"> Garder une copie des emails si un compte existe</label><br>
   <button>Créer la redirection</button>
   </fieldset>
