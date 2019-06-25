@@ -1,3 +1,4 @@
+require('dotenv').config()
 const BetaGouv = require('./../betagouv')
 BetaGouv.redirections().then(function(redirections){
     console.log("digraph D {") 
