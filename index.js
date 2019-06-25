@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const cons = require('consolidate');
 const BetaGouv = require('./betagouv');
+const Promise = require('bluebird')
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const expressJWT = require('express-jwt');

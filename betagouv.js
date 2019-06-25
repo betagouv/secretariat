@@ -1,5 +1,6 @@
 // betagouv.js
 // ======
+const Promise = require("bluebird");
 const https = require('https');
 const rp = require('request-promise');
 const ovh = require('ovh')({
@@ -66,6 +67,45 @@ const betaOVH = {
         }/redirection : ${JSON.stringify(err)}`;
       });
   },
+  redirection_to(name) {
+    return ovh
+      .requestPromised('GET', `/email/domain/${config.domain}/redirection`, {
+        to: `${name}@beta.gouv.fr`
+      })
+      .then(redirectionIds =>
+        Promise.map(redirectionIds, redirectionId =>
+          ovh.requestPromised(
+            'GET',
+            `/email/domain/${config.domain}/redirection/${redirectionId}`
+          )
+        )
+      )
+      .catch(err => {
+        throw `OVH Error on /email/domain/${
+          config.domain
+        }/redirection : ${JSON.stringify(err)}`;
+      });
+  },
+  delete_redirection(from, to) {
+    return ovh
+      .requestPromised('GET', `/email/domain/${config.domain}/redirection`, {
+        from: from,
+        to: to
+      })
+      .then(redirectionIds =>
+        Promise.map(redirectionIds, redirectionId =>
+          ovh.requestPromised(
+            'DELETE',
+            `/email/domain/${config.domain}/redirection/${redirectionId}`
+          )
+        )
+      )
+      .catch(err => {
+        throw `OVH Error on deleting /email/domain/${
+          config.domain
+        }/redirection : ${JSON.stringify(err)}`;
+      });
+  },
   redirections() {
     return ovh
       .requestPromised('GET', `/email/domain/${config.domain}/redirection`)
@@ -108,7 +148,7 @@ const BetaGouv = {
       throw `Error to notify slack: ${err}`;
     });
   },
-  ...betaOVH.email_infos,
+  ...betaOVH,
   users_infos() {
     return new Promise((resolve, reject) =>
       // TODO: utiliser `fetch` avec header accept:application/json
