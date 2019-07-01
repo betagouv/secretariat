@@ -217,7 +217,7 @@ app.post('/login', (req, res) => {
   sendLoginEmail(req.body.id, domain)
     .then(result => {
       renderLogin(req, res, {
-        message: `Email de connexion envoyé pour ${eq.body.id}`
+        message: `Email de connexion envoyé pour ${req.body.id}`
       });
     })
     .catch(err => {
