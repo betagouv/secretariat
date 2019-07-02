@@ -362,11 +362,7 @@ app.post('/users/:id/email', (req, res) => {
         .slice(-10);
       const email = `${id}@beta.gouv.fr`;
       console.log(
-        `Email account creation by=${req.user.id}&email=${email}&to_email=${
-          req.query.to_email
-        }&create_redirection=${req.body.create_redirection}&keep_copy=${
-          req.body.keep_copy
-        }`
+        `Email account creation by=${req.user.id}&email=${email}&to_email=${req.query.to_email}&create_redirection=${req.body.create_redirection}&keep_copy=${req.body.keep_copy}`
       );
       const message = `A la demande de ${
         req.user.id
@@ -428,11 +424,7 @@ app.post('/users/:id/redirections', (req, res) => {
         throw "Vous n'avez pas le droits de créer de redirection";
       }
       console.log(
-        `Email account creation by=${req.user.id}&from_email=${id}&to_email=${
-          req.query.to_email
-        }&create_redirection=${req.body.create_redirection}&keep_copy=${
-          req.body.keep_copy
-        }`
+        `Email account creation by=${req.user.id}&from_email=${id}&to_email=${req.query.to_email}&create_redirection=${req.body.create_redirection}&keep_copy=${req.body.keep_copy}`
       );
       const message = `A la demande de ${
         req.user.id
