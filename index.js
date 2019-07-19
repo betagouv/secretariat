@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const expressJWT = require('express-jwt');
 const nodemailer = require('nodemailer');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const flash = require('connect-flash');
 const PromiseMemoize = require('promise-memoize');
 
@@ -36,6 +37,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/static', express.static('static'));
 
 app.use(cookieParser(config.secret));
+app.use(session({ cookie: { maxAge: 300000 } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
