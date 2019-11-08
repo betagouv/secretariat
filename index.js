@@ -165,11 +165,10 @@ function userInfos(name, is_current_user) {
         email_infos == undefined &&
         (is_current_user || redirections.length === 0);
 
-      // On peut créer une redirection que si la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur(trice) connecté qui peut créer ces propres redirections)
+      // On peut créer une redirection si la page fiche github existe et que l'on est l'utilisateur(trice) connecté pour créer ces propres redirections.
       const can_create_redirection =
         user_infos != undefined &&
-        (is_current_user ||
-          (redirections.length === 0 && email_infos == undefined));
+         is_current_user;
 
       const result = {
         email_infos,
