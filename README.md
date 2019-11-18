@@ -1,7 +1,7 @@
 # secretariat
 Le secrétariat de l’incubateur
 
-## Dev
+## Dev de l'app de secrétariat
 
 - Variables d'environnement nécessaires :
    - OVH_APP_KEY
@@ -17,10 +17,41 @@ Le secrétariat de l’incubateur
 - Lancer l'app : `node index.js`
 - Ouvrir `http://localhost:8100` (8100 est le port par défaut, vous pouvez le changer avec la variable d'env PORT)
 
-## Script
+### Debug avec un autre domaine OVH
+- Configurer la variable d'environnement SECRETARIAT_DOMAIN (par défaut à beta.gouv.fr)
+
+### Debug avec une autre API utilisateur
+- Configurer la variable d'environnement USERS_API (par défaut à https://beta.gouv.fr/api/v1.6/authors.json)
+
+## Script pour faire des taches en local
 
 # Générer le graphe des redirections emails
 
 - Configurer les variables d'environnements : OVH_APP_KEY, OVH_APP_SECRET et OVH_CONSUMER_KEY (Avec une clé aillant un accès aux emails)
 - Lancer le script : `node ./scripts/export_redirections_to_dot.js > redirections.dot`
 - Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
+
+# Supprimer une redirection
+- Configurer les variables d'environnements : OVH_APP_KEY, OVH_APP_SECRET et OVH_CONSUMER_KEY (Avec une clé aillant un accès aux emails)
+- Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
+
+## Générer clé API OVH
+
+Lien : https://eu.api.ovh.com/createToken/
+
+- Nécessaires pour les fonctionalités en cours
+```
+GET /email/domain/beta.gouv.fr/*
+POST /email/domain/beta.gouv.fr/account
+DELETE /email/domain/beta.gouv.fr/account/*
+POST  /email/domain/beta.gouv.fr/redirection
+DELETE  /email/domain/beta.gouv.fr/redirection/*
+```
+
+- Nécessaires pour les prochaines fonctionalités
+```
+POST /email/domain/beta.gouv.fr/account/*/changePassword
+POST /email/domain/beta.gouv.fr/mailingList
+POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
+DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
+```
