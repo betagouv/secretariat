@@ -454,6 +454,7 @@ app.post('/users/:id/redirections', (req, res) => {
 app.post('/users/:id/redirections/:email', (req, res) => {
   const id = req.params.id;
   const to_email = req.params.email;
+  const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
   userInfos(id, req.user.id === id)
     .then(result => {
       if (!result.can_create_redirection) {
