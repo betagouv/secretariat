@@ -40,7 +40,7 @@
   </fieldset>
 </form>
 </p>
-{{/can_create_email}}
+{{/can_create_email}}>
 {{^can_create_email}}
 <p><i>Seul {{name}} peut créer ou modifier ce compte email (ou bientôt le faire)</i></p>
 {{/can_create_email}}
@@ -48,7 +48,11 @@
 <h2>Redirections</h2>
 <ul>
 {{#redirections}}
-  <li>{{from}} vers {{to}}</li>
+  <li>{{from}} vers {{to}} {{#can_create_email}}
+  <form action="/users/{{name}}/redirections/{{to}}" method="POST">
+    <button>Supprimer</button>
+  </form>
+  {{/can_create_email}}</li>
 {{/redirections}}
 {{^redirections}}
    <li>Aucune</li>
