@@ -452,13 +452,12 @@ app.post('/users/:id/redirections', (req, res) => {
 });
 
 app.post('/users/:id/redirections/:email', (req, res) => {
-  const id = req.params.id;
-  const to_email = req.params.email;
+  const { id, email: to_email } = req.params;
   const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
   userInfos(id, req.user.id === id)
     .then(result => {
       if (!result.can_create_redirection) {
-        throw "Vous n'avez pas le droits de supprimer cette redirection";
+        new Error("Vous n'avez pas le droits de supprimer cette redirection");
       }
       console.log(
         `Delete redirection by=${id}&to_email=${to_email}`
@@ -482,8 +481,8 @@ app.post('/users/:id/redirections/:email', (req, res) => {
       res.redirect(`/users/${id}`);
     })
     .catch(err => {
-      console.log(err);
-      req.flash('error', err);
+      console.error(err);
+      req.flash('error', err.message);
       res.redirect(`/users/${id}`);
     });
 });
