@@ -451,4 +451,40 @@ app.post('/users/:id/redirections', (req, res) => {
     });
 });
 
+app.post('/users/:id/redirections/:email', (req, res) => {
+  const { id, email: to_email } = req.params;
+  const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+  userInfos(id, req.user.id === id)
+    .then(result => {
+      if (!result.can_create_redirection) {
+        new Error("Vous n'avez pas le droits de supprimer cette redirection");
+      }
+      console.log(
+        `Delete redirection by=${id}&to_email=${to_email}`
+      );
+      const message = `A la demande de ${
+        req.user.id
+      } sur <${url}>, je supprime la redirection mail de ${id} vers ${to_email}`;
+      return BetaGouv.sendInfoToSlack(message)
+        .then(result =>
+          BetaGouv.delete_redirection(
+            `${id}@beta.gouv.fr`,
+            to_email
+          )
+        )
+        .catch(err => {
+          throw new Error(`Erreur pour supprimer la redirection: ${err}`);
+        });
+    })
+    .then(result => {
+      req.flash('message', 'La redirection a bien été supprimé');
+      res.redirect(`/users/${id}`);
+    })
+    .catch(err => {
+      console.error(err);
+      req.flash('error', err.message);
+      res.redirect(`/users/${id}`);
+    });
+});
+
 app.listen(config.port);

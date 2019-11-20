@@ -48,7 +48,11 @@
 <h2>Redirections</h2>
 <ul>
 {{#redirections}}
-  <li>{{from}} vers {{to}}</li>
+  <li>{{from}} vers {{to}} {{#can_create_redirection}}
+  <form action="/users/{{name}}/redirections/{{to}}" method="POST">
+    <button>Supprimer</button>
+  </form>
+  {{/can_create_redirection}}</li>
 {{/redirections}}
 {{^redirections}}
    <li>Aucune</li>
