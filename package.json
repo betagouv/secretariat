@@ -27,7 +27,7 @@
     "express-session": "^1.15.6",
     "jsonwebtoken": "^8.2.2",
     "mustache": "^3.1.0",
-    "nodemailer": "^4.6.5",
+    "nodemailer": "^6.4.1",
     "ovh": "^2.0.1",
     "promise-memoize": "^1.2.1",
     "request": "^2.87.0",
