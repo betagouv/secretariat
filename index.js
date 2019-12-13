@@ -16,7 +16,8 @@ const PromiseMemoize = require('promise-memoize');
 const config = {
   secret: process.env.SESSION_SECRET,
   port: process.env.PORT || 8100,
-  secure: (process.env.SECURE || 'true') === 'true'
+  secure: (process.env.SECURE || 'true') === 'true',
+  senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net"
 };
 
 const mailTransport = nodemailer.createTransport({
@@ -107,7 +108,7 @@ const isBetaEmail = email => email && email.endsWith('beta.gouv.fr');
 async function sendMail(to_email, subject, html, text) {
   const mail = {
     to: to_email,
-    from: `Secretariat BetaGouv <${buildBetaEmail('secretariat')}>`,
+    from: `Secretariat BetaGouv <${config.senderEmail}>`,
     subject: subject,
     html: html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
