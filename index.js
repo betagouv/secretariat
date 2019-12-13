@@ -107,7 +107,7 @@ const isBetaEmail = email => email && email.endsWith('beta.gouv.fr');
 async function sendMail(to_email, subject, html, text) {
   const mail = {
     to: to_email,
-    from: `Secrétariat BetaGouv ${buildBetaEmail('secretariat')}>`,
+    from: `Secretariat BetaGouv <${buildBetaEmail('secretariat')}>`,
     subject: subject,
     html: html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
