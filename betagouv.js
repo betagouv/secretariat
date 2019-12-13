@@ -1,6 +1,6 @@
 // betagouv.js
 // ======
-const Promise = require("bluebird");
+const Promise = require('bluebird');
 const https = require('https');
 const rp = require('request-promise');
 const ovh = require('ovh')({
@@ -131,17 +131,28 @@ const betaOVH = {
       }
       return null;
     });
+  },
+  async change_password(id, password) {
+    try {
+      await ovh.requestPromised(
+        'POST',
+        `/email/domain/${config.domain}/account/${id}/changePassword`,
+        { password }
+      );
+    } catch (err) {
+      throw `OVH Error on /email/domain/${
+        config.domain
+      }/redirection : ${JSON.stringify(err)}`;
+    }
   }
 };
 
 const BetaGouv = {
-  sendInfoToSlack(message) {
+  sendInfoToSlack(text) {
     const options = {
       method: 'POST',
       uri: config.slackWebhookURL,
-      body: {
-        text: message
-      },
+      body: { text },
       json: true
     };
     return rp(options).catch(err => {
