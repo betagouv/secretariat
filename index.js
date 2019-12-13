@@ -345,7 +345,7 @@ app.get('/users/:name', async (req, res) => {
   const name = req.params.name;
 
   try {
-    const user = await userInfos(name, true || req.user.id === name);
+    const user = await userInfos(name, req.user.id === name);
 
     res.render('user', {
       name,
@@ -383,7 +383,7 @@ app.post('/users/:id/email', async (req, res) => {
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer de redirection");
+      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur");
     }
 
     const password = Math.random()
@@ -480,7 +480,7 @@ app.post('/users/:id/redirections/:email/delete', async (req, res) => {
     // TODO: vérifier si l'utilisateur existe sur github ?
 
     if (!user.canCreateRedirection) {
-      new Error("Vous n'avez pas le droits de supprimer cette redirection");
+      throw new Error("Vous n'avez pas le droits de supprimer cette redirection");
     }
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
@@ -516,6 +516,10 @@ app.post('/users/:id/password', async (req, res) => {
         `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas modifier le mot de passe`
       );
     }
+    console.log(user)
+    if (!user.canChangePassword) {
+      throw new Error("Vous n'avez pas le droits de changer le mot de passe.");
+    }
 
     const password = req.body.new_password;
 
@@ -546,7 +550,7 @@ app.post('/users/:id/password', async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', err);
+    req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
 });
