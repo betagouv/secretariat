@@ -17,168 +17,159 @@ const config = {
 };
 
 const betaOVH = {
-  email_infos(name) {
+  emailInfos: async name => {
     const url = `/email/domain/${config.domain}/account/${name}`;
-    return ovh.requestPromised('GET', url, {}).catch(err => {
-      if (err.error == '404') {
-        return null;
-      }
-      throw `OVH Error GET on ${url} : ${JSON.stringify(err)}`;
-    });
+
+    try {
+      return ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      if (err.error == '404') return null;
+
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  create_email(name, password) {
+  createEmail: async (name, password) => {
     const url = `/email/domain/${config.domain}/account`;
-    console.log(`OVH POST ${url} name=${name}`);
-    return ovh
-      .requestPromised('POST', url, { accountName: name, password: password })
-      .catch(err => {
-        throw `OVH Error POST on ${url} : ${JSON.stringify(err)}`;
+
+    try {
+      console.log(`OVH POST ${url} name=${name}`);
+
+      return ovh.requestPromised('POST', url, {
+        accountName: name,
+        password
       });
+    } catch (err) {
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  create_redirection(from, to, keep_local) {
+  createRedirection: async (from, to, localCopy) => {
     const url = `/email/domain/${config.domain}/redirection`;
-    console.log(`OVH POST ${url} from+${from} &to=${to}`);
-    return ovh
-      .requestPromised('POST', url, {
-        from: from,
-        to: to,
-        localCopy: keep_local
-      })
-      .catch(err => {
-        throw `OVH Error POST on ${url} : ${JSON.stringify(err)}`;
-      });
+
+    try {
+      console.log(`OVH POST ${url} from+${from} &to=${to}`);
+
+      return ovh.requestPromised('POST', url, { from, to, localCopy });
+    } catch (err) {
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  redirection_for_name(name) {
-    return ovh
-      .requestPromised('GET', `/email/domain/${config.domain}/redirection`, {
-        from: `${name}@beta.gouv.fr`
-      })
-      .then(redirectionIds =>
-        Promise.map(redirectionIds, redirectionId =>
-          ovh.requestPromised(
-            'GET',
-            `/email/domain/${config.domain}/redirection/${redirectionId}`
-          )
-        )
-      )
-      .catch(err => {
-        throw `OVH Error on /email/domain/${
-          config.domain
-        }/redirection : ${JSON.stringify(err)}`;
-      });
+  requestRedirection: async (method, redirectionId) =>
+    ovh.requestPromised(
+      method,
+      `/email/domain/${config.domain}/redirection/${redirectionId}`
+    ),
+  requestRedirections: async (method, redirectionIds) =>
+    Promise.map(redirectionIds, redirectionId =>
+      BetaGouv.requestRedirection(method, redirectionId)
+    ),
+  redirectionsForName: async query => {
+    if (!query.from && !query.to) {
+      throw new Error(`paramètre 'from' ou 'to' manquant`);
+    }
+
+    const url = `/email/domain/${config.domain}/redirection`;
+
+    const options = {};
+
+    if (query.from) {
+      options.from = `${query.from}@beta.gouv.fr`;
+    }
+
+    if (query.to) {
+      options.to = `${query.to}@beta.gouv.fr`;
+    }
+
+    try {
+      const redirectionIds = await ovh.requestPromised('GET', url, options);
+
+      return BetaGouv.requestRedirections('GET', redirectionIds);
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  redirection_to(name) {
-    return ovh
-      .requestPromised('GET', `/email/domain/${config.domain}/redirection`, {
-        to: `${name}@beta.gouv.fr`
-      })
-      .then(redirectionIds =>
-        Promise.map(redirectionIds, redirectionId =>
-          ovh.requestPromised(
-            'GET',
-            `/email/domain/${config.domain}/redirection/${redirectionId}`
-          )
-        )
-      )
-      .catch(err => {
-        throw `OVH Error on /email/domain/${
-          config.domain
-        }/redirection : ${JSON.stringify(err)}`;
+  deleteRedirection: async (from, to) => {
+    const url = `/email/domain/${config.domain}/redirection`;
+
+    try {
+      const redirectionIds = await ovh.requestPromised('GET', url, {
+        from,
+        to
       });
+
+      return BetaGouv.requestRedirections('DELETE', redirectionIds);
+    } catch (err) {
+      throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  delete_redirection(from, to) {
-    return ovh
-      .requestPromised('GET', `/email/domain/${config.domain}/redirection`, {
-        from: from,
-        to: to
-      })
-      .then(redirectionIds =>
-        Promise.map(redirectionIds, redirectionId =>
-          ovh.requestPromised(
-            'DELETE',
-            `/email/domain/${config.domain}/redirection/${redirectionId}`
-          )
-        )
-      )
-      .catch(err => {
-        throw `OVH Error on deleting /email/domain/${
-          config.domain
-        }/redirection : ${JSON.stringify(err)}`;
-      });
+  redirections: async () => {
+    const url = `/email/domain/${config.domain}/redirection`;
+
+    try {
+      const redirectionIds = await ovh.requestPromised('GET', url);
+
+      return BetaGouv.requestRedirections('GET', redirectionIds);
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
   },
-  redirections() {
-    return ovh
-      .requestPromised('GET', `/email/domain/${config.domain}/redirection`)
-      .then(redirectionIds =>
-        Promise.map(redirectionIds, redirectionId =>
-          ovh.requestPromised(
-            'GET',
-            `/email/domain/${config.domain}/redirection/${redirectionId}`
-          )
-        )
-      )
-      .catch(err => {
-        throw `OVH Error on /email/domain/${
-          config.domain
-        }/redirection : ${JSON.stringify(err)}`;
-      });
-  },
-  accounts() {
+  accounts: async () => {
     const url = `/email/domain/${config.domain}/account`;
-    return ovh.requestPromised('GET', url, {}).catch(err => {
+
+    try {
+      return ovh.requestPromised('GET', url, {});
+    } catch (err) {
       if (err.error != '404') {
-        throw `OVH Error GET on ${url} : ${JSON.stringify(err)}`;
+        throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
       }
       return null;
-    });
+    }
   },
-  async change_password(id, password) {
+  changePassword: async (id, password) => {
+    const url = `/email/domain/${config.domain}/account/${id}/changePassword`;
+
     try {
-      await ovh.requestPromised(
-        'POST',
-        `/email/domain/${config.domain}/account/${id}/changePassword`,
-        { password }
-      );
+      await ovh.requestPromised('POST', url, { password });
     } catch (err) {
-      throw `OVH Error on /email/domain/${
-        config.domain
-      }/redirection : ${JSON.stringify(err)}`;
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
   }
 };
 
 const BetaGouv = {
-  sendInfoToSlack(text) {
-    const options = {
-      method: 'POST',
-      uri: config.slackWebhookURL,
-      body: { text },
-      json: true
-    };
-    return rp(options).catch(err => {
-      throw `Error to notify slack: ${err}`;
-    });
+  sendInfoToSlack: async text => {
+    try {
+      const options = {
+        method: 'POST',
+        uri: config.slackWebhookURL,
+        body: { text },
+        json: true
+      };
+
+      return rp(options);
+    } catch (err) {
+      throw new Error(`Error to notify slack: ${err}`);
+    }
   },
   ...betaOVH,
-  users_infos() {
-    return new Promise((resolve, reject) =>
+  usersInfos: async () =>
+    new Promise((resolve, reject) =>
       // TODO: utiliser `fetch` avec header accept:application/json
       // pour ne pas avoir à gérer les chunks + JSON.parse
       https
         .get(config.usersAPI, resp => {
           let data = '';
+
           resp.on('data', chunk => (data += chunk));
           resp.on('end', () => resolve(JSON.parse(data)));
         })
         .on('error', err => {
           reject(`Error to get users infos in beta.gouv.fr: ${err}`);
         })
-    );
-  },
-  user_infos_by_id(id) {
-    return BetaGouv.users_infos().then(response =>
-      response.find(element => element.id == id)
-    );
+    ),
+  userInfosById: async id => {
+    const users = await BetaGouv.usersInfos();
+
+    return users.find(element => element.id == id);
   }
 };
 

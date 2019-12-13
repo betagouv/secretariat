@@ -7,7 +7,7 @@
 <p><b><i>{{messages}}</i></b></p>
 {{/messages}}
 <h2>Fiche beta.gouv.fr</h2>
-{{#user_infos}}
+{{#userInfos}}
 <ul>
   <li>Nom: {{fullname}}</li>
   <li>Date de début: {{start}}</li>
@@ -17,17 +17,17 @@
   {{^github}}Non renseigné{{/github}}</li>
 </ul>
 <p><i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/{{name}}.md">Par ici</a></i></p>
-{{/user_infos}}
-{{^user_infos}}
+{{/userInfos}}
+{{^userInfos}}
   Inexistante (Nécessaire pour créer le compte mail)<br>
 <p><i>Vous pouvez créer la fiche sur Github</i></p>
-{{/user_infos}}
+{{/userInfos}}
 <h2>Compte mail</h2>
-{{#email_infos}}
+{{#emailInfos}}
    {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@beta.gouv.fr">Webmail</a> )
     <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
 
-    {{#can_change_password}}
+    {{#canChangePassword}}
      <form action="/users/{{name}}/password" method="POST">
       <fieldset>
         <legend>Changer le mot de passe POP/IMAP/SMTP</legend>
@@ -36,12 +36,12 @@
         <button>Changer</button>
         </fieldset>
       </form>
-    {{/can_change_password}}
-{{/email_infos}}
-{{^email_infos}}
+    {{/canChangePassword}}
+{{/emailInfos}}
+{{^emailInfos}}
   Inexistant
-{{/email_infos}}
-{{#can_create_email}}
+{{/emailInfos}}
+{{#canCreateEmail}}
 <p>
 <form action="/users/{{name}}/email" method="POST">
  <fieldset>
@@ -51,25 +51,25 @@
   </fieldset>
 </form>
 </p>
-{{/can_create_email}}
-{{^can_create_email}}
+{{/canCreateEmail}}
+{{^canCreateEmail}}
 <p><i>Seul {{name}} peut créer ou modifier ce compte email</i></p>
-{{/can_create_email}}
+{{/canCreateEmail}}
 
 <h2>Redirections</h2>
 <ul>
 {{#redirections}}
-  <li>{{from}} vers {{to}} {{#can_create_redirection}}
+  <li>{{from}} vers {{to}} {{#canCreateRedirection}}
   <form action="/users/{{name}}/redirections/{{to}}/delete" method="POST">
     <button>Supprimer</button>
   </form>
-  {{/can_create_redirection}}</li>
+  {{/canCreateRedirection}}</li>
 {{/redirections}}
 {{^redirections}}
    <li>Aucune</li>
 {{/redirections}}
 </ul>
-{{#can_create_redirection}}
+{{#canCreateRedirection}}
 <p>
 <form action="/users/{{name}}/redirections" method="POST">
  <fieldset>
@@ -80,8 +80,8 @@
   </fieldset>
 </form>
 </p>
-{{/can_create_redirection}}
-{{^can_create_redirection}}
+{{/canCreateRedirection}}
+{{^canCreateRedirection}}
 <p><i>Seul {{name}} peut créer ou modifier les redirections</i></p>
-{{/can_create_redirection}}
+{{/canCreateRedirection}}
 {{> footer}}

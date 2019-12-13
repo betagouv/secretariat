@@ -100,10 +100,14 @@ function renderLogin(req, res, params) {
   return res.render('login', params);
 }
 
+const buildBetaEmail = id => `${id}@beta.gouv.fr`;
+const getBetaEmailId = email => email && email.split('@')[0];
+const isBetaEmail = email => email && email.endsWith('beta.gouv.fr');
+
 async function sendMail(to_email, subject, html, text) {
   const mail = {
     to: to_email,
-    from: 'Secrétariat BetaGouv <secretariat@beta.gouv.fr>',
+    from: `Secrétariat BetaGouv ${buildBetaEmail('secretariat')}>`,
     subject: subject,
     html: html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
@@ -118,7 +122,7 @@ async function sendMail(to_email, subject, html, text) {
 }
 
 async function sendLoginEmail(id, domain) {
-  const user = await BetaGouv.user_infos_by_id(id);
+  const user = await BetaGouv.userInfosById(id);
 
   if (!user) {
     throw new Error(
@@ -127,7 +131,7 @@ async function sendLoginEmail(id, domain) {
   }
 
   if (
-    user.end !== undefined &&
+    user.end != undefined &&
     new Date(user.end).getTime() < new Date().getTime()
   ) {
     throw new Error(
@@ -135,7 +139,7 @@ async function sendLoginEmail(id, domain) {
     );
   }
 
-  const email = `${id}@beta.gouv.fr`;
+  const email = buildBetaEmail(id);
   const token = jwt.sign({ id: id }, config.secret, { expiresIn: '1 hours' });
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
@@ -152,32 +156,38 @@ async function sendLoginEmail(id, domain) {
   }
 }
 
-async function userInfos(name, is_current_user) {
+async function userInfos(name, isCurrentUser) {
   try {
-    const [user_infos, email_infos, redirections] = await Promise.all([
-      BetaGouv.user_infos_by_id(name),
-      BetaGouv.email_infos(name),
-      BetaGouv.redirection_for_name(name)
+    const [userInfos, emailInfos, redirections] = await Promise.all([
+      BetaGouv.userInfosById(name),
+      BetaGouv.emailInfos(name),
+      BetaGouv.redirectionsForName({ from: name })
     ]);
 
-    // On ne peut créé un compte que se la page fiche github existe, que le compte n'existe pas et qu'il n'y a aucun redirection. (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
-    const can_create_email =
-      user_infos != undefined &&
-      email_infos == undefined &&
-      (is_current_user || redirections.length === 0);
+    const hasUserInfos = userInfos != undefined;
 
-    // On peut créer une redirection si la page fiche github existe et que l'on est l'utilisateur(trice) connecté pour créer ces propres redirections.
-    const can_create_redirection = user_infos != undefined && is_current_user;
-    const can_change_password = user_infos != undefined && is_current_user;
+    // On ne peut créé un compte que se la page fiche github existe
+    // que le compte n'existe pas et qu'il n'y a aucun redirection.
+    // (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
+    const canCreateEmail =
+      hasUserInfos &&
+      emailInfos === undefined &&
+      (isCurrentUser || redirections.length === 0);
+
+    // On peut créer une redirection si la page fiche github existe
+    // et que l'on est l'utilisateur(trice) connecté(e)
+    // pour créer ces propres redirections.
+    const canCreateRedirection = hasUserInfos && isCurrentUser;
+    const canChangePassword = hasUserInfos && isCurrentUser;
 
     return {
-      email_infos,
+      emailInfos,
       redirections,
-      user_infos,
+      userInfos,
       name,
-      can_create_email,
-      can_create_redirection,
-      can_change_password
+      canCreateEmail,
+      canCreateRedirection,
+      canChangePassword
     };
   } catch (err) {
     console.error(err);
@@ -188,25 +198,25 @@ async function userInfos(name, is_current_user) {
   }
 }
 
-app.get('/login', (req, res) => {
-  BetaGouv.users_infos()
-    .then(users => {
-      renderLogin(req, res, { errors: req.flash('error'), users: users });
-    })
-    .catch(err => {
-      console.error(err);
+app.get('/login', async (req, res) => {
+  try {
+    const users = await BetaGouv.usersInfos();
 
-      renderLogin(req, res, {
-        errors: [
-          'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
-        ]
-      });
+    renderLogin(req, res, { errors: req.flash('error'), users });
+  } catch (err) {
+    console.error(err);
+
+    renderLogin(req, res, {
+      errors: [
+        'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
+      ]
     });
+  }
 });
 
 app.post('/login', async (req, res) => {
   if (
-    req.body.id == undefined ||
+    req.body.id === undefined ||
     !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
   ) {
     req.flash('error', 'Nom invalid ([a-z0-9_-]+.[a-z0-9_-]+)');
@@ -228,64 +238,68 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.get('/users', (req, res) => {
+app.get('/users', async (req, res) => {
   if (req.query.name) {
     return res.redirect(`/users/${req.query.name}`);
   }
 
-  BetaGouv.users_infos()
-    .then(users => {
-      res.render('search', {
-        users: users,
-        user: req.user,
-        partials: {
-          header: 'header',
-          footer: 'footer'
-        }
-      });
-    })
-    .catch(err => {
-      console.error(err);
+  try {
+    const users = await BetaGouv.usersInfos();
 
-      res.render('search', {
-        users: [],
-        errors: [
-          'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
-        ],
-        user: req.user,
-        partials: {
-          header: 'header',
-          footer: 'footer'
-        }
-      });
+    res.render('search', {
+      users: users,
+      user: req.user,
+      partials: {
+        header: 'header',
+        footer: 'footer'
+      }
     });
+  } catch (err) {
+    console.error(err);
+
+    res.render('search', {
+      users: [],
+      errors: [
+        'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
+      ],
+      user: req.user,
+      partials: {
+        header: 'header',
+        footer: 'footer'
+      }
+    });
+  }
 });
 
-function email_with_metadata() {
-  return Promise.all([
-    BetaGouv.accounts(),
-    BetaGouv.redirections(),
-    BetaGouv.users_infos()
-  ]).then(([accounts, redirections, user_infos]) => {
+const emailWithMetadataMemoized = PromiseMemoize(
+  async () => {
+    const [accounts, redirections, users] = await Promise.all([
+      BetaGouv.accounts(),
+      BetaGouv.redirections(),
+      BetaGouv.usersInfos()
+    ]);
+
+    console.log('users', users.length);
+
     const emails = Array.from(
       new Set([
         ...redirections.reduce(
-          (acc, r) => (!r.to.endsWith('beta.gouv.fr') ? [...acc, r.from] : acc),
+          (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
           []
         ),
-        ...accounts.map(a => `${a}@beta.gouv.fr`)
+        ...accounts.map(buildBetaEmail)
       ])
     ).sort();
 
     return emails.map(email => {
-      const [id] = email.split('@');
-      const user = user_infos.find(ui => ui.id == id);
+      const id = getBetaEmailId(email);
+      const user = users.find(ui => ui.id === id);
 
       return {
         email: email,
-        github: user !== undefined,
+        github: user != undefined,
         redirections: redirections.reduce(
-          (acc, r) => (r.from == email ? [...acc, r.to] : acc),
+          (acc, r) => (r.from === email ? [...acc, r.to] : acc),
           []
         ),
         account: accounts.includes(id),
@@ -295,61 +309,65 @@ function email_with_metadata() {
           new Date(user.end).getTime() < new Date().getTime()
       };
     });
-  });
-}
-
-app.get('/emails', (req, res) =>
-  PromiseMemoize(email_with_metadata, { maxAge: 120000 })()
-    .then(emails_with_metadata => {
-      res.render('emails', {
-        user: req.user,
-        emails: emails_with_metadata,
-        partials: {
-          header: 'header',
-          footer: 'footer'
-        }
-      });
-    })
-    .catch(err => {
-      console.error(err);
-
-      res.render('emails', {
-        errors: ['Erreur interne'],
-        user: req.user,
-        partials: {
-          header: 'header',
-          footer: 'footer'
-        }
-      });
-    })
+  },
+  {
+    maxAge: 120000
+  }
 );
 
-app.get('/users/:name', (req, res) => {
-  const name = req.params.name;
-  userInfos(name, req.user.id === name)
-    .then(result => {
-      res.render('user', {
-        email_infos: result.email_infos,
-        redirections: result.redirections,
-        user_infos: result.user_infos,
-        name,
-        user: req.user,
-        can_create_email: result.can_create_email,
-        can_create_redirection: result.can_create_redirection,
-        can_change_password: result.can_change_password,
-        errors: req.flash('error'),
-        messages: req.flash('message'),
-        partials: {
-          header: 'header',
-          footer: 'footer'
-        }
-      });
-    })
-    .catch(err => {
-      console.error(err);
+app.get('/emails', async (req, res) => {
+  try {
+    const emails = await emailWithMetadataMemoized();
 
-      res.send(err);
+    res.render('emails', {
+      user: req.user,
+      emails,
+      partials: {
+        header: 'header',
+        footer: 'footer'
+      }
     });
+  } catch (err) {
+    console.error(err);
+
+    res.render('emails', {
+      errors: ['Erreur interne'],
+      user: req.user,
+      partials: {
+        header: 'header',
+        footer: 'footer'
+      }
+    });
+  }
+});
+
+app.get('/users/:name', async (req, res) => {
+  const name = req.params.name;
+
+  try {
+    const user = await userInfos(name, true || req.user.id === name);
+
+    res.render('user', {
+      name,
+      user: req.user,
+      emailInfos: user.emailInfos,
+      redirections: user.redirections,
+      userInfos: user.userInfos,
+      canCreateEmail: user.canCreateEmail,
+      canCreateRedirection: user.canCreateRedirection,
+      canChangePassword: user.canChangePassword,
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+      partials: {
+        header: 'header',
+        footer: 'footer'
+      }
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.send(err);
+  }
 });
 
 app.post('/users/:id/email', async (req, res) => {
@@ -358,23 +376,23 @@ app.post('/users/:id/email', async (req, res) => {
   try {
     const user = await userInfos(id, req.user.id === id);
 
-    if (!user.user_infos) {
+    if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas créer son compte email`
       );
     }
 
-    if (!user.can_create_email) {
+    if (!user.canCreateEmail) {
       throw new Error("Vous n'avez pas le droits de créer de redirection");
     }
 
     const password = Math.random()
       .toString(36)
       .slice(-10);
-    const email = `${id}@beta.gouv.fr`;
+    const email = buildBetaEmail(id);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.query.to_email}&create_redirection=${req.body.create_redirection}&keep_copy=${req.body.keep_copy}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.query.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
@@ -382,7 +400,7 @@ app.post('/users/:id/email', async (req, res) => {
     const message = `À la demande de ${req.user.id} sur <${url}>, je crée un compte mail pour ${id}`;
 
     await BetaGouv.sendInfoToSlack(message);
-    await BetaGouv.create_email(id, password);
+    await BetaGouv.createEmail(id, password);
 
     const html = `
       <h1>Ton compte ${email} a été créé !</h1>
@@ -417,28 +435,28 @@ app.post('/users/:id/redirections', async (req, res) => {
     const user = await userInfos(id, req.user.id === id);
 
     // TODO: généraliser ce code dans un `app.param("id")` ?
-    if (!user.user_infos) {
+    if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas créer de redirection`
       );
     }
 
-    if (!user.can_create_redirection) {
+    if (!user.canCreateRedirection) {
       throw new Error("Vous n'avez pas le droits de créer de redirection");
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&create_redirection=${req.body.create_redirection}&keep_copy=${req.body.keep_copy}`
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
     const message = `À la demande de ${req.user.id} sur <${url}>, je crée une redirection mail pour ${id}`;
 
     try {
       await BetaGouv.sendInfoToSlack(message);
-      await BetaGouv.create_redirection(
-        `${id}@beta.gouv.fr`,
+      await BetaGouv.createRedirection(
+        buildBetaEmail(id),
         req.body.to_email,
-        req.body.keep_copy == 'true'
+        req.body.keep_copy === 'true'
       );
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
@@ -461,7 +479,7 @@ app.post('/users/:id/redirections/:email/delete', async (req, res) => {
     const user = await userInfos(id, req.user.id === id);
     // TODO: vérifier si l'utilisateur existe sur github ?
 
-    if (!user.can_create_redirection) {
+    if (!user.canCreateRedirection) {
       new Error("Vous n'avez pas le droits de supprimer cette redirection");
     }
 
@@ -472,7 +490,7 @@ app.post('/users/:id/redirections/:email/delete', async (req, res) => {
 
     try {
       await BetaGouv.sendInfoToSlack(message);
-      await BetaGouv.delete_redirection(`${id}@beta.gouv.fr`, to_email);
+      await BetaGouv.deleteRedirection(buildBetaEmail(id), to_email);
     } catch (err) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
@@ -493,7 +511,7 @@ app.post('/users/:id/password', async (req, res) => {
   try {
     const user = await userInfos(id, req.user.id === id);
 
-    if (!user.user_infos) {
+    if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas modifier le mot de passe`
       );
@@ -512,7 +530,7 @@ app.post('/users/:id/password', async (req, res) => {
       );
     }
 
-    const email = `${id}@beta.gouv.fr`;
+    const email = buildBetaEmail(id);
 
     console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
 
@@ -521,7 +539,7 @@ app.post('/users/:id/password', async (req, res) => {
     const message = `À la demande de ${req.user.id} sur <${url}>, je change le mot de passe pour ${id}`;
 
     await BetaGouv.sendInfoToSlack(message);
-    await BetaGouv.change_password(id, password);
+    await BetaGouv.changePassword(id, password);
 
     req.flash('message', 'Le mot de passe a bien été modifié');
     res.redirect(`/users/${id}`);
