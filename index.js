@@ -499,7 +499,7 @@ app.post('/users/:id/password', async (req, res) => {
       );
     }
 
-    const password = req.body.password;
+    const password = req.body.new_password;
 
     if (
       !password ||
