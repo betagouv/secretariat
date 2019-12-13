@@ -146,7 +146,14 @@ async function sendLoginEmail(id, domain) {
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
       <a href="${url}">${url}
-      </a>`;
+      </a>
+      <p>Tu as une heure pour cliquez dessus.<br>
+      Sur le secretariat, tu pourras :
+      <ul><li>Consulter les informations sur les emails</li>
+          <li>Changer ton mot de passe</li>
+          <li>Ajouter ou supprimer des redirections d'email</li>
+      </ul>
+    </p><p>Si tu as des questions, n'hésites pas à les poser sur le channel #incubateur-secretariat sur le Slack de BetaGouv.</p>`;
 
   try {
     await sendMail(email, 'Connexion secrétariat BetaGouv', html);
