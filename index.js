@@ -74,7 +74,7 @@ app.use((err, req, res, next) => {
 
     return res.redirect('/login');
   }
-  V;
+
   next(err);
 });
 
