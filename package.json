@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -34,6 +35,7 @@
     "request-promise": "^4.2.2"
   },
   "devDependencies": {
+    "nodemon": "^2.0.2",
     "prettier": "^1.16.4"
   },
   "prettier": {

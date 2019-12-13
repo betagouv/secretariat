@@ -14,7 +14,7 @@ Le secrétariat de l’incubateur
    - SECURE (true si https sinon false)
    - SLACK_WEBHOOK_URL (adresse d'envoit des notifs : https://hooks.slack.com/services/...)
 - Récupérer les dépendances avec npm
-- Lancer l'app : `node index.js`
+- Lancer l'app : `npm run dev`
 - Ouvrir `http://localhost:8100` (8100 est le port par défaut, vous pouvez le changer avec la variable d'env PORT)
 
 ### Debug avec un autre domaine OVH
@@ -55,3 +55,7 @@ POST /email/domain/beta.gouv.fr/mailingList
 POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
 DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 ```
+
+## Production
+
+`npm run start`
