@@ -145,8 +145,7 @@ async function sendLoginEmail(id, domain) {
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
-      <a href="${url}">${url}
-      </a>
+     
       <p>Tu as une heure pour cliquez dessus.<br>
       Sur le secretariat, tu pourras :
       <ul><li>Consulter les informations sur les emails</li>
