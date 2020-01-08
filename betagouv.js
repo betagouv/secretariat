@@ -20,13 +20,12 @@ const betaOVH = {
   emailInfos: async name => {
     const url = `/email/domain/${config.domain}/account/${name}`;
 
-    try {
-      return ovh.requestPromised('GET', url, {});
-    } catch (err) {
-      if (err.error == '404') return null;
-
-      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
-    }
+    return ovh.requestPromised('GET', url, {}).catch(err => {
+      if (err.error == '404') 
+        return null;
+      else
+        throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    })
   },
   createEmail: async (name, password) => {
     const url = `/email/domain/${config.domain}/account`;
