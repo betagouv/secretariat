@@ -172,7 +172,7 @@ async function userInfos(name, isCurrentUser) {
     // (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
     const canCreateEmail =
       hasUserInfos &&
-      emailInfos === undefined &&
+      emailInfos === null &&
       (isCurrentUser || redirections.length === 0);
 
     // On peut créer une redirection si la page fiche github existe
