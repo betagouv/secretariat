@@ -22,3 +22,11 @@ jobs:
     - run: npm test
       env:
         CI: true
+        OVH_APP_KEY: fakeovhkey
+        OVH_APP_SECRET: fakeovhsecret
+        OVH_CONSUMER_KEY: fakeconsumerkey
+        SESSION_SECRET: fakesessionsecret
+        SLACK_WEBHOOK_URL: https://example.com
+        MAIL_PASS: fakepass
+        MAIL_SERVICE: debug
+        MAIL_USER: fakeuser
