@@ -1,0 +1,12 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8100:8100"
+      - "9229:9229"
+    volumes:
+      - .:/app
+    env_file:
+      - ../.env.secretariat
+    command: nodemon --inspect=0.0.0.0:9229 ./index.js
