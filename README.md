@@ -56,6 +56,13 @@ POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
 DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 ```
 
+## Dev docker-compose
+
+- Récupéré les dépendences : `docker-compose run web npm install`
+- Lancer le service : `docker-compose up`
+- Lancer les tests : `docker-compose run web npm test`
+
+
 ## Production
 
 `npm run start`

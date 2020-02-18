@@ -556,4 +556,4 @@ app.post('/users/:id/password', async (req, res) => {
   }
 });
 
-app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
+module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
