@@ -61,6 +61,8 @@ DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 - Récupéré les dépendences : `docker-compose run web npm install`
 - Lancer le service : `docker-compose up`
 - Lancer les tests : `docker-compose run web npm test`
+- Exemple pour développer dans un contenaire :
+	- `docker run --rm --env-file ../.env.secretariat.dev -v `pwd`:/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev )
 
 
 ## Production
