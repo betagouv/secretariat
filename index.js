@@ -46,6 +46,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   expressJWT({
     secret: config.secret,
+    algorithms: ['HS256'],
     getToken: req =>
       req.query.token || req.cookies.token
         ? req.query.token || req.cookies.token
