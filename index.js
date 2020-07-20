@@ -21,7 +21,7 @@ const config = {
 };
 
 const mailTransport = nodemailer.createTransport({
-  debug: process.env.MAIL_DEBUG || false,
+  debug: process.env.MAIL_DEBUG === 'true',
   service: process.env.MAIL_SERVICE,
   auth: {
     user: process.env.MAIL_USER,
