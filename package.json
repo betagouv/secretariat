@@ -28,7 +28,7 @@
     "express-session": "^1.17.1",
     "jsonwebtoken": "^8.2.2",
     "mustache": "^3.2.1",
-    "nodemailer": "^6.4.6",
+    "nodemailer": "^6.4.10",
     "ovh": "^2.0.1",
     "promise-memoize": "^1.2.1",
     "request": "^2.88.2",
@@ -38,7 +38,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^7.1.2",
-    "nodemon": "^2.0.3",
+    "nodemon": "^2.0.4",
     "prettier": "^1.16.4"
   },
   "prettier": {
