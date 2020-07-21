@@ -39,7 +39,7 @@
     "chai-http": "^4.3.0",
     "mocha": "^7.1.2",
     "nodemon": "^2.0.4",
-    "prettier": "^1.16.4"
+    "prettier": "^2.0.5"
   },
   "prettier": {
     "singleQuote": true
