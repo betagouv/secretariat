@@ -1,7 +1,6 @@
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
-const cons = require('consolidate');
 const BetaGouv = require('./betagouv');
 const Promise = require('bluebird');
 const bodyParser = require('body-parser');
@@ -12,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const PromiseMemoize = require('promise-memoize');
+var mustacheExpress = require('mustache-express');
 
 const config = {
   secret: process.env.SESSION_SECRET,
@@ -31,7 +31,7 @@ const mailTransport = nodemailer.createTransport({
 
 const app = express();
 
-app.engine('mustache', cons.mustache);
+app.engine('mustache', mustacheExpress());
 app.set('view engine', 'mustache');
 app.set('views', path.join(__dirname, 'views'));
 
