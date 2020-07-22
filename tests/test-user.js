@@ -114,9 +114,6 @@ describe("User", () => {
       let ovhEmailNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200)
-        .persist()
-
-      ovhEmailNock.on('request', () => { return })
 
       chai.request(app)
         .post('/users/jenexistepas.test2/email')
@@ -124,7 +121,7 @@ describe("User", () => {
         .type('form')
         .send({ to_email: 'test@test.com' })
         .end((err, res) => {
-          ovhEmailNock._eventsCount.should.equal(1)
+          ovhEmailNock.isDone().should.be.true
           done();
         });
     })
@@ -152,17 +149,14 @@ describe("User", () => {
       let ovhRedirectionNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200)
-        .persist()
-
-      ovhRedirectionNock.on('request', () => { return })
 
       chai.request(app)
-        .post('/users/jenexistepas.test2/redirections')
+        .post('/users/jenexistepas.test/redirections')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
         .send({ to_email: 'test@test.com' })
         .end((err, res) => {
-          ovhRedirectionNock._eventsCount.should.equal(1)
+          ovhRedirectionNock.isDone().should.be.true
           done();
         });
     })
