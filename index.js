@@ -394,7 +394,7 @@ app.post('/users/:id/email', async (req, res) => {
     const email = buildBetaEmail(id);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.query.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
