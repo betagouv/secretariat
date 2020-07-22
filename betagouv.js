@@ -72,11 +72,11 @@ const betaOVH = {
     const options = {};
 
     if (query.from) {
-      options.from = `${query.from}@beta.gouv.fr`;
+      options.from = `${query.from}@${config.domain}`;
     }
 
     if (query.to) {
-      options.to = `${query.to}@beta.gouv.fr`;
+      options.to = `${query.to}@${config.domain}`;
     }
 
     try {
@@ -163,7 +163,7 @@ const BetaGouv = {
           resp.on('end', () => resolve(JSON.parse(data)));
         })
         .on('error', err => {
-          reject(`Error to get users infos in beta.gouv.fr: ${err}`);
+          reject(`Error to get users infos in ${config.domain}: ${err}`);
         })
     ),
   userInfosById: async id => {
