@@ -19,4 +19,5 @@ beforeEach(() => {
 
 afterEach(() => {
   utils.cleanMocks()
+  nock.enableNetConnect()
 })
