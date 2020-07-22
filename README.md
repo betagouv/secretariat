@@ -11,6 +11,7 @@ Le secrétariat de l’incubateur
    - MAIL_SERVICE (service géré par nodemailer, `mailjet` est dispo)
    - MAIL_USER
    - MAIL_PASS
+   - MAIL_PORT (optionnel)
    - SECURE (true si https sinon false)
    - SLACK_WEBHOOK_URL (adresse d'envoit des notifs : https://hooks.slack.com/services/...)
 - Récupérer les dépendances avec npm
