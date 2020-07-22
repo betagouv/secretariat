@@ -161,4 +161,34 @@ describe("User", () => {
         });
     })
   })
+
+  describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
+    it("should redirect to login", (done) => {
+      chai.request(app)
+        .post('/users/jenexistepas.test2/redirections/test@email.com/delete')
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal("/login");
+          done();
+        });
+    })
+  })
+
+  describe("POST /users/:id/redirections/:email/delete authenticated", () => {
+    it("should ask OVH to delete a redirection", (done) => {
+
+      let ovhRedirectionNock = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/.*/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/jenexistepas.test/redirections/test-2@test.com/delete')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .end((err, res) => {
+          ovhRedirectionNock.isDone().should.be.true
+          done();
+        });
+    })
+  })
 });

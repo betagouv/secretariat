@@ -14,6 +14,7 @@ beforeEach(() => {
   utils.mockOvhTime()
   utils.mockOvhUserEmailInfos()
   utils.mockOvhAllEmailInfos()
+  utils.mockOvhRedirectionWithQueries()
   utils.mockOvhRedirections()
 })
 

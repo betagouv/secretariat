@@ -34,6 +34,13 @@ module.exports = {
       .reply(200, testUsers.map(x => x.id))
       .persist()
   },
+  mockOvhRedirectionWithQueries() {
+    return nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/redirection/)
+      .query(x => x.from && x.to)
+      .reply(200, ['398284990'])
+      .persist()
+  },
   mockOvhRedirections() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/redirection/)
