@@ -17,7 +17,8 @@ const config = {
   secret: process.env.SESSION_SECRET,
   port: process.env.PORT || 8100,
   secure: (process.env.SECURE || 'true') === 'true',
-  senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net"
+  senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net",
+  domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"
 };
 
 const mailTransport = nodemailer.createTransport({
@@ -98,13 +99,14 @@ function renderLogin(req, res, params) {
     footer: 'footer',
     user: req.user
   };
+  params.domain = config.domain;
 
   return res.render('login', params);
 }
 
-const buildBetaEmail = id => `${id}@beta.gouv.fr`;
+const buildBetaEmail = id => `${id}@${config.domain}`;
 const getBetaEmailId = email => email && email.split('@')[0];
-const isBetaEmail = email => email && email.endsWith('beta.gouv.fr');
+const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
 
 async function sendMail(to_email, subject, html, text) {
   const mail = {
@@ -128,7 +130,7 @@ async function sendLoginEmail(id, domain) {
 
   if (!user) {
     throw new Error(
-      `Utilisateur(trice) ${id} inconnu(e) sur beta.gouv.fr (Avez-vous une fiche sur github ?)`
+      `Utilisateur(trice) ${id} inconnu(e) sur ${config.domain} (Avez-vous une fiche sur github ?)`
     );
   }
 
@@ -210,7 +212,7 @@ app.get('/login', async (req, res) => {
 
     renderLogin(req, res, {
       errors: [
-        'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
+        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`
       ]
     });
   }
@@ -251,6 +253,7 @@ app.get('/users', async (req, res) => {
     res.render('search', {
       users: users,
       user: req.user,
+      domain: config.domain,
       partials: {
         header: 'header',
         footer: 'footer'
@@ -262,7 +265,7 @@ app.get('/users', async (req, res) => {
     res.render('search', {
       users: [],
       errors: [
-        'Erreur interne: impossible de récupérer la liste des membres sur beta.gouv.fr'
+        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`
       ],
       user: req.user,
       partials: {
@@ -360,6 +363,7 @@ app.get('/users/:name', async (req, res) => {
       canChangePassword: user.canChangePassword,
       errors: req.flash('error'),
       messages: req.flash('message'),
+      domain: config.domain,
       partials: {
         header: 'header',
         footer: 'footer'

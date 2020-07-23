@@ -6,7 +6,7 @@
 {{#messages}}
 <p><b><i>{{messages}}</i></b></p>
 {{/messages}}
-<h2>Fiche beta.gouv.fr</h2>
+<h2>Fiche {{domain}}</h2>
 {{#userInfos}}
 <ul>
   <li>Nom: {{fullname}}</li>
@@ -24,7 +24,7 @@
 {{/userInfos}}
 <h2>Compte mail</h2>
 {{#emailInfos}}
-   {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@beta.gouv.fr">Webmail</a> )
+   {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@{{domain}}">Webmail</a> )
     <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
 
     {{#canChangePassword}}
