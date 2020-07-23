@@ -23,6 +23,14 @@ Le secrétariat de l’incubateur
 ### Debug avec une autre API utilisateur
 - Configurer la variable d'environnement USERS_API (par défaut à https://beta.gouv.fr/api/v1.6/authors.json)
 
+### Debug avec le serveur SMTP Maildev
+
+[Maildev](http://maildev.github.io/maildev/) est un serveur SMTP avec une interface web conçus pour le développement et les tests.
+
+Une fois [installé](http://maildev.github.io/maildev/#install) et lancé, il suffit de mettre la variable d'environnement `MAIL_SERVICE` à `maildev` pour l'utiliser. `MAIL_USER` et `MAIL_PASS` ne sont pas nécessaires.
+
+Tous les emails envoyés par le code du secrétariat seront visibles depuis l'interface web de Maildev.
+
 ## Script pour faire des taches en local
 
 # Générer le graphe des redirections emails
