@@ -8,7 +8,7 @@ describe("User", () => {
   describe("GET /users/:name unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
@@ -21,7 +21,7 @@ describe("User", () => {
   describe("GET /users authenticated", () => {
     it("should return a valid page", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -31,10 +31,10 @@ describe("User", () => {
     });
     it("should include the user's information", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('Nom: Je n&#39;existe pas 2')
+          res.text.should.include('Nom: Utilisateur Parti')
           res.text.should.include('Date de début: 2016-11-03')
           res.text.should.include('Date de fin: 2050-10-30')
           res.text.should.include('Employeur: independent&#x2F;octo')
@@ -44,10 +44,10 @@ describe("User", () => {
     });
     it("should include an email creation form for email-less users", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('<form action="/users/jenexistepas.test2/email" method="POST">')
+          res.text.should.include('<form action="/users/utilisateur.parti/email" method="POST">')
           done();
         })
     });
@@ -63,29 +63,29 @@ describe("User", () => {
       utils.mockOvhTime()
 
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('Seul jenexistepas.test2 peut créer ou modifier ce compte email')
+          res.text.should.include('Seul utilisateur.parti peut créer ou modifier ce compte email')
           done();
         })
     });
     it("should show the user an email redirection form", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test')
+        .get('/users/utilisateur.actif')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('<form action="/users/jenexistepas.test/redirections" method="POST">')
+          res.text.should.include('<form action="/users/utilisateur.actif/redirections" method="POST">')
           done();
         })
     });
     it("should not show an email redirection form to other users", (done) => {
       chai.request(app)
-        .get('/users/jenexistepas.test2')
+        .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('Seul jenexistepas.test2 peut créer ou modifier les redirections')
-          res.text.should.not.include('<form action="/users/jenexistepas.test2/redirections" method="POST">')
+          res.text.should.include('Seul utilisateur.parti peut créer ou modifier les redirections')
+          res.text.should.not.include('<form action="/users/utilisateur.parti/redirections" method="POST">')
           done();
         })
     });
@@ -94,11 +94,11 @@ describe("User", () => {
   describe("POST /users/:id/email unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .post('/users/jenexistepas.test2/email')
+        .post('/users/utilisateur.parti/email')
         .type('form')
         .send({
           '_method': 'POST',
-          'to_email': 'test@test.com'
+          'to_email': 'test@example.com'
         })
         .redirects(0)
         .end((err, res) => {
@@ -116,10 +116,10 @@ describe("User", () => {
         .reply(200)
 
       chai.request(app)
-        .post('/users/jenexistepas.test2/email')
+        .post('/users/utilisateur.parti/email')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@test.com' })
+        .send({ to_email: 'test@example.com' })
         .end((err, res) => {
           ovhEmailNock.isDone().should.be.true
           done();
@@ -130,10 +130,10 @@ describe("User", () => {
   describe("POST /users/:id/redirections unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .post('/users/jenexistepas.test2/redirections')
+        .post('/users/utilisateur.parti/redirections')
         .type('form')
         .send({
-          'to_email': 'test@test.com'
+          'to_email': 'test@example.com'
         })
         .redirects(0)
         .end((err, res) => {
@@ -151,10 +151,10 @@ describe("User", () => {
         .reply(200)
 
       chai.request(app)
-        .post('/users/jenexistepas.test/redirections')
+        .post('/users/utilisateur.actif/redirections')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@test.com' })
+        .send({ to_email: 'test@example.com' })
         .end((err, res) => {
           ovhRedirectionNock.isDone().should.be.true
           done();
@@ -165,7 +165,7 @@ describe("User", () => {
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .post('/users/jenexistepas.test2/redirections/test@email.com/delete')
+        .post('/users/utilisateur.parti/redirections/test@email.com/delete')
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
@@ -183,7 +183,7 @@ describe("User", () => {
         .reply(200)
 
       chai.request(app)
-        .post('/users/jenexistepas.test/redirections/test-2@test.com/delete')
+        .post('/users/utilisateur.actif/redirections/test-2@example.com/delete')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
           ovhRedirectionNock.isDone().should.be.true
