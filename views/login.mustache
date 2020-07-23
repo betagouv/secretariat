@@ -8,9 +8,9 @@
 {{/message}}
 {{^message}}
 <form action="/login" method="POST">
-  <p><label><b>Saisir ton prenom.nom pour te connecter</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">@beta.gouv.fr</label><br><br>
-  <b>Tu peux te connecter si tu as une adresse en @beta.gouv.fr. Si tu n'as pas encore d'adresse @beta.gouv.fr, tu peux demander à une autre personne qui en a une de te la créer.</b>
-  <button>Connexion avec mon email @beta.gouv.fr</button>
+  <p><label><b>Saisir ton prenom.nom pour te connecter</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">@{{domain}}</label><br><br>
+  <b>Tu peux te connecter si tu as une adresse en @{{domain}}. Si tu n'as pas encore d'adresse @{{domain}}, tu peux demander à une autre personne qui en a une de te la créer.</b>
+  <button>Connexion avec mon email @{{domain}}</button>
   <br>(Un email sera envoyé à ton adresse pour te connecter)</p>
 </form>
 {{/message}}
