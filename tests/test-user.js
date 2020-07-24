@@ -165,7 +165,7 @@ describe("User", () => {
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .post('/users/utilisateur.parti/redirections/test@email.com/delete')
+        .post('/users/utilisateur.parti/redirections/test@example.com/delete')
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
