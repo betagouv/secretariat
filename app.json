@@ -30,7 +30,7 @@
     },
     "SECRETARIAT_DOMAIN": {
       "required": true
-    },
+    }
   },
   "formation": {
     "web": {
