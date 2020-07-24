@@ -16,6 +16,9 @@
     "MAIL_SERVICE": {
       "required": true
     },
+    "MAIL_USER": {
+      "required": true
+    },
     "MAIL_PASS": {
       "required": true
     },
