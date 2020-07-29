@@ -32,7 +32,7 @@
     "ovh": "^2.0.1",
     "promise-memoize": "^1.2.1",
     "request": "^2.88.2",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "chai": "^4.2.0",
