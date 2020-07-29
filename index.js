@@ -67,16 +67,16 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-app.get('/', indexController.get);
-app.get('/logout', logoutController.get);
-app.get('/login', loginController.get);
-app.post('/login', loginController.post);
-app.get('/emails', emailsController.get);
-app.get('/users', usersController.get);
-app.get('/users/:name', usersController.getByName);
-app.post('/users/:id/email', usersController.postEmail);
-app.post('/users/:id/redirections', usersController.postRedirections);
-app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirections);
-app.post('/users/:id/password', usersController.postPassword);
+app.get('/', indexController.getIndex);
+app.get('/logout', logoutController.getLogout);
+app.get('/login', loginController.getLogin);
+app.post('/login', loginController.postLogin);
+app.get('/emails', emailsController.getEmails);
+app.get('/users', usersController.getUsers);
+app.get('/users/:name', usersController.getUserByName);
+app.post('/users/:id/email', usersController.createEmailForUser);
+app.post('/users/:id/redirections', usersController.createRedirectionForUser);
+app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
+app.post('/users/:id/password', usersController.updatePasswordForUser);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

@@ -4,7 +4,7 @@ const userInfos = require('./utils').userInfos;
 const buildBetaEmail = require('./utils').buildBetaEmail;
 const sendMail = require('./utils').sendMail;
 
-module.exports.get = async function (req, res) {
+module.exports.getUsers = async function (req, res) {
   if (req.query.name) {
     return res.redirect(`/users/${req.query.name}`);
   }
@@ -38,7 +38,7 @@ module.exports.get = async function (req, res) {
   }
 }
 
-module.exports.getByName = async function (req, res) {
+module.exports.getUserByName = async function (req, res) {
   const name = req.params.name;
 
   try {
@@ -68,7 +68,7 @@ module.exports.getByName = async function (req, res) {
   }
 }
 
-module.exports.postEmail = async function (req, res) {
+module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
 
   try {
@@ -125,7 +125,7 @@ module.exports.postEmail = async function (req, res) {
   }
 }
 
-module.exports.postRedirections = async function (req, res) {
+module.exports.createRedirectionForUser = async function (req, res) {
   const id = req.params.id;
   const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
@@ -170,7 +170,7 @@ module.exports.postRedirections = async function (req, res) {
   }
 }
 
-module.exports.deleteRedirections = async function (req, res) {
+module.exports.deleteRedirectionForUser = async function (req, res) {
   const { id, email: to_email } = req.params;
 
   try {
@@ -203,7 +203,7 @@ module.exports.deleteRedirections = async function (req, res) {
   }
 }
 
-module.exports.postPassword = async function (req, res) {
+module.exports.updatePasswordForUser = async function (req, res) {
   const id = req.params.id;
 
   try {

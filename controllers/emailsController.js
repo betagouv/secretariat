@@ -50,7 +50,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
   }
 );
 
-module.exports.get = async function (req, res) {
+module.exports.getEmails = async function (req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
 

@@ -1,4 +1,4 @@
-module.exports.get = function (req, res) {
+module.exports.getIndex = function (req, res) {
   if (!req.cookies.token) {
     return res.redirect('/login');
   }

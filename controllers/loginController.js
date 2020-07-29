@@ -50,7 +50,7 @@ async function sendLoginEmail(id, domain) {
   }
 }
 
-module.exports.get = async function (req, res) {
+module.exports.getLogin = async function (req, res) {
   try {
     const users = await BetaGouv.usersInfos();
 
@@ -66,7 +66,7 @@ module.exports.get = async function (req, res) {
   }
 }
 
-module.exports.post = async function (req, res) {
+module.exports.postLogin = async function (req, res) {
   if (
     req.body.id === undefined ||
     !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
