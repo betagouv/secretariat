@@ -8,10 +8,20 @@
 {{/message}}
 {{^message}}
 <form action="/login" method="POST">
-  <p><label><b>Saisir ton prenom.nom pour te connecter</b><br><input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">@{{domain}}</label><br><br>
-  <b>Tu peux te connecter si tu as une adresse en @{{domain}}. Si tu n'as pas encore d'adresse @{{domain}}, tu peux demander à une autre personne qui en a une de te la créer.</b>
-  <button>Connexion avec mon email @{{domain}}</button>
-  <br>(Un email sera envoyé à ton adresse pour te connecter)</p>
+  <p>
+    <label><strong>Saisir ton prenom.nom pour te connecter</strong><br>
+    <input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">@{{domain}}</label>
+  </p>
+  <p>
+    <button>Connexion avec mon email @{{domain}}</button><br>
+    <i>Un email sera envoyé à ton adresse pour te connecter</i>
+  </p>
 </form>
+<hr>
+<p>
+  ℹ️ Tu peux te connecter si tu as une adresse en @{{domain}}.<br>
+  Tu n'as pas encore d'adresse @{{domain}} ? Tu peux demander à une autre personne qui en a une de te la créer.
+  Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails" target="_blank" title="lien vers la documentation">ici</a>.
+</p>
 {{/message}}
 {{> footer}}
