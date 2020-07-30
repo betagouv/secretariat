@@ -43,17 +43,18 @@ module.exports.userInfos = async function(name, isCurrentUser) {
 
     const hasUserInfos = userInfos != undefined;
 
-    // On ne peut créé un compte que se la page fiche github existe
-    // que le compte n'existe pas et qu'il n'y a aucun redirection.
-    // (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
+    // On ne peut créé un compte que si:
+    // - la page fiche github existe
+    // - et le compte n'existe pas
+    // - et qu'il n'y a aucun redirection (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
     const canCreateEmail =
       hasUserInfos &&
       emailInfos === null &&
       (isCurrentUser || redirections.length === 0);
 
-    // On peut créer une redirection si la page fiche github existe
-    // et que l'on est l'utilisateur(trice) connecté(e)
-    // pour créer ces propres redirections.
+    // On peut créer une redirection si:
+    // - la page fiche github existe
+    // - et que l'on est l'utilisateur(trice) connecté(e) pour créer ces propres redirections.
     const canCreateRedirection = hasUserInfos && isCurrentUser;
     const canChangePassword = hasUserInfos && isCurrentUser;
 

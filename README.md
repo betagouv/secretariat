@@ -1,4 +1,5 @@
 # secretariat
+
 Le secrétariat de l’incubateur
 
 ## Dev de l'app de secrétariat
@@ -16,7 +17,7 @@ Le secrétariat de l’incubateur
    - `SECURE` - _true_ si https sinon _false_
    - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
 
-- Variables d'environnement optionnels :
+- Variables d'environnement optionnelles :
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
    - `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
 
@@ -49,8 +50,8 @@ Lien : https://eu.api.ovh.com/createToken/
 GET /email/domain/beta.gouv.fr/*
 POST /email/domain/beta.gouv.fr/account
 DELETE /email/domain/beta.gouv.fr/account/*
-POST  /email/domain/beta.gouv.fr/redirection
-DELETE  /email/domain/beta.gouv.fr/redirection/*
+POST /email/domain/beta.gouv.fr/redirection
+DELETE /email/domain/beta.gouv.fr/redirection/*
 POST /email/domain/beta.gouv.fr/account/*/changePassword
 ```
 
@@ -67,7 +68,7 @@ DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 
 Une fois [installé](http://maildev.github.io/maildev/#install) et lancé, il suffit de mettre la variable d'environnement `MAIL_SERVICE` à `maildev` pour l'utiliser. `MAIL_USER` et `MAIL_PASS` ne sont pas nécessaires.
 
-Tous les emails envoyés par le code du secrétariat seront visibles depuis l'interface web de Maildev.
+Tous les emails envoyés par le code du secrétariat seront visibles depuis l'interface web de Maildev (`http://localhost:1080/`).
 
 ### Debug sans notifications Slack
 
@@ -82,8 +83,8 @@ Sinon, certains outils gratuits comme [Mockoon](https://mockoon.com/) ou [Postma
 Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour le développement), la variable `SECRETARIAT_DOMAIN` doit être renseignée. Par défaut, le domaine est `beta.gouv.fr`.
 
 ### Debug avec une autre API utilisateur
-Configurer la variable d'environnement `USERS_API` (par défaut à https://beta.gouv.fr/api/v1.6/authors.json)
 
+Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta.gouv.fr/api/v1.6/authors.json`)
 
 ## Scripts pour faire des taches en local
 
@@ -94,6 +95,7 @@ Configurer la variable d'environnement `USERS_API` (par défaut à https://beta.
 - Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
 
 ### Supprimer une redirection
+
 - Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
 - Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
 
@@ -104,5 +106,6 @@ Configurer la variable d'environnement `USERS_API` (par défaut à https://beta.
 - Lancer les tests : `docker-compose run web npm test`
 
 ### Dev docker sans docker-compose
+
 - Exemple pour développer dans un container :
 	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev )
