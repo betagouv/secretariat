@@ -120,7 +120,7 @@ module.exports.createEmailForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', err);
+    req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
 }
@@ -165,7 +165,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', err);
+    req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
 }
