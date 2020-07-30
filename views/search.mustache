@@ -1,13 +1,17 @@
 {{> header}}
 <form action="/users">
-  <p><label><b>Rechercher un nom</b><br><input name="name" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids"></label><br>
-  Si le nom n'apparait pas en autocompletion: c'est que l'utilisateur n'existe pas sur {{domain}}
-  <br><br>
-  <datalist id="user_ids">
+  <p>
+    <label><strong>Rechercher un nom</strong><br>
+    <input name="name" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids"></label><br>
+    <i>Si le nom n'apparait pas en autocompletion, c'est que l'utilisateur n'existe pas sur {{domain}}</i>
+  </p>
+  <p>
+    <button>Vérifier l'utilisateur</button>
+  </p>
+</form>
+<datalist id="user_ids">
   {{#users}}
     <option value="{{id}}">
   {{/users}}
-  </datalist>
-  <button>Vérifier l'utilisateur</button></p>
-</form>
+</datalist>
 {{> footer}}
