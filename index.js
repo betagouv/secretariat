@@ -15,6 +15,7 @@ logoutController = require('./controllers/logoutController');
 loginController = require('./controllers/loginController');
 emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
+onboardingController = require('./controllers/onboardingController');
 
 const app = express();
 
@@ -78,5 +79,8 @@ app.post('/users/:id/email', usersController.createEmailForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);
+app.post('/onboardingRequest', onboardingController.createOnboardingRequest);
+app.get('/onboardingRequest/accept', onboardingController.acceptOnboardingRequest);
+app.get('/onboardingRequest/decline', onboardingController.declineOnboardingRequest);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
