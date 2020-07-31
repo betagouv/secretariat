@@ -39,7 +39,7 @@ module.exports.checkUserIsExpired = function(user) {
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
   return user &&
-    user.end != undefined &&
+    user.end !== undefined &&
     new Date(user.end).getTime() < new Date().getTime();
 }
 
@@ -51,7 +51,7 @@ module.exports.userInfos = async function(id, isCurrentUser) {
       BetaGouv.redirectionsForId({ from: id })
     ]);
 
-    const hasUserInfos = userInfos != undefined;
+    const hasUserInfos = userInfos !== undefined;
 
     const isExpired = module.exports.checkUserIsExpired(userInfos);
 
