@@ -30,4 +30,3 @@ jobs:
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser
-        USERS_API: https://raw.githubusercontent.com/betagouv/secretariat/master/tests/users.json
