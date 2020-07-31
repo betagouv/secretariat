@@ -1,0 +1,14 @@
+{{> header}}
+{{#errors}}
+<p style="color: red; font-weight: bold">{{errors}}<p>
+{{/errors}}
+{{^errors}}
+<h1>Votre décision a été prise en compte</h1>
+{{/errors}}
+
+<a href="/">
+    <button>
+        Acceder au sécretariat
+    </button>
+</a>
+{{> footer}}

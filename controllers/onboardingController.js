@@ -108,14 +108,10 @@ module.exports.acceptOnboardingRequest = async function (req, res) {
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
-
-    req.flash('message', `Vous êtes le/la marrain.ne de ${newcomer.fullname}, vous recevrez un email de confirmation.`);
-    res.redirect(`/users/${newcomer.id}`);
+    res.render('onboarding')
   } catch (err) {
     console.error(err);
-
-    req.flash('error', err.message);
-    res.redirect(`/users`);
+    res.render('onboarding', {errors: err.message})
   }
 }
 
@@ -142,12 +138,9 @@ module.exports.declineOnboardingRequest = async function (req, res) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    req.flash('message', `Merci de votre réponse, elle a bien été prise en compte.`);
-    res.redirect(`/users/${newcomer.id}`);
+    res.render('onboarding')
   } catch (err) {
     console.error(err);
-
-    req.flash('error', err.message);
-    res.redirect(`/users`);
+    res.render('onboarding', {errors: err.message})
   }
 }

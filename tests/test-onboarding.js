@@ -47,8 +47,8 @@ describe("Onboarding", () => {
         .get(`/onboardingRequest/accept?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.equal("/users/utilisateur.nouveau");
+          res.should.have.status(200);
+          res.text.should.include('Votre décision a été prise en compte')
           this.sendEmailStub.calledOnce.should.be.true;
 
           const toEmail = this.sendEmailStub.args[0][0];
@@ -73,8 +73,8 @@ describe("Onboarding", () => {
         .get(`/onboardingRequest/decline?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.equal("/users/utilisateur.nouveau");
+          res.should.have.status(200);
+          res.text.should.include('Votre décision a été prise en compte')
           this.sendEmailStub.calledTwice.should.be.true;
 
           const newcomerEmailArgs = this.sendEmailStub.args[1]
@@ -102,8 +102,8 @@ describe("Onboarding", () => {
         .get(`/onboardingRequest/decline?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.equal("/users/utilisateur.nouveau");
+          res.should.have.status(200);
+          res.text.should.include('Votre décision a été prise en compte')
           this.sendEmailStub.calledTwice.should.be.true;
 
           const newOnboarderEmailArgs = this.sendEmailStub.args[0]
