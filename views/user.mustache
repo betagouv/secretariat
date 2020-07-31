@@ -1,5 +1,5 @@
 {{> header}}
-<h1>{{name}}</h1>
+<h1>{{userInfos.id}}</h1>
 {{#errors}}
 <p style="color: red; font-weight: bold">{{errors}}<p>
 {{/errors}}
@@ -25,7 +25,7 @@
   {{^github}}Non renseigné{{/github}}</li>
 </ul>
 <p>
-  <i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/{{name}}.md">Par ici</a></i>
+  <i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/{{id}}.md">Par ici</a></i>
 </p>
 {{/userInfos}}
 {{^userInfos}}
@@ -37,10 +37,10 @@
 
 <h2>Compte mail</h2>
 {{#emailInfos}}
-  {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{name}}@{{domain}}">Webmail</a> )
+  {{email}} ( <a href="https://mail.ovh.net/roundcube/?_user={{userInfos.id}}@{{domain}}">Webmail</a> )
   <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
   {{#canChangePassword}}
-    <form action="/users/{{name}}/password" method="POST">
+    <form action="/users/{{userInfos.id}}/password" method="POST">
       <fieldset>
         <legend>Changer le mot de passe POP/IMAP/SMTP</legend>
         <label>Nouveau mot de passe : <input name="new_password" type="password" required minlength="9"></label><br>
@@ -55,7 +55,7 @@
 {{/emailInfos}}
 {{#canCreateEmail}}
 <p>
-  <form action="/users/{{name}}/email" method="POST">
+  <form action="/users/{{userInfos.id}}/email" method="POST">
   <fieldset>
     <legend>Créer le compte mail</legend>
     <label>Envoyer le mot de passe à cette adresse mail : <br> <input name="to_email" type="email" required></label><br>
@@ -66,7 +66,7 @@
 {{/canCreateEmail}}
 {{^canCreateEmail}}
 <p>
-  <i>Seul {{name}} peut créer ou modifier ce compte email</i>
+  <i>Seul {{userInfos.id}} peut créer ou modifier ce compte email</i>
 </p>
 {{/canCreateEmail}}
 
@@ -75,7 +75,7 @@
 {{#redirections}}
   <li>
     {{from}} vers {{to}} {{#canCreateRedirection}}
-    <form action="/users/{{name}}/redirections/{{to}}/delete" method="POST">
+    <form action="/users/{{userInfos.id}}/redirections/{{to}}/delete" method="POST">
       <button>Supprimer</button>
     </form>
     {{/canCreateRedirection}}
@@ -87,7 +87,7 @@
 </ul>
 {{#canCreateRedirection}}
 <p>
-  <form action="/users/{{name}}/redirections" method="POST">
+  <form action="/users/{{userInfos.id}}/redirections" method="POST">
     <fieldset>
       <legend>Créer une redirection email</legend>
       <label>Rediriger les mails vers : <input name="to_email" type="email" required></label><br>
@@ -99,7 +99,7 @@
 {{/canCreateRedirection}}
 {{^canCreateRedirection}}
 <p>
-  <i>Seul {{name}} peut créer ou modifier les redirections</i>
+  <i>Seul {{userInfos.id}} peut créer ou modifier les redirections</i>
 </p>
 {{/canCreateRedirection}}
 {{> footer}}

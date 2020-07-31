@@ -33,12 +33,12 @@ module.exports.buildBetaEmail = function(id) {
   return `${id}@${config.domain}`;
 }
 
-module.exports.userInfos = async function(name, isCurrentUser) {
+module.exports.userInfos = async function(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
-      BetaGouv.userInfosById(name),
-      BetaGouv.emailInfos(name),
-      BetaGouv.redirectionsForName({ from: name })
+      BetaGouv.userInfosById(id),
+      BetaGouv.emailInfos(id),
+      BetaGouv.redirectionsForId({ from: id })
     ]);
 
     const hasUserInfos = userInfos != undefined;
@@ -62,7 +62,6 @@ module.exports.userInfos = async function(name, isCurrentUser) {
       emailInfos,
       redirections,
       userInfos,
-      name,
       canCreateEmail,
       canCreateRedirection,
       canChangePassword

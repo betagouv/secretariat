@@ -55,7 +55,7 @@ module.exports.getEmails = async function (req, res) {
     const emails = await emailWithMetadataMemoized();
 
     res.render('emails', {
-      user: req.user,
+      currentUser: req.user,
       emails,
       partials: {
         header: 'header',
@@ -66,8 +66,8 @@ module.exports.getEmails = async function (req, res) {
     console.error(err);
 
     res.render('emails', {
+      currentUser: req.user,
       errors: ['Erreur interne'],
-      user: req.user,
       partials: {
         header: 'header',
         footer: 'footer'

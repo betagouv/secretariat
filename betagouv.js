@@ -62,7 +62,7 @@ const betaOVH = {
     Promise.map(redirectionIds, redirectionId =>
       BetaGouv.requestRedirection(method, redirectionId)
     ),
-  redirectionsForName: async query => {
+  redirectionsForId: async query => {
     if (!query.from && !query.to) {
       throw new Error(`paramètre 'from' ou 'to' manquant`);
     }

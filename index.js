@@ -68,12 +68,12 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/', indexController.getIndex);
-app.get('/logout', logoutController.getLogout);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
+app.get('/logout', logoutController.getLogout);
 app.get('/emails', emailsController.getEmails);
 app.get('/users', usersController.getUsers);
-app.get('/users/:name', usersController.getUserByName);
+app.get('/users/:id', usersController.getUserById);
 app.post('/users/:id/email', usersController.createEmailForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
