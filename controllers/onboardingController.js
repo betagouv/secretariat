@@ -52,6 +52,11 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
         Désolé, je ne suis pas disponible
       </button>
     </a>
+
+    <p style="color: #999;font-size: 0.85em;">
+      Tu reçois ce message car tu es considéré comme membre de la communauté beta.gouv.fr. Si ce n'est pas le cas, signale-le sur <a href="secretariat@beta.gouv.fr">secretariat@beta.gouv.fr</a>.
+    </p>
+
     <p>Bonne journée,</p>
     <p>🤖 Le sécretariat</p>
   `;
