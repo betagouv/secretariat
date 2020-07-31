@@ -22,7 +22,7 @@ describe("Onboarding", () => {
   describe("unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
-        .post("/onboardingRequest")
+        .post("/marrainage")
         .type("form")
         .send({
           '_method': 'POST',
@@ -44,7 +44,7 @@ describe("Onboarding", () => {
       }, config.secret);
 
       chai.request(app)
-        .get(`/onboardingRequest/accept?details=${encodeURIComponent(token)}`)
+        .get(`/marrainage/accept?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(200);
@@ -70,7 +70,7 @@ describe("Onboarding", () => {
       }, config.secret);
 
       chai.request(app)
-        .get(`/onboardingRequest/decline?details=${encodeURIComponent(token)}`)
+        .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(200);
@@ -99,7 +99,7 @@ describe("Onboarding", () => {
       }, config.secret);
 
       chai.request(app)
-        .get(`/onboardingRequest/decline?details=${encodeURIComponent(token)}`)
+        .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(200);
@@ -112,8 +112,8 @@ describe("Onboarding", () => {
           const emailBody = newOnboarderEmailArgs[2];
 
           subject.should.equal("Tu as été sélectionné.e comme marrain.ne 🙌");
-          emailBody.should.include('onboardingRequest/accept');
-          emailBody.should.include('onboardingRequest/decline');
+          emailBody.should.include('marrainage/accept');
+          emailBody.should.include('marrainage/decline');
           done();
         });
     });
@@ -123,7 +123,7 @@ describe("Onboarding", () => {
 
     it("should generate an email when sollicited", (done) => {
       chai.request(app)
-        .post("/onboardingRequest")
+        .post("/marrainage")
         .set('Cookie', `token=${utils.getJWT()}`)
         .type("form")
         .send({
@@ -140,8 +140,8 @@ describe("Onboarding", () => {
           const emailBody = this.sendEmailStub.args[0][2];
 
           subject.should.equal("Tu as été sélectionné.e comme marrain.ne 🙌");
-          emailBody.should.include('onboardingRequest/accept');
-          emailBody.should.include('onboardingRequest/decline');
+          emailBody.should.include('marrainage/accept');
+          emailBody.should.include('marrainage/decline');
           done();
         });
     });

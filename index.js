@@ -15,7 +15,7 @@ logoutController = require('./controllers/logoutController');
 loginController = require('./controllers/loginController');
 emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
-onboardingController = require('./controllers/onboardingController');
+marrainageController = require('./controllers/marrainageController');
 
 const app = express();
 
@@ -39,7 +39,7 @@ app.use(
       req.query.token || req.cookies.token
         ? req.query.token || req.cookies.token
         : null
-  }).unless({ path: ['/', '/login', '/onboardingRequest/accept', '/onboardingRequest/decline'] })
+  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline'] })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
@@ -79,8 +79,8 @@ app.post('/users/:id/email', usersController.createEmailForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);
-app.post('/onboardingRequest', onboardingController.createOnboardingRequest);
-app.get('/onboardingRequest/accept', onboardingController.acceptOnboardingRequest);
-app.get('/onboardingRequest/decline', onboardingController.declineOnboardingRequest);
+app.post('/marrainage', marrainageController.createRequest);
+app.get('/marrainage/accept', marrainageController.acceptRequest);
+app.get('/marrainage/decline', marrainageController.declineRequest);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

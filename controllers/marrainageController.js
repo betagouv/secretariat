@@ -42,12 +42,12 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   const html = `
     <h1>Hello ${onboarder.fullname} 👋,</h1>
     <p>Tu as été sélectonné.e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain.ne</a> de ${newcomer.fullname}.</p>
-    <a href="${url}/onboardingRequest/accept?details=${encodeURIComponent(token)}">
+    <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
       <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
         J'accepte
       </button>
     </a><br/>
-    <a href="${url}/onboardingRequest/decline?details=${encodeURIComponent(token)}">
+    <a href="${url}/marrainage/decline?details=${encodeURIComponent(token)}">
       <button style="padding: 10px;border: none;box-shadow: 1px 1px 2px 0px #333;min-width: 280px;">
         Désolé, je ne suis pas disponible
       </button>
@@ -68,7 +68,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   }
 }
 
-module.exports.createOnboardingRequest = async function (req, res) {
+module.exports.createRequest = async function (req, res) {
   try {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
@@ -90,7 +90,7 @@ module.exports.createOnboardingRequest = async function (req, res) {
   }
 }
 
-module.exports.acceptOnboardingRequest = async function (req, res) {
+module.exports.acceptRequest = async function (req, res) {
   try {
     const details = getDataFromToken(req.query.details);
     const newcomer = details.newcomer;
@@ -113,14 +113,14 @@ module.exports.acceptOnboardingRequest = async function (req, res) {
 
     console.log(`Marrainage accepté pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
 
-    res.render('onboarding');
+    res.render('marrainage');
   } catch (err) {
     console.error(err);
-    res.render('onboarding', {errors: err.message});
+    res.render('marrainage', {errors: err.message});
   }
 }
 
-module.exports.declineOnboardingRequest = async function (req, res) {
+module.exports.declineRequest = async function (req, res) {
   try {
     const details = getDataFromToken(req.query.details);
     const newcomer = details.newcomer;
@@ -145,9 +145,9 @@ module.exports.declineOnboardingRequest = async function (req, res) {
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien.ne marrain.ne : ${declinedOnboarder.id}. Nouvel.le marrain.ne : ${onboarder.id}`);
 
-    res.render('onboarding');
+    res.render('marrainage');
   } catch (err) {
     console.error(err);
-    res.render('onboarding', {errors: err.message});
+    res.render('marrainage', {errors: err.message});
   }
 }
