@@ -17,8 +17,8 @@ const config = {
 };
 
 const betaOVH = {
-  emailInfos: async name => {
-    const url = `/email/domain/${config.domain}/account/${name}`;
+  emailInfos: async id => {
+    const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
       return await ovh.requestPromised('GET', url, {});
@@ -28,14 +28,14 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  createEmail: async (name, password) => {
+  createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
 
     try {
-      console.log(`OVH POST ${url} name=${name}`);
+      console.log(`OVH POST ${url} name=${id}`);
 
       return await ovh.requestPromised('POST', url, {
-        accountName: name,
+        accountName: id,
         password
       });
     } catch (err) {
@@ -62,7 +62,7 @@ const betaOVH = {
     Promise.map(redirectionIds, redirectionId =>
       BetaGouv.requestRedirection(method, redirectionId)
     ),
-  redirectionsForName: async query => {
+  redirectionsForId: async query => {
     if (!query.from && !query.to) {
       throw new Error(`paramètre 'from' ou 'to' manquant`);
     }

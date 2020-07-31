@@ -1,18 +1,19 @@
 const chai = require('chai');
+const nock = require('nock');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock');
 
 
 describe("User", () => {
-  describe("GET /users/:name unauthenticated", () => {
+  describe("GET /users/:id unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     });
@@ -29,7 +30,7 @@ describe("User", () => {
           done();
         })
     });
-    it("should include the user's information", (done) => {
+    it("should show the user's information", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
@@ -37,21 +38,21 @@ describe("User", () => {
           res.text.should.include('Nom: Utilisateur Parti')
           res.text.should.include('Date de début: 2016-11-03')
           res.text.should.include('Date de fin: 2050-10-30')
-          res.text.should.include('Employeur: independent&#x2F;octo')
+          res.text.should.include('Employeur: independent/octo')
           res.text.should.include('Github : test-github')
           done();
         })
     });
-    it("should include an email creation form for email-less users", (done) => {
+    it("should show the email creation form for email-less users", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('<form action="/users/utilisateur.parti/email" method="POST">')
+          res.text.should.include('<form action="/users/utilisateur.parti/email" method="POST">');
           done();
         })
     });
-    it("should not include an email creation form for users with existing emails", (done) => {
+    it("should not show the email creation form for users with existing emails", (done) => {
       nock.cleanAll()
 
       nock(/.*ovh.com/)
@@ -66,11 +67,32 @@ describe("User", () => {
         .get('/users/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          res.text.should.include('Seul utilisateur.parti peut créer ou modifier ce compte email')
+          res.text.should.not.include('<form action="/users/utilisateur.parti/email" method="POST">');
+          res.text.should.include('Seul utilisateur.parti peut créer ou modifier ce compte email');
           done();
         })
     });
-    it("should show the user an email redirection form", (done) => {
+    it("should not show the email creation form for users expired", (done) => {
+      nock.cleanAll()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, { description: '' })
+
+      utils.mockUsers()
+      utils.mockOvhRedirections()
+      utils.mockOvhTime()
+
+      chai.request(app)
+        .get('/users/utilisateur.expire')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .end((err, res) => {
+          res.text.should.not.include('<form action="/users/utilisateur.expire/email" method="POST">')
+          // res.text.should.include('Seul utilisateur.expire peut créer ou modifier ce compte email')
+          done();
+        })
+    });
+    it("should show an email redirection form", (done) => {
       chai.request(app)
         .get('/users/utilisateur.actif')
         .set('Cookie', `token=${utils.getJWT()}`)
@@ -103,11 +125,11 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/email authenticated", () => {
     it("should ask OVH to create an email", (done) => {
@@ -119,13 +141,15 @@ describe("User", () => {
         .post('/users/utilisateur.parti/email')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@example.com' })
+        .send({
+          to_email: 'test@example.com'
+        })
         .end((err, res) => {
           ovhEmailNock.isDone().should.be.true
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections unauthenticated", () => {
     it("should redirect to login", (done) => {
@@ -133,12 +157,12 @@ describe("User", () => {
         .post('/users/utilisateur.parti/redirections')
         .type('form')
         .send({
-          'to_email': 'test@example.com'
+          to_email: 'test@example.com'
         })
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     })
@@ -154,7 +178,9 @@ describe("User", () => {
         .post('/users/utilisateur.actif/redirections')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@example.com' })
+        .send({
+          to_email: 'test@example.com'
+        })
         .end((err, res) => {
           ovhRedirectionNock.isDone().should.be.true
           done();
@@ -169,7 +195,7 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     })

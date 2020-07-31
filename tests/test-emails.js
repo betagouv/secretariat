@@ -13,7 +13,7 @@ describe("Emails", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     });
