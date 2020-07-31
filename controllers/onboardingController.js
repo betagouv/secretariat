@@ -67,8 +67,11 @@ module.exports.createOnboardingRequest = async function (req, res) {
   try {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
+    const user = req.user;
+    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+
     await sendOnboarderRequestEmail(onboarder, newcomer, req)
-    await BetaGouv.sendInfoToSlack(`${newcomer.fullname} a demandé un.e marrain.ne.`);
+    await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un.e marrain.ne pour ${newcomer.id}`);
 
     req.flash('message', `Nous avons envoyé un email à ${onboarder.fullname} l'invitant à te marrainer.`);
     res.redirect(`/users/${newcomer.id}`);
