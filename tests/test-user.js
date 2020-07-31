@@ -38,7 +38,7 @@ describe("User", () => {
           res.text.should.include('Nom: Utilisateur Parti')
           res.text.should.include('Date de début: 2016-11-03')
           res.text.should.include('Date de fin: 2050-10-30')
-          res.text.should.include('Employeur: independent&#x2F;octo')
+          res.text.should.include('Employeur: independent/octo')
           res.text.should.include('Github : test-github')
           done();
         })
