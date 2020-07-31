@@ -78,6 +78,8 @@ module.exports.createOnboardingRequest = async function (req, res) {
     await sendOnboarderRequestEmail(onboarder, newcomer, req)
     await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un.e marrain.ne pour ${newcomer.id}`);
 
+    console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
+
     req.flash('message', `Nous avons envoyé un email à ${onboarder.fullname} l'invitant à te marrainer.`);
     res.redirect(`/users/${newcomer.id}`);
   } catch (err) {
@@ -108,10 +110,13 @@ module.exports.acceptOnboardingRequest = async function (req, res) {
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
-    res.render('onboarding')
+
+    console.log(`Marrainage accepté pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
+
+    res.render('onboarding');
   } catch (err) {
     console.error(err);
-    res.render('onboarding', {errors: err.message})
+    res.render('onboarding', {errors: err.message});
   }
 }
 
@@ -138,9 +143,11 @@ module.exports.declineOnboardingRequest = async function (req, res) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    res.render('onboarding')
+    console.log(`Marrainage décliné pour ${newcomer.id}. Ancien.ne marrain.ne : ${declinedOnboarder.id}. Nouvel.le marrain.ne : ${onboarder.id}`);
+
+    res.render('onboarding');
   } catch (err) {
     console.error(err);
-    res.render('onboarding', {errors: err.message})
+    res.render('onboarding', {errors: err.message});
   }
 }
