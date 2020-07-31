@@ -82,6 +82,7 @@ module.exports.postLogin = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    renderLogin(req, res, { errors: [err] });
+    req.flash('error', err.message);
+    return res.redirect('/login');
   }
 }

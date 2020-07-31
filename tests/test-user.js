@@ -1,7 +1,8 @@
 const chai = require('chai');
+const nock = require('nock');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock');
 
 
 describe("User", () => {
@@ -12,7 +13,7 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     });
@@ -103,7 +104,7 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     })
@@ -119,7 +120,9 @@ describe("User", () => {
         .post('/users/utilisateur.parti/email')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@example.com' })
+        .send({
+          to_email: 'test@example.com'
+        })
         .end((err, res) => {
           ovhEmailNock.isDone().should.be.true
           done();
@@ -133,12 +136,12 @@ describe("User", () => {
         .post('/users/utilisateur.parti/redirections')
         .type('form')
         .send({
-          'to_email': 'test@example.com'
+          to_email: 'test@example.com'
         })
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     })
@@ -154,7 +157,9 @@ describe("User", () => {
         .post('/users/utilisateur.actif/redirections')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
-        .send({ to_email: 'test@example.com' })
+        .send({
+          to_email: 'test@example.com'
+        })
         .end((err, res) => {
           ovhRedirectionNock.isDone().should.be.true
           done();
@@ -169,7 +174,7 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     })

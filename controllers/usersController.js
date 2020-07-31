@@ -28,7 +28,7 @@ module.exports.getUsers = async function (req, res) {
       currentUser: req.user,
       users: [],
       errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`
+        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
       ],
       partials: {
         header: 'header',
@@ -75,12 +75,12 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email`
+        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
       );
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur");
+      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur.");
     }
 
     const password = Math.random()
@@ -114,7 +114,7 @@ module.exports.createEmailForUser = async function (req, res) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    req.flash('message', 'Le compte email a bien été créé');
+    req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/users/${id}`);
   } catch (err) {
     console.error(err);
@@ -133,12 +133,12 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection`
+        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
       );
     }
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de créer de redirection");
+      throw new Error("Vous n'avez pas le droits de créer de redirection.");
     }
 
     console.log(
@@ -160,7 +160,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
     }
 
-    req.flash('message', 'La redirection a bien été créé');
+    req.flash('message', 'La redirection a bien été créé.');
     res.redirect(`/users/${id}`);
   } catch (err) {
     console.error(err);
