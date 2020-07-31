@@ -66,7 +66,7 @@
 {{/canCreateEmail}}
 {{#isExpired}}{{^canCreateEmail}}
 <p>
-  <i>Le compte {{name}} est expiré</i>
+  <i>Le compte {{userInfos.id}} est expiré</i>
 </p>
 {{/canCreateEmail}}{{/isExpired}}
 {{^isExpired}}{{^canCreateEmail}}
@@ -104,7 +104,7 @@
 {{/canCreateRedirection}}
 {{#isExpired}}{{^canCreateRedirection}}
 <p>
-  <i>Le compte {{name}} est expiré</i>
+  <i>Le compte {{userInfos.id}} est expiré</i>
 </p>
 {{/canCreateRedirection}}{{/isExpired}}
 {{^isExpired}}{{^canCreateRedirection}}

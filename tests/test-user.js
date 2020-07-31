@@ -6,7 +6,7 @@ const utils = require('./utils.js');
 
 
 describe("User", () => {
-  describe("GET /users/:name unauthenticated", () => {
+  describe("GET /users/:id unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
