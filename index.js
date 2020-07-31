@@ -39,7 +39,7 @@ app.use(
       req.query.token || req.cookies.token
         ? req.query.token || req.cookies.token
         : null
-  }).unless({ path: ['/', '/login'] })
+  }).unless({ path: ['/', '/login', '/onboardingRequest/accept', '/onboardingRequest/decline'] })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged

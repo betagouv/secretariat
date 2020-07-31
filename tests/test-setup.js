@@ -6,6 +6,8 @@ const nock = require('nock')
 chai.use(chaiHttp);
 chai.should();
 
+const sinon = require('sinon');
+
 beforeEach(() => {
   nock.disableNetConnect()
   nock.enableNetConnect('127.0.0.1')

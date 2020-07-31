@@ -1,7 +1,6 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const buildBetaEmail = require('./utils').buildBetaEmail;
-const sendMail = require('./utils').sendMail;
+const utils = require('./utils')
 const jwt = require('jsonwebtoken');
 
 async function selectRandomOnboarder(newcomerId) {
@@ -58,7 +57,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   `;
 
   try {
-    return await sendMail(buildBetaEmail(onboarder.id), `Tu as été sélectionné.e comme marrain.ne 🙌`, html);
+    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), `Tu as été sélectionné.e comme marrain.ne 🙌`, html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -97,7 +96,7 @@ module.exports.acceptOnboardingRequest = async function (req, res) {
     `;
 
     try {
-      await sendMail([buildBetaEmail(onboarder.id), buildBetaEmail(newcomer.id)], `Mise en contact pour marrainage`, html);
+      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], `Mise en contact pour marrainage`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
@@ -122,7 +121,7 @@ module.exports.declineOnboardingRequest = async function (req, res) {
     await sendOnboarderRequestEmail(onboarder, newcomer, req);
 
     const html = `
-      <h1>Hello 👋 ${newcomer.fullname},</h1>
+      <h1>Hello ${newcomer.fullname} 👋,</h1>
       <p>Malheureusement, ${declinedOnboarder.fullname} n'est pas disponible en ce moment.</p>
       <p>Nous avons envoyé une demande de marrainage à ${onboarder.fullname}.</p>
       <p>Bonne journée,</p>
@@ -130,7 +129,7 @@ module.exports.declineOnboardingRequest = async function (req, res) {
     `;
 
     try {
-      await sendMail([buildBetaEmail(newcomer.id)], `La recherche de marrain.ne se poursuit !`, html);
+      await utils.sendMail(utils.buildBetaEmail(newcomer.id), `La recherche de marrain.ne se poursuit !`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }

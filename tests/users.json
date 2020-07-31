@@ -21,6 +21,12 @@
     "github": "test-github"
    },
    {
+    "id": "utilisateur.nouveau",
+    "fullname": "Utilisateur Nouveau",
+    "start": "2020-07-03",
+    "employer": "independent/octo"
+   },
+   {
     "id": "hela.ghariani",
     "fullname": "Hela Ghariani",
     "start": "2014-11-01",
