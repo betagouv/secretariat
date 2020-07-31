@@ -5,16 +5,16 @@ const buildBetaEmail = require('./utils').buildBetaEmail;
 const sendMail = require('./utils').sendMail;
 
 module.exports.getUsers = async function (req, res) {
-  if (req.query.name) {
-    return res.redirect(`/users/${req.query.name}`);
+  if (req.query.id) {
+    return res.redirect(`/users/${req.query.id}`);
   }
 
   try {
     const users = await BetaGouv.usersInfos();
 
     res.render('search', {
+      currentUser: req.user,
       users: users,
-      user: req.user,
       domain: config.domain,
       partials: {
         header: 'header',
@@ -25,11 +25,11 @@ module.exports.getUsers = async function (req, res) {
     console.error(err);
 
     res.render('search', {
+      currentUser: req.user,
       users: [],
       errors: [
         `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`
       ],
-      user: req.user,
       partials: {
         header: 'header',
         footer: 'footer'
@@ -38,15 +38,14 @@ module.exports.getUsers = async function (req, res) {
   }
 }
 
-module.exports.getUserByName = async function (req, res) {
-  const name = req.params.name;
+module.exports.getUserById = async function (req, res) {
+  const id = req.params.id;
 
   try {
-    const user = await userInfos(name, req.user.id === name);
+    const user = await userInfos(id, req.user.id === id);
 
     res.render('user', {
-      name,
-      user: req.user,
+      currentUser: req.user,
       emailInfos: user.emailInfos,
       redirections: user.redirections,
       userInfos: user.userInfos,
@@ -127,7 +126,6 @@ module.exports.createEmailForUser = async function (req, res) {
 
 module.exports.createRedirectionForUser = async function (req, res) {
   const id = req.params.id;
-  const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
   try {
     const user = await userInfos(id, req.user.id === id);
@@ -146,6 +144,8 @@ module.exports.createRedirectionForUser = async function (req, res) {
     console.log(
       `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
+
+    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
     const message = `À la demande de ${req.user.id} sur <${url}>, je crée une redirection mail pour ${id}`;
 

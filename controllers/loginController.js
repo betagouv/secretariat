@@ -8,7 +8,7 @@ function renderLogin(req, res, params) {
   params.partials = {
     header: 'header',
     footer: 'footer',
-    user: req.user
+    currentUser: req.user
   };
   params.domain = config.domain;
 
