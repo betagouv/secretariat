@@ -48,7 +48,7 @@ module.exports.getUserById = async function (req, res) {
       emailInfos: user.emailInfos,
       redirections: user.redirections,
       userInfos: user.userInfos,
-      userIsExpired: user.userIsExpired,
+      isExpired: user.isExpired,
       canCreateEmail: user.canCreateEmail,
       canCreateRedirection: user.canCreateRedirection,
       canChangePassword: user.canChangePassword,
@@ -79,7 +79,7 @@ module.exports.createEmailForUser = async function (req, res) {
       );
     }
 
-    if (user.userIsExpired) {
+    if (user.isExpired) {
       throw new Error(
         `Le compte de l'utilisateur(trice) ${id} est expiré.`
       );
@@ -143,7 +143,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       );
     }
 
-    if (user.userIsExpired) {
+    if (user.isExpired) {
       throw new Error(
         `Le compte de l'utilisateur(trice) ${id} est expiré.`
       );
@@ -227,7 +227,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
       );
     }
 
-    if (user.userIsExpired) {
+    if (user.isExpired) {
       throw new Error(
         `Le compte de l'utilisateur(trice) ${id} est expiré.`
       );
