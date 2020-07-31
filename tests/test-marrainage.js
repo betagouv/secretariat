@@ -25,7 +25,6 @@ describe("Onboarding", () => {
         .post("/marrainage")
         .type("form")
         .send({
-          '_method': 'POST',
           'newcomerId': 'utilisateur.actif'
         })
         .redirects(0)
@@ -127,7 +126,6 @@ describe("Onboarding", () => {
         .set('Cookie', `token=${utils.getJWT()}`)
         .type("form")
         .send({
-          '_method': 'POST',
           'newcomerId': 'utilisateur.actif'
         })
         .redirects(0)

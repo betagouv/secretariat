@@ -48,7 +48,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
       </button>
     </a><br/>
     <a href="${url}/marrainage/decline?details=${encodeURIComponent(token)}">
-      <button style="padding: 10px;border: none;box-shadow: 1px 1px 2px 0px #333;min-width: 280px;">
+      <button style="padding: 10px;border: none;box-shadow: 1px 1px 2px 0px #333;min-width: 280px;cursor: pointer;">
         Désolé, je ne suis pas disponible
       </button>
     </a>
@@ -86,7 +86,7 @@ module.exports.createRequest = async function (req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/users/${newcomer.id}`);
   }
 }
 
@@ -113,7 +113,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     console.log(`Marrainage accepté pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
 
-    res.render('marrainage');
+    res.render('marrainage', {errors: undefined});
   } catch (err) {
     console.error(err);
     res.render('marrainage', {errors: err.message});
@@ -145,7 +145,7 @@ module.exports.declineRequest = async function (req, res) {
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien.ne marrain.ne : ${declinedOnboarder.id}. Nouvel.le marrain.ne : ${onboarder.id}`);
 
-    res.render('marrainage');
+    res.render('marrainage', {errors: undefined});
   } catch (err) {
     console.error(err);
     res.render('marrainage', {errors: err.message});

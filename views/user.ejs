@@ -111,5 +111,18 @@
     </p>
   <% } %>
 <% } %>
+<% if (userInfos) { %>
+<h2>Marrainage</h2>
+<p>
+  <form action="/marrainage" method="POST">
+    <fieldset>
+      <legend>Chercher un.e marrain.ne</legend>
+      <label>En appuyant sur ce bouton, une personne aléatoire sera invité.e à devenir ta ou ton marrain.ne.</label><br>
+      <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+      <button>Chercher un.e marrain.ne</button>
+    </fieldset>
+  </form>
+</p>
+<% } %>
 
 <%- include('partials/footer'); -%>

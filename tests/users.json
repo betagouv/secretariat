@@ -19,11 +19,11 @@
     "end": "2050-10-30",
     "employer": "independent/octo",
     "github": "test-github"
-   },
-   {
+  },
+  {
     "id": "utilisateur.nouveau",
     "fullname": "Utilisateur Nouveau",
-    "start": "2020-07-03",
+    "start": "2020-07-03"
   },
   {
     "id": "julien.dauphant",

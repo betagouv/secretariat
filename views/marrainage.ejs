@@ -1,0 +1,13 @@
+<%- include('partials/header'); -%>
+
+<% if (errors) { %>
+    <p class="text-error"><%= errors %><p>
+<% } else { %>  
+    <h1>Votre décision a été prise en compte</h1>
+<% } %>
+
+<a href="/">
+    <button>
+        Acceder au sécretariat
+    </button>
+</a>
