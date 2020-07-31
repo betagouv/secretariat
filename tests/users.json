@@ -1,93 +1,96 @@
 [ 
   {
-    "id": "julien.dauphant",
-    "fullname": "Julien Dauphant",
-    "start": "2016-11-03",
-    "end": "2050-10-30",
-    "employer": "independent/octo"
-   },
-   {
     "id": "utilisateur.actif",
     "fullname": "Utilisateur Actif",
     "start": "2016-11-03",
     "employer": "independent/octo"
-   },
-   {
+  },
+  {
+    "id": "utilisateur.expire",
+    "fullname": "Utilisateur Expiré",
+    "start": "2016-11-03",
+    "end": "2017-11-02",
+    "employer": "independent/octo"
+  },
+  {
     "id": "utilisateur.parti",
     "fullname": "Utilisateur Parti",
     "start": "2016-11-03",
     "end": "2050-10-30",
     "employer": "independent/octo",
     "github": "test-github"
-   },
-   {
+  },
+  {
+    "id": "julien.dauphant",
+    "fullname": "Julien Dauphant",
+    "start": "2016-11-03",
+    "end": "2050-10-30",
+    "employer": "independent/octo"
+  },
+  {
     "id": "hela.ghariani",
     "fullname": "Hela Ghariani",
     "start": "2014-11-01",
     "end": "2019-10-30",
     "employer": "dinsic"
-   },
-   {
+  },
+  {
     "id": "nicolas.bouilleaud",
     "fullname": "Nicolas Bouilleaud",
     "start": "2018-04-09",
     "end": "2018-12-31",
     "employer": "independent/octo",
     "github": "n-b"
-   },
-   {
-    "id": "laurent.bossavit"
-    ,"fullname": "Laurent Bossavit"
-    ,"start": "2016-03-01"
-    ,"end": "2021-04-05"
-    ,"employer": "dinsic"
-    
   },
   {
-    "id": "stephane.legouffe"
-    ,"fullname": "Stéphane Legouffe"
-    ,"start": "2018-03-08"
-    ,"end": "2018-06-08"
-    ,"employer": "independent"
-    ,"github": "slegouffe"
+    "id": "laurent.bossavit",
+    "fullname": "Laurent Bossavit",
+    "start": "2016-03-01",
+    "end": "2021-04-05",
+    "employer": "dinsic"  
   },
   {
-    "id": "sandra.chakroun"
-    ,"fullname": "Sandra Chakroun"
-    ,"start": "2017-05-10"
-    ,"end": "2018-10-05"
-    ,"employer": "independent/octo"
-    
+    "id": "stephane.legouffe",
+    "fullname": "Stéphane Legouffe",
+    "start": "2018-03-08",
+    "end": "2018-06-08",
+    "employer": "independent",
+    "github": "slegouffe"
   },
   {
-    "id": "loup.wolff"
-    ,"fullname": "Loup Wolff"
-    ,"start": "2018-03-27"
-    ,"end": ""
-    ,"employer": "admin/Ministère de la Culture"  
+    "id": "sandra.chakroun",
+    "fullname": "Sandra Chakroun",
+    "start": "2017-05-10",
+    "end": "2018-10-05",
+    "employer": "independent/octo"
   },
   {
-            "id": "ishan.bhojwani"
-            ,"fullname": "Ishan Bhojwani"
-            ,"start": "2017-05-23"
-            ,"end": "2018-12-31"
-            ,"employer": "independent/octo"
-            ,"github": "IshanB"
-        },
-  
-        {
-            "id": "pierre.de_la_morinerie"
-            ,"fullname": "Pierre de La Morinerie"
-            ,"start": "2017-01-24"
-            ,"end": "2017-07-31"
-            ,"employer": "independent/octo"
-            
-        },{
-            "id": "thomas.guillet"
-            ,"fullname": "Thomas Guillet"
-            ,"start": "2017-03-06"
-            ,"end": "2020-12-24"
-            ,"employer": "dinsic"
-            
-        }
+    "id": "loup.wolff",
+    "fullname": "Loup Wolff",
+    "start": "2018-03-27",
+    "end": "",
+    "employer": "admin/Ministère de la Culture"  
+  },
+  {
+    "id": "ishan.bhojwani",
+    "fullname": "Ishan Bhojwani",
+    "start": "2017-05-23",
+    "end": "2018-12-31",
+    "employer": "independent/octo",
+    "github": "IshanB"
+  },
+  {
+    "id": "pierre.de_la_morinerie",
+    "fullname": "Pierre de La Morinerie",
+    "start": "2017-01-24",
+    "end": "2017-07-31",
+    "employer": "independent/octo"
+  },
+  {
+    "id": "thomas.guillet",
+    "fullname": "Thomas Guillet",
+    "start": "2017-03-06",
+    "end": "2020-12-24",
+    "employer": "dinsic"
+  }
 ]

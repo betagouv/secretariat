@@ -32,7 +32,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
 
       return {
         email: email,
-        github: user != undefined,
+        github: user !== undefined,
         redirections: redirections.reduce(
           (acc, r) => (r.from === email ? [...acc, r.to] : acc),
           []

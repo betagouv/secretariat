@@ -1,8 +1,7 @@
+const jwt = require('jsonwebtoken');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const sendMail = require('./utils').sendMail;
-const buildBetaEmail = require('./utils').buildBetaEmail;
-const jwt = require('jsonwebtoken');
+const utils = require('./utils');
 
 function renderLogin(req, res, params) {
   params.partials = {
@@ -20,20 +19,17 @@ async function sendLoginEmail(id, domain) {
 
   if (!user) {
     throw new Error(
-      `Utilisateur(trice) ${id} inconnu(e) sur ${config.domain} (Avez-vous une fiche sur github ?)`
+      `Utilisateur(trice) ${id} inconnu(e) sur ${config.domain}. Avez-vous une fiche sur Github ?`
     );
   }
 
-  if (
-    user.end != undefined &&
-    new Date(user.end).getTime() < new Date().getTime()
-  ) {
+  if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur(trice) ${id} a une date de fin expiré sur Github`
+      `Utilisateur(trice) ${id} a une date de fin expiré sur Github.`
     );
   }
 
-  const email = buildBetaEmail(id);
+  const email = utils.buildBetaEmail(id);
   const token = jwt.sign({ id: id }, config.secret, { expiresIn: '1 hours' });
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
@@ -42,11 +38,11 @@ async function sendLoginEmail(id, domain) {
       </a>`;
 
   try {
-    await sendMail(email, 'Connexion secrétariat BetaGouv', html);
+    await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
   } catch (err) {
     console.error(err);
 
-    throw new Error("Erreur d'envoi de mail à ton adresse");
+    throw new Error("Erreur d'envoi de mail à ton adresse.");
   }
 }
 
@@ -60,7 +56,7 @@ module.exports.getLogin = async function (req, res) {
 
     renderLogin(req, res, {
       errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`
+        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
       ]
     });
   }
@@ -81,11 +77,12 @@ module.exports.postLogin = async function (req, res) {
     const result = await sendLoginEmail(req.body.id, domain);
 
     renderLogin(req, res, {
-      message: `Email de connexion envoyé pour ${req.body.id}`
+      message: `Email de connexion envoyé pour ${req.body.id}.`
     });
   } catch (err) {
     console.error(err);
 
-    renderLogin(req, res, { errors: [err] });
+    req.flash('error', err.message);
+    return res.redirect('/login');
   }
 }

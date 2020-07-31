@@ -33,6 +33,16 @@ module.exports.buildBetaEmail = function(id) {
   return `${id}@${config.domain}`;
 }
 
+module.exports.checkUserIsExpired = function(user) {
+  // L'utilisateur(trice) est considéré comme expiré si:
+  // - il/elle existe
+  // - il/elle a une date de fin
+  // - son/sa date de fin est passée
+  return user &&
+    user.end !== undefined &&
+    new Date(user.end).getTime() < new Date().getTime();
+}
+
 module.exports.userInfos = async function(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
@@ -41,27 +51,37 @@ module.exports.userInfos = async function(id, isCurrentUser) {
       BetaGouv.redirectionsForId({ from: id })
     ]);
 
-    const hasUserInfos = userInfos != undefined;
+    const hasUserInfos = userInfos !== undefined;
+
+    const isExpired = module.exports.checkUserIsExpired(userInfos);
 
     // On ne peut créé un compte que si:
-    // - la page fiche github existe
+    // - la page fiche Github existe
+    // - l'utilisateur(trice) n'est pas expiré(e)
     // - et le compte n'existe pas
     // - et qu'il n'y a aucun redirection (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
     const canCreateEmail =
       hasUserInfos &&
+      !isExpired &&
       emailInfos === null &&
       (isCurrentUser || redirections.length === 0);
 
-    // On peut créer une redirection si:
-    // - la page fiche github existe
+    // On peut créer une redirection & changer un password si:
+    // - la page fiche Github existe
+    // - l'utilisateur(trice) n'est pas expiré(e) (l'utilisateur(trice) ne devrait de toute façon pas pouvoir se connecter)
     // - et que l'on est l'utilisateur(trice) connecté(e) pour créer ces propres redirections.
-    const canCreateRedirection = hasUserInfos && isCurrentUser;
-    const canChangePassword = hasUserInfos && isCurrentUser;
+    const canCreateRedirection = hasUserInfos &&
+      !isExpired &&
+      isCurrentUser;
+    const canChangePassword = hasUserInfos &&
+      !isExpired &&
+      isCurrentUser;
 
     return {
       emailInfos,
       redirections,
       userInfos,
+      isExpired,
       canCreateEmail,
       canCreateRedirection,
       canChangePassword
@@ -70,7 +90,7 @@ module.exports.userInfos = async function(id, isCurrentUser) {
     console.error(err);
 
     throw new Error(
-      `Problème pour récupérer les infos de l'utilisateur(trice) ${name}`
+      `Problème pour récupérer les infos de l'utilisateur(trice) ${userInfos.id}`
     );
   }
 }

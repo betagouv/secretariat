@@ -1,10 +1,12 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+
 const app = require('../index');
 const utils = require('./utils.js')
 
 chai.use(chaiHttp);
 chai.should();
+
 
 describe("Users", () => {
   describe("GET /users unauthenticated", () => {
@@ -14,7 +16,7 @@ describe("Users", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/login");
+          res.headers.location.should.equal('/login');
           done();
         });
     });
@@ -30,7 +32,7 @@ describe("Users", () => {
           done();
         })
     });
-    it("should include a search form", (done) => {
+    it("should show the search form", (done) => {
       chai.request(app)
         .get('/users')
         .set('Cookie', `token=${utils.getJWT()}`)
