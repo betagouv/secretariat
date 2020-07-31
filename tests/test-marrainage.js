@@ -55,7 +55,7 @@ describe("Onboarding", () => {
           const emailBody = this.sendEmailStub.args[0][2];
 
           subject.should.equal("Mise en contact pour marrainage");
-          emailBody.should.include("Utilisateur Actif a accepté d'être marrain.ne de Utilisateur Nouveau");
+          emailBody.should.include("Utilisateur Actif a accepté d'être marrain·e de Utilisateur Nouveau");
           done();
         });
     });
@@ -83,7 +83,7 @@ describe("Onboarding", () => {
           const emailBody = newcomerEmailArgs[2];
 
           toEmail.should.include("utilisateur.nouveau@")
-          subject.should.equal("La recherche de marrain.ne se poursuit !");
+          subject.should.equal("La recherche de marrain·e se poursuit !");
           emailBody.should.include("Malheureusement, Utilisateur Actif n'est pas disponible en ce moment.");
           done();
         });
@@ -110,7 +110,7 @@ describe("Onboarding", () => {
           const subject = newOnboarderEmailArgs[1];
           const emailBody = newOnboarderEmailArgs[2];
 
-          subject.should.equal("Tu as été sélectionné.e comme marrain.ne 🙌");
+          subject.should.equal("Tu as été sélectionné·e comme marrain·e 🙌");
           emailBody.should.include('marrainage/accept');
           emailBody.should.include('marrainage/decline');
           done();
@@ -137,7 +137,7 @@ describe("Onboarding", () => {
           const subject = this.sendEmailStub.args[0][1];
           const emailBody = this.sendEmailStub.args[0][2];
 
-          subject.should.equal("Tu as été sélectionné.e comme marrain.ne 🙌");
+          subject.should.equal("Tu as été sélectionné·e comme marrain·e 🙌");
           emailBody.should.include('marrainage/accept');
           emailBody.should.include('marrainage/decline');
           done();

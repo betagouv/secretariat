@@ -41,7 +41,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
 
   const html = `
     <h1>Hello ${onboarder.fullname} 👋,</h1>
-    <p>Tu as été sélectonné.e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain.ne</a> de ${newcomer.fullname}.</p>
+    <p>Tu as été sélectonné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
     <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
       <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
         J'accepte
@@ -62,7 +62,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   `;
 
   try {
-    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), `Tu as été sélectionné.e comme marrain.ne 🙌`, html);
+    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), `Tu as été sélectionné·e comme marrain·e 🙌`, html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -76,9 +76,9 @@ module.exports.createRequest = async function (req, res) {
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
     await sendOnboarderRequestEmail(onboarder, newcomer, req)
-    await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un.e marrain.ne pour ${newcomer.id}`);
+    await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un·e marrain·e pour ${newcomer.id}`);
 
-    console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
+    console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
     req.flash('message', `Nous avons envoyé un email à ${onboarder.fullname} l'invitant à te marrainer.`);
     res.redirect(`/users/${newcomer.id}`);
@@ -98,7 +98,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     const html = `
       <h1>Hello ${newcomer.fullname}, ${onboarder.fullname} 👋,</h1>
-      <p>${onboarder.fullname} a accepté d'être marrain.ne de ${newcomer.fullname}.</p>
+      <p>${onboarder.fullname} a accepté d'être marrain·e de ${newcomer.fullname}.</p>
       <p>Vous trouverez plus d'informations sur le marrainage sur la <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">documentation de l'incubateur</a>.</p>
       <p>Vous êtes tou.s.tes les deux en copie de cet email, à vous de jouer ! </p>
       <p>Bonne journée,</p>
@@ -111,7 +111,7 @@ module.exports.acceptRequest = async function (req, res) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    console.log(`Marrainage accepté pour ${newcomer.id}. Marrain.ne selectionné.e : ${onboarder.id}`);
+    console.log(`Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
     res.render('marrainage', {errors: undefined});
   } catch (err) {
@@ -138,12 +138,12 @@ module.exports.declineRequest = async function (req, res) {
     `;
 
     try {
-      await utils.sendMail(utils.buildBetaEmail(newcomer.id), `La recherche de marrain.ne se poursuit !`, html);
+      await utils.sendMail(utils.buildBetaEmail(newcomer.id), `La recherche de marrain·e se poursuit !`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    console.log(`Marrainage décliné pour ${newcomer.id}. Ancien.ne marrain.ne : ${declinedOnboarder.id}. Nouvel.le marrain.ne : ${onboarder.id}`);
+    console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
 
     res.render('marrainage', {errors: undefined});
   } catch (err) {
