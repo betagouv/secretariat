@@ -1,16 +1,18 @@
 const jwt = require('jsonwebtoken');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
-function renderLogin(req, res, params) {
-  params.partials = {
-    header: 'header',
-    footer: 'footer',
-    currentUser: req.user
-  };
-  params.domain = config.domain;
 
+function renderLogin(req, res, params) {
+  // init params
+  params.currentUser = req.user;
+  params.domain = config.domain;
+  // enrich params
+  params.errors = params.errors || undefined;
+  params.message = params.message || undefined;
+  // render
   return res.render('login', params);
 }
 
