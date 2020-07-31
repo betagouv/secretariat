@@ -14,4 +14,16 @@
     <option value="{{id}}">
   {{/users}}
 </datalist>
+<hr />
+<p>
+  <form action="/onboardingRequest" method="POST">
+
+      <label><strong>Chercher un.e marrain.ne</strong><br>
+      <label>En appuyant sur ce bouton, une personne aléatoire sera invité.e à devenir ta ou ton marrain.ne.</label><br>
+      <input type="hidden" name="newcomerId" value="{{user.id}}">
+      <p>
+        <button>Chercher un.e marrain.ne</button>
+      </p>
+  </form>
+</p>
 {{> footer}}
