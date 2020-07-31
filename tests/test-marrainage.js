@@ -110,7 +110,7 @@ describe("Onboarding", () => {
           const subject = newOnboarderEmailArgs[1];
           const emailBody = newOnboarderEmailArgs[2];
 
-          subject.should.equal("Tu as été sélectionné.e comme marrain·e 🙌");
+          subject.should.equal("Tu as été sélectionné·e comme marrain·e 🙌");
           emailBody.should.include('marrainage/accept');
           emailBody.should.include('marrainage/decline');
           done();
@@ -137,7 +137,7 @@ describe("Onboarding", () => {
           const subject = this.sendEmailStub.args[0][1];
           const emailBody = this.sendEmailStub.args[0][2];
 
-          subject.should.equal("Tu as été sélectionné.e comme marrain·e 🙌");
+          subject.should.equal("Tu as été sélectionné·e comme marrain·e 🙌");
           emailBody.should.include('marrainage/accept');
           emailBody.should.include('marrainage/decline');
           done();
