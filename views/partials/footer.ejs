@@ -1,0 +1,8 @@
+</div>
+<% if (currentUser) { %>
+  <p id="bottom">
+    Utilisateur : <a href="/users/<%= currentUser.id %>"><%= currentUser.id %></a> / <a href="/emails">Tous les emails</a> / <a href="/logout">Déconnexion</a>
+  </p>
+<% } %>
+</body>
+</html>

@@ -15,10 +15,6 @@ module.exports.getUsers = async function (req, res) {
       currentUser: req.user,
       users: users,
       domain: config.domain,
-      partials: {
-        header: 'header',
-        footer: 'footer'
-      }
     });
   } catch (err) {
     console.error(err);
@@ -26,13 +22,10 @@ module.exports.getUsers = async function (req, res) {
     res.render('search', {
       currentUser: req.user,
       users: [],
+      domain: config.domain,
       errors: [
         `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
-      ],
-      partials: {
-        header: 'header',
-        footer: 'footer'
-      }
+      ]
     });
   }
 }
@@ -55,10 +48,6 @@ module.exports.getUserById = async function (req, res) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       domain: config.domain,
-      partials: {
-        header: 'header',
-        footer: 'footer'
-      }
     });
   } catch (err) {
     console.error(err);

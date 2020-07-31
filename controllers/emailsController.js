@@ -57,21 +57,15 @@ module.exports.getEmails = async function (req, res) {
     res.render('emails', {
       currentUser: req.user,
       emails,
-      partials: {
-        header: 'header',
-        footer: 'footer'
-      }
+      errors: undefined
     });
   } catch (err) {
     console.error(err);
 
     res.render('emails', {
       currentUser: req.user,
+      emails: [],
       errors: ['Erreur interne'],
-      partials: {
-        header: 'header',
-        footer: 'footer'
-      }
     });
   }
 }

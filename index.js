@@ -18,8 +18,7 @@ usersController = require('./controllers/usersController');
 
 const app = express();
 
-app.engine('mustache', cons.mustache);
-app.set('view engine', 'mustache');
+app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/static', express.static('static'));
