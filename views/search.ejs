@@ -17,16 +17,15 @@
 </form>
 
 <hr />
-<p>
-  <form action="/marrainage" method="POST">
-
-      <label><strong>Chercher un.e marrain.ne</strong><br>
-      <label>En appuyant sur ce bouton, une personne aléatoire sera invité.e à devenir ta ou ton marrain.ne.</label><br>
-      <input type="hidden" name="newcomerId" value="<%= currentUser.id %>">
-      <p>
-        <button>Chercher un.e marrain.ne</button>
-      </p>
-  </form>
-</p>
+<form action="/marrainage" method="POST">
+  <p>
+    <label><strong>Chercher un.e marrain.ne</strong><br>
+    <label>En appuyant sur ce bouton, une personne aléatoire sera invité.e à devenir ta ou ton marrain.ne.</label><br>
+    <input type="hidden" name="newcomerId" value="<%= currentUser.id %>">
+    <p>
+      <button>Chercher un.e marrain.ne</button>
+    </p>
+  </p>
+</form>
 
 <%- include('partials/footer'); -%>
