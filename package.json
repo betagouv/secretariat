@@ -41,7 +41,8 @@
     "mocha": "^8.0.1",
     "nock": "^13.0.3",
     "nodemon": "^2.0.4",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "sinon": "^9.0.2"
   },
   "prettier": {
     "singleQuote": true
