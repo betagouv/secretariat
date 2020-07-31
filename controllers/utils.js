@@ -53,25 +53,35 @@ module.exports.userInfos = async function(id, isCurrentUser) {
 
     const hasUserInfos = userInfos != undefined;
 
+    const userIsExpired = module.exports.checkUserIsExpired(userInfos);
+
     // On ne peut créé un compte que si:
     // - la page fiche Github existe
+    // - l'utilisateur(trice) n'est pas expiré(e)
     // - et le compte n'existe pas
     // - et qu'il n'y a aucun redirection (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
     const canCreateEmail =
       hasUserInfos &&
+      !userIsExpired &&
       emailInfos === null &&
       (isCurrentUser || redirections.length === 0);
 
-    // On peut créer une redirection si:
+    // On peut créer une redirection & changer un password si:
     // - la page fiche Github existe
+    // - l'utilisateur(trice) n'est pas expiré(e) (l'utilisateur(trice) ne devrait de toute façon pas pouvoir se connecter)
     // - et que l'on est l'utilisateur(trice) connecté(e) pour créer ces propres redirections.
-    const canCreateRedirection = hasUserInfos && isCurrentUser;
-    const canChangePassword = hasUserInfos && isCurrentUser;
+    const canCreateRedirection = hasUserInfos &&
+      !userIsExpired &&
+      isCurrentUser;
+    const canChangePassword = hasUserInfos &&
+      !userIsExpired &&
+      isCurrentUser;
 
     return {
       emailInfos,
       redirections,
       userInfos,
+      userIsExpired,
       canCreateEmail,
       canCreateRedirection,
       canChangePassword

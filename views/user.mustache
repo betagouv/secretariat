@@ -19,7 +19,7 @@
 <ul>
   <li>Nom: {{fullname}}</li>
   <li>Date de début: {{start}}</li>
-  <li>Date de fin: {{end}}</li>
+  <li>Date de fin: {{end}} {{#userIsExpired}}<span style="color: red; font-weight: bold">Expiré !<span>{{/userIsExpired}}</li>
   <li>Employeur: {{employer}}</li>
   <li>Github : {{#github}}{{github}}{{/github}}
   {{^github}}Non renseigné{{/github}}</li>
@@ -64,11 +64,16 @@
   </form>
 </p>
 {{/canCreateEmail}}
-{{^canCreateEmail}}
+{{#userIsExpired}}{{^canCreateEmail}}
+<p>
+  <i>Le compte {{name}} est expiré</i>
+</p>
+{{/canCreateEmail}}{{/userIsExpired}}
+{{^userIsExpired}}{{^canCreateEmail}}
 <p>
   <i>Seul {{userInfos.id}} peut créer ou modifier ce compte email</i>
 </p>
-{{/canCreateEmail}}
+{{/canCreateEmail}}{{/userIsExpired}}
 
 <h2>Redirections</h2>
 <ul>
@@ -97,9 +102,14 @@
   </form>
 </p>
 {{/canCreateRedirection}}
-{{^canCreateRedirection}}
+{{#userIsExpired}}{{^canCreateRedirection}}
+<p>
+  <i>Le compte {{name}} est expiré</i>
+</p>
+{{/canCreateRedirection}}{{/userIsExpired}}
+{{^userIsExpired}}{{^canCreateRedirection}}
 <p>
   <i>Seul {{userInfos.id}} peut créer ou modifier les redirections</i>
 </p>
-{{/canCreateRedirection}}
+{{/canCreateRedirection}}{{/userIsExpired}}
 {{> footer}}

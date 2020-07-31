@@ -1,8 +1,7 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const userInfos = require('./utils').userInfos;
-const buildBetaEmail = require('./utils').buildBetaEmail;
-const sendMail = require('./utils').sendMail;
+const utils = require('./utils');
+
 
 module.exports.getUsers = async function (req, res) {
   if (req.query.id) {
@@ -42,13 +41,14 @@ module.exports.getUserById = async function (req, res) {
   const id = req.params.id;
 
   try {
-    const user = await userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, req.user.id === id);
 
     res.render('user', {
       currentUser: req.user,
       emailInfos: user.emailInfos,
       redirections: user.redirections,
       userInfos: user.userInfos,
+      userIsExpired: user.userIsExpired,
       canCreateEmail: user.canCreateEmail,
       canCreateRedirection: user.canCreateRedirection,
       canChangePassword: user.canChangePassword,
@@ -71,11 +71,17 @@ module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
 
   try {
-    const user = await userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, req.user.id === id);
 
     if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+      );
+    }
+
+    if (user.userIsExpired) {
+      throw new Error(
+        `Le compte de l'utilisateur(trice) ${id} est expiré.`
       );
     }
 
@@ -86,7 +92,7 @@ module.exports.createEmailForUser = async function (req, res) {
     const password = Math.random()
       .toString(36)
       .slice(-10);
-    const email = buildBetaEmail(id);
+    const email = utils.buildBetaEmail(id);
 
     console.log(
       `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
@@ -109,7 +115,7 @@ module.exports.createEmailForUser = async function (req, res) {
       </a>`;
 
     try {
-      await sendMail(req.body.to_email, `Création compte ${email}`, html);
+      await utils.sendMail(req.body.to_email, `Création compte ${email}`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
@@ -128,12 +134,18 @@ module.exports.createRedirectionForUser = async function (req, res) {
   const id = req.params.id;
 
   try {
-    const user = await userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, req.user.id === id);
 
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+      );
+    }
+
+    if (user.userIsExpired) {
+      throw new Error(
+        `Le compte de l'utilisateur(trice) ${id} est expiré.`
       );
     }
 
@@ -152,7 +164,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     try {
       await BetaGouv.sendInfoToSlack(message);
       await BetaGouv.createRedirection(
-        buildBetaEmail(id),
+        utils.buildBetaEmail(id),
         req.body.to_email,
         req.body.keep_copy === 'true'
       );
@@ -174,7 +186,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
   const { id, email: to_email } = req.params;
 
   try {
-    const user = await userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, req.user.id === id);
     // TODO: vérifier si l'utilisateur existe sur Github ?
 
     if (!user.canCreateRedirection) {
@@ -188,7 +200,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
     try {
       await BetaGouv.sendInfoToSlack(message);
-      await BetaGouv.deleteRedirection(buildBetaEmail(id), to_email);
+      await BetaGouv.deleteRedirection(utils.buildBetaEmail(id), to_email);
     } catch (err) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
@@ -207,14 +219,20 @@ module.exports.updatePasswordForUser = async function (req, res) {
   const id = req.params.id;
 
   try {
-    const user = await userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, req.user.id === id);
 
     if (!user.userInfos) {
       throw new Error(
         `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
       );
     }
-    console.log(user)
+
+    if (user.userIsExpired) {
+      throw new Error(
+        `Le compte de l'utilisateur(trice) ${id} est expiré.`
+      );
+    }
+
     if (!user.canChangePassword) {
       throw new Error("Vous n'avez pas le droits de changer le mot de passe.");
     }
@@ -232,7 +250,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
       );
     }
 
-    const email = buildBetaEmail(id);
+    const email = utils.buildBetaEmail(id);
 
     console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
 

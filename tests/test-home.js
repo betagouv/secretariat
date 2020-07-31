@@ -18,7 +18,7 @@ describe("Home", () => {
         });
     });
 
-    it("should include a login form", (done) => {
+    it("should show the login form", (done) => {
       chai.request(app)
         .get('/')
         .end((err, res) => {

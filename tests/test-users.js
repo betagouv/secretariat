@@ -32,7 +32,7 @@ describe("Users", () => {
           done();
         })
     });
-    it("should include a search form", (done) => {
+    it("should show the search form", (done) => {
       chai.request(app)
         .get('/users')
         .set('Cookie', `token=${utils.getJWT()}`)
