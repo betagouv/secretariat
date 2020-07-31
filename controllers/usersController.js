@@ -75,7 +75,7 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas créer son compte email`
+        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email`
       );
     }
 
@@ -133,7 +133,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas créer de redirection`
+        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection`
       );
     }
 
@@ -175,10 +175,10 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
   try {
     const user = await userInfos(id, req.user.id === id);
-    // TODO: vérifier si l'utilisateur existe sur github ?
+    // TODO: vérifier si l'utilisateur existe sur Github ?
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de supprimer cette redirection");
+      throw new Error("Vous n'avez pas le droits de supprimer cette redirection.");
     }
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
@@ -193,7 +193,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
 
-    req.flash('message', 'La redirection a bien été supprimé');
+    req.flash('message', 'La redirection a bien été supprimée.');
     res.redirect(`/users/${id}`);
   } catch (err) {
     console.error(err);
@@ -211,7 +211,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur github : vous ne pouvez pas modifier le mot de passe`
+        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
       );
     }
     console.log(user)
@@ -228,7 +228,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
       password !== password.trim()
     ) {
       throw new Error(
-        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin"
+        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin."
       );
     }
 
@@ -238,12 +238,12 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
-    const message = `À la demande de ${req.user.id} sur <${url}>, je change le mot de passe pour ${id}`;
+    const message = `À la demande de ${req.user.id} sur <${url}>, je change le mot de passe pour ${id}.`;
 
     await BetaGouv.sendInfoToSlack(message);
     await BetaGouv.changePassword(id, password);
 
-    req.flash('message', 'Le mot de passe a bien été modifié');
+    req.flash('message', 'Le mot de passe a bien été modifié.');
     res.redirect(`/users/${id}`);
   } catch (err) {
     console.error(err);

@@ -33,6 +33,16 @@ module.exports.buildBetaEmail = function(id) {
   return `${id}@${config.domain}`;
 }
 
+module.exports.checkUserIsExpired = function(user) {
+  // L'utilisateur(trice) est considéré comme expiré si:
+  // - il/elle existe
+  // - il/elle a une date de fin
+  // - son/sa date de fin est passée
+  return user &&
+    user.end != undefined &&
+    new Date(user.end).getTime() < new Date().getTime();
+}
+
 module.exports.userInfos = async function(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
@@ -44,7 +54,7 @@ module.exports.userInfos = async function(id, isCurrentUser) {
     const hasUserInfos = userInfos != undefined;
 
     // On ne peut créé un compte que si:
-    // - la page fiche github existe
+    // - la page fiche Github existe
     // - et le compte n'existe pas
     // - et qu'il n'y a aucun redirection (sauf l'utilisateur(trice) connecté qui peut créer son propre compte)
     const canCreateEmail =
@@ -53,7 +63,7 @@ module.exports.userInfos = async function(id, isCurrentUser) {
       (isCurrentUser || redirections.length === 0);
 
     // On peut créer une redirection si:
-    // - la page fiche github existe
+    // - la page fiche Github existe
     // - et que l'on est l'utilisateur(trice) connecté(e) pour créer ces propres redirections.
     const canCreateRedirection = hasUserInfos && isCurrentUser;
     const canChangePassword = hasUserInfos && isCurrentUser;
