@@ -8,7 +8,7 @@ async function selectRandomOnboarder(newcomerId) {
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
   const onboarders = users.filter(x => {
     const senior = new Date(minimumSeniority) > new Date(x.start);
-    const stillActive = !x.end || new Date(x.end) > new Date();
+    const stillActive = !utils.checkUserIsExpired(x);
     const isRequester = x.id === newcomerId;
     return senior && stillActive && !isRequester;
   });
