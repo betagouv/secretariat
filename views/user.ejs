@@ -1,128 +1,149 @@
 <%- include('partials/header'); -%>
 
-<style media="screen">
-#message { max-width: 500px; }
-</style>
+<div class="container container-small">
 
-<h1><%= userInfos.id %></h1>
+  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
 
-<% if (errors) { %>
-  <p class="text-error"><%= errors %><p>
-<% } %>
+  <h4 class="subtitle"><%= userInfos.id %></h4>
 
-<% if (messages) { %>
-  <p><strong><i><%= messages %></i></strong></p>
-<% } %>
-
-<h2>Fiche <%= domain %></h2>
-<% if (userInfos) { %>
-  <ul>
-    <li>Nom: <%= userInfos.fullname %></li>
-    <li>Date de début: <%= userInfos.start %></li>
-    <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-error">Expiré !<span><% } %></li>
-    <li>Employeur: <%= userInfos.employer %></li>
-    <li>Github : <% if (userInfos.github) { %><%= userInfos.github %><% } else { %>Non renseigné<% } %></li>
-  </ul>
-  <p>
-    <i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md">Par ici</a></i>
-  </p>
-<% } else { %>
-  <p>
-    Inexistante (nécessaire pour créer le compte mail)<br>
-    <i>Vous pouvez créer la fiche sur Github</i>
-  </p>
-<% } %>
-
-<h2>Compte mail</h2>
-<% if (emailInfos) { %>
-  <%= emailInfos.email %> ( <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>">Webmail</a> )
-  <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
-  <% if (canChangePassword) { %>
-    <form action="/users/<%= userInfos.id %>/password" method="POST">
-      <fieldset>
-        <legend>Changer le mot de passe POP/IMAP/SMTP</legend>
-        <label>Nouveau mot de passe : </label><br>
-        <input name="new_password" type="password" minlength="9" required><br>
-        <i>(de 9 à 30 caractères, pas d'accents, pas d'espace au début ou à la fin)</i><br>
-        <button>Changer</button>
-      </fieldset>
-    </form>
+  <% if (errors) { %>
+    <p class="text-error"><%= errors %><p>
   <% } %>
-<% } else { %>
-  <p>Inexistant</p>
-<% } %>
 
-<% if (canCreateEmail) { %>
-  <form action="/users/<%= userInfos.id %>/email" method="POST">
-  <fieldset>
-    <legend>Créer le compte mail</legend>
-    <label>Envoyer le mot de passe à cette adresse mail : </label><br>
-    <input name="to_email" type="email" required><br>
-    <button>Créer un compte</button>
-    </fieldset>
-  </form>
-<% } else { %>
-  <% if (isExpired) { %>
-    <p>
-      <i>Le compte <%= userInfos.id %> est expiré</i>
-    </p>
-  <% } else { %>
-    <p>
-      <i>Seul <%= userInfos.id %> peut créer ou modifier ce compte email</i>
-    </p>
+  <% if (messages) { %>
+    <p><strong><i><%= messages %></i></strong></p>
   <% } %>
-<% } %>
 
-<h2>Redirections</h2>
-<ul>
-  <% redirections.forEach(function(redirection) { %>
-    <li>
-      <%= redirection.from %> vers <%= redirection.to %>
-      <% if (canCreateRedirection) { %>
-        <form action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
-          <button>Supprimer</button>
+  <div class="panel margin-top-m">
+    <h4>Fiche <%= domain %></h4>
+    <% if (userInfos) { %>
+      <ul>
+        <li>Nom: <%= userInfos.fullname %></li>
+        <li>Date de début: <%= userInfos.start %></li>
+        <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-error">Expiré !<span><% } %></li>
+        <li>Employeur: <%= userInfos.employer %></li>
+        <li>Github : <% if (userInfos.github) { %><%= userInfos.github %><% } else { %>Non renseigné<% } %></li>
+      </ul>
+      <div class="notification warning">
+        ℹ️&nbsp;Une erreur ? Vous pouvez modifier la fiche sur Github <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> ici</a>.
+      </div>
+    <% } else { %>
+      <p>
+        Inexistante (nécessaire pour créer le compte mail)<br>
+        <i>Vous pouvez créer la fiche sur Github</i>
+      </p>
+    <% } %>
+  </div>
+
+  <div class="panel">
+    <h4>Compte mail</h4>
+
+    <% if (emailInfos) { %>
+      <%= emailInfos.email %> ( <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>">Webmail</a> )
+      <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
+      <% if (canChangePassword) { %>
+        <form action="/users/<%= userInfos.id %>/password" method="POST">
+          <fieldset>
+            <legend>Changer le mot de passe POP/IMAP/SMTP</legend>
+            <label>Nouveau mot de passe : </label><br>
+            <input name="new_password" type="password" minlength="9" required><br>
+            <i>(de 9 à 30 caractères, pas d'accents, pas d'espace au début ou à la fin)</i><br>
+            <button>Changer</button>
+          </fieldset>
         </form>
       <% } %>
-    </li>
-  <% }) %>
-  <% if (redirections.length === 0) { %>
-   <li>Aucune</li>
-  <% } %>
-</ul>
+    <% } else { %>
+      <div><strong>Inexistant</strong></div>
+    <% } %>
 
-<% if (canCreateRedirection) { %>
-  <form action="/users/<%= userInfos.id %>/redirections" method="POST">
-    <fieldset>
-      <legend>Créer une redirection email</legend>
-      <label>Rediriger les mails vers : </label>
-      <input name="to_email" type="email" required><br>
-      <input type="checkbox" name="keep_copy" value="true"> <label>Garder une copie des emails si un compte existe</label><br>
-      <button>Créer la redirection</button>
-    </fieldset>
-  </form>
-<% } else { %>
-  <% if (isExpired) { %>
+    <% if (canCreateEmail) { %>
+      <br>
+      <form action="/users/<%= userInfos.id %>/email" method="POST">
+      <fieldset>
+        <legend>Créer le compte mail</legend>
+        <div class="form__group">
+          <label>Envoyer le mot de passe à cette adresse mail : </label>
+          <input name="to_email" type="email" required>
+        </div>
+        <button class="button" type="submit">Créer un compte</button>
+        </fieldset>
+      </form>
+    <% } else { %>
+      <% if (isExpired) { %>
+        <p>
+          <i>Le compte <%= userInfos.id %> est expiré</i>
+        </p>
+      <% } else { %>
+        <p>
+          <i>Seul <%= userInfos.id %> peut créer ou modifier ce compte email</i>
+        </p>
+      <% } %>
+    <% } %>
+  </div>
+
+  <div class="panel">
+    <h4>Redirections</h4>
+
+    <ul>
+      <% redirections.forEach(function(redirection) { %>
+        <li>
+          <%= redirection.from %> vers <%= redirection.to %>
+          <% if (canCreateRedirection) { %>
+            <form action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
+              <button class="button small margin-0" type="submit">Supprimer</button>
+            </form>
+          <% } %>
+        </li>
+      <% }) %>
+      <% if (redirections.length === 0) { %>
+        <li><strong>Aucune</strong></li>
+      <% } %>
+    </ul>
+
+    <% if (canCreateRedirection) { %>
+      <br>
+      <form action="/users/<%= userInfos.id %>/redirections" method="POST">
+        <fieldset>
+          <legend>Créer une redirection email</legend>
+          <div class="form__group">
+            <label>Rediriger les mails vers : </label>
+            <input name="to_email" type="email" required><br>
+          </div>
+          <div class="input__group">
+            <input type="checkbox" name="keep_copy" value="true"> <label>Garder une copie des emails si un compte existe</label>
+          </div>
+          <button class="button" type="submit">Créer la redirection</button>
+        </fieldset>
+      </form>
+    <% } else { %>
+      <% if (isExpired) { %>
+        <p>
+          <i>Le compte <%= userInfos.id %> est expiré</i>
+        </p>
+      <% } else { %>
+        <p>
+          <i>Seul <%= userInfos.id %> peut créer ou modifier les redirections</i>
+        </p>
+      <% } %>
+    <% } %>
+  </div>
+
+  <% if (userInfos) { %>
+  <div class="panel">
+    <h4>Marrainage</h4>
     <p>
-      <i>Le compte <%= userInfos.id %> est expiré</i>
+      <form action="/marrainage" method="POST">
+        <fieldset>
+          <legend>Chercher un·e marrain·e</legend>
+          <div class="form__group">
+            <label>En appuyant sur ce bouton, une personne aléatoire sera invité·e à devenir la ou le marrain·e de <%= userInfos.fullname %>.</label>
+            <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+          </div>
+          <button class="button" type="submit">Chercher un·e marrain·e</button>
+        </fieldset>
+      </form>
     </p>
-  <% } else { %>
-    <p>
-      <i>Seul <%= userInfos.id %> peut créer ou modifier les redirections</i>
-    </p>
+  </div>
   <% } %>
-<% } %>
-<% if (userInfos) { %>
-<h2>Marrainage</h2>
-<p>
-  <form action="/marrainage" method="POST">
-    <fieldset>
-      <legend>Chercher un·e marrain·e</legend>
-      <label>En appuyant sur ce bouton, une personne aléatoire sera invité·e à devenir la ou le marrain·e de <%= userInfos.fullname %>.</label><br>
-      <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
-      <button>Chercher un·e marrain·e</button>
-    </fieldset>
-  </form>
-</p>
-<% } %>
 
 <%- include('partials/footer'); -%>

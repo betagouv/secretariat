@@ -39,7 +39,7 @@ describe("Users", () => {
         .end((err, res) => {
           res.text.should.include('<form action="/users">')
           res.text.should.include('<input name="id"')
-          res.text.should.include('<button>')
+          res.text.should.include('<button class="button" type="submit">')
           done();
         })
     });
