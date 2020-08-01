@@ -1,30 +1,48 @@
 <%- include('partials/header'); -%>
 
-<h1>Connexion au secrétariat de BetaGouv</h1>
+<div class="container container-small">
 
-<% if (errors) { %>
-  <p class="text-error"><%= errors %><p>
-<% } %>
+  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
 
-<% if (message) { %>
-  <p><%= message %><p>
-<% } else { %>
-  <form action="/login" method="POST">
-    <p>
-      <label><strong>Saisir ton prenom.nom pour te connecter</strong><br>
-      <input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">@<%= domain %></label>
-    </p>
-    <p>
-      <button>Connexion avec mon email @<%= domain %></button><br>
-      <i>Un email sera envoyé à ton adresse pour te connecter</i>
-    </p>
-  </form>
-  <hr>
   <p>
-    ℹ️ Tu peux te connecter si tu as une adresse en @<%= domain %>.<br>
-    Tu n'as pas encore d'adresse @<%= domain %> ? Tu peux demander à une autre personne qui en a une de te la créer.
-    Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails" target="_blank" title="lien vers la documentation">ici</a>.
+    Le secretariat te permet de gérer ton compte email (mot de passe, redirections, etc.).
+    Tu peux aussi créer une adresse pour un nouveau membre de la communauté.
   </p>
-<% } %>
+
+  <div class="panel margin-top-m">
+    <h4>Se connecter</h4>
+
+    <% if (errors) { %>
+      <p class="text-error"><%= errors %><p>
+    <% } %>
+
+    <% if (message) { %>
+      <p><%= message %><p>
+    <% } else { %>
+      <form action="/login" method="POST">
+        <div class="input__group">
+          <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">
+          <span class="padding-10">@<%= domain %></span>
+        </div>
+        <button class="button" type="submit">Recevoir le lien de connexion</button>
+        <span>Ce lien sera valable 1h.</span>
+      </form>
+    <% } %>
+  </div>
+
+  <div class="panel border-left-primary">
+    <div>
+      ℹ️ <strong>Tu n'as pas encore d'adresse @<%= domain %> ?</strong><br>
+      Tu peux demander à une autre personne qui en a une de te la créer.
+      Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails#creer-un-compte-email-a-un-nouveau-membre" target="_blank" title="lien vers la documentation pour créer un compte email">ici</a>.
+    </div>
+    <br>
+    <div>
+      ℹ️ <strong>Tu as une adresse @<%= domain %>, mais tu as perdu ton mot de passe ?</strong><br>
+      Demande de l'aide sur le Slack #incubateur-secretariat. Un des administrateurs du compte OVH pourra t'aider.
+      Plus d'informations pour te connecter à ta boite mail <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">ici</a>.
+    </div>
+  </div>
+</div>
 
 <%- include('partials/footer'); -%>
