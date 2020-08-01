@@ -5,6 +5,11 @@ body {
   /* font-family: Roboto, Helvetica, Arial, sans-serif; */
 }
 
+.section {
+  padding-top: 2.5em;
+  padding-bottom: 2.5em;
+}
+
 
 /* custom css */
 
@@ -12,6 +17,9 @@ body {
   width: 50%;
 }
 
+.margin-0 {
+  margin: 0 !important;
+}
 .margin-top-m {
   margin-top: var(--space-m);
 }

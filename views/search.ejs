@@ -1,31 +1,56 @@
 <%- include('partials/header'); -%>
 
-<form action="/users">
-  <p>
-    <label><strong>Rechercher un nom</strong></label><br>
-    <input name="id" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids"><br>
-    <datalist id="user_ids">
-      <% users.forEach(function(user) { %>
-        <option value="<%= user.id %>">
-      <% }) %>
-    </datalist>
-    <i>Si le nom n'apparait pas en autocompletion, c'est que l'utilisateur(trice) n'existe pas sur <%= domain %></i>
-  </p>
-  <p>
-    <button>Vérifier l'utilisateur(trice)</button>
-  </p>
-</form>
+<div class="container container-small">
 
-<hr />
-<form action="/marrainage" method="POST">
+  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
+
   <p>
-    <label><strong>Chercher un·e marrain·e</strong><br>
-    <label>En appuyant sur ce bouton, une personne aléatoire sera invité·e à devenir ta ou ton marrain·e.</label><br>
-    <input type="hidden" name="newcomerId" value="<%= currentUser.id %>">
-    <p>
-      <button>Chercher un·e marrain·e</button>
-    </p>
+    Bienvenue <%= currentUser.id %> !
   </p>
-</form>
+
+  <div class="panel margin-top-m">
+    <h4>Gérer mon compte</h4>
+    <a class="button margin-0" href="/users/<%= currentUser.id %>" title="Lien vers la gestion de mon compte">Accéder à la gestion de mon compte</a>
+  </div>
+
+  <div class="panel">
+    <h4>Créer un compte email pour un nouveau membre de la communauté</h4>
+    <form action="/users">
+      <div class="form__group">
+        <!-- <label for="id"><strong>Rechercher un nom</strong></label> -->
+        <div class="input__group">
+          <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids">
+          <span class="padding-10">@<%= domain %></span>
+        </div>
+        <datalist id="user_ids">
+          <% users.forEach(function(user) { %>
+            <option value="<%= user.id %>">
+          <% }) %>
+        </datalist>
+      </div>
+      <button class="button" type="submit">Vérifier l'utilisateur(trice)</button>
+      <br><br>
+      <div class="notification warning">
+        ℹ️&nbsp;Si le nom n'apparait pas en autocompletion, c'est que l'utilisateur(trice) n'existe pas sur <%= domain %>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h4>Chercher un·e marrain·e</h4>
+    <form action="/marrainage" method="POST">
+      <div class="input__group">
+        <label>En appuyant sur ce bouton, une personne aléatoire sera invité·e à devenir ton ou ta marrain·e.</label><br>
+        <input type="hidden" name="newcomerId" value="<%= currentUser.id %>">
+      </div>
+      <button class="button" type="submit">Chercher un·e marrain·e</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h4>Voir tous les comptes email @<%= domain %></h4>
+    <a class="button margin-0" href="/emails" title="Lien vers la liste des comptes email">Accéder à la liste</a>
+  </div>
+</div>
 
 <%- include('partials/footer'); -%>

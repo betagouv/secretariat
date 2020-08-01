@@ -79,7 +79,7 @@ module.exports.postLogin = async function (req, res) {
     const result = await sendLoginEmail(req.body.id, domain);
 
     renderLogin(req, res, {
-      message: `Email de connexion envoyé pour ${req.body.id}.`
+      message: `Email de connexion envoyé pour <strong>${req.body.id}</strong>`
     });
   } catch (err) {
     console.error(err);

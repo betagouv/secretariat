@@ -17,7 +17,7 @@
     <% } %>
 
     <% if (message) { %>
-      <p><%= message %><p>
+      <div class="notification"><%- message %></div>
     <% } else { %>
       <form action="/login" method="POST">
         <div class="input__group">
@@ -32,13 +32,13 @@
 
   <div class="panel border-left-primary">
     <div>
-      ℹ️ <strong>Tu n'as pas encore d'adresse @<%= domain %> ?</strong><br>
+      ℹ️&nbsp;<strong>Tu n'as pas encore d'adresse @<%= domain %> ?</strong><br>
       Tu peux demander à une autre personne qui en a une de te la créer.
       Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails#creer-un-compte-email-a-un-nouveau-membre" target="_blank" title="lien vers la documentation pour créer un compte email">ici</a>.
     </div>
     <br>
     <div>
-      ℹ️ <strong>Tu as une adresse @<%= domain %>, mais tu as perdu ton mot de passe ?</strong><br>
+      ℹ️&nbsp;<strong>Tu as une adresse @<%= domain %>, mais tu as perdu ton mot de passe ?</strong><br>
       Demande de l'aide sur le Slack #incubateur-secretariat. Un des administrateurs du compte OVH pourra t'aider.
       Plus d'informations pour te connecter à ta boite mail <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">ici</a>.
     </div>
