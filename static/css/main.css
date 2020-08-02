@@ -61,16 +61,12 @@ a[target="_blank"]::after {
   border-left: 7.5px solid var(--theme-primary);
 }
 
-.text-error {
-  color: var(--red);
-  font-weight: bold;
-}
-
 
 /* media */
 
 @media (max-width: 600px) {
-  body, #message { margin-top: 0; background: white; box-shadow: none; }
-  body { border-top: 16px solid #067b94; }
+  body {
+    border-top: 16px solid #067b94;
+  }
 }
 

@@ -5,7 +5,7 @@
   <h4 class="subtitle"><%= userInfos.id %></h4>
 
   <% if (errors.length) { %>
-    <p class="text-error"><%= errors %><p>
+    <div class="notification error"><%= errors %></div>
   <% } %>
 
   <% if (messages.length) { %>
@@ -18,7 +18,7 @@
       <ul>
         <li>Nom: <%= userInfos.fullname %></li>
         <li>Date de début: <%= userInfos.start %></li>
-        <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-error">Expiré !<span><% } %></li>
+        <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-red">Expiré !<span><% } %></li>
         <li>Employeur: <%= userInfos.employer %></li>
         <li>Github : <% if (userInfos.github) { %><a href="https://github.com/<%= userInfos.github %>" target="_blank"><%= userInfos.github %></a><% } else { %>Non renseigné<% } %></li>
       </ul>
