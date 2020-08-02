@@ -2,15 +2,13 @@
 
 <div class="container container-small">
 
-  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
-
   <p>
     Bienvenue <%= currentUser.id %> !
   </p>
 
   <div class="panel margin-top-m">
     <h4>Gérer mon compte</h4>
-    <a class="button margin-0" href="/users/<%= currentUser.id %>" title="Lien vers la gestion de mon compte">Accéder à la gestion de mon compte</a>
+    <a class="button no-margin" href="/users/<%= currentUser.id %>" title="Lien vers la gestion de mon compte">Accéder à la gestion de mon compte</a>
   </div>
 
   <div class="panel">
@@ -49,7 +47,7 @@
 
   <div class="panel">
     <h4>Voir tous les comptes email @<%= domain %></h4>
-    <a class="button margin-0" href="/emails" title="Lien vers la liste des comptes email">Accéder à la liste</a>
+    <a class="button no-margin" href="/emails" title="Lien vers la liste des comptes email">Accéder à la liste</a>
   </div>
 </div>
 

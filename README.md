@@ -39,6 +39,12 @@ L'application sera disponible sur `http://localhost:8100` (8100 est le port par 
    Running on port: 8100
 ```
 
+### Lancer les tests
+
+```
+» npm run test
+```
+
 ### Générer clé API OVH
 
 _Si vous n'avez pas les droits pour générer les credentials OVH, postez un message sur [#incubateur-amélioration-secretariat](https://startups-detat.slack.com/archives/C017J6CUN2V)._

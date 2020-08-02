@@ -2,8 +2,6 @@
 
 <div class="container container-small">
 
-  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
-
   <h4 class="subtitle"><%= userInfos.id %></h4>
 
   <% if (errors.length) { %>
@@ -88,7 +86,7 @@
           <%= redirection.from %> vers <%= redirection.to %>
           <% if (canCreateRedirection) { %>
             <form action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
-              <button class="button small margin-0" type="submit">Supprimer</button>
+              <button class="button small no-margin" type="submit">Supprimer</button>
             </form>
           <% } %>
         </li>

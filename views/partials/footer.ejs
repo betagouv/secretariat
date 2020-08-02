@@ -1,10 +1,11 @@
       </section>
     </main>
-    <footer>
+    <footer id="footer">
       <% if (currentUser) { %>
-        <p id="bottom">
-          <a href="/users">Accueil</a> / Utilisateur : <a href="/users/<%= currentUser.id %>"><%= currentUser.id %></a> / <a href="/emails">Tous les emails</a> / <a href="/logout">Déconnexion</a>
-        </p>
+        <a href="/users">Accueil</a> /
+        Utilisateur : <a href="/users/<%= currentUser.id %>"><%= currentUser.id %></a> /
+        <a href="/emails">Tous les emails</a> /
+        <a href="/logout">Se déconnecter</a>
       <% } %>
     </footer>
   </body>

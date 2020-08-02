@@ -36,8 +36,8 @@ async function sendLoginEmail(id, domain) {
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
-      <a href="${url}">${url}
-      </a>`;
+      <a href="${url}">${url}</a>
+      <p>🤖 Le secrétariat</p>`;
 
   try {
     await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
