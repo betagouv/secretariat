@@ -47,7 +47,7 @@ fieldset {
 }
 
 .text-error {
-  color: red;
+  color: var(--red);
   font-weight: bold;
 }
 

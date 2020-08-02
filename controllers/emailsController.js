@@ -57,7 +57,7 @@ module.exports.getEmails = async function (req, res) {
     res.render('emails', {
       currentUser: req.user,
       emails,
-      errors: undefined
+      errors: []
     });
   } catch (err) {
     console.error(err);

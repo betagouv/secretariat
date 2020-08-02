@@ -3,40 +3,46 @@
 <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'>
 <script src="/static/sortable/sortable.js"></script>
 <style media="screen">
-  #message { max-width: 1250px; overflow: scroll; }
+  .panel { overflow: scroll; }
 </style>
 
-<% if (errors) { %>
-  <p class="text-error"><%= errors %><p>
-<% } %>
+<div class="container">
 
-<table class="sortable">
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Fiche sur Github</th>
-      <th>Date de fin OK</th>
-      <th>Compte Email</th> 
-      <th>Redirections</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% emails.forEach(function(email) { %>
+  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
+
+  <% if (errors.length) { %>
+    <p class="text-error"><%= errors %><p>
+  <% } %>
+
+  <div class="panel">
+  <table class="sortable"><!-- why not use 'table' class as well ? conflicts 'sortable' class (thead) -->
+    <thead>
       <tr>
-        <td><%= email.email %></td>
-        <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-        <td><% if (email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-        <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-        <td>
-          <ul>
-            <% email.redirections.forEach(function(redirection) { %>
-              <li><%= redirection %></li>
-            <% }) %>
-          </ul>
-        </td> 
+        <th>Email</th>
+        <th>Fiche sur Github</th>
+        <th>Date de fin OK</th>
+        <th>Compte Email</th> 
+        <th>Redirections</th>
       </tr>
-    <% }) %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% emails.forEach(function(email) { %>
+        <tr>
+          <td><%= email.email %></td>
+          <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+          <td><% if (email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+          <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+          <td>
+            <ul>
+              <% email.redirections.forEach(function(redirection) { %>
+                <li><%= redirection %></li>
+              <% }) %>
+            </ul>
+          </td> 
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  </div>
 
 <%- include('partials/footer'); -%>

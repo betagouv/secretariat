@@ -9,15 +9,15 @@
     Tu peux aussi créer une adresse pour un nouveau membre de la communauté.
   </p>
 
+  <% if (errors.length) { %>
+    <p class="text-error"><%= errors %><p>
+  <% } %>
+
   <div class="panel margin-top-m">
     <h4>Se connecter</h4>
 
-    <% if (errors) { %>
-      <p class="text-error"><%= errors %><p>
-    <% } %>
-
-    <% if (message) { %>
-      <div class="notification"><%- message %></div>
+    <% if (messages.length) { %>
+      <div class="notification"><%- messages %></div>
     <% } else { %>
       <form action="/login" method="POST">
         <div class="input__group">

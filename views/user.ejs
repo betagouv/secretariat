@@ -6,12 +6,12 @@
 
   <h4 class="subtitle"><%= userInfos.id %></h4>
 
-  <% if (errors) { %>
+  <% if (errors.length) { %>
     <p class="text-error"><%= errors %><p>
   <% } %>
 
-  <% if (messages) { %>
-    <p><strong><i><%= messages %></i></strong></p>
+  <% if (messages.length) { %>
+    <div class="notification"><%- messages %></div>
   <% } %>
 
   <div class="panel margin-top-m">
@@ -22,7 +22,7 @@
         <li>Date de début: <%= userInfos.start %></li>
         <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-error">Expiré !<span><% } %></li>
         <li>Employeur: <%= userInfos.employer %></li>
-        <li>Github : <% if (userInfos.github) { %><%= userInfos.github %><% } else { %>Non renseigné<% } %></li>
+        <li>Github : <% if (userInfos.github) { %><a href="https://github.com/<%= userInfos.github %>" target="_blank"><%= userInfos.github %></a><% } else { %>Non renseigné<% } %></li>
       </ul>
       <div class="notification warning">
         ℹ️&nbsp;Une erreur ? Vous pouvez modifier la fiche sur Github <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> ici</a>.
@@ -70,13 +70,11 @@
       </form>
     <% } else { %>
       <% if (isExpired) { %>
-        <p>
-          <i>Le compte <%= userInfos.id %> est expiré</i>
-        </p>
+        <p class="text-error">Le compte <%= userInfos.id %> est expiré.</p>
       <% } else { %>
-        <p>
-          <i>Seul <%= userInfos.id %> peut créer ou modifier ce compte email</i>
-        </p>
+        <div class="notification warning">
+          Seul <%= userInfos.id %> peut créer ou modifier ce compte email.
+        </div>
       <% } %>
     <% } %>
   </div>
@@ -117,13 +115,11 @@
       </form>
     <% } else { %>
       <% if (isExpired) { %>
-        <p>
-          <i>Le compte <%= userInfos.id %> est expiré</i>
-        </p>
+        <p class="text-error">Le compte <%= userInfos.id %> est expiré.</p>
       <% } else { %>
-        <p>
-          <i>Seul <%= userInfos.id %> peut créer ou modifier les redirections</i>
-        </p>
+        <div class="notification warning">
+          Seul <%= userInfos.id %> peut créer ou modifier les redirections.
+        </div>
       <% } %>
     <% } %>
   </div>
