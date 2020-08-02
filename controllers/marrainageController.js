@@ -1,7 +1,8 @@
+const jwt = require('jsonwebtoken');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const utils = require('./utils')
-const jwt = require('jsonwebtoken');
+const utils = require('./utils');
+
 
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();

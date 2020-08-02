@@ -1,13 +1,17 @@
 <%- include('partials/header'); -%>
 
-<% if (errors) { %>
-    <p class="text-error"><%= errors %><p>
-<% } else { %>  
-    <h1>Votre décision a été prise en compte</h1>
-<% } %>
+<div class="container container-small">
 
-<a href="/">
-    <button>
-        Accéder au sécretariat
-    </button>
-</a>
+  <h3>🤖&nbsp;Secretariat automatique de beta.gouv</h3>
+
+  <% if (errors) { %>
+    <p class="text-error"><%= errors %><p>
+  <% } else { %>  
+    <div class="notification">
+      Votre décision a été prise en compte 👌
+    </div>
+  <% } %>
+
+  <a class="button" href="/">Accéder à l'accueil du sécretariat</a>
+
+</div>
