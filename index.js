@@ -2,7 +2,6 @@ require('dotenv').config();
 const config = require('./config');
 const path = require('path');
 const express = require('express');
-const cons = require('consolidate');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const expressJWT = require('express-jwt');
