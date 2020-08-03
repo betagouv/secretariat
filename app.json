@@ -1,0 +1,45 @@
+{
+  "name": "secretariat",
+  "env": {
+    "OVH_APP_KEY": {
+      "required": true
+    },
+    "OVH_APP_SECRET": {
+      "required": true
+    },
+    "OVH_CONSUMER_KEY": {
+      "required": true
+    },
+    "SESSION_SECRET": {
+      "required": true
+    },
+    "MAIL_SERVICE": {
+      "required": true
+    },
+    "MAIL_USER": {
+      "required": true
+    },
+    "MAIL_PASS": {
+      "required": true
+    },
+    "SECURE": {
+      "required": true
+    },
+    "SLACK_WEBHOOK_URL": {
+      "required": true
+    },
+    "SECRETARIAT_DOMAIN": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

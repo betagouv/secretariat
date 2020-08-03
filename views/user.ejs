@@ -1,0 +1,128 @@
+<%- include('partials/header'); -%>
+
+<style media="screen">
+#message { max-width: 500px; }
+</style>
+
+<h1><%= userInfos.id %></h1>
+
+<% if (errors) { %>
+  <p class="text-error"><%= errors %><p>
+<% } %>
+
+<% if (messages) { %>
+  <p><strong><i><%= messages %></i></strong></p>
+<% } %>
+
+<h2>Fiche <%= domain %></h2>
+<% if (userInfos) { %>
+  <ul>
+    <li>Nom: <%= userInfos.fullname %></li>
+    <li>Date de début: <%= userInfos.start %></li>
+    <li>Date de fin: <%= userInfos.end %> <% if (isExpired) { %><span class="text-error">Expiré !<span><% } %></li>
+    <li>Employeur: <%= userInfos.employer %></li>
+    <li>Github : <% if (userInfos.github) { %><%= userInfos.github %><% } else { %>Non renseigné<% } %></li>
+  </ul>
+  <p>
+    <i>Vous pouvez modifier la fiche sur Github : <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md">Par ici</a></i>
+  </p>
+<% } else { %>
+  <p>
+    Inexistante (nécessaire pour créer le compte mail)<br>
+    <i>Vous pouvez créer la fiche sur Github</i>
+  </p>
+<% } %>
+
+<h2>Compte mail</h2>
+<% if (emailInfos) { %>
+  <%= emailInfos.email %> ( <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>">Webmail</a> )
+  <p>Comment utiliser son compte email : <a href="https://docs.ovh.com/fr/emails/">Infos et tutos de configuration OVH</a></p>
+  <% if (canChangePassword) { %>
+    <form action="/users/<%= userInfos.id %>/password" method="POST">
+      <fieldset>
+        <legend>Changer le mot de passe POP/IMAP/SMTP</legend>
+        <label>Nouveau mot de passe : </label><br>
+        <input name="new_password" type="password" minlength="9" required><br>
+        <i>(de 9 à 30 caractères, pas d'accents, pas d'espace au début ou à la fin)</i><br>
+        <button>Changer</button>
+      </fieldset>
+    </form>
+  <% } %>
+<% } else { %>
+  <p>Inexistant</p>
+<% } %>
+
+<% if (canCreateEmail) { %>
+  <form action="/users/<%= userInfos.id %>/email" method="POST">
+  <fieldset>
+    <legend>Créer le compte mail</legend>
+    <label>Envoyer le mot de passe à cette adresse mail : </label><br>
+    <input name="to_email" type="email" required><br>
+    <button>Créer un compte</button>
+    </fieldset>
+  </form>
+<% } else { %>
+  <% if (isExpired) { %>
+    <p>
+      <i>Le compte <%= userInfos.id %> est expiré</i>
+    </p>
+  <% } else { %>
+    <p>
+      <i>Seul <%= userInfos.id %> peut créer ou modifier ce compte email</i>
+    </p>
+  <% } %>
+<% } %>
+
+<h2>Redirections</h2>
+<ul>
+  <% redirections.forEach(function(redirection) { %>
+    <li>
+      <%= redirection.from %> vers <%= redirection.to %>
+      <% if (canCreateRedirection) { %>
+        <form action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
+          <button>Supprimer</button>
+        </form>
+      <% } %>
+    </li>
+  <% }) %>
+  <% if (redirections.length === 0) { %>
+   <li>Aucune</li>
+  <% } %>
+</ul>
+
+<% if (canCreateRedirection) { %>
+  <form action="/users/<%= userInfos.id %>/redirections" method="POST">
+    <fieldset>
+      <legend>Créer une redirection email</legend>
+      <label>Rediriger les mails vers : </label>
+      <input name="to_email" type="email" required><br>
+      <input type="checkbox" name="keep_copy" value="true"> <label>Garder une copie des emails si un compte existe</label><br>
+      <button>Créer la redirection</button>
+    </fieldset>
+  </form>
+<% } else { %>
+  <% if (isExpired) { %>
+    <p>
+      <i>Le compte <%= userInfos.id %> est expiré</i>
+    </p>
+  <% } else { %>
+    <p>
+      <i>Seul <%= userInfos.id %> peut créer ou modifier les redirections</i>
+    </p>
+  <% } %>
+<% } %>
+<% if (userInfos) { %>
+<h2>Marrainage</h2>
+<p>
+  <form action="/marrainage" method="POST">
+    <fieldset>
+      <legend>Chercher un·e marrain·e</legend>
+      <label>En appuyant sur ce bouton, une personne aléatoire sera invité·e à devenir la ou le marrain·e de <%= userInfos.fullname %>.</label><br>
+      <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+      <button>Chercher un·e marrain·e</button>
+    </fieldset>
+  </form>
+</p>
+<% } %>
+
+<%- include('partials/footer'); -%>
