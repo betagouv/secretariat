@@ -1,7 +1,8 @@
+const jwt = require('jsonwebtoken');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const utils = require('./utils')
-const jwt = require('jsonwebtoken');
+const utils = require('./utils');
+
 
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
@@ -58,7 +59,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
     </p>
 
     <p>Bonne journée,</p>
-    <p>🤖 Le sécretariat</p>
+    <p>🤖 Le secrétariat</p>
   `;
 
   try {
@@ -102,7 +103,7 @@ module.exports.acceptRequest = async function (req, res) {
       <p>Vous trouverez plus d'informations sur le marrainage sur la <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">documentation de l'incubateur</a>.</p>
       <p>Vous êtes tou.s.tes les deux en copie de cet email, à vous de jouer ! </p>
       <p>Bonne journée,</p>
-      <p>🤖 Le sécretariat</p>
+      <p>🤖 Le secrétariat</p>
     `;
 
     try {
@@ -134,7 +135,7 @@ module.exports.declineRequest = async function (req, res) {
       <p>Malheureusement, ${declinedOnboarder.fullname} n'est pas disponible en ce moment.</p>
       <p>Nous avons envoyé une demande de marrainage à ${onboarder.fullname}.</p>
       <p>Bonne journée,</p>
-      <p>🤖 Le sécretariat</p>
+      <p>🤖 Le secrétariat</p>
     `;
 
     try {

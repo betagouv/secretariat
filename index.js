@@ -10,8 +10,8 @@ const session = require('express-session');
 const flash = require('connect-flash');
 
 indexController = require('./controllers/indexController');
-logoutController = require('./controllers/logoutController');
 loginController = require('./controllers/loginController');
+logoutController = require('./controllers/logoutController');
 emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
 marrainageController = require('./controllers/marrainageController');

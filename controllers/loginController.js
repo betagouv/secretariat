@@ -7,11 +7,11 @@ const utils = require('./utils');
 
 function renderLogin(req, res, params) {
   // init params
-  params.currentUser = req.user;
+  params.currentUser = undefined;
   params.domain = config.domain;
   // enrich params
-  params.errors = params.errors || undefined;
-  params.message = params.message || undefined;
+  params.errors = req.flash('error');
+  params.messages = req.flash('message');
   // render
   return res.render('login', params);
 }
@@ -36,8 +36,8 @@ async function sendLoginEmail(id, domain) {
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
-      <a href="${url}">${url}
-      </a>`;
+      <a href="${url}">${url}</a>
+      <p>🤖 Le secrétariat</p>`;
 
   try {
     await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
@@ -49,19 +49,7 @@ async function sendLoginEmail(id, domain) {
 }
 
 module.exports.getLogin = async function (req, res) {
-  try {
-    const users = await BetaGouv.usersInfos();
-
-    renderLogin(req, res, { errors: req.flash('error'), users });
-  } catch (err) {
-    console.error(err);
-
-    renderLogin(req, res, {
-      errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
-      ]
-    });
-  }
+  renderLogin(req, res, {});
 }
 
 module.exports.postLogin = async function (req, res) {
@@ -79,7 +67,7 @@ module.exports.postLogin = async function (req, res) {
     const result = await sendLoginEmail(req.body.id, domain);
 
     renderLogin(req, res, {
-      message: `Email de connexion envoyé pour ${req.body.id}.`
+      messages: req.flash('message', `Email de connexion envoyé pour <strong>${req.body.id}</strong>`)
     });
   } catch (err) {
     console.error(err);

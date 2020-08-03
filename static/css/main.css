@@ -1,0 +1,72 @@
+/* override template.min.css */
+
+body {
+  background-color: var(--theme-background-grey);
+  /* font-family: Roboto, Helvetica, Arial, sans-serif; */
+}
+
+.section {
+  padding-top: 2.5em;
+  padding-bottom: 2.5em;
+}
+
+fieldset {
+  /* border: inherit; */
+  border: 2px groove rgb(192, 192, 192);
+  /* margin: inherit; */
+  margin-left: 2px;
+  margin-right: 2px;
+  /* padding: inherit; */
+  padding-top: 0.35em;
+  padding-bottom: 0.625em;
+  padding-left: 0.75em;
+  padding-right: 0.75em;
+  /* width: inherit; */
+}
+
+
+/* custom css */
+
+/* adds a 'opens in new tab' icon */
+a[target="_blank"]::after {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+  margin: 0 3px 0 5px;
+}
+
+#header, #footer {
+  /* color: rgba(0,0,0,0.4); */
+  margin: 1em;
+  text-align: center;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+.no-margin {
+  margin: 0 !important;
+}
+.margin-top-m {
+  margin-top: var(--space-m);
+}
+
+.no-padding {
+  padding: 0;
+}
+.padding-10 {
+  padding: 10px;
+}
+
+.border-left-primary {
+  border-left: 7.5px solid var(--theme-primary);
+}
+
+
+/* media */
+
+@media (max-width: 600px) {
+  body {
+    border-top: 16px solid #067b94;
+  }
+}
+
