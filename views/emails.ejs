@@ -28,7 +28,7 @@
         <tr>
           <td><%= email.email %></td>
           <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-          <td><% if (email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+          <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
           <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
           <td>
             <ul>
