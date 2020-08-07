@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/static', express.static('static'));
-app.use('/static/css/template.data.gouv.fr/dist', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist')));
+app.use('/~', express.static(path.join(__dirname, 'node_modules'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000 } })); // Only used for Flash not safe for others purposes
