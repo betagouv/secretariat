@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
-
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
-
+const db = require('../db');
+const crypto = require('crypto');
 
 function renderLogin(req, res, params) {
   // init params
@@ -32,7 +32,7 @@ async function sendLoginEmail(id, domain) {
   }
 
   const email = utils.buildBetaEmail(id);
-  const token = jwt.sign({ id: id }, config.secret, { expiresIn: '1 hours' });
+  const token = crypto.randomBytes(256).toString('base64');
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
@@ -43,8 +43,22 @@ async function sendLoginEmail(id, domain) {
     await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
   } catch (err) {
     console.error(err);
-
     throw new Error("Erreur d'envoi de mail à ton adresse.");
+  }
+
+  try {
+    let expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 1);
+    await db.query('INSERT INTO login_tokens (token, username, email, expires_at) VALUES ($1, $2, $3, $4)', [
+      token,
+      id,
+      email,
+      expirationDate
+    ]);
+    console.log(`Login token créé pour ${email}`);
+  } catch (err) {
+    console.error(`Erreur de sauvegarde du token : ${err}`);
+    throw new Error(`Erreur de sauvegarde du token`);
   }
 }
 
