@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "setup": "node ./db/setup",
     "dev": "nodemon index.js",
     "test": "mocha tests/*.js --exit"
   },
@@ -29,6 +30,7 @@
     "jsonwebtoken": "^8.2.2",
     "nodemailer": "^6.4.11",
     "ovh": "^2.0.1",
+    "pg": "^8.3.0",
     "promise-memoize": "^1.2.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"

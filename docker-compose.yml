@@ -1,5 +1,10 @@
 version: '3'
 services:
+  db:
+    image: postgres
+    env_file:
+      - ../.env.secretariat
+
   web:
     build: .
     ports:
@@ -10,3 +15,5 @@ services:
     env_file:
       - ../.env.secretariat
     command: nodemon --inspect=0.0.0.0:9229 ./index.js
+    depends_on: 
+      - db

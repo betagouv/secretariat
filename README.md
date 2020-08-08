@@ -16,15 +16,24 @@ Le secrétariat de l’incubateur
    - `MAIL_PASS`
    - `SECURE` - _true_ si https sinon _false_
    - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
+   - `PGUSER`
+   - `PGPASSWORD`
+   - `PGHOST`
+   - `PGPORT`
+   - `PGDATABASE`
 
 - Variables d'environnement optionnelles :
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
    - `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
+   - `POSTGRES_PASSWORD` - Cette variable sert à lancer l'image docker de postgres et donc seulement nécessaire si Docker est utilisé pour le développement.
 
 ### Lancer en mode développement
 
+Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes :
+
 ```
 » npm install # Récupère les dépendances
+» npm run setup # Crée les tables
 » npm run dev
    ...
    Running on port: 8100
@@ -107,11 +116,12 @@ Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta
 
 ### Dev docker-compose
 
-- Récupéré les dépendences : `docker-compose run web npm install`
+- Récupérer les dépendences : `docker-compose run web npm install`
 - Lancer le service : `docker-compose up`
+- Créer les tables : `docker-compose run web npm run setup`
 - Lancer les tests : `docker-compose run web npm test`
 
 ### Dev docker sans docker-compose
 
 - Exemple pour développer dans un container :
-	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev )
+	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev)
