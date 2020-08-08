@@ -7,7 +7,7 @@
     "start": "node index.js",
     "setup": "node ./db/setup",
     "dev": "nodemon index.js",
-    "test": "mocha tests/*.js --exit"
+    "test": "mocha tests/*.js --exit --require ./tests/env-setup.js"
   },
   "repository": {
     "type": "git",
