@@ -7,6 +7,8 @@ const crypto = require('crypto');
 
 describe("Login token", () => {
 
+  const domain = `${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`
+
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     done();
@@ -18,7 +20,7 @@ describe("Login token", () => {
   });
 
   it('should be stored after login request', (done) => {
-    const userEmail = `utilisateur.nouveau@${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`;
+    const userEmail = `utilisateur.nouveau@${domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -40,7 +42,7 @@ describe("Login token", () => {
   });
 
   it('should be deleted after use', (done) => {
-    const userEmail = `utilisateur.actif@${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`;
+    const userEmail = `utilisateur.actif@${domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -69,7 +71,7 @@ describe("Login token", () => {
   });
 
   it('should only be usable once', (done) => {
-    const userEmail = `utilisateur.actif@${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`;
+    const userEmail = `utilisateur.actif@${domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -109,7 +111,7 @@ describe("Login token", () => {
   it('should not be used if expired', (done) => {
 
     // Create expired token
-    const userEmail = `utilisateur.actif@${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`;
+    const userEmail = `utilisateur.actif@${domain}`;
     const token = crypto.randomBytes(256).toString('base64');
     let expirationDate = new Date();
 
