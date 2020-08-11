@@ -33,7 +33,7 @@ Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes
 
 ```
 » npm install # Récupère les dépendances
-» npm run setup # Crée les tables
+» npm run migrate # Applique les migrations
 » npm run dev
    ...
    Running on port: 8100
@@ -101,6 +101,17 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 
 Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta.gouv.fr/api/v1.6/authors.json`)
 
+### Créer des migrations
+[KnexJS](http://knexjs.org/#Migrations) permet de créer des migrations de base de données. Un shortcut a été ajouté au `package.json` pour créer une migration :
+
+```
+npm run makeMigration <nom de la migration>
+```
+
+Pour utiliser d'autres options, vous pouvez utiliser le CLI de KnexJS avec `./node_modules/knex/bin/cli.js`.
+
+Une fois la migration créée, vous pouvez l'appliquer avec `npm run migrate`.
+
 ## Scripts pour faire des taches en local
 
 ### Générer le graphe des redirections emails
@@ -118,7 +129,7 @@ Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta
 
 - Récupérer les dépendences : `docker-compose run web npm install`
 - Lancer le service : `docker-compose up`
-- Créer les tables : `docker-compose run web npm run setup`
+- Créer les tables : `docker-compose run web npm run migrate`
 - Lancer les tests : `docker-compose run web npm test`
 
 ### Dev docker sans docker-compose

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
-const db = require('../db');
+const knex = require('../db');
 const crypto = require('crypto');
 
 function renderLogin(req, res, params) {
@@ -55,12 +55,13 @@ async function saveToken(id, token) {
   try {
     let expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
-    await db.query('INSERT INTO login_tokens (token, username, email, expires_at) VALUES ($1, $2, $3, $4)', [
-      token,
-      id,
-      email,
-      expirationDate
-    ]);
+
+    await knex('login_tokens').insert({
+      token: token,
+      username: id,
+      email: email,
+      expires_at: expirationDate
+    });
     console.log(`Login token créé pour ${email}`);
   } catch (err) {
     console.error(`Erreur de sauvegarde du token : ${err}`);

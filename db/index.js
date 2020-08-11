@@ -1,6 +1,9 @@
-const { Pool } = require('pg')
-const pool = new Pool()
-module.exports = {
-  pool: pool,
-  query: (text, params) => pool.query(text, params),
-}
+module.exports = require('knex')({
+  client: 'pg',
+  connection: {
+    host : process.env.PGHOST,
+    user : process.env.PGUSER,
+    password : process.env.PGPASSWORD,
+    database : process.env.PGDATABASE
+  }
+});

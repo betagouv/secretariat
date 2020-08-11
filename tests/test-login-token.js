@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const controllerUtils = require('../controllers/utils');
 const chai = require('chai');
 const app = require('../index');
-const db = require('../db');
+const knex = require('../db');
 const crypto = require('crypto');
 
 describe("Login token", () => {
@@ -29,15 +29,11 @@ describe("Login token", () => {
       })
 
       // Verify the token has been stored in the database
-      .then(() => {
-        return db.query('SELECT * FROM login_tokens WHERE email=$1;', [
-          userEmail
-        ]);
-      })
+      .then(() => knex('login_tokens').select().where({ email: userEmail }))
       .then(dbRes => {
-        dbRes.rowCount.should.equal(1);
-        dbRes.rows[0].email.should.equal(userEmail);
-        dbRes.rows[0].username.should.equal('utilisateur.nouveau');
+        dbRes.length.should.equal(1);
+        dbRes[0].email.should.equal(userEmail);
+        dbRes[0].username.should.equal('utilisateur.nouveau');
       })
       .then(done)
       .catch(done);
@@ -55,12 +51,8 @@ describe("Login token", () => {
       })
 
       // Extract token from the DB
-      .then(() => {
-        return db.query('SELECT * FROM login_tokens WHERE email=$1;', [
-          userEmail
-        ]);
-      })
-      .then(dbRes => dbRes.rows[0].token)
+      .then(() => knex('login_tokens').select().where({ email: userEmail }))
+      .then(dbRes => dbRes[0].token)
 
       // Use the token making a GET request
       .then(token => {
@@ -68,13 +60,9 @@ describe("Login token", () => {
       })
 
       // Ensure no tokens for this user remain
-      .then(() => {
-        return db.query('SELECT * FROM login_tokens WHERE email=$1;', [
-          userEmail
-        ]);
-      })
+      .then(() => knex('login_tokens').select().where({ email: userEmail }))
       .then((dbRes) => {
-        dbRes.rowCount.should.equal(0);
+        dbRes.length.should.equal(0);
       })
       .then(done)
       .catch(done);
@@ -92,12 +80,8 @@ describe("Login token", () => {
       })
 
       // Extract token from the DB
-      .then(() => {
-        return db.query('SELECT * FROM login_tokens WHERE email=$1;', [
-          userEmail
-        ]);
-      })
-      .then(dbRes => dbRes.rows[0].token)
+      .then(() => knex('login_tokens').select().where({ email: userEmail }))
+      .then(dbRes => dbRes[0].token)
 
       // Use the token to make a first GET request
       .then(token => {
@@ -128,12 +112,13 @@ describe("Login token", () => {
     const userEmail = `utilisateur.actif@${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`;
     const token = crypto.randomBytes(256).toString('base64');
     let expirationDate = new Date();
-    db.query('INSERT INTO login_tokens (token, username, email, expires_at) VALUES ($1, $2, $3, $4)', [
-      token,
-      "utilisateur.actif",
-      userEmail,
-      expirationDate
-    ])
+
+    knex('login_tokens').insert({
+      token: token,
+      username: "utilisateur.actif",
+      email: userEmail,
+      expires_at: expirationDate
+    })
 
     // Try to login using this expired token
     .then(() => {

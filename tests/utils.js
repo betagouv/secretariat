@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const nock = require('nock')
 const testUsers = require('./users.json')
 const { Client } = require('pg')
+const knex = require('../db/index')
 
 module.exports = {
   getJWT() {
@@ -59,48 +60,36 @@ module.exports = {
     nock.enableNetConnect()
   },
   setupTestDatabase() {
-    return new Promise((resolve, reject) => {
       const testDbName = process.env['PGDATABASE'];
-      if (!testDbName) {
-        reject(new Error('PGDATABASE environment variable not set'));
-        return;
-      }
+      if (!testDbName)
+        return new Error('PGDATABASE environment variable not set');
 
       // Postgres needs to have a connection to an existing database in order
       // to perform any request. Since our test database doesn't exist yet,
       // we need to connect to the default database to create it.
       console.log(`Creating test database ${testDbName}...`);
       const client = new Client({ database: "postgres" });
-      client.connect()
+      return client.connect()
         .then(() => client.query(`DROP DATABASE IF EXISTS ${testDbName}`, []))
         .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
         .then(() => client.end())
-        .then(() => require('../db/setup'))
-        .then(() => console.log(`Test database ${testDbName} created successfully`))
-        .then(resolve)
-        .catch((err) => reject(new Error(`Unable to create test database ${testDbName} : ${err}`)));
-    })
+        .then(() => knex.migrate.latest())
+        .then(() => console.log(`Test database ${testDbName} created successfully`));
   },
   cleanUpTestDatabase() {
-    return new Promise((resolve, reject) => {
       const testDbName = process.env['PGDATABASE'];
-      if (!testDbName) {
-        reject(new Error('PGDATABASE environment variable not set'));
-        return;
-      }
+      if (!testDbName)
+        return new Error('PGDATABASE environment variable not set');
 
       // Postgres can't remove a database in use, so we will have to
       // connect to the default database to clean up.
       console.log(`Cleaning up test database ${testDbName}...`);
       const client = new Client({ database: "postgres" });
-      const appPool = require('../db/index').pool;
-      appPool.end()
+
+      return knex.destroy()
         .then(() => client.connect())
         .then(() => client.query(`DROP DATABASE ${testDbName}`, []))
         .then(() => client.end())
-        .then(() => console.log(`Test database ${testDbName} cleaned up successfully`))
-        .then(resolve)
-        .catch((err) => reject(new Error(`Unable to clean up test database ${testDbName} : ${err}`)));
-    })
-  }
+        .then(() => console.log(`Test database ${testDbName} cleaned up successfully`));
+    }
 }

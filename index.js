@@ -8,7 +8,7 @@ const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
-const db = require('./db');
+const knex = require('./db');
 
 indexController = require('./controllers/indexController');
 loginController = require('./controllers/loginController');
@@ -39,27 +39,29 @@ app.use(async function (req, res, next) {
     return next();
 
   try {
-    const tokenDbResponse = await db.query('SELECT * FROM login_tokens WHERE token = $1 AND expires_at > $2;', [
-      req.query.token,
-      new Date()
-    ]);
+    const tokenDbResponse = await knex('login_tokens').select()
+      .where({ token: req.query.token })
+      .andWhere('expires_at', '>', new Date());
 
-    if (tokenDbResponse.rows.length !== 1) {
+    if (tokenDbResponse.length !== 1) {
       req.flash("error", "Ce lien de connexion a expiré");
       return res.redirect('/');
     }
 
-    const dbToken = tokenDbResponse.rows[0];
+    const dbToken = tokenDbResponse[0];
     if (dbToken.token !== req.query.token) {
       req.flash("error", "Ce lien de connexion a expiré");
       return res.redirect('/');
     }
 
-    await db.query("DELETE FROM login_tokens WHERE email = $1;", [dbToken.email]);
+    await knex('login_tokens')
+      .where({ email: dbToken.email })
+      .del();
+
     res.cookie('token', getJwtTokenForUser(dbToken.username));
     return res.redirect(req.path);
 
-  } catch (error) {
+  } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     next(err);
   }
