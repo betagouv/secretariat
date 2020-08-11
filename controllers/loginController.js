@@ -21,13 +21,13 @@ async function sendLoginEmail(id, domain) {
 
   if (!user) {
     throw new Error(
-      `Utilisateur(trice) ${id} inconnu(e) sur ${config.domain}. Avez-vous une fiche sur Github ?`
+      `Utilisateur·rice ${id} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur(trice) ${id} a une date de fin expiré sur Github.`
+      `Utilisateur·rice ${id} a une date de fin expiré sur Github.`
     );
   }
 
