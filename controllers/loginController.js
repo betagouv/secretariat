@@ -16,7 +16,11 @@ function renderLogin(req, res, params) {
   return res.render('login', params);
 }
 
-async function sendLoginEmail(id, domain) {
+function generateToken() {
+  return crypto.randomBytes(256).toString('base64');
+}
+
+async function sendLoginEmail(id, domain, token) {
   const user = await BetaGouv.userInfosById(id);
 
   if (!user) {
@@ -32,7 +36,6 @@ async function sendLoginEmail(id, domain) {
   }
 
   const email = utils.buildBetaEmail(id);
-  const token = crypto.randomBytes(256).toString('base64');
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
@@ -45,7 +48,10 @@ async function sendLoginEmail(id, domain) {
     console.error(err);
     throw new Error("Erreur d'envoi de mail à ton adresse.");
   }
+}
 
+async function saveToken(id, token) {
+  const email = utils.buildBetaEmail(id);
   try {
     let expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
@@ -78,7 +84,9 @@ module.exports.postLogin = async function (req, res) {
   const domain = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
   try {
-    const result = await sendLoginEmail(req.body.id, domain);
+    const token = generateToken()
+    await sendLoginEmail(req.body.id, domain, token);
+    await saveToken(req.body.id, token)
 
     renderLogin(req, res, {
       messages: req.flash('message', `Email de connexion envoyé pour <strong>${req.body.id}</strong>`)
