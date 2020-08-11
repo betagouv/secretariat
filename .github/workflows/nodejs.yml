@@ -36,8 +36,4 @@ jobs:
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser
-        PGUSER: postgres
-        PGHOST: localhost
-        PGPORT: 5432
-        PGDATABASE: postgres
-        PGPASSWORD: postgres
+        PG_CONNECTION_STRING: postgres://postgres:postgres@localhost:5432/postgres

@@ -16,11 +16,7 @@ Le secrétariat de l’incubateur
    - `MAIL_PASS`
    - `SECURE` - _true_ si https sinon _false_
    - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
-   - `PGUSER`
-   - `PGPASSWORD`
-   - `PGHOST`
-   - `PGPORT`
-   - `PGDATABASE`
+   - `PG_CONNECTION_STRING` - Le [string de connexion](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) pour se connecter à Postgres (pensez à échapper les caractères spéciaux s'il s'agit d'une URI)
 
 - Variables d'environnement optionnelles :
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
