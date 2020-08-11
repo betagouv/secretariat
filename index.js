@@ -24,7 +24,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use('/static', express.static('static'));
 
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 300000 } })); // Only used for Flash not safe for others purposes
+app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -47,7 +47,7 @@ app.use((req, res, next) => {
       expiresIn: '7 days'
     });
 
-    res.cookie('token', token);
+    res.cookie('token', token, { sameSite: 'lax' });
   }
 
   next();
