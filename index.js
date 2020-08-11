@@ -25,7 +25,7 @@ app.use('/static', express.static('static'));
 app.use('/~', express.static(path.join(__dirname, 'node_modules'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 300000 } })); // Only used for Flash not safe for others purposes
+app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -48,7 +48,7 @@ app.use((req, res, next) => {
       expiresIn: '7 days'
     });
 
-    res.cookie('token', token);
+    res.cookie('token', token, { sameSite: 'lax' });
   }
 
   next();

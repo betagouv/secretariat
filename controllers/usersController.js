@@ -64,18 +64,18 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur(trice) ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`
       );
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur.");
+      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur·rice.");
     }
 
     const password = Math.random()
@@ -129,13 +129,13 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur(trice) ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`
       );
     }
 
@@ -177,7 +177,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
-    // TODO: vérifier si l'utilisateur existe sur Github ?
+    // TODO: vérifier si l'utilisateur·rice existe sur Github ?
 
     if (!user.canCreateRedirection) {
       throw new Error("Vous n'avez pas le droits de supprimer cette redirection.");
@@ -213,13 +213,13 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur(trice) ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur(trice) ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`
       );
     }
 
