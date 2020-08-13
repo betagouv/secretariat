@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "migrate": "knex migrate:latest",
+    "makeMigration": "knex migrate:make",
     "dev": "nodemon index.js",
-    "test": "mocha tests/*.js --exit"
+    "test": "mocha tests/*.js --exit --require ./tests/env-setup.js"
   },
   "repository": {
     "type": "git",
@@ -28,8 +30,10 @@
     "express-session": "^1.17.1",
     "front-matter": "^4.0.2",
     "jsonwebtoken": "^8.2.2",
+    "knex": "^0.21.4",
     "nodemailer": "^6.4.11",
     "ovh": "^2.0.1",
+    "pg": "^8.3.0",
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.4.1",
     "request": "^2.88.2",
@@ -42,6 +46,7 @@
     "mocha": "^8.1.1",
     "nock": "^13.0.4",
     "nodemon": "^2.0.4",
+    "pg-connection-string": "^2.3.0",
     "prettier": "^2.0.5",
     "sinon": "^9.0.3"
   },

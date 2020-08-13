@@ -17,9 +17,15 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Setup PostgreSQL
+      uses: Harmon758/postgresql-action@v1.0.0
+      with:
+        postgresql db: postgres
+        postgresql user: postgres 
+        postgresql password: postgres
     - run: npm install
     - run: npm run build --if-present
-    - run: npm test
+    - run: npm run test
       env:
         CI: true
         OVH_APP_KEY: fakeovhkey
@@ -30,3 +36,4 @@ jobs:
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser
+        DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres

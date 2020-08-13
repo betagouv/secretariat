@@ -20,7 +20,8 @@
                 "--timeout",
                 "999999",
                 "--colors",
-                "${workspaceFolder}/tests/*.js"
+                "${workspaceFolder}/tests/*.js",
+                "--require ${workspaceFolder}/tests/env-setup.js"
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "name": "Mocha Tests",
