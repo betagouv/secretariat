@@ -37,17 +37,13 @@
       "quantity": 1
     }
   },
-  "addons": [
-    {
-      "plan": "heroku-postgresql",
-      "options": {
-        "version": "12"
-      }
-    }
-  ],
+  "addons": ["heroku-postgresql"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
     }
-  ]
+  ],
+  "scripts": {
+    "postdeploy": "npm run migrate"
+  }
 }
