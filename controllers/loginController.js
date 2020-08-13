@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
-
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
-
+const knex = require('../db');
+const crypto = require('crypto');
 
 function renderLogin(req, res, params) {
   // init params
@@ -16,7 +16,11 @@ function renderLogin(req, res, params) {
   return res.render('login', params);
 }
 
-async function sendLoginEmail(id, domain) {
+function generateToken() {
+  return crypto.randomBytes(256).toString('base64');
+}
+
+async function sendLoginEmail(id, domain, token) {
   const user = await BetaGouv.userInfosById(id);
 
   if (!user) {
@@ -32,7 +36,6 @@ async function sendLoginEmail(id, domain) {
   }
 
   const email = utils.buildBetaEmail(id);
-  const token = jwt.sign({ id: id }, config.secret, { expiresIn: '1 hours' });
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
       <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
@@ -43,8 +46,26 @@ async function sendLoginEmail(id, domain) {
     await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
   } catch (err) {
     console.error(err);
-
     throw new Error("Erreur d'envoi de mail à ton adresse.");
+  }
+}
+
+async function saveToken(id, token) {
+  const email = utils.buildBetaEmail(id);
+  try {
+    let expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 1);
+
+    await knex('login_tokens').insert({
+      token: token,
+      username: id,
+      email: email,
+      expires_at: expirationDate
+    });
+    console.log(`Login token créé pour ${email}`);
+  } catch (err) {
+    console.error(`Erreur de sauvegarde du token : ${err}`);
+    throw new Error(`Erreur de sauvegarde du token`);
   }
 }
 
@@ -64,7 +85,9 @@ module.exports.postLogin = async function (req, res) {
   const domain = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
   try {
-    const result = await sendLoginEmail(req.body.id, domain);
+    const token = generateToken()
+    await sendLoginEmail(req.body.id, domain, token);
+    await saveToken(req.body.id, token)
 
     renderLogin(req, res, {
       messages: req.flash('message', `Email de connexion envoyé pour <strong>${req.body.id}</strong>`)

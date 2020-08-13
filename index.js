@@ -8,6 +8,7 @@ const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
+const knex = require('./db');
 
 indexController = require('./controllers/indexController');
 loginController = require('./controllers/loginController');
@@ -31,27 +32,56 @@ app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+const getJwtTokenForUser = (id) => {
+  return jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
+}
+
+app.use(async function (req, res, next) {
+  if (!req.query.token)
+    return next();
+
+  try {
+    const tokenDbResponse = await knex('login_tokens').select()
+      .where({ token: req.query.token })
+      .andWhere('expires_at', '>', new Date());
+
+    if (tokenDbResponse.length !== 1) {
+      req.flash("error", "Ce lien de connexion a expiré");
+      return res.redirect('/');
+    }
+
+    const dbToken = tokenDbResponse[0];
+    if (dbToken.token !== req.query.token) {
+      req.flash("error", "Ce lien de connexion a expiré");
+      return res.redirect('/');
+    }
+
+    await knex('login_tokens')
+      .where({ email: dbToken.email })
+      .del();
+
+    res.cookie('token', getJwtTokenForUser(dbToken.username));
+    return res.redirect(req.path);
+
+  } catch (err) {
+    console.log(`Erreur dans l'utilisation du login token : ${err}`);
+    next(err);
+  }
+});
+
 app.use(
   expressJWT({
     secret: config.secret,
     algorithms: ['HS256'],
-    getToken: req =>
-      req.query.token || req.cookies.token
-        ? req.query.token || req.cookies.token
-        : null
+    getToken: req => req.cookies.token || null,
   }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', '/notifications/github'] })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req, res, next) => {
   if (req.user && req.user.id) {
-    const token = jwt.sign({ id: req.user.id }, config.secret, {
-      expiresIn: '7 days'
-    });
-
-    res.cookie('token', token, { sameSite: 'lax' });
+    res.cookie('token', getJwtTokenForUser(req.user.id), { sameSite: 'lax' });
   }
-
   next();
 });
 
