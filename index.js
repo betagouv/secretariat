@@ -16,6 +16,7 @@ logoutController = require('./controllers/logoutController');
 emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
 marrainageController = require('./controllers/marrainageController');
+githubNotificationController = require('./controllers/githubNotificationController');
 
 const app = express();
 
@@ -23,9 +24,10 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/static', express.static('static'));
+app.use('/~', express.static(path.join(__dirname, 'node_modules'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 300000 } })); // Only used for Flash not safe for others purposes
+app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -72,13 +74,13 @@ app.use(
     secret: config.secret,
     algorithms: ['HS256'],
     getToken: req => req.cookies.token || null,
-  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline'] })
+  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', '/notifications/github'] })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req, res, next) => {
   if (req.user && req.user.id) {
-    res.cookie('token', getJwtTokenForUser(req.user.id));
+    res.cookie('token', getJwtTokenForUser(req.user.id) { sameSite: 'lax' });
   }
   next();
 });
@@ -107,6 +109,7 @@ app.post('/users/:id/email', usersController.createEmailForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);
+app.post('/notifications/github', githubNotificationController.processNotification);
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
