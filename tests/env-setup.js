@@ -3,11 +3,11 @@
 require('dotenv').config();
 const parse = require('pg-connection-string').parse;
 
-if (process.env.PG_CONNECTION_STRING) {
-  const config = parse(process.env.PG_CONNECTION_STRING)
+if (process.env.DATABASE_URL) {
+  const config = parse(process.env.DATABASE_URL)
   const testDbName = `${config.database}__test`
-  console.log(`Overriding PG_CONNECTION_STRING for test with database : ${testDbName}`);
-  process.env.PG_CONNECTION_STRING = `postgres://${encodeURIComponent(config.user)}:${encodeURIComponent(config.password)}@${encodeURIComponent(config.host)}:${encodeURIComponent(config.port)}/${encodeURIComponent(testDbName)}`
+  console.log(`Overriding DATABASE_URL for test with database : ${testDbName}`);
+  process.env.DATABASE_URL = `postgres://${encodeURIComponent(config.user)}:${encodeURIComponent(config.password)}@${encodeURIComponent(config.host)}:${encodeURIComponent(config.port)}/${encodeURIComponent(testDbName)}`
 } else {
-  console.log('Environment variable PG_CONNECTION_STRING not found');
+  console.log('Environment variable DATABASE_URL not found');
 }

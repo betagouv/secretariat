@@ -61,10 +61,10 @@ module.exports = {
     nock.enableNetConnect()
   },
   setupTestDatabase() {
-    const config = parse(process.env.PG_CONNECTION_STRING)
+    const config = parse(process.env.DATABASE_URL)
     const testDbName = config.database
     if (!testDbName)
-      return new Error('PG_CONNECTION_STRING environment variable not set');
+      return new Error('DATABASE_URL environment variable not set');
 
     // Postgres needs to have a connection to an existing database in order
     // to perform any request. Since our test database doesn't exist yet,
@@ -83,10 +83,10 @@ module.exports = {
       });
   },
   cleanUpTestDatabase() {
-    const config = parse(process.env.PG_CONNECTION_STRING)
+    const config = parse(process.env.DATABASE_URL)
     const testDbName = config.database
     if (!testDbName)
-      return new Error('PG_CONNECTION_STRING environment variable not set');
+      return new Error('DATABASE_URL environment variable not set');
 
     // Postgres can't remove a database in use, so we will have to
     // connect to the default database to clean up.
