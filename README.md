@@ -104,9 +104,17 @@ Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta
 npm run makeMigration <nom de la migration>
 ```
 
-Pour utiliser d'autres options, vous pouvez utiliser le CLI de KnexJS avec `./node_modules/knex/bin/cli.js`.
+Une fois la migration créée, vous pouvez l'appliquer avec :
 
-Une fois la migration créée, vous pouvez l'appliquer avec `npm run migrate`.
+```
+npm run migrate
+```
+
+Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migrations) est disponible avec `./node_modules/knex/bin/cli.js`. Par exemple, pour faire un rollback :
+
+```
+./node_modules/knex/bin/cli.js migrate:rollback
+```
 
 ## Scripts pour faire des taches en local
 
