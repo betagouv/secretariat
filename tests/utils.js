@@ -3,8 +3,8 @@ const nock = require('nock')
 const testUsers = require('./users.json')
 
 module.exports = {
-  getJWT() {
-    return jwt.sign({ id: 'utilisateur.actif' }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
+  getJWT(id='utilisateur.actif') {
+    return jwt.sign({ id: id }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
   },
   mockUsers() {
     const url = process.env.USERS_API || 'https://beta.gouv.fr'

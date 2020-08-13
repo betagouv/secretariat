@@ -194,22 +194,114 @@ describe("User", () => {
 
   describe("POST /users/:id/email authenticated", () => {
     it("should ask OVH to create an email", (done) => {
-      let ovhEmailNock = nock(/.*ovh.com/)
+      let ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200)
 
       chai.request(app)
-        .post('/users/utilisateur.parti/email')
+        .post('/users/utilisateur.nouveau/email')
         .set('Cookie', `token=${utils.getJWT()}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
         })
         .end((err, res) => {
-          ovhEmailNock.isDone().should.be.true
+          ovhEmailCreation.isDone().should.be.true;
           done();
         });
     });
+
+    it("should not allow email creation from third user if email already exists", (done) => {
+
+      // For this case we need to reset the basic nocks in order to return
+      // a different response to indicate that utilisateur.nouveau has an
+      // existing email already created.
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlack();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+
+      // We return an email for utilisateur.nouveau to indicate he already has one
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: 'utilisateur.nouveau',
+          email: 'utilisateur.nouveau@example.com'
+        });
+
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/email')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from third user if github file doesn't exist", (done) => {
+
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.sans.fiche/email')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from third user if user has expired", (done) => {
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/email')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from third user if third user has expired", (done) => {
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
   });
 
   describe("POST /users/:id/redirections unauthenticated", () => {
@@ -231,7 +323,7 @@ describe("User", () => {
 
   describe("POST /users/:id/redirections authenticated", () => {
     it("should ask OVH to create a redirection", (done) => {
-      let ovhRedirectionNock = nock(/.*ovh.com/)
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200)
 
@@ -243,10 +335,28 @@ describe("User", () => {
           to_email: 'test@example.com'
         })
         .end((err, res) => {
-          ovhRedirectionNock.isDone().should.be.true
+          ovhRedirectionCreation.isDone().should.be.true;
           done();
         });
-    })
+    });
+
+    it("should not allow redirection creation from third user", (done) => {
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/redirections')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhRedirectionCreation.isDone().should.be.false;
+          done();
+        });
+    });
   })
 
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
@@ -265,7 +375,7 @@ describe("User", () => {
   describe("POST /users/:id/redirections/:email/delete authenticated", () => {
     it("should ask OVH to delete a redirection", (done) => {
 
-      let ovhRedirectionNock = nock(/.*ovh.com/)
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
         .reply(200)
 
@@ -273,9 +383,23 @@ describe("User", () => {
         .post('/users/utilisateur.actif/redirections/test-2@example.com/delete')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
-          ovhRedirectionNock.isDone().should.be.true
+          ovhRedirectionDeletion.isDone().should.be.true;
           done();
         });
-    })
+    });
+
+    it("should not allow redirection deletion from third user", (done) => {
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/.*/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/redirections/test-2@example.com/delete')
+        .set('Cookie', `token=${utils.getJWT()}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
   })
 });
