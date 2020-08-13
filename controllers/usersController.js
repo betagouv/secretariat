@@ -58,9 +58,10 @@ module.exports.getUserById = async function (req, res) {
 
 module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
+  const isCurrentUser = req.user.id === id;
 
   try {
-    const user = await utils.userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(id, isCurrentUser);
 
     if (!user.userInfos) {
       throw new Error(
@@ -76,6 +77,13 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.canCreateEmail) {
       throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur·rice.");
+    }
+
+    if (!isCurrentUser) {
+      const loggedUserInfo = await BetaGouv.userInfosById(req.user.id)
+      if (utils.checkUserIsExpired(loggedUserInfo)) {
+        throw new Error("Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.");
+      }
     }
 
     const password = Math.random()
