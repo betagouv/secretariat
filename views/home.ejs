@@ -2,6 +2,14 @@
 
 <div class="container container-small">
 
+  <% if (errors.length) { %>
+    <div class="notification error"><%= errors %></div>
+  <% } %>
+
+  <% if (messages.length) { %>
+    <div class="notification"><%- messages %></div>
+  <% } %>
+
   <p>
     Bienvenue <%= currentUser.id %> !
   </p>

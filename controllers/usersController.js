@@ -11,21 +11,24 @@ module.exports.getUsers = async function (req, res) {
   try {
     const users = await BetaGouv.usersInfos();
 
-    res.render('search', {
+    res.render('home', {
       currentUser: req.user,
       users: users,
       domain: config.domain,
+      errors: req.flash('error'),
+      messages: req.flash('message'),
     });
   } catch (err) {
     console.error(err);
 
-    res.render('search', {
+    res.render('home', {
       currentUser: req.user,
       users: [],
       domain: config.domain,
       errors: [
         `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
-      ]
+      ],
+      messages: []
     });
   }
 }
