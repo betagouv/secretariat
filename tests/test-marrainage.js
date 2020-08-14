@@ -123,7 +123,7 @@ describe("Onboarding", () => {
     it("should generate an email when sollicited", (done) => {
       chai.request(app)
         .post("/marrainage")
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type("form")
         .send({
           'newcomerId': 'utilisateur.actif'

@@ -6,7 +6,7 @@ const knex = require('../db/index')
 const parse = require('pg-connection-string').parse
 
 module.exports = {
-  getJWT(id='utilisateur.actif') {
+  getJWT(id) {
     return jwt.sign({ id: id }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
   },
   mockUsers() {

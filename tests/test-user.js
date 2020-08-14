@@ -23,7 +23,7 @@ describe("User", () => {
     it("should return a valid page for an existing user", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -33,7 +33,7 @@ describe("User", () => {
     it("should return a valid page even for an unknown user", (done) => {
       chai.request(app)
         .get('/users/utilisateur.unknown')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -47,7 +47,7 @@ describe("User", () => {
     it("should show the user's information", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('Nom: Utilisateur Parti')
           res.text.should.include('Date de début: 2016-11-03')
@@ -61,7 +61,7 @@ describe("User", () => {
       it("should show the email creation form for email-less users", (done) => {
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.include('Inexistant');
             res.text.should.include('<form action="/users/utilisateur.parti/email" method="POST">');
@@ -82,7 +82,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.parti/email" method="POST">');
             res.text.should.include('Seul utilisateur.parti peut créer ou modifier ce compte email');
@@ -102,7 +102,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.expire')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.expire/email" method="POST">');
             res.text.should.not.include('<form action="/users/utilisateur.expire/password" method="POST">');
@@ -123,7 +123,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.actif')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.actif/email" method="POST">');
             res.text.should.include('<form action="/users/utilisateur.actif/password" method="POST">');
@@ -135,7 +135,7 @@ describe("User", () => {
       it("should show the email redirection form", (done) => {
         chai.request(app)
           .get('/users/utilisateur.actif')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.include('<form action="/users/utilisateur.actif/redirections" method="POST">');
             done();
@@ -144,7 +144,7 @@ describe("User", () => {
       it("should not show the email redirection form to other users", (done) => {
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.parti/redirections" method="POST">')
             res.text.should.include('Seul utilisateur.parti peut créer ou modifier les redirections')
@@ -164,7 +164,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.expire')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.expire/redirections" method="POST">');
             res.text.should.include('Le compte utilisateur.expire est expiré.');
@@ -200,7 +200,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.nouveau/email')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -236,7 +236,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.nouveau/email')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -255,7 +255,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.sans.fiche/email')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -273,7 +273,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.expire/email')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -329,7 +329,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.actif/redirections')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -347,7 +347,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.nouveau/redirections')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
@@ -381,7 +381,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.actif/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.true;
           done();
@@ -395,7 +395,7 @@ describe("User", () => {
 
       chai.request(app)
         .post('/users/utilisateur.nouveau/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.false;
           done();

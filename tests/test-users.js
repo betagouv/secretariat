@@ -25,7 +25,7 @@ describe("Users", () => {
     it("should return a valid page", (done) => {
       chai.request(app)
         .get('/users')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -35,7 +35,7 @@ describe("Users", () => {
     it("should show the search form", (done) => {
       chai.request(app)
         .get('/users')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('<form action="/users">')
           res.text.should.include('<input name="id"')
