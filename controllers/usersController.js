@@ -11,7 +11,7 @@ module.exports.getUsers = async function (req, res) {
   try {
     const users = await BetaGouv.usersInfos();
 
-    res.render('search', {
+    res.render('home', {
       currentUser: req.user,
       users: users,
       domain: config.domain,
@@ -21,7 +21,7 @@ module.exports.getUsers = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    res.render('search', {
+    res.render('home', {
       currentUser: req.user,
       users: [],
       domain: config.domain,
