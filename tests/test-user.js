@@ -211,7 +211,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow email creation from third user if email already exists", (done) => {
+    it("should not allow email creation from delegate if email already exists", (done) => {
 
       // For this case we need to reset the basic nocks in order to return
       // a different response to indicate that utilisateur.nouveau has an
@@ -247,7 +247,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow email creation from third user if github file doesn't exist", (done) => {
+    it("should not allow email creation from delegate if github file doesn't exist", (done) => {
 
       let ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
@@ -266,7 +266,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow email creation from third user if user has expired", (done) => {
+    it("should not allow email creation from delegate if user has expired", (done) => {
       let ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
@@ -284,7 +284,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow email creation from third user if third user has expired", (done) => {
+    it("should not allow email creation from delegate if delegate has expired", (done) => {
       let ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200)
@@ -340,7 +340,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow redirection creation from third user", (done) => {
+    it("should not allow redirection creation from delegate", (done) => {
       let ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200);
@@ -406,7 +406,7 @@ describe("User", () => {
         });
     });
 
-    it("should not allow redirection deletion from third user", (done) => {
+    it("should not allow redirection deletion from delegate", (done) => {
       let ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
         .reply(200);
