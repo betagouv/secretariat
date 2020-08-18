@@ -434,4 +434,141 @@ describe("User", () => {
         });
     });
   })
+
+  describe("POST /users/:id/password unauthenticated", () => {
+
+    it("should redirect to login", (done) => {
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/login');
+          done();
+        });
+    });
+    it("should not allow a password change", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+  });
+
+  describe("POST /users/:id/password unauthenticated", (done) => {
+    it("should redirect to user page", (done) => {
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/users/utilisateur.actif');
+          done();
+        });
+    });
+    it("should perform a password change", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.true;
+          done();
+        });
+    });
+    it("should not allow a password change from delegate", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password change from expired user", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password shorter than 9 characters", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': '12345678'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password longer than 30 characters", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': '1234567890123456789012345678901'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+  });
 });
