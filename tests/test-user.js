@@ -318,8 +318,8 @@ describe("User", () => {
           res.headers.location.should.equal('/login');
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections authenticated", () => {
     it("should ask OVH to create a redirection", (done) => {
@@ -374,8 +374,8 @@ describe("User", () => {
           ovhRedirectionCreation.isDone().should.be.false;
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
     it("should redirect to login", (done) => {
@@ -387,8 +387,8 @@ describe("User", () => {
           res.headers.location.should.equal('/login');
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections/:email/delete authenticated", () => {
     it("should ask OVH to delete a redirection", (done) => {
@@ -433,7 +433,7 @@ describe("User", () => {
           done();
         });
     });
-  })
+  });
 
   describe("POST /users/:id/password unauthenticated", () => {
 
