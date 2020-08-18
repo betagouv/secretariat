@@ -357,6 +357,24 @@ describe("User", () => {
           done();
         });
     });
+
+    it("should not allow redirection creation from expired users", (done) => {
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/redirections')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhRedirectionCreation.isDone().should.be.false;
+          done();
+        });
+    })
   })
 
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
@@ -396,6 +414,20 @@ describe("User", () => {
       chai.request(app)
         .post('/users/utilisateur.nouveau/redirections/test-2@example.com/delete')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow redirection deletion from expired users", (done) => {
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/.*/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/redirections/test-2@example.com/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.false;
           done();

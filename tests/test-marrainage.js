@@ -143,6 +143,23 @@ describe("Onboarding", () => {
           done();
         });
     });
+
+    it("should not allow expired users to create a request", (done) => {
+      chai.request(app)
+        .post("/marrainage")
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type("form")
+        .send({
+          'newcomerId': 'utilisateur.actif'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal("/users/utilisateur.actif");
+          this.sendEmailStub.notCalled.should.be.true;
+          done();
+        });
+    });
   });
 });
 
