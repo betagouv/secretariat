@@ -90,7 +90,7 @@ module.exports.postLogin = async function (req, res) {
     await saveToken(req.body.id, token)
 
     renderLogin(req, res, {
-      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${req.body.id}@${domain}</strong>. Il est valable une heure.`)
+      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${req.body.id}@${config.domain}</strong>. Il est valable une heure.`)
     });
   } catch (err) {
     console.error(err);
