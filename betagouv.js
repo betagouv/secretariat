@@ -144,21 +144,11 @@ const BetaGouv = {
     }
   },
   ...betaOVH,
-  usersInfos: async () =>
-    new Promise((resolve, reject) =>
-      // TODO: utiliser `fetch` avec header accept:application/json
-      // pour ne pas avoir à gérer les chunks + JSON.parse
-      https
-        .get(config.usersAPI, resp => {
-          let data = '';
-
-          resp.on('data', chunk => (data += chunk));
-          resp.on('end', () => resolve(JSON.parse(data)));
-        })
-        .on('error', err => {
-          reject(`Error to get users infos in ${config.domain}: ${err}`);
-        })
-    ),
+  usersInfos: async () => {
+    return axios.get(config.usersAPI).then(x => x.data).catch((err) => {
+      throw new Error(`Error to get users infos in ${config.domain}: ${err}`)
+    })
+  },
   userInfosById: async id => {
     const users = await BetaGouv.usersInfos();
 
