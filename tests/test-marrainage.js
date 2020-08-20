@@ -1,6 +1,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
+
 const app = require('../index');
 const utils = require('./utils.js');
 const controllerUtils = require('../controllers/utils');
@@ -52,6 +53,7 @@ describe('Onboarding', () => {
           const subject = this.sendEmailStub.args[0][1];
           const emailBody = this.sendEmailStub.args[0][2];
 
+          toEmail.length.should.equal(2);
           subject.should.equal('Mise en contact pour marrainage');
           emailBody.should.include("Utilisateur Actif a accepté d'être marrain·e de Utilisateur Nouveau");
           done();

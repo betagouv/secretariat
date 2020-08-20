@@ -62,7 +62,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   `;
 
   try {
-    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), 'Tu as été sélectionné·e comme marrain·e 🙌', html);
+    return utils.sendMail(utils.buildBetaEmail(onboarder.id), 'Tu as été sélectionné·e comme marrain·e 🙌', html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -86,7 +86,7 @@ module.exports.createRequest = async function (req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${newcomer.id}`);
+    res.redirect(`/users/${req.body.newcomerId}`);
   }
 };
 

@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');

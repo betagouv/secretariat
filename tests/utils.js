@@ -24,6 +24,7 @@ module.exports = {
         .reply(200)
         .persist();
     }
+    return null;
   },
   mockOvhUserEmailInfos() {
     return nock(/.*ovh.com/)

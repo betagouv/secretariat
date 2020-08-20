@@ -1,6 +1,7 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const nock = require('nock');
+
 const utils = require('./utils.js');
 
 chai.use(chaiHttp);

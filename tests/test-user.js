@@ -205,6 +205,7 @@ describe('User', () => {
           to_email: 'test@example.com',
         })
         .end((err, res) => {
+          res.should.have.status(200);
           ovhEmailNock.isDone().should.be.true;
           done();
         });
@@ -242,6 +243,7 @@ describe('User', () => {
           to_email: 'test@example.com',
         })
         .end((err, res) => {
+          res.should.have.status(200);
           ovhRedirectionNock.isDone().should.be.true;
           done();
         });
@@ -271,6 +273,7 @@ describe('User', () => {
         .post('/users/utilisateur.actif/redirections/test-2@example.com/delete')
         .set('Cookie', `token=${utils.getJWT()}`)
         .end((err, res) => {
+          res.should.have.status(200);
           ovhRedirectionNock.isDone().should.be.true;
           done();
         });

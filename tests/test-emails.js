@@ -1,8 +1,7 @@
 const chai = require('chai');
-const nock = require('nock');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const { changePassword } = require('../betagouv');
 
 describe('Emails', () => {
   describe('GET /emails unauthenticated', () => {

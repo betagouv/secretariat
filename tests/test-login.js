@@ -1,7 +1,7 @@
 const chai = require('chai');
 
 const app = require('../index');
-const utils = require('./utils.js');
+// const utils = require('./utils.js');
 
 describe('Login', () => {
   // describe("POST /login with user actif", () => {

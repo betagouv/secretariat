@@ -1,5 +1,3 @@
-// betagouv.js
-// ======
 const Promise = require('bluebird');
 const https = require('https');
 const rp = require('request-promise');
@@ -21,10 +19,9 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
-      return await ovh.requestPromised('GET', url, {});
+      return ovh.requestPromised('GET', url, {});
     } catch (err) {
-      if (err.error == '404') return null;
-
+      if (err.error === '404') return null;
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
@@ -34,7 +31,7 @@ const betaOVH = {
     try {
       console.log(`OVH POST ${url} name=${id}`);
 
-      return await ovh.requestPromised('POST', url, {
+      return ovh.requestPromised('POST', url, {
         accountName: id,
         password,
       });
@@ -48,7 +45,7 @@ const betaOVH = {
     try {
       console.log(`OVH POST ${url} from+${from} &to=${to}`);
 
-      return await ovh.requestPromised('POST', url, { from, to, localCopy });
+      return ovh.requestPromised('POST', url, { from, to, localCopy });
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
@@ -78,7 +75,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, options);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return BetaGouv.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -92,7 +89,7 @@ const betaOVH = {
         to,
       });
 
-      return await BetaGouv.requestRedirections('DELETE', redirectionIds);
+      return BetaGouv.requestRedirections('DELETE', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
@@ -103,7 +100,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return BetaGouv.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -112,12 +109,10 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/account`;
 
     try {
-      return await ovh.requestPromised('GET', url, {});
+      return ovh.requestPromised('GET', url, {});
     } catch (err) {
-      if (err.error != '404') {
-        throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
-      }
-      return null;
+      if (err.error === '404') return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
   changePassword: async (id, password) => {
@@ -141,7 +136,7 @@ const BetaGouv = {
         json: true,
       };
 
-      return await rp(options);
+      return rp(options);
     } catch (err) {
       throw new Error(`Error to notify slack: ${err}`);
     }
@@ -153,7 +148,7 @@ const BetaGouv = {
     https
       .get(config.usersAPI, (resp) => {
         let data = '';
-
+        
         resp.on('data', (chunk) => (data += chunk));
         resp.on('end', () => resolve(JSON.parse(data)));
       })
