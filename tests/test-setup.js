@@ -1,32 +1,28 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
+const nock = require('nock');
 const utils = require('./utils.js');
-const nock = require('nock')
 
 chai.use(chaiHttp);
 chai.should();
 
-before(() => {
-  return utils.setupTestDatabase()
-})
+before(() => utils.setupTestDatabase());
 
 beforeEach(() => {
-  nock.disableNetConnect()
-  nock.enableNetConnect('127.0.0.1')
-  utils.mockUsers()
-  utils.mockSlack()
-  utils.mockOvhTime()
-  utils.mockOvhUserEmailInfos()
-  utils.mockOvhAllEmailInfos()
-  utils.mockOvhRedirectionWithQueries()
-  utils.mockOvhRedirections()
-})
+  nock.disableNetConnect();
+  nock.enableNetConnect('127.0.0.1');
+  utils.mockUsers();
+  utils.mockSlack();
+  utils.mockOvhTime();
+  utils.mockOvhUserEmailInfos();
+  utils.mockOvhAllEmailInfos();
+  utils.mockOvhRedirectionWithQueries();
+  utils.mockOvhRedirections();
+});
 
 afterEach(() => {
-  utils.cleanMocks()
-  nock.enableNetConnect()
-})
+  utils.cleanMocks();
+  nock.enableNetConnect();
+});
 
-after(() => {
-  return utils.cleanUpTestDatabase()
-})
+after(() => utils.cleanUpTestDatabase());

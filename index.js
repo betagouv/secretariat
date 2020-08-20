@@ -1,5 +1,4 @@
 require('dotenv').config();
-const config = require('./config');
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -8,6 +7,7 @@ const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
+const config = require('./config');
 const knex = require('./db');
 
 indexController = require('./controllers/indexController');
@@ -32,13 +32,10 @@ app.use(flash());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
-const getJwtTokenForUser = (id) => {
-  return jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
-}
+const getJwtTokenForUser = (id) => jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
-app.use(async function (req, res, next) {
-  if (!req.query.token)
-    return next();
+app.use(async (req, res, next) => {
+  if (!req.query.token) return next();
 
   try {
     const tokenDbResponse = await knex('login_tokens').select()
@@ -46,13 +43,13 @@ app.use(async function (req, res, next) {
       .andWhere('expires_at', '>', new Date());
 
     if (tokenDbResponse.length !== 1) {
-      req.flash("error", "Ce lien de connexion a expiré");
+      req.flash('error', 'Ce lien de connexion a expiré');
       return res.redirect('/');
     }
 
     const dbToken = tokenDbResponse[0];
     if (dbToken.token !== req.query.token) {
-      req.flash("error", "Ce lien de connexion a expiré");
+      req.flash('error', 'Ce lien de connexion a expiré');
       return res.redirect('/');
     }
 
@@ -62,7 +59,6 @@ app.use(async function (req, res, next) {
 
     res.cookie('token', getJwtTokenForUser(dbToken.username));
     return res.redirect(req.path);
-
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     next(err);
@@ -73,8 +69,8 @@ app.use(
   expressJWT({
     secret: config.secret,
     algorithms: ['HS256'],
-    getToken: req => req.cookies.token || null,
-  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', '/notifications/github'] })
+    getToken: (req) => req.cookies.token || null,
+  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', '/notifications/github'] }),
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
@@ -89,7 +85,7 @@ app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     req.flash(
       'error',
-      "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)"
+      "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
     );
 
     return res.redirect('/login');

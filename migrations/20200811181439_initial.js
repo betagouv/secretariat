@@ -1,5 +1,4 @@
-
-exports.up = function(knex) {
+exports.up = function (knex) {
   return knex.schema
     .createTable('login_tokens', (table) => {
       table.text('token').primary();
@@ -7,10 +6,10 @@ exports.up = function(knex) {
       table.text('email').notNullable();
       table.datetime('created_at').notNullable().defaultTo(knex.fn.now());
       table.datetime('expires_at').notNullable();
-    })
+    });
 };
 
-exports.down = function(knex) {
+exports.down = function (knex) {
   return knex.schema
-    .dropTable('login_tokens')
+    .dropTable('login_tokens');
 };

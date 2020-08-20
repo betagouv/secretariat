@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 const knex = require('../db');
-const crypto = require('crypto');
 
 function renderLogin(req, res, params) {
   // init params
@@ -25,13 +25,13 @@ async function sendLoginEmail(id, domain, token) {
 
   if (!user) {
     throw new Error(
-      `Utilisateur·rice ${id} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
+      `Utilisateur·rice ${id} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur·rice ${id} a une date de fin expiré sur Github.`
+      `Utilisateur·rice ${id} a une date de fin expiré sur Github.`,
     );
   }
 
@@ -53,30 +53,30 @@ async function sendLoginEmail(id, domain, token) {
 async function saveToken(id, token) {
   const email = utils.buildBetaEmail(id);
   try {
-    let expirationDate = new Date();
+    const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
 
     await knex('login_tokens').insert({
-      token: token,
+      token,
       username: id,
-      email: email,
-      expires_at: expirationDate
+      email,
+      expires_at: expirationDate,
     });
     console.log(`Login token créé pour ${email}`);
   } catch (err) {
     console.error(`Erreur de sauvegarde du token : ${err}`);
-    throw new Error(`Erreur de sauvegarde du token`);
+    throw new Error('Erreur de sauvegarde du token');
   }
 }
 
 module.exports.getLogin = async function (req, res) {
   renderLogin(req, res, {});
-}
+};
 
 module.exports.postLogin = async function (req, res) {
   if (
-    req.body.id === undefined ||
-    !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
+    req.body.id === undefined
+    || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
   ) {
     req.flash('error', 'Nom invalid ([a-z0-9_-]+.[a-z0-9_-]+)');
     return res.redirect('/login');
@@ -85,12 +85,12 @@ module.exports.postLogin = async function (req, res) {
   const domain = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
   try {
-    const token = generateToken()
+    const token = generateToken();
     await sendLoginEmail(req.body.id, domain, token);
-    await saveToken(req.body.id, token)
+    await saveToken(req.body.id, token);
 
     renderLogin(req, res, {
-      messages: req.flash('message', `Email de connexion envoyé pour <strong>${req.body.id}</strong>`)
+      messages: req.flash('message', `Email de connexion envoyé pour <strong>${req.body.id}</strong>`),
     });
   } catch (err) {
     console.error(err);
@@ -98,4 +98,4 @@ module.exports.postLogin = async function (req, res) {
     req.flash('error', err.message);
     return res.redirect('/login');
   }
-}
+};

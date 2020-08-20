@@ -3,11 +3,10 @@ const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
-
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
-  const onboarders = users.filter(x => {
+  const onboarders = users.filter((x) => {
     const senior = new Date(minimumSeniority) > new Date(x.start);
     const stillActive = !utils.checkUserIsExpired(x);
     const isRequester = x.id === newcomerId;
@@ -36,8 +35,8 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
   const token = jwt.sign({
-    newcomer: newcomer,
-    onboarder: onboarder
+    newcomer,
+    onboarder,
   }, config.secret);
 
   const html = `
@@ -63,7 +62,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   `;
 
   try {
-    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), `Tu as été sélectionné·e comme marrain·e 🙌`, html);
+    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), 'Tu as été sélectionné·e comme marrain·e 🙌', html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -73,10 +72,10 @@ module.exports.createRequest = async function (req, res) {
   try {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
-    const user = req.user;
+    const { user } = req;
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
 
-    await sendOnboarderRequestEmail(onboarder, newcomer, req)
+    await sendOnboarderRequestEmail(onboarder, newcomer, req);
     await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un·e marrain·e pour ${newcomer.id}`);
 
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
@@ -89,13 +88,13 @@ module.exports.createRequest = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/users/${newcomer.id}`);
   }
-}
+};
 
 module.exports.acceptRequest = async function (req, res) {
   try {
     const details = getDataFromToken(req.query.details);
-    const newcomer = details.newcomer;
-    const onboarder = details.onboarder;
+    const { newcomer } = details;
+    const { onboarder } = details;
 
     const html = `
       <h1>Hello ${newcomer.fullname}, ${onboarder.fullname} 👋,</h1>
@@ -107,24 +106,24 @@ module.exports.acceptRequest = async function (req, res) {
     `;
 
     try {
-      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], `Mise en contact pour marrainage`, html);
+      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], 'Mise en contact pour marrainage', html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
     console.log(`Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
-    res.render('marrainage', {errors: undefined});
+    res.render('marrainage', { errors: undefined });
   } catch (err) {
     console.error(err);
-    res.render('marrainage', {errors: err.message});
+    res.render('marrainage', { errors: err.message });
   }
-}
+};
 
 module.exports.declineRequest = async function (req, res) {
   try {
     const details = getDataFromToken(req.query.details);
-    const newcomer = details.newcomer;
+    const { newcomer } = details;
     const declinedOnboarder = details.onboarder;
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
@@ -139,16 +138,16 @@ module.exports.declineRequest = async function (req, res) {
     `;
 
     try {
-      await utils.sendMail(utils.buildBetaEmail(newcomer.id), `La recherche de marrain·e se poursuit !`, html);
+      await utils.sendMail(utils.buildBetaEmail(newcomer.id), 'La recherche de marrain·e se poursuit !', html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
 
-    res.render('marrainage', {errors: undefined});
+    res.render('marrainage', { errors: undefined });
   } catch (err) {
     console.error(err);
-    res.render('marrainage', {errors: err.message});
+    res.render('marrainage', { errors: err.message });
   }
-}
+};

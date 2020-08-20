@@ -1,17 +1,17 @@
-const config = require('../config')
-const BetaGouv = require('../betagouv');
 const PromiseMemoize = require('promise-memoize');
-const buildBetaEmail = require('./utils').buildBetaEmail;
+const config = require('../config');
+const BetaGouv = require('../betagouv');
+const { buildBetaEmail } = require('./utils');
 
-const getBetaEmailId = email => email && email.split('@')[0];
-const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
+const getBetaEmailId = (email) => email && email.split('@')[0];
+const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
 const emailWithMetadataMemoized = PromiseMemoize(
   async () => {
     const [accounts, redirections, users] = await Promise.all([
       BetaGouv.accounts(),
       BetaGouv.redirections(),
-      BetaGouv.usersInfos()
+      BetaGouv.usersInfos(),
     ]);
 
     console.log('users', users.length);
@@ -20,34 +20,34 @@ const emailWithMetadataMemoized = PromiseMemoize(
       new Set([
         ...redirections.reduce(
           (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
-          []
+          [],
         ),
-        ...accounts.map(buildBetaEmail)
-      ])
+        ...accounts.map(buildBetaEmail),
+      ]),
     ).sort();
 
-    return emails.map(email => {
+    return emails.map((email) => {
       const id = getBetaEmailId(email);
-      const user = users.find(ui => ui.id === id);
+      const user = users.find((ui) => ui.id === id);
 
       return {
-        email: email,
+        email,
         github: user !== undefined,
         redirections: redirections.reduce(
           (acc, r) => (r.from === email ? [...acc, r.to] : acc),
-          []
+          [],
         ),
         account: accounts.includes(id),
         expired:
-          user &&
-          user.end &&
-          new Date(user.end).getTime() < new Date().getTime()
+          user
+          && user.end
+          && new Date(user.end).getTime() < new Date().getTime(),
       };
     });
   },
   {
-    maxAge: 120000
-  }
+    maxAge: 120000,
+  },
 );
 
 module.exports.getEmails = async function (req, res) {
@@ -57,7 +57,7 @@ module.exports.getEmails = async function (req, res) {
     res.render('emails', {
       currentUser: req.user,
       emails,
-      errors: []
+      errors: [],
     });
   } catch (err) {
     console.error(err);
@@ -68,4 +68,4 @@ module.exports.getEmails = async function (req, res) {
       errors: ['Erreur interne'],
     });
   }
-}
+};

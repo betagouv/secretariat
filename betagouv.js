@@ -6,18 +6,18 @@ const rp = require('request-promise');
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
-  consumerKey: process.env.OVH_CONSUMER_KEY
+  consumerKey: process.env.OVH_CONSUMER_KEY,
 });
 
 const config = {
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
   usersAPI:
     process.env.USERS_API || 'https://beta.gouv.fr/api/v1.6/authors.json',
-  slackWebhookURL: process.env.SLACK_WEBHOOK_URL
+  slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
 };
 
 const betaOVH = {
-  emailInfos: async id => {
+  emailInfos: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
@@ -36,7 +36,7 @@ const betaOVH = {
 
       return await ovh.requestPromised('POST', url, {
         accountName: id,
-        password
+        password,
       });
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
@@ -53,18 +53,14 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  requestRedirection: async (method, redirectionId) =>
-    ovh.requestPromised(
-      method,
-      `/email/domain/${config.domain}/redirection/${redirectionId}`
-    ),
-  requestRedirections: async (method, redirectionIds) =>
-    Promise.map(redirectionIds, redirectionId =>
-      BetaGouv.requestRedirection(method, redirectionId)
-    ),
-  redirectionsForId: async query => {
+  requestRedirection: async (method, redirectionId) => ovh.requestPromised(
+    method,
+    `/email/domain/${config.domain}/redirection/${redirectionId}`,
+  ),
+  requestRedirections: async (method, redirectionIds) => Promise.map(redirectionIds, (redirectionId) => BetaGouv.requestRedirection(method, redirectionId)),
+  redirectionsForId: async (query) => {
     if (!query.from && !query.to) {
-      throw new Error(`paramètre 'from' ou 'to' manquant`);
+      throw new Error('paramètre \'from\' ou \'to\' manquant');
     }
 
     const url = `/email/domain/${config.domain}/redirection`;
@@ -93,7 +89,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, {
         from,
-        to
+        to,
       });
 
       return await BetaGouv.requestRedirections('DELETE', redirectionIds);
@@ -132,17 +128,17 @@ const betaOVH = {
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
-  }
+  },
 };
 
 const BetaGouv = {
-  sendInfoToSlack: async text => {
+  sendInfoToSlack: async (text) => {
     try {
       const options = {
         method: 'POST',
         uri: config.slackWebhookURL,
         body: { text },
-        json: true
+        json: true,
       };
 
       return await rp(options);
@@ -151,26 +147,24 @@ const BetaGouv = {
     }
   },
   ...betaOVH,
-  usersInfos: async () =>
-    new Promise((resolve, reject) =>
-      // TODO: utiliser `fetch` avec header accept:application/json
-      // pour ne pas avoir à gérer les chunks + JSON.parse
-      https
-        .get(config.usersAPI, resp => {
-          let data = '';
+  usersInfos: async () => new Promise((resolve, reject) =>
+  // TODO: utiliser `fetch` avec header accept:application/json
+  // pour ne pas avoir à gérer les chunks + JSON.parse
+    https
+      .get(config.usersAPI, (resp) => {
+        let data = '';
 
-          resp.on('data', chunk => (data += chunk));
-          resp.on('end', () => resolve(JSON.parse(data)));
-        })
-        .on('error', err => {
-          reject(`Error to get users infos in ${config.domain}: ${err}`);
-        })
-    ),
-  userInfosById: async id => {
+        resp.on('data', (chunk) => (data += chunk));
+        resp.on('end', () => resolve(JSON.parse(data)));
+      })
+      .on('error', (err) => {
+        reject(`Error to get users infos in ${config.domain}: ${err}`);
+      })),
+  userInfosById: async (id) => {
     const users = await BetaGouv.usersInfos();
 
-    return users.find(element => element.id == id);
-  }
+    return users.find((element) => element.id == id);
+  },
 };
 
 module.exports = BetaGouv;

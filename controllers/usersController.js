@@ -2,7 +2,6 @@ const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
-
 module.exports.getUsers = async function (req, res) {
   if (req.query.id) {
     return res.redirect(`/users/${req.query.id}`);
@@ -13,7 +12,7 @@ module.exports.getUsers = async function (req, res) {
 
     res.render('home', {
       currentUser: req.user,
-      users: users,
+      users,
       domain: config.domain,
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -26,15 +25,15 @@ module.exports.getUsers = async function (req, res) {
       users: [],
       domain: config.domain,
       errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
+        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`,
       ],
-      messages: []
+      messages: [],
     });
   }
-}
+};
 
 module.exports.getUserById = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
@@ -57,23 +56,23 @@ module.exports.getUserById = async function (req, res) {
 
     res.send(err);
   }
-}
+};
 
 module.exports.createEmailForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -87,7 +86,7 @@ module.exports.createEmailForUser = async function (req, res) {
     const email = utils.buildBetaEmail(id);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`,
     );
 
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
@@ -121,10 +120,10 @@ module.exports.createEmailForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
-}
+};
 
 module.exports.createRedirectionForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
@@ -132,13 +131,13 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -147,7 +146,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`,
     );
 
     const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
@@ -159,7 +158,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(id),
         req.body.to_email,
-        req.body.keep_copy === 'true'
+        req.body.keep_copy === 'true',
       );
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
@@ -173,7 +172,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
-}
+};
 
 module.exports.deleteRedirectionForUser = async function (req, res) {
   const { id, email: to_email } = req.params;
@@ -206,23 +205,23 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
-}
+};
 
 module.exports.updatePasswordForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -233,13 +232,13 @@ module.exports.updatePasswordForUser = async function (req, res) {
     const password = req.body.new_password;
 
     if (
-      !password ||
-      password.length < 9 ||
-      password.length > 30 ||
-      password !== password.trim()
+      !password
+      || password.length < 9
+      || password.length > 30
+      || password !== password.trim()
     ) {
       throw new Error(
-        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin."
+        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
       );
     }
 
@@ -262,4 +261,4 @@ module.exports.updatePasswordForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/users/${id}`);
   }
-}
+};

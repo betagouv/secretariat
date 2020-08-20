@@ -1,13 +1,12 @@
 const chai = require('chai');
+const nock = require('nock');
 const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock')
 const { changePassword } = require('../betagouv');
 
-
-describe("Emails", () => {
-  describe("GET /emails unauthenticated", () => {
-    it("should redirect to login", (done) => {
+describe('Emails', () => {
+  describe('GET /emails unauthenticated', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .get('/emails')
         .redirects(0)
@@ -19,8 +18,8 @@ describe("Emails", () => {
     });
   });
 
-  describe("GET /emails authenticated", () => {
-    it("should return a valid page", (done) => {
+  describe('GET /emails authenticated', () => {
+    it('should return a valid page', (done) => {
       chai.request(app)
         .get('/emails')
         .set('Cookie', `token=${utils.getJWT()}`)
