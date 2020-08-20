@@ -1,6 +1,5 @@
 // betagouv.js
 // ======
-const Promise = require('bluebird');
 const https = require('https');
 const axios = require('axios').default;
 const ovh = require('ovh')({
@@ -58,10 +57,9 @@ const betaOVH = {
       method,
       `/email/domain/${config.domain}/redirection/${redirectionId}`
     ),
-  requestRedirections: async (method, redirectionIds) =>
-    Promise.map(redirectionIds, redirectionId =>
-      BetaGouv.requestRedirection(method, redirectionId)
-    ),
+  requestRedirections: async (method, redirectionIds) => {
+    return Promise.all(redirectionIds.map(x => BetaGouv.requestRedirection(method, x)))
+  },
   redirectionsForId: async query => {
     if (!query.from && !query.to) {
       throw new Error(`paramètre 'from' ou 'to' manquant`);
