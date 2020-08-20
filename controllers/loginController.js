@@ -78,7 +78,7 @@ module.exports.postLogin = async function (req, res) {
     req.body.id === undefined ||
     !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
   ) {
-    req.flash('error', 'Nom invalid ([a-z0-9_-]+.[a-z0-9_-]+)');
+    req.flash('error', "L'email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.'.<br />Exemple : charlotte.duret");
     return res.redirect('/login');
   }
 
