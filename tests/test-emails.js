@@ -23,7 +23,7 @@ describe("Emails", () => {
     it("should return a valid page", (done) => {
       chai.request(app)
         .get('/emails')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
