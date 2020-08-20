@@ -1,7 +1,7 @@
 // betagouv.js
 // ======
 const https = require('https');
-const rp = require('request-promise');
+const axios = require('axios').default;
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
@@ -136,34 +136,17 @@ const betaOVH = {
 const BetaGouv = {
   sendInfoToSlack: async text => {
     try {
-      const options = {
-        method: 'POST',
-        uri: config.slackWebhookURL,
-        body: { text },
-        json: true
-      };
-
-      return await rp(options);
+      return await axios.post(config.slackWebhookURL, { text })
     } catch (err) {
       throw new Error(`Error to notify slack: ${err}`);
     }
   },
   ...betaOVH,
-  usersInfos: async () =>
-    new Promise((resolve, reject) =>
-      // TODO: utiliser `fetch` avec header accept:application/json
-      // pour ne pas avoir à gérer les chunks + JSON.parse
-      https
-        .get(config.usersAPI, resp => {
-          let data = '';
-
-          resp.on('data', chunk => (data += chunk));
-          resp.on('end', () => resolve(JSON.parse(data)));
-        })
-        .on('error', err => {
-          reject(`Error to get users infos in ${config.domain}: ${err}`);
-        })
-    ),
+  usersInfos: async () => {
+    return axios.get(config.usersAPI).then(x => x.data).catch((err) => {
+      throw new Error(`Error to get users infos in ${config.domain}: ${err}`)
+    })
+  },
   userInfosById: async id => {
     const users = await BetaGouv.usersInfos();
 
