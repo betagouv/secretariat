@@ -6,8 +6,8 @@ const knex = require('../db/index')
 const parse = require('pg-connection-string').parse
 
 module.exports = {
-  getJWT() {
-    return jwt.sign({ id: 'utilisateur.actif' }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
+  getJWT(id) {
+    return jwt.sign({ id: id }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
   },
   mockUsers() {
     const url = process.env.USERS_API || 'https://beta.gouv.fr'

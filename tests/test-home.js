@@ -33,7 +33,7 @@ describe("Home", () => {
     it("should redirect to users page", (done) => {
       chai.request(app)
         .get('/')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);

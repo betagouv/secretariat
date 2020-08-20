@@ -23,7 +23,7 @@ describe("User", () => {
     it("should return a valid page for an existing user", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -33,7 +33,7 @@ describe("User", () => {
     it("should return a valid page even for an unknown user", (done) => {
       chai.request(app)
         .get('/users/utilisateur.unknown')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -47,7 +47,7 @@ describe("User", () => {
     it("should show the user's information", (done) => {
       chai.request(app)
         .get('/users/utilisateur.parti')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('Nom: Utilisateur Parti')
           res.text.should.include('Date de début: 2016-11-03')
@@ -61,7 +61,7 @@ describe("User", () => {
       it("should show the email creation form for email-less users", (done) => {
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.include('Inexistant');
             res.text.should.include('<form action="/users/utilisateur.parti/email" method="POST">');
@@ -82,7 +82,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.parti/email" method="POST">');
             res.text.should.include('Seul utilisateur.parti peut créer ou modifier ce compte email');
@@ -102,7 +102,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.expire')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.expire/email" method="POST">');
             res.text.should.not.include('<form action="/users/utilisateur.expire/password" method="POST">');
@@ -123,7 +123,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.actif')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.actif/email" method="POST">');
             res.text.should.include('<form action="/users/utilisateur.actif/password" method="POST">');
@@ -135,7 +135,7 @@ describe("User", () => {
       it("should show the email redirection form", (done) => {
         chai.request(app)
           .get('/users/utilisateur.actif')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.include('<form action="/users/utilisateur.actif/redirections" method="POST">');
             done();
@@ -144,7 +144,7 @@ describe("User", () => {
       it("should not show the email redirection form to other users", (done) => {
         chai.request(app)
           .get('/users/utilisateur.parti')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.parti/redirections" method="POST">')
             res.text.should.include('Seul utilisateur.parti peut créer ou modifier les redirections')
@@ -164,7 +164,7 @@ describe("User", () => {
 
         chai.request(app)
           .get('/users/utilisateur.expire')
-          .set('Cookie', `token=${utils.getJWT()}`)
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('<form action="/users/utilisateur.expire/redirections" method="POST">');
             res.text.should.include('Le compte utilisateur.expire est expiré.');
@@ -194,22 +194,114 @@ describe("User", () => {
 
   describe("POST /users/:id/email authenticated", () => {
     it("should ask OVH to create an email", (done) => {
-      let ovhEmailNock = nock(/.*ovh.com/)
+      let ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200)
 
       chai.request(app)
-        .post('/users/utilisateur.parti/email')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .post('/users/utilisateur.nouveau/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
         })
         .end((err, res) => {
-          ovhEmailNock.isDone().should.be.true
+          ovhEmailCreation.isDone().should.be.true;
           done();
         });
     });
+
+    it("should not allow email creation from delegate if email already exists", (done) => {
+
+      // For this case we need to reset the basic nocks in order to return
+      // a different response to indicate that utilisateur.nouveau has an
+      // existing email already created.
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlack();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+
+      // We return an email for utilisateur.nouveau to indicate he already has one
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: 'utilisateur.nouveau',
+          email: 'utilisateur.nouveau@example.com'
+        });
+
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from delegate if github file doesn't exist", (done) => {
+
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.sans.fiche/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from delegate if user has expired", (done) => {
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow email creation from delegate if delegate has expired", (done) => {
+      let ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/email')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhEmailCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
   });
 
   describe("POST /users/:id/redirections unauthenticated", () => {
@@ -226,28 +318,64 @@ describe("User", () => {
           res.headers.location.should.equal('/login');
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections authenticated", () => {
     it("should ask OVH to create a redirection", (done) => {
-      let ovhRedirectionNock = nock(/.*ovh.com/)
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200)
 
       chai.request(app)
         .post('/users/utilisateur.actif/redirections')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com'
         })
         .end((err, res) => {
-          ovhRedirectionNock.isDone().should.be.true
+          ovhRedirectionCreation.isDone().should.be.true;
           done();
         });
-    })
-  })
+    });
+
+    it("should not allow redirection creation from delegate", (done) => {
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/redirections')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhRedirectionCreation.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow redirection creation from expired users", (done) => {
+      let ovhRedirectionCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/redirections')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com'
+        })
+        .end((err, res) => {
+          ovhRedirectionCreation.isDone().should.be.false;
+          done();
+        });
+    });
+  });
 
   describe("POST /users/:id/redirections/:email/delete unauthenticated", () => {
     it("should redirect to login", (done) => {
@@ -259,23 +387,188 @@ describe("User", () => {
           res.headers.location.should.equal('/login');
           done();
         });
-    })
-  })
+    });
+  });
 
   describe("POST /users/:id/redirections/:email/delete authenticated", () => {
     it("should ask OVH to delete a redirection", (done) => {
 
-      let ovhRedirectionNock = nock(/.*ovh.com/)
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
         .reply(200)
 
       chai.request(app)
         .post('/users/utilisateur.actif/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          ovhRedirectionNock.isDone().should.be.true
+          ovhRedirectionDeletion.isDone().should.be.true;
           done();
         });
-    })
-  })
+    });
+
+    it("should not allow redirection deletion from delegate", (done) => {
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/.*/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/redirections/test-2@example.com/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow redirection deletion from expired users", (done) => {
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/.*/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/redirections/test-2@example.com/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+  });
+
+  describe("POST /users/:id/password unauthenticated", () => {
+
+    it("should redirect to login", (done) => {
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/login');
+          done();
+        });
+    });
+    it("should not allow a password change", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+  });
+
+  describe("POST /users/:id/password unauthenticated", (done) => {
+    it("should redirect to user page", (done) => {
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/users/utilisateur.actif');
+          done();
+        });
+    });
+    it("should perform a password change", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.true;
+          done();
+        });
+    });
+    it("should not allow a password change from delegate", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.nouveau/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password change from expired user", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type('form')
+        .send({
+          'new_password': 'Test_Password_1234'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password shorter than 9 characters", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': '12345678'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+    it("should not allow a password longer than 30 characters", (done) => {
+      this.ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/password')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type('form')
+        .send({
+          'new_password': '1234567890123456789012345678901'
+        })
+        .end((err, res) => {
+          this.ovhPasswordNock.isDone().should.be.false;
+          done();
+        });
+    });
+  });
 });
