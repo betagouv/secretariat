@@ -18,8 +18,8 @@
       <div class="notification"><%- messages %></div>
     <% } else { %>
       <form action="/login" method="POST">
+        <label for="id">Adresse email :</label>
         <div class="input__group">
-          <label for="id">Adresse email :</label>
           <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">
           <span class="padding-10">@<%= domain %></span>
         </div>
