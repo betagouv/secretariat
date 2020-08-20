@@ -98,7 +98,7 @@ module.exports.createEmailForUser = async function (req, res) {
       `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
 
     const message = `À la demande de ${req.user.id} sur <${url}>, je crée un compte mail pour ${id}`;
 
@@ -158,7 +158,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
 
     const message = `À la demande de ${req.user.id} sur <${url}>, je crée une redirection mail pour ${id}`;
 
@@ -196,7 +196,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
 
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
     const message = `À la demande de ${req.user.id} sur <${url}>, je supprime la redirection mail de ${id} vers ${to_email}`;
 
     try {
@@ -255,7 +255,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
 
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
 
     const message = `À la demande de ${req.user.id} sur <${url}>, je change le mot de passe pour ${id}.`;
 
