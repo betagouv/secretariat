@@ -10,6 +10,8 @@
   "parserOptions": {
     "ecmaVersion": 11
   },
+  "plugins": [
+  ],
   "rules": {
   }
 }
