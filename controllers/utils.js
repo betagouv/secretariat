@@ -15,7 +15,7 @@ const mailTransport = nodemailer.createTransport({
 module.exports.sendMail = async function (to_email, subject, html, text) {
   const mail = {
     to: to_email,
-    from: `Secretariat BetaGouv <${config.senderEmail}>`,
+    from: `Secrétariat BetaGouv <${config.senderEmail}>`,
     subject: subject,
     html: html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
