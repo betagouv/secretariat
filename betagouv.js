@@ -2,7 +2,7 @@
 // ======
 const Promise = require('bluebird');
 const https = require('https');
-const rp = require('request-promise');
+const axios = require('axios').default;
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
@@ -138,14 +138,7 @@ const betaOVH = {
 const BetaGouv = {
   sendInfoToSlack: async text => {
     try {
-      const options = {
-        method: 'POST',
-        uri: config.slackWebhookURL,
-        body: { text },
-        json: true
-      };
-
-      return await rp(options);
+      return await axios.post(config.slackWebhookURL, { text })
     } catch (err) {
       throw new Error(`Error to notify slack: ${err}`);
     }
