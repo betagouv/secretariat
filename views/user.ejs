@@ -24,9 +24,7 @@
         <li>Employeur: <%= userInfos.employer %></li>
         <li>Github : <% if (userInfos.github) { %><a href="https://github.com/<%= userInfos.github %>" target="_blank"><%= userInfos.github %></a><% } else { %>Non renseigné<% } %></li>
       </ul>
-      <div class="notification warning">
-        ℹ️&nbsp;Une erreur ? Vous pouvez modifier la fiche sur Github <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> ici</a>.
-      </div>
+      <p><a class="button secondary" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier la fiche sur Github</a></p>
     <% } else { %>
       <div class="notification error">
         Inexistante (nécessaire pour créer le compte mail)<br>

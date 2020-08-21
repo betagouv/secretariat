@@ -38,12 +38,25 @@ async function sendLoginEmail(id, domain, token) {
   const email = utils.buildBetaEmail(id);
   const url = `${domain}/users?token=${encodeURIComponent(token)}`;
   const html = `
-      <h1>Ton lien de connexion ! (Valable 1 heure)</h1>
-      <a href="${url}">${url}</a>
+      <p>Hello ! 👋</p>
+      <p>Tu as demandé un lien de connexion au secrétariat BetaGouv. 
+      Pour t'authentifier, tu dois cliquer sur le bouton ci-dessous dans l'heure qui suit la réception de ce message.</p>
+
+      <p><a href="${url}">
+            <button style="margin-bottom: 15px;background: #006be6;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
+              Me connecter
+            </button>
+          </a>
+      </p>
+
+      <p>Ou utiliser ce lien :<br /><a href="${url}">${url}</a></p>
+
+      <p>En cas de problème avec ton compte, n'hésite pas à répondre à ce mail !</p>
+
       <p>🤖 Le secrétariat</p>`;
 
   try {
-    await utils.sendMail(email, 'Connexion secrétariat BetaGouv', html);
+    await utils.sendMail(email, 'Connexion au secrétariat BetaGouv', html);
   } catch (err) {
     console.error(err);
     throw new Error("Erreur d'envoi de mail à ton adresse.");
