@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/betagouv/secretariat#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
@@ -37,7 +38,6 @@
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.4.1",
     "request": "^2.88.2",
-    "request-promise": "^4.2.6",
     "template.data.gouv.fr": "^1.3.2"
   },
   "devDependencies": {

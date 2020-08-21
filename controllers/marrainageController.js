@@ -71,6 +71,10 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
 
 module.exports.createRequest = async function (req, res) {
   try {
+    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id)
+    if (utils.checkUserIsExpired(loggedUserInfo)) {
+      throw new Error("Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.");
+    }
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const user = req.user;
@@ -87,7 +91,7 @@ module.exports.createRequest = async function (req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${newcomer.id}`);
+    res.redirect(`/users/${req.body.newcomerId}`);
   }
 }
 

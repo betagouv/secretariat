@@ -1,6 +1,5 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
-const Promise = require('bluebird');
 const nodemailer = require('nodemailer');
 
 const mailTransport = nodemailer.createTransport({
