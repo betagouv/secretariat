@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/betagouv/secretariat#readme",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
