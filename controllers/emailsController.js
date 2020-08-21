@@ -1,7 +1,7 @@
 const config = require('../config')
 const BetaGouv = require('../betagouv');
 const PromiseMemoize = require('promise-memoize');
-const buildBetaEmail = require('./utils').buildBetaEmail;
+const utils = require('./utils');
 
 const getBetaEmailId = email => email && email.split('@')[0];
 const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
@@ -22,7 +22,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
           (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
           []
         ),
-        ...accounts.map(buildBetaEmail)
+        ...accounts.map(utils.buildBetaEmail)
       ])
     ).sort();
 
@@ -38,10 +38,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
           []
         ),
         account: accounts.includes(id),
-        expired:
-          user &&
-          user.end &&
-          new Date(user.end).getTime() < new Date().getTime()
+        expired: utils.checkUserIsExpired(user)
       };
     });
   },
