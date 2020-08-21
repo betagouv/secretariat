@@ -42,7 +42,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
 
   const html = `
     <h1>Hello ${onboarder.fullname} 👋,</h1>
-    <p>Tu as été sélectonné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
+    <p>Tu as été sélectionné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
     <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
       <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
         J'accepte
