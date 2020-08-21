@@ -11,7 +11,7 @@
   <% } %>
 
   <p>
-    Bienvenue <%= currentUser.id %> !
+    Bienvenue !
   </p>
 
   <div class="panel margin-top-m">
@@ -23,7 +23,7 @@
     <h4>Créer un compte email pour un nouveau membre de la communauté</h4>
     <form action="/users">
       <div class="form__group">
-        <!-- <label for="id"><strong>Rechercher un nom</strong></label> -->
+        <label for="id">Adresse email :</label>
         <div class="input__group">
           <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids">
           <span class="padding-10">@<%= domain %></span>
