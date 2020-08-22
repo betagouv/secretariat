@@ -37,7 +37,7 @@ app.use(
       req.query.token || req.cookies.token
         ? req.query.token || req.cookies.token
         : null
-  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline'] })
+  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', "/emails/expired"] })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
@@ -71,6 +71,7 @@ app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
 app.get('/logout', logoutController.getLogout);
 app.get('/emails', emailsController.getEmails);
+app.get('/emails/expired', emailsController.getExpiredEmails);
 app.get('/users', usersController.getUsers);
 app.get('/users/:id', usersController.getUserById);
 app.post('/users/:id/email', usersController.createEmailForUser);
