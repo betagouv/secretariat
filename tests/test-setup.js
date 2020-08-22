@@ -6,7 +6,9 @@ const nock = require('nock')
 chai.use(chaiHttp);
 chai.should();
 
-const sinon = require('sinon');
+before(() => {
+  return utils.setupTestDatabase()
+})
 
 beforeEach(() => {
   nock.disableNetConnect()
@@ -23,4 +25,8 @@ beforeEach(() => {
 afterEach(() => {
   utils.cleanMocks()
   nock.enableNetConnect()
+})
+
+after(() => {
+  return utils.cleanUpTestDatabase()
 })

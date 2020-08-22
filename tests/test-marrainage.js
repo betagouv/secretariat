@@ -123,7 +123,7 @@ describe("Onboarding", () => {
     it("should generate an email when sollicited", (done) => {
       chai.request(app)
         .post("/marrainage")
-        .set('Cookie', `token=${utils.getJWT()}`)
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .type("form")
         .send({
           'newcomerId': 'utilisateur.actif'
@@ -140,6 +140,23 @@ describe("Onboarding", () => {
           subject.should.equal("Tu as été sélectionné·e comme marrain·e 🙌");
           emailBody.should.include('marrainage/accept');
           emailBody.should.include('marrainage/decline');
+          done();
+        });
+    });
+
+    it("should not allow expired users to create a request", (done) => {
+      chai.request(app)
+        .post("/marrainage")
+        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .type("form")
+        .send({
+          'newcomerId': 'utilisateur.actif'
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal("/users/utilisateur.actif");
+          this.sendEmailStub.notCalled.should.be.true;
           done();
         });
     });

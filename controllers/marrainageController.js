@@ -33,7 +33,7 @@ function getDataFromToken(token) {
 }
 
 async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
-  const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+  const url = `${config.protocol}://${req.get('host')}`;
 
   const token = jwt.sign({
     newcomer: newcomer,
@@ -42,7 +42,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
 
   const html = `
     <h1>Hello ${onboarder.fullname} 👋,</h1>
-    <p>Tu as été sélectonné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
+    <p>Tu as été sélectionné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
     <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
       <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
         J'accepte
@@ -71,23 +71,27 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
 
 module.exports.createRequest = async function (req, res) {
   try {
+    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id)
+    if (utils.checkUserIsExpired(loggedUserInfo)) {
+      throw new Error("Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.");
+    }
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const user = req.user;
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
 
     await sendOnboarderRequestEmail(onboarder, newcomer, req)
     await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un·e marrain·e pour ${newcomer.id}`);
 
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
-    req.flash('message', `Nous avons envoyé un email à ${onboarder.fullname} l'invitant à te marrainer.`);
+    req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
     res.redirect(`/users/${newcomer.id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${newcomer.id}`);
+    res.redirect(`/users/${req.body.newcomerId}`);
   }
 }
 

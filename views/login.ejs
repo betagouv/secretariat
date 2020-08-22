@@ -3,7 +3,7 @@
 <div class="container container-small">
 
   <p>
-    Le secrétariat te permet de gérer ton compte email (mot de passe, redirections, etc.).
+    Le secrétariat te permet de gérer ton compte (email, mot de passe, redirections, etc).
     Tu peux aussi créer une adresse pour un nouveau membre de la communauté.
   </p>
 
@@ -12,12 +12,13 @@
   <% } %>
 
   <div class="panel margin-top-m">
-    <h4>Se connecter</h4>
+    <h4>Me connecter</h4>
 
     <% if (messages.length) { %>
       <div class="notification"><%- messages %></div>
     <% } else { %>
       <form action="/login" method="POST">
+        <label for="id">Adresse email :</label>
         <div class="input__group">
           <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">
           <span class="padding-10">@<%= domain %></span>
@@ -29,17 +30,14 @@
   </div>
 
   <div class="panel border-left-primary">
-    <div>
-      ℹ️&nbsp;<strong>Tu n'as pas encore d'adresse @<%= domain %> ?</strong><br>
+      ℹ️&nbsp;<strong>Pas encore d'adresse @<%= domain %> ?</strong><br>
       Tu peux demander à une autre personne qui en a une de te la créer.
-      Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails#creer-un-compte-email-a-un-nouveau-membre" target="_blank" title="lien vers la documentation pour créer un compte email">ici</a>.
-    </div>
-    <br>
-    <div>
-      ℹ️&nbsp;<strong>Tu as une adresse @<%= domain %>, mais tu as perdu ton mot de passe ?</strong><br>
-      Demande de l'aide sur le Slack #incubateur-secretariat. Un des administrateurs du compte OVH pourra t'aider.
-      Plus d'informations pour te connecter à ta boite mail <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">ici</a>.
-    </div>
+      Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails#creer-un-compte-email-a-un-nouveau-membre" target="_blank" title="lien vers la documentation pour créer un compte email">sur la documentation de l'incubateur</a>.
+  </div>
+  <div class="panel border-left-primary">
+      ℹ️&nbsp;<strong>Problème d'accès à ton adresse @<%= domain %> ?</strong><br>
+      Si tu as oublié ton mot de passe : demande de l'aide sur le Slack #incubateur-secretariat, un des administrateurs pourra t'aider.<br />
+      Si tu as besoin d'aide pour configurer ton client webmail : regarde la <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">documentation de l'incubateur</a>.
   </div>
 </div>
 
