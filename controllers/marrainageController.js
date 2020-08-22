@@ -33,7 +33,7 @@ function getDataFromToken(token) {
 }
 
 async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
-  const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+  const url = `${config.protocol}://${req.get('host')}`;
 
   const token = jwt.sign({
     newcomer: newcomer,
@@ -78,7 +78,7 @@ module.exports.createRequest = async function (req, res) {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const user = req.user;
-    const url = `${config.secure ? 'https' : 'http'}://${req.hostname}`;
+    const url = `${config.protocol}://${req.get('host')}`;
 
     await sendOnboarderRequestEmail(onboarder, newcomer, req)
     await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un·e marrain·e pour ${newcomer.id}`);
