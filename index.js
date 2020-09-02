@@ -17,6 +17,7 @@ emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
 marrainageController = require('./controllers/marrainageController');
 githubNotificationController = require('./controllers/githubNotificationController');
+homeController = require('./controllers/homeController');
 
 const app = express();
 
@@ -113,5 +114,7 @@ app.post('/notifications/github', githubNotificationController.processNotificati
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
+app.get('/home', homeController.getHome);
+
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
