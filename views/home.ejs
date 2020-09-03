@@ -20,10 +20,10 @@
   </div>
 
   <div class="panel">
-    <h4>Créer un compte email pour un nouveau membre de la communauté</h4>
+    <h4>Vérifier un utilisateur (Permet aussi de créer un compte email pour un nouveau membre)</h4>
     <form action="/users">
       <div class="form__group">
-        <label for="id">Adresse email :</label>
+        <label for="id">Adresse email du membre:</label>
         <div class="input__group">
           <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids">
           <span class="padding-10">@<%= domain %></span>
