@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const testUsers = require('./users.json');
 
-describe("Onboarding", () => {
+describe("Marrainage", () => {
 
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
@@ -50,7 +50,7 @@ describe("Onboarding", () => {
           res.text.should.include('Votre décision a été prise en compte')
           this.sendEmailStub.calledOnce.should.be.true;
 
-          const toEmail = this.sendEmailStub.args[0][0];
+          const toEmail = this.sendEmailStub.args[0][0][0];
           const subject = this.sendEmailStub.args[0][1];
           const emailBody = this.sendEmailStub.args[0][2];
 
