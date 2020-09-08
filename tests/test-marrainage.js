@@ -50,7 +50,7 @@ describe("Marrainage", () => {
           res.text.should.include('Votre décision a été prise en compte')
           this.sendEmailStub.calledOnce.should.be.true;
 
-          const toEmail = this.sendEmailStub.args[0][0][0];
+          const toEmail = this.sendEmailStub.args[0][0];
           const subject = this.sendEmailStub.args[0][1];
           const emailBody = this.sendEmailStub.args[0][2];
 
@@ -78,7 +78,7 @@ describe("Marrainage", () => {
 
           const newcomerEmailArgs = this.sendEmailStub.args[1]
 
-          const toEmail = newcomerEmailArgs[0];
+          const toEmail = newcomerEmailArgs[0][0];
           const subject = newcomerEmailArgs[1];
           const emailBody = newcomerEmailArgs[2];
 
