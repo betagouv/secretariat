@@ -104,6 +104,7 @@ app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
 app.get('/logout', logoutController.getLogout);
 app.get('/emails', emailsController.getEmails);
+app.get('/emails/expired', emailsController.getExpiredEmails);
 app.get('/users', usersController.getUsers);
 app.get('/users/:id', usersController.getUserById);
 app.post('/users/:id/email', usersController.createEmailForUser);

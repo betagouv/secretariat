@@ -31,6 +31,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
       const user = users.find(ui => ui.id === id);
 
       return {
+        id,
         email: email,
         github: user !== undefined,
         redirections: redirections.reduce(
@@ -38,6 +39,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
           []
         ),
         account: accounts.includes(id),
+        endDate: user ? user.end : undefined,
         expired:
           user &&
           user.end &&
@@ -63,6 +65,28 @@ module.exports.getEmails = async function (req, res) {
     console.error(err);
 
     res.render('emails', {
+      currentUser: req.user,
+      emails: [],
+      errors: ['Erreur interne'],
+    });
+  }
+}
+
+
+module.exports.getExpiredEmails = async function (req, res) {
+  try {
+    const emails = await emailWithMetadataMemoized();
+    emailsExpirated = emails.filter(user => user.expired)
+
+    res.render('expired', {
+      currentUser: req.user,
+      emailsExpirated,
+      errors: []
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.render('expired', {
       currentUser: req.user,
       emails: [],
       errors: ['Erreur interne'],
