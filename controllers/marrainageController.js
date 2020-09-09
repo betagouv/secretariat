@@ -32,36 +32,16 @@ function getDataFromToken(token) {
   return data;
 }
 
-async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
-  const url = `${config.protocol}://${req.get('host')}`;
-
+async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
   const token = jwt.sign({
     newcomer: newcomer,
     onboarder: onboarder
   }, config.secret);
 
-  const html = `
-    <h1>Hello ${onboarder.fullname} 👋,</h1>
-    <p>Tu as été sélectionné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
-    <p>Le marrain·e est un contact en dehors de l'équipe. Tout commence par prendre un café/thé ensemble !</p>
-    <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
-      <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
-        J'accepte
-      </button>
-    </a><br/>
-    <a href="${url}/marrainage/decline?details=${encodeURIComponent(token)}">
-      <button style="padding: 10px;border: none;box-shadow: 1px 1px 2px 0px #333;min-width: 280px;cursor: pointer;">
-        Désolé, je ne suis pas disponible
-      </button>
-    </a>
+  const marrainageAcceptUrl = `${config.protocol}://${req.get('host')}/marrainage/accept?details=${encodeURIComponent(token)}`;
+  const marrainageDeclineUrl = `${config.protocol}://${req.get('host')}/marrainage/decline?details=${encodeURIComponent(token)}`;
 
-    <p style="color: #999;font-size: 0.85em;">
-      Tu reçois ce message car tu es considéré comme membre de la communauté beta.gouv.fr. Si ce n'est pas le cas, signale-le sur <a href="secretariat@beta.gouv.fr">secretariat@beta.gouv.fr</a>.
-    </p>
-
-    <p>Bonne journée,</p>
-    <p>🤖 Le secrétariat</p>
-  `;
+  const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageRequestEmail.ejs", { newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl });
 
   try {
     return await utils.sendMail([utils.buildBetaEmail(onboarder.id),config.senderEmail], `Tu as été sélectionné·e comme marrain·e 🙌`, html);
@@ -79,10 +59,10 @@ module.exports.createRequest = async function (req, res) {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const user = req.user;
-    const url = `${config.protocol}://${req.get('host')}`;
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    await sendOnboarderRequestEmail(onboarder, newcomer, req)
-    await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${url}, je cherche un·e marrain·e pour ${newcomer.id}`);
+    await sendOnboarderRequestEmail(newcomer, onboarder, req)
+    await BetaGouv.sendInfoToSlack(`À la demande de ${user.id} sur ${secretariatUrl}, je cherche un·e marrain·e pour ${newcomer.id}`);
 
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
@@ -102,14 +82,7 @@ module.exports.acceptRequest = async function (req, res) {
     const newcomer = details.newcomer;
     const onboarder = details.onboarder;
 
-    const html = `
-      <h1>Hello ${newcomer.fullname}, ${onboarder.fullname} 👋,</h1>
-      <p>${onboarder.fullname} a accepté d'être marrain·e de ${newcomer.fullname}.</p>
-      <p>Vous trouverez plus d'informations sur le marrainage sur la <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">documentation de l'incubateur</a>.</p>
-      <p>Vous êtes tou.s.tes les deux en copie de cet email, vous pouvez commencer par prendre un café/thé de visu ou en virtuel, à vous de jouer ! </p>      
-      <p>Bonne journée,</p>
-      <p>🤖 Le secrétariat</p>
-    `;
+    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageAcceptEmail.ejs", { newcomer, onboarder });
 
     try {
       await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id),config.senderEmail], `Mise en contact pour marrainage`, html);
@@ -133,15 +106,9 @@ module.exports.declineRequest = async function (req, res) {
     const declinedOnboarder = details.onboarder;
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
-    await sendOnboarderRequestEmail(onboarder, newcomer, req);
+    await sendOnboarderRequestEmail(newcomer, onboarder, req);
 
-    const html = `
-      <h1>Hello ${newcomer.fullname} 👋,</h1>
-      <p>Malheureusement, ${declinedOnboarder.fullname} n'est pas disponible en ce moment.</p>
-      <p>Nous avons envoyé une demande de marrainage à ${onboarder.fullname}.</p>
-      <p>Bonne journée,</p>
-      <p>🤖 Le secrétariat</p>
-    `;
+    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageDeclineEmail.ejs", { newcomer, declinedOnboarder, onboarder });
 
     try {
       await utils.sendMail([utils.buildBetaEmail(newcomer.id),config.senderEmail], `La recherche de marrain·e se poursuit !`, html);

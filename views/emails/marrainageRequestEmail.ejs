@@ -1,0 +1,31 @@
+<h1>Hello <%= onboarder.fullname %> 👋,</h1>
+
+<p>
+  Tu as été sélectionné·e aléatoirement pour devenir
+  <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de <%= newcomer.fullname %>.
+</p>
+
+<p>
+  Le marrain·e est un contact en dehors de l'équipe.
+  Tout commence par prendre un café/thé ensemble !
+</p>
+
+<a href="<%= marrainageAcceptUrl %>">
+  <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
+    J'accepte
+  </button>
+</a>
+<br/>
+<a href="<%= marrainageDeclineUrl %>">
+  <button style="padding: 10px;border: none;box-shadow: 1px 1px 2px 0px #333;min-width: 280px;cursor: pointer;">
+    Désolé, je ne suis pas disponible
+  </button>
+</a>
+
+<p style="color: #999;font-size: 0.85em;">
+  Tu reçois ce message car tu es considéré comme membre de la communauté beta.gouv.fr.
+  Si ce n'est pas le cas, signale-le sur <a href="secretariat@beta.gouv.fr">secretariat@beta.gouv.fr</a>.
+</p>
+
+<p>Bonne journée,</p>
+<p>🤖 Le secrétariat</p>

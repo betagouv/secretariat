@@ -1,3 +1,5 @@
+const ejs = require('ejs');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
