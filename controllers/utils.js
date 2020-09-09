@@ -89,7 +89,7 @@ module.exports.userInfos = async function(id, isCurrentUser) {
     console.error(err);
 
     throw new Error(
-      `Problème pour récupérer les infos de l'utilisateur·rice ${userInfos.id}`
+      `Problème pour récupérer les infos de l'utilisateur·rice ${id}`
     );
   }
 }

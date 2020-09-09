@@ -23,7 +23,6 @@ const betaOVH = {
       return await ovh.requestPromised('GET', url, {});
     } catch (err) {
       if (err.error == '404') return null;
-
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
@@ -116,10 +115,8 @@ const betaOVH = {
     try {
       return await ovh.requestPromised('GET', url, {});
     } catch (err) {
-      if (err.error != '404') {
-        throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
-      }
-      return null;
+      if (err.error == '404') return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
   changePassword: async (id, password) => {

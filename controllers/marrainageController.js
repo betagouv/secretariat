@@ -1,4 +1,6 @@
+const ejs = require('ejs');
 const jwt = require('jsonwebtoken');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
@@ -41,7 +43,7 @@ async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
   const marrainageAcceptUrl = `${config.protocol}://${req.get('host')}/marrainage/accept?details=${encodeURIComponent(token)}`;
   const marrainageDeclineUrl = `${config.protocol}://${req.get('host')}/marrainage/decline?details=${encodeURIComponent(token)}`;
 
-  const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageRequestEmail.ejs", { newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl });
+  const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageRequest.ejs", { newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl });
 
   try {
     return await utils.sendMail([utils.buildBetaEmail(onboarder.id),config.senderEmail], `Tu as été sélectionné·e comme marrain·e 🙌`, html);
@@ -82,7 +84,7 @@ module.exports.acceptRequest = async function (req, res) {
     const newcomer = details.newcomer;
     const onboarder = details.onboarder;
 
-    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageAcceptEmail.ejs", { newcomer, onboarder });
+    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageAccept.ejs", { newcomer, onboarder });
 
     try {
       await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id),config.senderEmail], `Mise en contact pour marrainage`, html);
@@ -108,7 +110,7 @@ module.exports.declineRequest = async function (req, res) {
     const onboarder = await selectRandomOnboarder(newcomer.id);
     await sendOnboarderRequestEmail(newcomer, onboarder, req);
 
-    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageDeclineEmail.ejs", { newcomer, declinedOnboarder, onboarder });
+    const html = await ejs.renderFile(__dirname + "/../views/emails/marrainageDecline.ejs", { newcomer, declinedOnboarder, onboarder });
 
     try {
       await utils.sendMail([utils.buildBetaEmail(newcomer.id),config.senderEmail], `La recherche de marrain·e se poursuit !`, html);

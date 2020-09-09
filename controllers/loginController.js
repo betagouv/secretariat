@@ -21,7 +21,7 @@ function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
-async function sendLoginEmail(id, token) {
+async function sendLoginEmail(id, url, token) {
   const user = await BetaGouv.userInfosById(id);
 
   if (!user) {
@@ -37,7 +37,7 @@ async function sendLoginEmail(id, token) {
   }
 
   const email = utils.buildBetaEmail(id);
-  const loginUrl = `${config.protocol}://${req.get('host')}/users?token=${encodeURIComponent(token)}`;
+  const loginUrl = `${url}/users?token=${encodeURIComponent(token)}`;
 
   const html = await ejs.renderFile(__dirname + "/../views/emails/login.ejs", { loginUrl });
 
@@ -81,9 +81,11 @@ module.exports.postLogin = async function (req, res) {
     return res.redirect('/login');
   }
 
+  const secretariatUrl = `${config.protocol}://${req.get('host')}`;
+
   try {
-    const token = generateToken()
-    await sendLoginEmail(req.body.id, token);
+    const token = generateToken();
+    await sendLoginEmail(req.body.id, secretariatUrl, token);
     await saveToken(req.body.id, token)
 
     renderLogin(req, res, {
