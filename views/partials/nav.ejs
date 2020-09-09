@@ -14,17 +14,36 @@
     <link rel="stylesheet" href="/static/css/main.css">
   </head>
   <body>
-    <div id="dashboard" class="dashboard" style="min-height: calc(100vh);">
+    <div id="dashboard" class="dashboard">
         <aside class="side-menu" role="navigation" id="navigation">
-            <h4 style="padding: 32px;margin: 0;">🤖&nbsp;Secrétariat</h4>
-            <ul>
+            <h4 id="logo">🤖&nbsp;Secrétariat</h4>
+            <ul style="margin-bottom: 5px;">
                 <li>
                     <a data-toggle="account" class="nav-item active">Mon compte</a>
                 </li>
                 <li>
                     <a data-toggle="community" class="nav-item">Communauté</a>
                 </li>
+                <li class="nav-end" style="margin-top: 50px;">
+                    <hr />
+                    <div>
+                        Identifié·e en tant que<br />
+                        <span style="font-weight: bold;"><%= userInfos.id %></span>
+                    </div>
+                    <hr />
+                    <a href="/logout">Se déconnecter</a>
+                    <hr />
+                    <img src="/static/images/betagouv.png" width="150" alt="">
+                    <a href="https://github.com/betagouv/secretariat/" target="_blank" style="font-size: 0.8em; color: #53657d;">Code source du sécretariat</a>
+                </li>
             </ul>
         </aside>
         <main role="main" class="main">
+        <% if (errors.length) { %>
+            <div class="notification error"><%= errors %></div>
+        <% } %>
+    
+        <% if (messages.length) { %>
+            <div class="notification"><%- messages %></div>
+        <% } %>
         <section class="section section-grey no-padding">

@@ -1,12 +1,64 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
+const PromiseMemoize = require('promise-memoize');
+const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
+const buildBetaEmail = require('./utils').buildBetaEmail;
 
+const getBetaEmailId = email => email && email.split('@')[0];
+
+const emailWithMetadataMemoized = PromiseMemoize(
+  async () => {
+    const [accounts, redirections, users] = await Promise.all([
+      BetaGouv.accounts(),
+      BetaGouv.redirections(),
+      BetaGouv.usersInfos()
+    ]);
+
+    console.log('users', users.length);
+
+    const emails = Array.from(
+      new Set([
+        ...redirections.reduce(
+          (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
+          []
+        ),
+        ...accounts.map(buildBetaEmail)
+      ])
+    ).sort();
+
+    return emails.map(email => {
+      const id = getBetaEmailId(email);
+      const user = users.find(ui => ui.id === id);
+
+      return {
+        id,
+        email: email,
+        github: user !== undefined,
+        redirections: redirections.reduce(
+          (acc, r) => (r.from === email ? [...acc, r.to] : acc),
+          []
+        ),
+        account: accounts.includes(id),
+        endDate: user ? user.end : undefined,
+        expired:
+          user &&
+          user.end &&
+          new Date(user.end).getTime() < new Date().getTime()
+      };
+    });
+  },
+  {
+    maxAge: 120000
+  }
+);
 
 module.exports.getHome = async function (req, res) {
   if (req.query.id) {
     return res.redirect(`/users/${req.query.id}`);
   }
+  const emails = await emailWithMetadataMemoized();
+  const expiredEmails = emails.filter(user => user.expired)
 
   try {
     const users = await BetaGouv.usersInfos();
@@ -23,7 +75,9 @@ module.exports.getHome = async function (req, res) {
       canCreateEmail: currentUser.canCreateEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
-      redirections: currentUser.redirections
+      redirections: currentUser.redirections,
+      emails: emails,
+      expiredEmails: expiredEmails
     });
   } catch (err) {
     console.error(err);

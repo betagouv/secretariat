@@ -68,8 +68,21 @@ a[target="_blank"]::after {
   border-left: 7.5px solid var(--theme-primary);
 }
 
-.module {
-  max-width: 1100px;
+#dashboard {
+  height: calc(100vh);
+  min-height: calc(100vh);
+}
+
+#navigation {
+  position: relative;
+}
+
+.main {
+  overflow-y: auto;
+}
+
+.module, .notification {
+  max-width: 1000px;
 }
 
 .module button.button, .module a.button {
@@ -78,22 +91,88 @@ a[target="_blank"]::after {
 
 .panel {
   margin-bottom: var(--space-m);
+  overflow-x: auto;
 }
 
-.panel p {
+.panel p, .panel label {
   color: #53657d;
   margin-top: 0;
+}
+
+.panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.panel th {
+  text-align: left;
+}
+
+.panel tr {
+  border-bottom: solid 1px #e0e0e0;
 }
 
 h4, h5, h6 {
   margin-bottom: 10px;
 }
 
+.nav-end {
+  display: block;
+  padding: var(--space-s) var(--space-l);
+  color: #53657d;
+  font-size: 0.9em;
+  position: absolute;
+  bottom: 10px;
+}
+
+.main-end {
+  display: none;
+  padding: 0px 24px;
+  margin-bottom: 24px;
+}
+
+.side-menu .nav-end a {
+  padding: 0;
+  text-decoration: underline;
+  color: #0053b3;
+}
+#logo {
+  padding: 32px;
+  font-size: 1.25em;
+  margin: 0;
+  border-bottom: none;
+}
+.dashboard .main {
+  padding: var(--space-l);
+}
+
 /* media */
 
-@media (max-width: 600px) {
-  body {
-    border-top: 16px solid #067b94;
+@media (max-width: 749px) {
+  .nav-end {
+    display: none;
+  }
+
+  .main-end {
+    display: block;
+  }
+
+  #logo {
+    padding: 10px 32px;
+    font-size: 1em;
+    border-bottom: solid 2px #006be6;
+  }
+
+  .dashboard .main {
+    padding: 5px;
+  }
+
+  #dashboard {
+    height: auto;
+  }
+
+  .main {
+    overflow-y: unset;
   }
 }
 

@@ -75,7 +75,7 @@
             <h6 style="margin: 10px 0;">Rediriger vers une autre adresse mail</h6>
 
             <% redirections.forEach(function(redirection) { %>
-                <div class="padding-10">
+                <div style="padding-bottom: 10px;">
                 <%= redirection.to %>
                 <% if (canCreateRedirection) { %>
                     <form style="display: inline" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
@@ -88,13 +88,10 @@
                 <li><strong>Aucune</strong></li>
             <% } %>
               <% if (canCreateRedirection) { %>
-                <p>
-                    Rediriger mes mails <%= domain %> vers :
-                </p>
                 <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST">
-                    
                     <div class="form__group">
-                      <input name="to_email" type="email" required>
+                        <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
+                        <input name="to_email" type="email" required>
                     </div>
                     <div class="input__group" style="margin: 10px 0;">
                       <input type="checkbox" name="keep_copy" value="true">
