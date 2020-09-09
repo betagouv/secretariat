@@ -43,6 +43,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   const html = `
     <h1>Hello ${onboarder.fullname} 👋,</h1>
     <p>Tu as été sélectionné·e aléatoirement pour devenir <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">marrain·e</a> de ${newcomer.fullname}.</p>
+    <p>Le marrain·e est un contact en dehors de l'équipe. Tout commence par prendre un café/thé ensemble !</p>
     <a href="${url}/marrainage/accept?details=${encodeURIComponent(token)}">
       <button style="margin-bottom: 15px;background: green;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
         J'accepte
@@ -63,7 +64,7 @@ async function sendOnboarderRequestEmail(onboarder, newcomer, req) {
   `;
 
   try {
-    return await utils.sendMail(utils.buildBetaEmail(onboarder.id), `Tu as été sélectionné·e comme marrain·e 🙌`, html);
+    return await utils.sendMail([utils.buildBetaEmail(onboarder.id),config.senderEmail], `Tu as été sélectionné·e comme marrain·e 🙌`, html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -105,13 +106,13 @@ module.exports.acceptRequest = async function (req, res) {
       <h1>Hello ${newcomer.fullname}, ${onboarder.fullname} 👋,</h1>
       <p>${onboarder.fullname} a accepté d'être marrain·e de ${newcomer.fullname}.</p>
       <p>Vous trouverez plus d'informations sur le marrainage sur la <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/bienvenue/marrainage">documentation de l'incubateur</a>.</p>
-      <p>Vous êtes tou.s.tes les deux en copie de cet email, à vous de jouer ! </p>
+      <p>Vous êtes tou.s.tes les deux en copie de cet email, vous pouvez commencer par prendre un café/thé de visu ou en virtuel, à vous de jouer ! </p>      
       <p>Bonne journée,</p>
       <p>🤖 Le secrétariat</p>
     `;
 
     try {
-      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], `Mise en contact pour marrainage`, html);
+      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id),config.senderEmail], `Mise en contact pour marrainage`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
@@ -143,7 +144,7 @@ module.exports.declineRequest = async function (req, res) {
     `;
 
     try {
-      await utils.sendMail(utils.buildBetaEmail(newcomer.id), `La recherche de marrain·e se poursuit !`, html);
+      await utils.sendMail([utils.buildBetaEmail(newcomer.id),config.senderEmail], `La recherche de marrain·e se poursuit !`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
