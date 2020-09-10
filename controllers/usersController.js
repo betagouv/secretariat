@@ -80,7 +80,7 @@ module.exports.createEmailAccount = async function (req, res) {
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur·rice.");
+      throw new Error("Vous n'avez pas le droit de créer le compte email de l'utilisateur·rice.");
     }
 
     if (!isCurrentUser) {
@@ -152,7 +152,7 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur·rice.");
+      throw new Error("Vous n'avez pas le droit de créer le compte email de l'utilisateur·rice.");
     }
 
     if (!isCurrentUser) {
@@ -224,7 +224,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de créer de redirection.");
+      throw new Error("Vous n'avez pas le droit de créer de redirection.");
     }
 
     console.log(
@@ -264,7 +264,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     // TODO: vérifier si l'utilisateur·rice existe sur Github ?
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de supprimer cette redirection.");
+      throw new Error("Vous n'avez pas le droit de supprimer cette redirection.");
     }
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
@@ -308,7 +308,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
     }
 
     if (!user.canChangePassword) {
-      throw new Error("Vous n'avez pas le droits de changer le mot de passe.");
+      throw new Error("Vous n'avez pas le droit de changer le mot de passe.");
     }
 
     const password = req.body.new_password;
