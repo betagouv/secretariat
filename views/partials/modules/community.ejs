@@ -29,7 +29,7 @@
         <h3>
             Liste des emails
         </h3>
-
+        <button class="button-outline small primary" style="margin-bottom:10px;" id="redirection-show">Afficher les redirections</button>
         <table class="sortable"><!-- why not use 'table' class as well ? conflicts 'sortable' class (thead) -->
             <thead>
               <tr>
@@ -37,7 +37,7 @@
                 <th>Fiche sur Github</th>
                 <th>Date de fin OK</th>
                 <th>Compte Email</th> 
-                <th>Redirections</th>
+                <th class="hidden redirection">Redirections</th>
               </tr>
             </thead>
             <tbody>
@@ -47,9 +47,7 @@
                   <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                   <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                   <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                  <td data-id="<%= email.id %>" class="cell-redirections">
-                    <button data-id="<%= email.id %>" class="button-underline button-redirections button-outline small primary">Afficher les redirections</button>
-                  </td> 
+                  <td data-id="<%= email.id %>" class="cell-redirections hidden redirection"></td> 
                 </tr>
               <% }) %>
             </tbody>

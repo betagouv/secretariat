@@ -204,17 +204,28 @@ module.exports.createEmailForUser = async function (req, res) {
   }
 }
 
-module.exports.getRedirectionForUser = async function(req, res) { // TODO: add tests
-  const id = req.params.id;
-
+module.exports.getRedirections = async function(req, res) { // TODO: add tests
   try {
-    const redirections = await BetaGouv.redirectionsForId({ from: id });
-    res.json(redirections)
+    const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
+    const getBetaEmailId = email => email && email.split('@')[0];
+    const ovhRedirections = await BetaGouv.redirections();
+    const emails = ovhRedirections.reduce(
+      (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
+      []
+    );
+    const redirections = emails.map(email => {
+      return {
+        id: getBetaEmailId(email),
+        redirections: ovhRedirections.reduce(
+          (acc, r) => (r.from === email ? [...acc, r.to] : acc),
+          []
+        ),
+      }
+    })
+    res.json(redirections);
   } catch (err) {
     console.error(err);
-
-    req.flash('error', err.message);
-    res.redirect(`/home#community`);
+    res.status(500)
   }
 }
 

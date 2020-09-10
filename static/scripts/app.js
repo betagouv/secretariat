@@ -34,27 +34,35 @@
   }
 
   window.addEventListener('popstate', () => navigateToHash());
-  window.addEventListener('DOMContentLoaded', () => navigateToHash());
+  window.addEventListener('DOMContentLoaded', () => {
+    navigateToHash();
+  });
 
-  const redirectionButtons = document.querySelectorAll('button.button-redirections[data-id]')
-  for (let i = 0; i < redirectionButtons.length; i++) {
-    const button = redirectionButtons[i];
-    const id = button.getAttribute('data-id');
-    const tableCell = document.querySelector(`td.cell-redirections[data-id="${id}"]`)
-
-    button.addEventListener('click', () => {
-      tableCell.innerHTML = 'Un instant svp...';
-      return window.fetch(`/users/${id}/redirections`)
-        .then((response) => {
-          if (!response.ok) {
-            return 'Erreur'
-          }
-          return response.json()
-            .then(x => x.map(y => `<li>${y.to}</li>`).join(' '));
-        })
-        .then((displayHtml) => {
-          tableCell.innerHTML = displayHtml || 'Pas de redirections';
-        })
-    });
-  }
+  const redirectionButton = document.getElementById('redirection-show')
+  redirectionButton.addEventListener('click', () => {
+    return window.fetch(`/redirections`)
+      .then((response) => {
+        if (!response.ok) {
+          alert('Oops, il y a eu une erreur, veuillez essayer plus tard');
+          return null;
+        }
+        return response.json();
+      })
+      .then((redirections) => {
+        if (!redirections)
+          return;
+        for (let i = 0; i < redirections.length; i++) {
+          const redirection = redirections[i];
+          const tableCell = document.querySelector(`td.cell-redirections[data-id="${redirection.id}"]`)
+          if (!tableCell)
+            continue
+          if (redirection.redirections.length > 0) 
+            tableCell.innerHTML = redirection.redirections.map(x => `<li>${x}</li>`).join(' ')
+        }
+        const redirectionElements = document.querySelectorAll('.redirection');
+        for (let i = 0; i < redirectionElements.length; i++)
+          redirectionElements[i].classList.remove('hidden');
+        redirectionButton.classList.add('hidden')
+      })
+  })
 }());
