@@ -9,9 +9,13 @@
                     <% if (userInfos) { %>
                     <p style="color: #0053b3; font-weight: bold;"><%= userInfos.fullname %></p>
                     <% } %>
+                    <% if (userInfos.start) { %>
                     <p>
-                        <span style="font-weight: bold">Mission : </span>
+                        <span style="font-weight: bold">Mission :</span>
+                        du <%= userInfos.start %>
+                        <% if (userInfos.end) { %> du <%= userInfos.end %><% } %>
                     </p>
+                    <% } %>
                     <% if (userInfos.employer) { %>
                     <p>
                         <span style="font-weight: bold">Employeur : </span> <%= userInfos.employer %>
