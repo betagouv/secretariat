@@ -146,6 +146,11 @@ h4, h5, h6 {
   padding: var(--space-l);
 }
 
+
+a.button[target="_blank"]::after {
+  content:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAAD1BMVEUAAACjo6Pn5+fDw8P///8mXC3WAAAABHRSTlMAfb49zZRSvgAAADBJREFUCNdjAAIXFxBicmFwYGAQUQGSjI4sQFJEgIHBgdmRAUgyGAAxUBZOugCBAwCrDAY9nvSvKAAAAABJRU5ErkJggg==');
+}
+
 /* media */
 
 @media (max-width: 749px) {
