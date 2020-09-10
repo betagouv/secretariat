@@ -109,6 +109,7 @@ app.get('/users', usersController.getUsers);
 app.get('/users/:id', usersController.getUserById);
 app.post('/users/:id/email', usersController.createEmailForUser);
 app.post('/users/emailAccount', usersController.createEmailAccount);
+app.get('/users/:id/redirections', usersController.getRedirectionForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);

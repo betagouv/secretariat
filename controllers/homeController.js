@@ -9,9 +9,8 @@ const getBetaEmailId = email => email && email.split('@')[0];
 
 const emailWithMetadataMemoized = PromiseMemoize(
   async () => {
-    const [accounts, redirections, users] = await Promise.all([
+    const [accounts, users] = await Promise.all([
       BetaGouv.accounts(),
-      BetaGouv.redirections(),
       BetaGouv.usersInfos()
     ]);
 
@@ -19,10 +18,6 @@ const emailWithMetadataMemoized = PromiseMemoize(
 
     const emails = Array.from(
       new Set([
-        ...redirections.reduce(
-          (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
-          []
-        ),
         ...accounts.map(buildBetaEmail)
       ])
     ).sort();
@@ -35,10 +30,6 @@ const emailWithMetadataMemoized = PromiseMemoize(
         id,
         email: email,
         github: user !== undefined,
-        redirections: redirections.reduce(
-          (acc, r) => (r.from === email ? [...acc, r.to] : acc),
-          []
-        ),
         account: accounts.includes(id),
         endDate: user ? user.end : undefined,
         expired:

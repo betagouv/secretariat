@@ -204,6 +204,20 @@ module.exports.createEmailForUser = async function (req, res) {
   }
 }
 
+module.exports.getRedirectionForUser = async function(req, res) { // TODO: add tests
+  const id = req.params.id;
+
+  try {
+    const redirections = await BetaGouv.redirectionsForId({ from: id });
+    res.json(redirections)
+  } catch (err) {
+    console.error(err);
+
+    req.flash('error', err.message);
+    res.redirect(`/home#community`);
+  }
+}
+
 module.exports.createRedirectionForUser = async function (req, res) {
   const id = req.params.id;
 
