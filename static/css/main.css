@@ -163,6 +163,9 @@ a.button[target="_blank"]::after {
   color: #8393a7 ;
   font-size: 0.875em;
 }
+label.switch .slider::before {
+  bottom: 0.15em;
+}
 
 /* media */
 

@@ -29,7 +29,13 @@
         <h3>
             Liste des emails
         </h3>
-        <button class="button-outline small primary" style="margin-bottom:10px;" id="redirection-show">Afficher les redirections</button>
+
+        <label class="switch">
+          <input type="checkbox" name="redirection-show" id="redirection-show">
+          <span class="slider"></span>
+          Afficher les redirections
+        </label>
+        <hr />
         <table class="sortable"><!-- why not use 'table' class as well ? conflicts 'sortable' class (thead) -->
             <thead>
               <tr>
@@ -44,7 +50,7 @@
                 <tr>
                   <td>
                     <%= email.email %>
-                    <div data-id="<%= email.id %>" class="redirection-list">
+                    <div data-id="<%= email.id %>" class="redirection-list hidden">
 
                     </div>
                   </td>

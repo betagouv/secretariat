@@ -1,6 +1,7 @@
 (function () {
   "use strict";
 
+  let redirectionsFetched = false;
   const navItems = document.getElementById('navigation').getElementsByClassName('nav-item');
   const activeClass = 'active';
 
@@ -39,26 +40,37 @@
   });
 
   const redirectionButton = document.getElementById('redirection-show')
-  redirectionButton.addEventListener('click', () => {
+
+  function fetchRedirections() {
+    redirectionButton.setAttribute('disabled', '')
     return window.fetch(`/redirections`)
       .then((response) => {
-        if (!response.ok) {
-          alert('Oops, il y a eu une erreur, veuillez essayer plus tard');
-          return null;
-        }
+        redirectionButton.removeAttribute('disabled')
+        if (!response.ok)
+          throw new Error('Oops, il y a eu une erreur, veuillez essayer plus tard');
         return response.json();
       })
       .then((redirections) => {
-        if (!redirections)
-          return;
         for (let i = 0; i < redirections.length; i++) {
           const redirection = redirections[i];
-          const container = document.querySelector(`td div.redirection-list[data-id="${redirection.id}"]`)
-          if (!container)
-            continue
-          if (redirection.redirections.length > 0) 
+          const container = document.querySelector(`td .redirection-list[data-id="${redirection.id}"]`)
+          if (container && redirection.redirections.length > 0)
             container.innerHTML = redirection.redirections.map(x => `${x}<br />`).join(' ')
         }
       })
-  })
+  }
+
+  redirectionButton.addEventListener('click', (e) => {
+    const isChecked = e.target.checked;
+    if (!redirectionsFetched) {
+      fetchRedirections()
+        .then(() => redirectionsFetched = true)
+        .catch(alert);
+    }
+    document.querySelectorAll('.redirection-list').forEach(element => {
+      isChecked ? element.classList.remove('hidden') : element.classList.add('hidden')
+    })
+  });
+
+
 }());
