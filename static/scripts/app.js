@@ -53,16 +53,12 @@
           return;
         for (let i = 0; i < redirections.length; i++) {
           const redirection = redirections[i];
-          const tableCell = document.querySelector(`td.cell-redirections[data-id="${redirection.id}"]`)
-          if (!tableCell)
+          const container = document.querySelector(`td div.redirection-list[data-id="${redirection.id}"]`)
+          if (!container)
             continue
           if (redirection.redirections.length > 0) 
-            tableCell.innerHTML = redirection.redirections.map(x => `<li>${x}</li>`).join(' ')
+            container.innerHTML = redirection.redirections.map(x => `${x}<br />`).join(' ')
         }
-        const redirectionElements = document.querySelectorAll('.redirection');
-        for (let i = 0; i < redirectionElements.length; i++)
-          redirectionElements[i].classList.remove('hidden');
-        redirectionButton.classList.add('hidden')
       })
   })
 }());

@@ -112,6 +112,10 @@ a[target="_blank"]::after {
   border-bottom: solid 1px #e0e0e0;
 }
 
+.panel td {
+  vertical-align: top;
+}
+
 h4, h5, h6 {
   margin-bottom: 10px;
 }
@@ -155,10 +159,10 @@ a.button[target="_blank"]::after {
   content:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAAD1BMVEUAAACjo6Pn5+fDw8P///8mXC3WAAAABHRSTlMAfb49zZRSvgAAADBJREFUCNdjAAIXFxBicmFwYGAQUQGSjI4sQFJEgIHBgdmRAUgyGAAxUBZOugCBAwCrDAY9nvSvKAAAAABJRU5ErkJggg==');
 }
 
-td.cell-redirections {
+.redirection-list {
+  color: #8393a7 ;
   font-size: 0.875em;
 }
-
 
 /* media */
 

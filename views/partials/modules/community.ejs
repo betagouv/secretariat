@@ -37,17 +37,20 @@
                 <th>Fiche sur Github</th>
                 <th>Date de fin OK</th>
                 <th>Compte Email</th> 
-                <th class="hidden redirection">Redirections</th>
               </tr>
             </thead>
             <tbody>
               <% emails.forEach(function(email) { %>
                 <tr>
-                  <td><%= email.email %></td>
+                  <td>
+                    <%= email.email %>
+                    <div data-id="<%= email.id %>" class="redirection-list">
+
+                    </div>
+                  </td>
                   <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                   <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                   <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                  <td data-id="<%= email.id %>" class="cell-redirections hidden redirection"></td> 
                 </tr>
               <% }) %>
             </tbody>
