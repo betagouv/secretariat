@@ -100,14 +100,6 @@ a[target="_blank"]::after {
   border-collapse: collapse;
 }
 
-.panel th {
-  text-align: left;
-}
-
-.panel tr {
-  border-bottom: solid 1px #e0e0e0;
-}
-
 .panel td {
   vertical-align: top;
 }
@@ -136,12 +128,14 @@ h4, h5, h6 {
   text-decoration: underline;
   color: #0053b3;
 }
+
 #logo {
   padding: 32px;
   font-size: 1.25em;
   margin: 0;
   border-bottom: none;
 }
+
 .dashboard .main {
   padding: var(--space-l);
 }
@@ -164,12 +158,12 @@ a.button[target="_blank"]::after {
   display: none;
 }
 
-.hidden-mobile {
-  display: initial;
-}
-
 #drawer-toggle-arrow {
   font-size: 11px;
+}
+
+.hidden-mobile {
+  display: initial;
 }
 
 .rotate180 {

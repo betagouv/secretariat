@@ -13,7 +13,6 @@ const knex = require('./db');
 indexController = require('./controllers/indexController');
 loginController = require('./controllers/loginController');
 logoutController = require('./controllers/logoutController');
-emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
 marrainageController = require('./controllers/marrainageController');
 githubNotificationController = require('./controllers/githubNotificationController');
@@ -105,12 +104,7 @@ app.get('/', indexController.getIndex);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
 app.get('/logout', logoutController.getLogout);
-app.get('/emails', emailsController.getEmails);
-app.get('/emails/expired', emailsController.getExpiredEmails);
-app.get('/users', usersController.getUsers);
-app.get('/users/:id', usersController.getUserById);
 app.post('/users/:id/email', usersController.createEmailForUser);
-app.post('/users/emailAccount', usersController.createEmailAccount);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);
@@ -121,6 +115,7 @@ app.get('/marrainage/decline', marrainageController.declineRequest);
 
 app.get('/account', accountController.getAccount);
 app.get('/community', communityController.getCommunity);
+app.get('/community/:id', communityController.getMember);
 app.get('/admin', adminController.getAdmin);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

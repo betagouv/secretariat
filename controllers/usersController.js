@@ -59,79 +59,6 @@ module.exports.getUserById = async function (req, res) {
   }
 }
 
-// TODO: temporary, will replace method createEmailForUser
-module.exports.createEmailAccount = async function (req, res) {
-  const emailId = req.body.email_id;
-  const isCurrentUser = req.user.id === emailId;
-
-  try {
-    const user = await utils.userInfos(emailId, isCurrentUser);
-
-    if (!user.userInfos) {
-      throw new Error(
-        `L'utilisateur·rice ${emailId} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
-      );
-    }
-
-    if (user.isExpired) {
-      throw new Error(
-        `Le compte de l'utilisateur·rice ${emailId} est expiré.`
-      );
-    }
-
-    if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droit de créer le compte email de l'utilisateur·rice.");
-    }
-
-    if (!isCurrentUser) {
-      const loggedUserInfo = await BetaGouv.userInfosById(req.user.id)
-      if (utils.checkUserIsExpired(loggedUserInfo)) {
-        throw new Error("Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.");
-      }
-    }
-
-    const password = Math.random()
-      .toString(36)
-      .slice(-10);
-    const email = utils.buildBetaEmail(emailId);
-
-    console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
-    );
-
-    const url = `${config.protocol}://${req.get('host')}`;
-
-    const message = `À la demande de ${req.user.id} sur <${url}>, je crée un compte mail pour ${emailId}`;
-
-    await BetaGouv.sendInfoToSlack(message);
-    await BetaGouv.createEmail(emailId, password);
-
-    const html = `
-      <h1>Ton compte ${email} a été créé !</h1>
-      <ul>
-      <li>Identifiant de login : ${email}</li>
-      <li>Mot de passe : ${password}</li>
-      <li>Comment utiliser ton compte email, voici les infos OVH pour configurer ta boite mail : <a href="https://docs.ovh.com/fr/emails/">https://docs.ovh.com/fr/emails/</a></li>
-      <li>Gérer son compte mail sur le secrétariat BetaGouv : <a href="${url}">${url}</a></li>
-      </ul>
-      <p>🤖 Le secrétariat</p>`;
-
-    try {
-      await utils.sendMail(req.body.to_email, `Création compte ${email}`, html);
-    } catch (err) {
-      throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
-    }
-
-    req.flash('message', 'Le compte email a bien été créé.');
-    res.redirect(`/community`);
-  } catch (err) {
-    console.error(err);
-
-    req.flash('error', err.message);
-    res.redirect(`/community`);
-  }
-}
-
 module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
   const isCurrentUser = req.user.id === id;
@@ -195,12 +122,12 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     req.flash('message', 'Le compte email a bien été créé.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community`);
   }
 }
 
@@ -247,12 +174,12 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     req.flash('message', 'La redirection a bien été créé.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }
 
@@ -280,12 +207,12 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     }
 
     req.flash('message', 'La redirection a bien été supprimée.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }
 
@@ -336,11 +263,11 @@ module.exports.updatePasswordForUser = async function (req, res) {
     await BetaGouv.changePassword(id, password);
 
     req.flash('message', 'Le mot de passe a bien été modifié.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }

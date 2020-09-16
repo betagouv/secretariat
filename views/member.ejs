@@ -1,0 +1,77 @@
+<%- include('partials/nav-header'); -%>
+<div class="module">
+    <div class="panel" style="min-width: 100%;">
+        <div>
+            <h3>
+                <%= userInfos.fullname %>
+            </h3>
+            <% if (userInfos.start) { %>
+            <p>
+                <span style="font-weight: bold">Mission :</span>
+                du <%= userInfos.start %>
+                <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
+            </p>
+            <% } %>
+            <% if (userInfos.employer) { %>
+            <p>
+                <span style="font-weight: bold">Employeur : </span> <%= userInfos.employer %>
+            </p>
+            <% } %>
+            <% if (userInfos.github) { %>
+            <p>
+                <span style="font-weight: bold">Compte Github : </span> <a
+                    href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+            </p>
+            <% } %>
+        </div>
+        <a class="button" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+    </div>
+
+    <div class="panel">
+        <h3>L'accueillir ?</h3>
+        <form class="no-margin" action="/marrainage" method="POST">
+            <div class="form__group" style="margin-bottom: 10px;">
+                <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                    Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
+                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+            </div>
+            <button class="button" type="submit">Chercher un·e marrain·e</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <h3>Compte mail</h3>
+
+        <% if (emailInfos) { %>
+        <p style="color: #53657d ; font-weight: bold;"><%= emailInfos.email %></p>
+        <% }%>
+        <% if (canCreateEmail) { %>
+        <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
+        <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST">
+            <div class="form__group">
+                <label><span style="color: rgb(38, 53, 63)">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
+                <input name="to_email" type="email" required>
+            </div>
+            <div class="form__group">
+                <button class="button" type="submit">Créer un compte</button>
+            </div>
+        </form>
+        <% } else { %>
+        <% if (isExpired) { %>
+        <div class="notification error">
+            Le compte <%= userInfos.id %> est expiré.
+        </div>
+        <% } %>
+        <% } %>
+        <div style="color: #0053b3; font-weight: bold; margin-top: 10px;">Redirections</div>
+        <% redirections.forEach(function(redirection) { %>
+        <div style="padding-bottom: 10px;">
+            <%= redirection.to %>
+        </div>
+        <% }) %>
+        <% if (redirections.length === 0) { %>
+        <strong>Aucune</strong>
+        <% } %>
+    </div>
+</div>
+<%- include('partials/nav-footer'); -%>
