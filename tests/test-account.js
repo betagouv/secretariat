@@ -50,11 +50,12 @@ describe("Account", () => {
     });
 
     it("should include a link to OVH's webmail", (done) => {
+      const domain = `${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@betagouv.ovh"')
+          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${domain}"`)
           done();
         })
     });
