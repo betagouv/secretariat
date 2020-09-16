@@ -18,10 +18,12 @@
 <body>
     <div id="dashboard" class="dashboard">
         <aside class="side-menu" role="navigation" id="navigation">
+            <button id="drawer-toggle" class="button-outline small primary">Menu ▼</button>
             <h4 id="logo">🤖&nbsp;Secrétariat</h4>
-            <ul style="margin-bottom: 5px;">
+            <ul style="margin-bottom: 5px;" class="hidden-mobile" id="drawer">
                 <li>
-                    <a href="/account" id="account" class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
+                    <a href="/account" id="account" 
+                        class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
                         Mon compte
                     </a>
                 </li>
@@ -32,7 +34,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/admin" id="admin" class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                    <a href="/admin" id="admin" 
+                        class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
                         Administration
                     </a>
                 </li>

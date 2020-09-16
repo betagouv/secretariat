@@ -13,10 +13,6 @@ body {
   padding-bottom: 2.5em;
 }
 
-.hidden {
-  display: none !important;
-}
-
 fieldset {
   /* border: inherit; */
   border: 2px groove rgb(192, 192, 192);
@@ -163,8 +159,13 @@ a.button[target="_blank"]::after {
   color: #8393a7 ;
   font-size: 0.875em;
 }
-label.switch .slider::before {
-  bottom: 0.15em;
+
+#drawer-toggle {
+  display: none;
+}
+
+.hidden-mobile {
+  display: initial;
 }
 
 /* media */
@@ -194,6 +195,18 @@ label.switch .slider::before {
 
   .main {
     overflow-y: unset;
+  }
+
+  #drawer-toggle {
+    display: initial;
+    position: absolute;
+    right: 10px;
+    top: 4px;
+    height: 36px;
+  }
+
+  .hidden-mobile {
+    display: none;
   }
 }
 
