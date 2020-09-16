@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -12,38 +13,52 @@
     <link rel="manifest" href="/static/favicon/site.webmanifest">
 
     <link rel="stylesheet" href="/static/css/main.css">
-  </head>
-  <body>
+</head>
+
+<body>
     <div id="dashboard" class="dashboard">
         <aside class="side-menu" role="navigation" id="navigation">
             <h4 id="logo">🤖&nbsp;Secrétariat</h4>
             <ul style="margin-bottom: 5px;">
                 <li>
-                    <a data-toggle="account" class="nav-item active">Mon compte</a>
+                    <a href="/account" id="account" class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
+                        Mon compte
+                    </a>
                 </li>
                 <li>
-                    <a data-toggle="community" class="nav-item">Communauté</a>
+                    <a href="/community" id="community"
+                        class="nav-item <% if(activeTab === 'community') { %> active <% } %>">
+                        Communauté
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin" id="admin" class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                        Administration
+                    </a>
                 </li>
                 <li class="nav-end" style="margin-top: 50px;">
                     <hr />
+                    <% if (userInfos) { %>
                     <div>
                         Identifié·e en tant que<br />
                         <span style="font-weight: bold;"><%= userInfos.id %></span>
                     </div>
+                    <% } %>
                     <hr />
                     <a href="/logout">Se déconnecter</a>
                     <hr />
                     <img src="/static/images/betagouv.png" width="150" alt="">
-                    <a href="https://github.com/betagouv/secretariat/" target="_blank" style="font-size: 0.8em; color: #53657d;">Code source du sécretariat</a>
+                    <a href="https://github.com/betagouv/secretariat/" target="_blank"
+                        style="font-size: 0.8em; color: #53657d;">Code source du sécretariat</a>
                 </li>
             </ul>
         </aside>
         <main role="main" class="main">
-        <% if (errors.length) { %>
+            <% if (errors.length) { %>
             <div class="notification error"><%= errors %></div>
-        <% } %>
-    
-        <% if (messages.length) { %>
+            <% } %>
+
+            <% if (messages.length) { %>
             <div class="notification"><%- messages %></div>
-        <% } %>
-        <section class="section section-grey no-padding">
+            <% } %>
+            <section class="section section-grey no-padding">

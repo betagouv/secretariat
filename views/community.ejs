@@ -1,0 +1,30 @@
+<%- include('partials/nav-header'); -%>
+<div class="module">
+    <div class="panel" style="min-width: 100%;">
+        <h3>
+            Créer un compte email
+        </h3>
+        <p>Tu peux créer un compte mail pour une nouvelle recrue de la communauté si elle a créé sa fiche GitHub.</p>
+        <form class="no-margin" action="/users/emailAccount" method="POST">
+            <div class="form__group">
+                <label>Email à créer</label>
+                <input placeholder="prenom.nom" style="width: auto;" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="email_id" required  list="user_ids"> @<%= domain %>
+                <datalist id="user_ids">
+                <% users.forEach(function(user) { %>
+                    <option value="<%= user.id %>">
+                <% }) %>
+                </datalist>
+            </div>
+
+            <div class="form__group">
+                <label><span style="color: rgb(38, 53, 63)">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
+                <input name="to_email" type="email" required>
+            </div>
+            <div class="form__group">
+            <button class="button" type="submit">Créer l'email</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+<%- include('partials/nav-footer'); -%>

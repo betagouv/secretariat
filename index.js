@@ -117,7 +117,10 @@ app.post('/notifications/github', githubNotificationController.processNotificati
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
-app.get('/home', homeController.getHome);
 
+// TODO split these into different controllers
+app.get('/account', homeController.getAccount);
+app.get('/community', homeController.getCommunity);
+app.get('/admin', homeController.getAdmin);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

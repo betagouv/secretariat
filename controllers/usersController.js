@@ -123,12 +123,12 @@ module.exports.createEmailAccount = async function (req, res) {
     }
 
     req.flash('message', 'Le compte email a bien été créé.');
-    res.redirect(`/home#community`);
+    res.redirect(`/community`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/home#community`);
+    res.redirect(`/community`);
   }
 }
 
