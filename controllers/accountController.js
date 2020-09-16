@@ -5,6 +5,7 @@ module.exports.getAccount = async function (req, res) {
   try {
     const currentUser = await utils.userInfos(req.user.id, true);
     res.render('account', {
+      currentUserId: req.user.id,
       emailInfos: currentUser.emailInfos,
       userInfos: currentUser.userInfos,
       domain: config.domain,

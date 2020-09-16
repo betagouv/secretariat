@@ -60,7 +60,7 @@ module.exports.getAdmin = async function (req, res) {
     const expiredEmails = emails.filter(user => user.expired)
     const currentUser = await utils.userInfos(req.user.id, true);
     res.render('admin', {
-      currentUser: req.user,
+      currentUserId: req.user.id,
       userInfos: currentUser.userInfos,
       emails,
       expiredEmails,
