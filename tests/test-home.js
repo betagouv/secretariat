@@ -30,14 +30,14 @@ describe("Home", () => {
     });
   });
   describe("GET / authenticated", () => {
-    it("should redirect to account page", (done) => {
+    it("should redirect to community page", (done) => {
       chai.request(app)
         .get('/')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/account");
+          res.headers.location.should.equal("/community");
           done();
         })
     })
