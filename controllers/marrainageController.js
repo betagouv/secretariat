@@ -87,12 +87,12 @@ module.exports.createRequest = async function (req, res) {
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
     req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
-    res.redirect(`/users/${newcomer.id}`);
+    res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${req.body.newcomerId}`);
+    res.redirect(`/community/${req.body.newcomerId}`);
   }
 }
 

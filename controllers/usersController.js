@@ -3,62 +3,6 @@ const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
 
-module.exports.getUsers = async function (req, res) {
-  if (req.query.id) {
-    return res.redirect(`/users/${req.query.id}`);
-  }
-
-  try {
-    const users = await BetaGouv.usersInfos();
-
-    res.render('home', {
-      currentUser: req.user,
-      users: users,
-      domain: config.domain,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.render('home', {
-      currentUser: req.user,
-      users: [],
-      domain: config.domain,
-      errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
-      ],
-      messages: []
-    });
-  }
-}
-
-module.exports.getUserById = async function (req, res) {
-  const id = req.params.id;
-
-  try {
-    const user = await utils.userInfos(id, req.user.id === id);
-
-    res.render('user', {
-      currentUser: req.user,
-      emailInfos: user.emailInfos,
-      redirections: user.redirections,
-      userInfos: user.userInfos,
-      isExpired: user.isExpired,
-      canCreateEmail: user.canCreateEmail,
-      canCreateRedirection: user.canCreateRedirection,
-      canChangePassword: user.canChangePassword,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-      domain: config.domain,
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.send(err);
-  }
-}
-
 module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
   const isCurrentUser = req.user.id === id;
