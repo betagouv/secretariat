@@ -22,7 +22,7 @@
                         <%= email.email %>
                         <div data-id="<%= email.id %>" class="redirection-list">
                             <% email.redirections.forEach(function(redirection) { %>
-                            <li><%= redirection %><br /></li>
+                            <%= redirection %><br />
                             <% }) %>
                         </div>
                     </td>
@@ -56,7 +56,7 @@
                     <td><%= email.id %>
                         <div data-id="<%= email.id %>" class="redirection-list">
                             <% email.redirections.forEach(function(redirection) { %>
-                            <li><%= redirection %><br /></li>
+                            <%= redirection %><br />
                             <% }) %>
                         </div>
                     </td>

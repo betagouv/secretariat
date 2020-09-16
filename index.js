@@ -17,7 +17,9 @@ emailsController = require('./controllers/emailsController');
 usersController = require('./controllers/usersController');
 marrainageController = require('./controllers/marrainageController');
 githubNotificationController = require('./controllers/githubNotificationController');
-homeController = require('./controllers/homeController');
+accountController = require('./controllers/accountController');
+communityController = require('./controllers/communityController');
+adminController = require('./controllers/adminController');
 
 const app = express();
 
@@ -118,9 +120,8 @@ app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
 
-// TODO split these into different controllers
-app.get('/account', homeController.getAccount);
-app.get('/community', homeController.getCommunity);
-app.get('/admin', homeController.getAdmin);
+app.get('/account', accountController.getAccount);
+app.get('/community', communityController.getCommunity);
+app.get('/admin', adminController.getAdmin);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

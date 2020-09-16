@@ -53,46 +53,6 @@ const emailWithMetadataMemoized = PromiseMemoize(
   }
 );
 
-module.exports.getAccount = async function (req, res) {
-  try {
-    const currentUser = await utils.userInfos(req.user.id, true);
-    res.render('account', {
-      emailInfos: currentUser.emailInfos,
-      userInfos: currentUser.userInfos,
-      domain: config.domain,
-      isExpired: currentUser.isExpired,
-      canCreateEmail: currentUser.canCreateEmail,
-      canCreateRedirection: currentUser.canCreateRedirection,
-      canChangePassword: currentUser.canChangePassword,
-      redirections: currentUser.redirections,
-      activeTab: 'account',
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-    });
-  } catch (err) {
-    console.error(err);
-    res.send(err);
-  }
-}
-
-module.exports.getCommunity = async function (req, res) {
-  try {
-    const users = await BetaGouv.usersInfos();
-    const currentUser = await utils.userInfos(req.user.id, true);
-    res.render('community', {
-      domain: config.domain,
-      users: users,
-      userInfos: currentUser.userInfos,
-      activeTab: 'community',
-      errors: req.flash('error'),
-      messages: req.flash('message')
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`);
-    res.redirect(`/account`);
-  }
-}
 
 module.exports.getAdmin = async function (req, res) {
   try {
