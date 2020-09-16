@@ -86,7 +86,11 @@ module.exports.createRequest = async function (req, res) {
 
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
-    req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
+    if (newcomer.id === req.user.id)
+      req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
+    else
+      req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
+
     res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
