@@ -3,7 +3,6 @@ const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 const PromiseMemoize = require('promise-memoize');
 const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
-const buildBetaEmail = require('./utils').buildBetaEmail;
 
 const getBetaEmailId = email => email && email.split('@')[0];
 
@@ -23,7 +22,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
           (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
           []
         ),
-        ...accounts.map(buildBetaEmail)
+        ...accounts.map(utils.buildBetaEmail)
       ])
     ).sort();
 
