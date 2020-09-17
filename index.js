@@ -113,7 +113,7 @@ app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
 
-app.get('/account', accountController.getAccount);
+app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
 app.get('/community/:id', communityController.getMember);
 app.get('/admin', adminController.getAdmin);

@@ -1,7 +1,7 @@
 const config = require('../config');
 const utils = require('./utils');
 
-module.exports.getAccount = async function (req, res) {
+module.exports.getCurrentAccount = async function (req, res) {
   try {
     const currentUser = await utils.userInfos(req.user.id, true);
     res.render('account', {
