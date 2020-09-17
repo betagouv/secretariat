@@ -116,6 +116,6 @@ app.get('/marrainage/decline', marrainageController.declineRequest);
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
 app.get('/community/:id', communityController.getMember);
-app.get('/admin', adminController.getAdmin);
+app.get('/admin', adminController.getEmailLists);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

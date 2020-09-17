@@ -53,7 +53,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
 );
 
 
-module.exports.getAdmin = async function (req, res) {
+module.exports.getEmailLists = async function (req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter(user => user.expired)
