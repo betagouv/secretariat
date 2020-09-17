@@ -3,5 +3,5 @@ module.exports.getIndex = function (req, res) {
     return res.redirect('/login');
   }
 
-  res.redirect('/users');
+  res.redirect('/community');
 }

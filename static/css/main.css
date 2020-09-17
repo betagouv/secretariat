@@ -64,12 +64,156 @@ a[target="_blank"]::after {
   border-left: 7.5px solid var(--theme-primary);
 }
 
+#dashboard {
+  height: calc(100vh);
+  min-height: calc(100vh);
+}
+
+#navigation {
+  position: relative;
+}
+
+.main {
+  overflow-y: auto;
+}
+
+.module, .notification {
+  max-width: 1000px;
+}
+
+.module button.button, .module a.button {
+  margin: 0;
+}
+
+.panel {
+  margin-bottom: var(--space-m);
+  overflow-x: auto;
+}
+
+.panel p, .panel label {
+  color: #53657d;
+  margin-top: 0;
+}
+
+.panel table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.panel td {
+  vertical-align: top;
+}
+
+h4, h5, h6 {
+  margin-bottom: 10px;
+}
+
+.nav-end {
+  display: block;
+  padding: var(--space-s) var(--space-l);
+  color: #53657d;
+  font-size: 0.9em;
+  position: absolute;
+  bottom: 10px;
+}
+
+.main-end {
+  display: none;
+  padding: 0px 24px;
+  margin-bottom: 24px;
+}
+
+.side-menu .nav-end a {
+  padding: 0;
+  text-decoration: underline;
+  color: #0053b3;
+}
+
+#logo {
+  padding: 32px;
+  font-size: 1.25em;
+  margin: 0;
+  border-bottom: none;
+}
+
+.dashboard .main {
+  padding: var(--space-l);
+}
+
+button.button-underline, button.button-underline:active, button.button-underline:hover {
+  text-decoration: underline;
+  border: none;
+}
+
+a.button[target="_blank"]::after {
+  content:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAAD1BMVEUAAACjo6Pn5+fDw8P///8mXC3WAAAABHRSTlMAfb49zZRSvgAAADBJREFUCNdjAAIXFxBicmFwYGAQUQGSjI4sQFJEgIHBgdmRAUgyGAAxUBZOugCBAwCrDAY9nvSvKAAAAABJRU5ErkJggg==');
+}
+
+.redirection-list {
+  color: #8393a7 ;
+  font-size: 0.875em;
+}
+
+#drawer-toggle {
+  display: none;
+}
+
+#drawer-toggle-arrow {
+  font-size: 11px;
+}
+
+.hidden-mobile {
+  display: initial;
+}
+
+.rotate180 {
+  -webkit-transform:rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+  display: inline-block;
+}
 
 /* media */
 
-@media (max-width: 600px) {
-  body {
-    border-top: 16px solid #067b94;
+@media (max-width: 749px) {
+  .nav-end {
+    display: none;
+  }
+
+  .main-end {
+    display: block;
+  }
+
+  #logo {
+    padding: 10px 32px;
+    font-size: 1em;
+    border-bottom: solid 2px #006be6;
+  }
+
+  .dashboard .main {
+    padding: 5px;
+  }
+
+  #dashboard {
+    height: auto;
+  }
+
+  .main {
+    overflow-y: unset;
+  }
+
+  #drawer-toggle {
+    display: initial;
+    position: absolute;
+    right: 10px;
+    top: 4px;
+    height: 36px;
+  }
+
+  .hidden-mobile {
+    display: none;
   }
 }
 
