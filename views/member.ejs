@@ -17,12 +17,14 @@
                 <span style="font-weight: bold">Employeur : </span> <%= userInfos.employer %>
             </p>
             <% } %>
-            <% if (userInfos.github) { %>
             <p>
-                <span style="font-weight: bold">Compte Github : </span> <a
-                    href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                <span style="font-weight: bold">Compte Github : </span> 
+                <% if (userInfos.github) { %>
+                <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                <% } else { %>
+                    Non renseigné
+                <% } %>
             </p>
-            <% } %>
         </div>
         <a class="button" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
     </div>

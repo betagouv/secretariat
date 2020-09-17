@@ -25,7 +25,12 @@
                     <% } %>
                     <% if (userInfos.github) { %>
                     <p>
-                        <span style="font-weight: bold">Compte Github : </span> <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                        <span style="font-weight: bold">Compte Github : </span>
+                        <% if (userInfos.github) { %>
+                        <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                        <% } else { %>
+                            Non renseigné
+                        <% } %>
                     </p>
                     <% } %>
                 </div>
