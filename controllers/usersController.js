@@ -5,62 +5,6 @@ const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
 
-module.exports.getUsers = async function (req, res) {
-  if (req.query.id) {
-    return res.redirect(`/users/${req.query.id}`);
-  }
-
-  try {
-    const users = await BetaGouv.usersInfos();
-
-    res.render('home', {
-      currentUser: req.user,
-      users: users,
-      domain: config.domain,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.render('home', {
-      currentUser: req.user,
-      users: [],
-      domain: config.domain,
-      errors: [
-        `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}.`
-      ],
-      messages: []
-    });
-  }
-}
-
-module.exports.getUserById = async function (req, res) {
-  const id = req.params.id;
-
-  try {
-    const user = await utils.userInfos(id, req.user.id === id);
-
-    res.render('user', {
-      currentUser: req.user,
-      emailInfos: user.emailInfos,
-      redirections: user.redirections,
-      userInfos: user.userInfos,
-      isExpired: user.isExpired,
-      canCreateEmail: user.canCreateEmail,
-      canCreateRedirection: user.canCreateRedirection,
-      canChangePassword: user.canChangePassword,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-      domain: config.domain,
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.send(err);
-  }
-}
-
 module.exports.createEmailForUser = async function (req, res) {
   const id = req.params.id;
   const isCurrentUser = req.user.id === id;
@@ -81,7 +25,7 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droits de créer le compte email de l'utilisateur·rice.");
+      throw new Error("Vous n'avez pas le droit de créer le compte email de l'utilisateur·rice.");
     }
 
     if (!isCurrentUser) {
@@ -116,12 +60,12 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     req.flash('message', 'Le compte email a bien été créé.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community`);
   }
 }
 
@@ -145,7 +89,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de créer de redirection.");
+      throw new Error("Vous n'avez pas le droit de créer de redirection.");
     }
 
     console.log(
@@ -168,12 +112,12 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     req.flash('message', 'La redirection a bien été créé.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }
 
@@ -185,7 +129,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     // TODO: vérifier si l'utilisateur·rice existe sur Github ?
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droits de supprimer cette redirection.");
+      throw new Error("Vous n'avez pas le droit de supprimer cette redirection.");
     }
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
@@ -202,12 +146,12 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     }
 
     req.flash('message', 'La redirection a bien été supprimée.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }
 
@@ -230,7 +174,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
     }
 
     if (!user.canChangePassword) {
-      throw new Error("Vous n'avez pas le droits de changer le mot de passe.");
+      throw new Error("Vous n'avez pas le droit de changer le mot de passe.");
     }
 
     const password = req.body.new_password;
@@ -258,11 +202,11 @@ module.exports.updatePasswordForUser = async function (req, res) {
     await BetaGouv.changePassword(id, password);
 
     req.flash('message', 'Le mot de passe a bien été modifié.');
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   } catch (err) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/users/${id}`);
+    res.redirect(`/community/${id}`);
   }
 }

@@ -37,7 +37,7 @@ async function sendLoginEmail(id, url, token) {
   }
 
   const email = utils.buildBetaEmail(id);
-  const loginUrl = `${url}/users?token=${encodeURIComponent(token)}`;
+  const loginUrl = `${url}/community?token=${encodeURIComponent(token)}`;
 
   const html = await ejs.renderFile(__dirname + "/../views/emails/login.ejs", { loginUrl });
 

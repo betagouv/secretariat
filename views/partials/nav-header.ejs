@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Secrétariat BetaGouv</title>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/static/favicon/site.webmanifest">
+
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+
+<body>
+    <div id="dashboard" class="dashboard">
+        <aside class="side-menu" role="navigation" id="navigation">
+            <button id="drawer-toggle" class="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
+            <h4 id="logo">🤖&nbsp;Secrétariat</h4>
+            <ul style="margin-bottom: 5px;" class="hidden-mobile" id="drawer">
+                <li>
+                    <a href="/community" id="community"
+                        class="nav-item <% if(activeTab === 'community') { %> active <% } %>">
+                        Communauté
+                    </a>
+                </li>
+                <li>
+                    <a href="/account" id="account" 
+                        class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
+                        Mon compte
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin" id="admin" 
+                        class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                        Administration
+                    </a>
+                </li>
+                <li class="nav-end" style="margin-top: 50px;">
+                    <hr />
+                    <% if (userInfos) { %>
+                    <div>
+                        Identifié·e en tant que<br />
+                        <span style="font-weight: bold;"><%= currentUserId %></span>
+                    </div>
+                    <% } %>
+                    <hr />
+                    <a href="/logout">Se déconnecter</a>
+                    <hr />
+                    <img src="/static/images/betagouv.png" width="150" alt="">
+                    <a href="https://github.com/betagouv/secretariat/" target="_blank"
+                        style="font-size: 0.8em; color: #53657d;">Code source du sécretariat</a>
+                </li>
+            </ul>
+        </aside>
+        <main role="main" class="main">
+            <% if (errors.length) { %>
+            <div class="notification error"><%= errors %></div>
+            <% } %>
+
+            <% if (messages.length) { %>
+            <div class="notification"><%- messages %></div>
+            <% } %>
+            <section class="section section-grey no-padding">

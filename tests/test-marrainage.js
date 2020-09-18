@@ -131,7 +131,7 @@ describe("Marrainage", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/users/utilisateur.actif");
+          res.headers.location.should.equal("/community/utilisateur.actif");
           this.sendEmailStub.calledOnce.should.be.true;
 
           const subject = this.sendEmailStub.args[0][1];
@@ -155,7 +155,7 @@ describe("Marrainage", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal("/users/utilisateur.actif");
+          res.headers.location.should.equal("/community/utilisateur.actif");
           this.sendEmailStub.notCalled.should.be.true;
           done();
         });
