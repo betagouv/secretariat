@@ -1,0 +1,146 @@
+<%- include('partials/nav-header'); -%>
+
+<div class="module">
+    <div class="row" style="justify-content: start;">
+        <div class="panel" style="min-width: 45%;">
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <h3>
+                        Ma fiche
+                    </h3>
+                    <% if (userInfos) { %>
+                    <p style="color: #0053b3; font-weight: bold;"><%= userInfos.fullname %></p>
+                    <% } %>
+                    <% if (userInfos.start) { %>
+                    <p>
+                        <span style="font-weight: bold">Mission :</span>
+                        du <%= userInfos.start %>
+                        <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
+                    </p>
+                    <% } %>
+                    <% if (userInfos.employer) { %>
+                    <p>
+                        <span style="font-weight: bold">Employeur : </span> <%= userInfos.employer %>
+                    </p>
+                    <% } %>
+                    <% if (userInfos.github) { %>
+                    <p>
+                        <span style="font-weight: bold">Compte Github : </span>
+                        <% if (userInfos.github) { %>
+                        <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                        <% } else { %>
+                            Non renseigné
+                        <% } %>
+                    </p>
+                    <% } %>
+                </div>
+                <div style="flex-shrink: 3; margin-left: 10px; max-width: 130px;">
+                    <img width="100%" src="/static/images/logo-betagouv.jpg" />
+                </div>
+            </div>
+            <a class="button" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+        </div>
+        <div class="panel" style="margin-top: 0;">
+            <h3>
+                Besoin d'aide ?
+            </h3>
+            <a href="https://doc.incubateur.net/" target="_blank" class="button">Voir le <span style="font-weight: bold;">guide de la communauté</span></a>
+            <h4 style="margin-bottom: 10px;">
+                Parler avec un humain ?
+            </h4>
+            <p>
+                Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.
+                Son role sera de t'accompagner dans tes démarches et t'aider
+                à t'orienter au sein de la communauté.
+            </p>
+
+
+            <form class="no-margin" action="/marrainage" method="POST">
+                <div class="form__group">
+                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                </div>
+                <button class="button secondary" type="submit">Chercher un·e marrain·e</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="panel" style="min-width: 100%;">
+            <h3>
+                Mon email
+            </h3>
+            <% if (emailInfos) { %>
+                <p style="color: #0053b3; font-weight: bold;"><%= emailInfos.email %></p>
+            <% } %>
+            <h6 style="margin: 10px 0;">Accéder au webmail</h6>
+            <p>
+                Tu peux consulter tes mails directement sur l'interface d'OVH. Elle n'est pas très
+                confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
+                accès à ton client web habituel
+            </p>
+            <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button">Webmail</a>
+
+
+            <hr />
+            <h6 style="margin: 10px 0;">Rediriger vers une autre adresse mail</h6>
+
+            <% redirections.forEach(function(redirection) { %>
+                <div style="padding-bottom: 10px;">
+                <%= redirection.to %>
+                <% if (canCreateRedirection) { %>
+                    <form style="display: inline" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
+                    <button style="margin: 0 10px;" class="button-outline small warning" type="submit">Supprimer</button>
+                    </form>
+                <% } %>
+                </div>
+            <% }) %>
+            <% if (redirections.length === 0) { %>
+                <li><strong>Aucune</strong></li>
+            <% } %>
+              <% if (canCreateRedirection) { %>
+                <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST">
+                    <div class="form__group">
+                        <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
+                        <input name="to_email" type="email" required>
+                    </div>
+                    <div class="input__group" style="margin: 10px 0;">
+                      <input type="checkbox" name="keep_copy" value="true">
+                      <label>Garder une copie des emails si un compte existe</label>
+                    </div>
+                    <button class="button" type="submit">Ajouter la redirection</button>
+                </form>
+              <% } else { %>
+                <% if (isExpired) { %>
+                  <div class="notification error">
+                    Le compte <%= userInfos.id %> est expiré.
+                  </div>
+                <% } else { %>
+                  <div class="notification warning">
+                    Seul <%= userInfos.id %> peut créer ou modifier les redirections.
+                  </div>
+                <% } %>
+              <% } %>
+
+
+            <hr />
+            <h6 style="margin: 10px 0;">Configurer son client mail</h6>
+            <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
+
+            <hr />
+            <h6 style="margin: 10px 0;">Changer le mot de passe</h6>
+            <p>
+                Nouveau mot de passe POP/IMAP/SMTP :<br .>
+                Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
+                d'espace au début ou à la fin.
+            </p>
+            <% if (canChangePassword) { %>
+                <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST">
+                    <input name="new_password" type="password" minlength="9" required>
+                    <button class="button" style="margin: 10px 0;" type="submit">Changer</button>
+                </form>
+              <% } %>
+        </div>
+    </div>
+</div>
+<%- include('partials/nav-footer'); -%>

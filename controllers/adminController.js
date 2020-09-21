@@ -1,10 +1,10 @@
-const config = require('../config')
+const config = require('../config');
 const BetaGouv = require('../betagouv');
+const utils = require('./utils');
 const PromiseMemoize = require('promise-memoize');
-const buildBetaEmail = require('./utils').buildBetaEmail;
+const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
 
 const getBetaEmailId = email => email && email.split('@')[0];
-const isBetaEmail = email => email && email.endsWith(`${config.domain}`);
 
 const emailWithMetadataMemoized = PromiseMemoize(
   async () => {
@@ -22,7 +22,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
           (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
           []
         ),
-        ...accounts.map(buildBetaEmail)
+        ...accounts.map(utils.buildBetaEmail)
       ])
     ).sort();
 
@@ -52,44 +52,25 @@ const emailWithMetadataMemoized = PromiseMemoize(
   }
 );
 
-module.exports.getEmails = async function (req, res) {
+
+module.exports.getEmailLists = async function (req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
-
-    res.render('emails', {
-      currentUser: req.user,
+    const expiredEmails = emails.filter(user => user.expired)
+    const currentUser = await utils.userInfos(req.user.id, true);
+    res.render('admin', {
+      currentUserId: req.user.id,
+      userInfos: currentUser.userInfos,
       emails,
-      errors: []
+      expiredEmails,
+      errors: [],
+      activeTab: 'admin',
+      errors: req.flash('error'),
+      messages: req.flash('message')
     });
   } catch (err) {
     console.error(err);
-
-    res.render('emails', {
-      currentUser: req.user,
-      emails: [],
-      errors: ['Erreur interne'],
-    });
-  }
-}
-
-
-module.exports.getExpiredEmails = async function (req, res) {
-  try {
-    const emails = await emailWithMetadataMemoized();
-    emailsExpirated = emails.filter(user => user.expired)
-
-    res.render('expired', {
-      currentUser: req.user,
-      emailsExpirated,
-      errors: []
-    });
-  } catch (err) {
-    console.error(err);
-
-    res.render('expired', {
-      currentUser: req.user,
-      emails: [],
-      errors: ['Erreur interne'],
-    });
+    req.flash('error', `Erreur interne`);
+    res.redirect(`/account`);
   }
 }

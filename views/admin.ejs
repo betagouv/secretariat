@@ -1,0 +1,78 @@
+<%- include('partials/nav-header'); -%>
+<link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'>
+<script src="/static/sortable/sortable.js"></script>
+<style media="screen">
+  .panel { overflow: scroll; }
+</style>
+
+<div class="module">
+    <div class="panel" id="all" style="min-width: 100%;">
+        <h3>
+            Liste des emails
+        </h3>
+        <a href="#expired">⬇️ Voir les comptes expirés</a>
+        <hr />
+        <table class="sortable">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Fiche sur Github</th>
+                    <th>Date de fin OK</th>
+                    <th>Compte Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% emails.forEach(function(email) { %>
+                <tr>
+                    <td>
+                        <%= email.email %>
+                        <div data-id="<%= email.id %>" class="redirection-list">
+                            <% email.redirections.forEach(function(redirection) { %>
+                            <%= redirection %><br />
+                            <% }) %>
+                        </div>
+                    </td>
+                    <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel" id="expired" style="min-width: 100%;">
+        <h3>
+            Comptes expirés
+        </h3>
+        <a href="#all">⬆️ Voir tous les comptes</a>
+        <hr />
+        <table class="sortable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Date de fin</th>
+                    <th>Compte Email</th>
+                    <th>Fiche sur Github</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% expiredEmails.forEach(function(email) { %>
+                <tr>
+                    <td><%= email.id %>
+                        <div data-id="<%= email.id %>" class="redirection-list">
+                            <% email.redirections.forEach(function(redirection) { %>
+                            <%= redirection %><br />
+                            <% }) %>
+                        </div>
+                    </td>
+                    <td><% if (email.endDate) { %><%= email.endDate %><% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include('partials/nav-footer'); -%>
