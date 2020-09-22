@@ -51,7 +51,7 @@ module.exports.createEmailForUser = async function (req, res) {
     await BetaGouv.sendInfoToSlack(message);
     await BetaGouv.createEmail(id, password);
 
-    const html = await ejs.renderFile(__dirname + "/../views/emails/createEmail.ejs", { email, password, secretariatUrl });
+    const html = await ejs.renderFile("./views/emails/createEmail.ejs", { email, password, secretariatUrl });
 
     try {
       await utils.sendMail(req.body.to_email, `Création compte ${email}`, html);
