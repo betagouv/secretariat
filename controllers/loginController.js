@@ -1,9 +1,10 @@
-const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const ejs = require('ejs');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 const knex = require('../db');
-const crypto = require('crypto');
 
 function renderLogin(req, res, params) {
   // init params
@@ -38,24 +39,7 @@ async function sendLoginEmail(id, url, token) {
   const email = utils.buildBetaEmail(id);
   const loginUrl = `${url}/community?token=${encodeURIComponent(token)}`;
 
-  const html = `
-      <p>Hello ! 👋</p>
-      <p>Tu as demandé un lien de connexion au secrétariat BetaGouv. 
-      Pour t'authentifier, tu dois cliquer sur le bouton ci-dessous dans l'heure qui suit la réception de ce message.</p>
-
-      <p>
-        <a href="${loginUrl}">
-          <button style="margin-bottom: 15px;background: #006be6;padding: 10px;border: none;border-radius: 3px;color: white;min-width: 280px;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;">
-            Me connecter
-          </button>
-        </a>
-      </p>
-
-      <p>Ou utiliser ce lien :<br /><a href="${loginUrl}">${loginUrl}</a></p>
-
-      <p>En cas de problème avec ton compte, n'hésite pas à répondre à ce mail !</p>
-
-      <p>🤖 Le secrétariat</p>`;
+  const html = await ejs.renderFile("./views/emails/login.ejs", { loginUrl });
 
   try {
     await utils.sendMail(email, 'Connexion au secrétariat BetaGouv', html);
@@ -97,11 +81,11 @@ module.exports.postLogin = async function (req, res) {
     return res.redirect('/login');
   }
 
-  const url = `${config.protocol}://${req.get('host')}`;
+  const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
   try {
-    const token = generateToken()
-    await sendLoginEmail(req.body.id, url, token);
+    const token = generateToken();
+    await sendLoginEmail(req.body.id, secretariatUrl, token);
     await saveToken(req.body.id, token)
 
     renderLogin(req, res, {

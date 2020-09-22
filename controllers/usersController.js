@@ -1,3 +1,5 @@
+const ejs = require('ejs');
+
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
@@ -33,31 +35,23 @@ module.exports.createEmailForUser = async function (req, res) {
       }
     }
 
+    const email = utils.buildBetaEmail(id);
     const password = Math.random()
       .toString(36)
       .slice(-10);
-    const email = utils.buildBetaEmail(id);
 
     console.log(
       `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
-    const url = `${config.protocol}://${req.get('host')}`;
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${url}>, je crée un compte mail pour ${id}`;
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée un compte mail pour ${id}`;
 
     await BetaGouv.sendInfoToSlack(message);
     await BetaGouv.createEmail(id, password);
 
-    const html = `
-      <h1>Ton compte ${email} a été créé !</h1>
-      <ul>
-      <li>Identifiant de login : ${email}</li>
-      <li>Mot de passe : ${password}</li>
-      <li>Comment utiliser ton compte email, voici les infos OVH pour configurer ta boite mail : <a href="https://docs.ovh.com/fr/emails/">https://docs.ovh.com/fr/emails/</a></li>
-      <li>Gérer son compte mail sur le secrétariat BetaGouv : <a href="${url}">${url}</a></li>
-      </ul>
-      <p>🤖 Le secrétariat</p>`;
+    const html = await ejs.renderFile("./views/emails/createEmail.ejs", { email, password, secretariatUrl });
 
     try {
       await utils.sendMail(req.body.to_email, `Création compte ${email}`, html);
@@ -102,9 +96,9 @@ module.exports.createRedirectionForUser = async function (req, res) {
       `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
     );
 
-    const url = `${config.protocol}://${req.get('host')}`;
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${url}>, je crée une redirection mail pour ${id}`;
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${id}`;
 
     try {
       await BetaGouv.sendInfoToSlack(message);
@@ -140,8 +134,9 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
     console.log(`Suppression de la redirection by=${id}&to_email=${to_email}`);
 
-    const url = `${config.protocol}://${req.get('host')}`;
-    const message = `À la demande de ${req.user.id} sur <${url}>, je supprime la redirection mail de ${id} vers ${to_email}`;
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
+
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${id} vers ${to_email}`;
 
     try {
       await BetaGouv.sendInfoToSlack(message);
@@ -199,9 +194,9 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
 
-    const url = `${config.protocol}://${req.get('host')}`;
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${url}>, je change le mot de passe pour ${id}.`;
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${id}.`;
 
     await BetaGouv.sendInfoToSlack(message);
     await BetaGouv.changePassword(id, password);
