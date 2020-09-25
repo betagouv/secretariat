@@ -17,6 +17,9 @@ Le secrétariat de l’incubateur
    - `SECURE` - _true_ si https sinon _false_
    - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
    - `DATABASE_URL` - Le [string de connexion](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) pour se connecter à Postgres (pensez à échapper les caractères spéciaux s'il s'agit d'une URI)
+   - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues
+   - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`)
+   - `GITHUB_FORK` - Le fork du GITHUB_REPOSITORY utilisé pour créer les PRs, (par ex: `test-user/beta.gouv.fr`).
 
 - Variables d'environnement optionnelles :
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
