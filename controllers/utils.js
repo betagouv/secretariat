@@ -1,6 +1,7 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const nodemailer = require('nodemailer');
+const { request } = require('@octokit/request');
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
@@ -9,6 +10,12 @@ const mailTransport = nodemailer.createTransport({
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
   }
+});
+
+const requestWithAuth = request.defaults({
+  headers: {
+    authorization: `token ${config.githubToken}`,
+  },
 });
 
 module.exports.sendMail = async function (to_email, subject, html, text) {
@@ -92,4 +99,31 @@ module.exports.userInfos = async function(id, isCurrentUser) {
       `Problème pour récupérer les infos de l'utilisateur·rice ${id}`
     );
   }
+}
+
+module.exports.getGithubMasterSha = function() {
+  const url = `https://api.github.com/repos/${config.githubRepository}/git/ref/heads/master`;
+  return requestWithAuth(url);
+}
+
+module.exports.createGithubBranch = function(sha, branch) {
+  const url = `https://api.github.com/repos/${config.githubFork}/git/refs`;
+  const ref = `refs/heads/${branch}`;
+  return requestWithAuth(`POST ${url}`, { sha, ref });
+}
+
+module.exports.createGithubFile = function(path, branch, content) {
+  const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
+  const message = `Création de fichier ${path} sur la branche ${branch}`;
+  content = Buffer.from(content, 'utf-8').toString('base64');
+
+  return requestWithAuth(`PUT ${url}`, { message, content, branch });
+}
+
+module.exports.makeGithubPullRequest = function(branch, title) {
+  const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
+  const head = `${config.githubFork.split('/')[0]}:${branch}`;
+  const base = 'master';
+
+  return requestWithAuth(`POST ${url}`, { title, head, base });
 }
