@@ -71,14 +71,14 @@ module.exports.postForm = async function (req, res) {
       throw new Error(`Le champ ${field} n'est pas renseigné`);
     }
 
-    const firstName = req.body.firstName || throwValidationError('firstName');
-    const lastName = req.body.lastName || throwValidationError('lastName');
+    const firstName = req.body.firstName || throwValidationError('prénom');
+    const lastName = req.body.lastName || throwValidationError('nom de famille');
     const website = req.body.website || null;
     const github = req.body.github || null;
     const role = req.body.role || throwValidationError('role');
-    const start = req.body.start || throwValidationError('start');
-    const end = req.body.end || throwValidationError('end');
-    const status = req.body.status || throwValidationError('status');
+    const start = req.body.start || throwValidationError('début de la mission');
+    const end = req.body.end || throwValidationError('fin de la mission');
+    const status = req.body.status || throwValidationError('statut');
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
 
