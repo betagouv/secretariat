@@ -30,6 +30,15 @@
     },
     "SECRETARIAT_DOMAIN": {
       "required": true
+    },
+    "GITHUB_TOKEN": {
+      "required": true
+    },
+    "GITHUB_REPOSITORY": {
+      "required": true
+    },
+    "GITHUB_FORK": {
+      "required": true
     }
   },
   "formation": {
