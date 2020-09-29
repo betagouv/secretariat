@@ -140,7 +140,7 @@ describe('Onboarding', () => {
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
-          branch.should.equal('author-fernandao-unibe')
+          branch.should.contain('author-fernandao-unibe-')
           done();
         });
     });

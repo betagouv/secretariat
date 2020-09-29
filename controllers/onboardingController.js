@@ -1,11 +1,16 @@
 const config = require('../config');
 const ejs = require('ejs');
 const utils = require('./utils');
+const crypto = require('crypto');
+
+function createBranchName(username) {
+  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
+  const randomSuffix = crypto.randomBytes(3).toString('hex')
+  return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
+}
 
 async function createNewcomerGithubFile(username, content) {
-  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
-  const branch = `author${username.replace(refRegex, '-')}`;
-
+  const branch = createBranchName(username)
   console.log(`Début de la création de fiche pour ${username}...`)
 
   await utils.getGithubMasterSha()
