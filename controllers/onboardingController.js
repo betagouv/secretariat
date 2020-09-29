@@ -2,7 +2,7 @@ const config = require('../config');
 const ejs = require('ejs');
 const utils = require('./utils');
 
-async function createGithubAuthor(username, content) {
+async function createNewcomerGithubFile(username, content) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
   const branch = `author${username.replace(refRegex, '-')}`;
 
@@ -74,7 +74,7 @@ module.exports.postForm = async function (req, res) {
       startup,
       employer
     });
-    await createGithubAuthor(username, content);
+    await createNewcomerGithubFile(username, content);
     res.redirect('/onboardingSuccess');
 
   } catch (err) {
