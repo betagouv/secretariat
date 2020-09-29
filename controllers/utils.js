@@ -139,8 +139,9 @@ module.exports.makeGithubPullRequest = function(branch, title) {
   const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
   const head = `${config.githubFork.split('/')[0]}:${branch}`;
   const base = 'master';
+  const maintainer_can_modify = true;
 
-  return requestWithAuth(`POST ${url}`, { title, head, base });
+  return requestWithAuth(`POST ${url}`, { title, head, base, maintainer_can_modify });
 }
 
 module.exports.createUsername = function(firstName, lastName) {
