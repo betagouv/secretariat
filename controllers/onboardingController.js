@@ -2,27 +2,6 @@ const config = require('../config');
 const ejs = require('ejs');
 const utils = require('./utils');
 
-function removeAccents(str) {
-    var map = {
-      'a' : 'á|à|ã|â|À|Á|Ã|Â',
-      'e' : 'é|è|ê|É|È|Ê',
-      'i' : 'í|ì|î|Í|Ì|Î',
-      'o' : 'ó|ò|ô|õ|Ó|Ò|Ô|Õ',
-      'u' : 'ú|ù|û|ü|Ú|Ù|Û|Ü',
-      'c' : 'ç|Ç',
-      'n' : 'ñ|Ñ'
-    };
-    for (var pattern in map)
-        str = str.replace(new RegExp(map[pattern], 'g'), pattern);
-    return str;
-}
-
-function createUsername(firstName, lastName) {
-  const firstNameSegment = removeAccents(firstName).replace(/( |'|\.)/gi, '-');
-  const lastNameSegment = removeAccents(lastName).replace(/( |'|\.)/gi, '-');
-  return `${firstNameSegment}.${lastNameSegment}`.toLowerCase();
-}
-
 async function createGithubAuthor(username, content) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
   const branch = `author${username.replace(refRegex, '-')}`;
@@ -83,7 +62,7 @@ module.exports.postForm = async function (req, res) {
     const employer = req.body.employer || null;
 
     const name = `${firstName} ${lastName}`;
-    const username = createUsername(firstName, lastName);
+    const username = utils.createUsername(firstName, lastName);
     const content = await ejs.renderFile("./views/githubAuthor.ejs", {
       name,
       website,
