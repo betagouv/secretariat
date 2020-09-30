@@ -1,0 +1,21 @@
+---
+fullname: <%- name %>
+role: <%- role %>
+<% if (website) { %>
+link: <%- website %>
+<% } %>
+<% if (github) { %>
+github: <%- github %>
+<% } %>
+missions:
+  - start: <%- start %>
+    end: <%- end %>
+    status: <%- status %>
+    <% if (employer) { %>
+    employer: <%- employer %>
+    <% } %>
+<% if (startup) { %>
+startups:
+  - <%- startup %>
+<% } %>
+---

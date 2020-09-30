@@ -1,0 +1,111 @@
+<%- include('partials/header'); -%>
+
+<div class="container container-small">
+
+    <% if (errors.length) { %>
+    <div class="notification error"><%= errors %></div>
+    <% } %>
+
+    <% if (messages.length) { %>
+    <div class="notification"><%- messages %></div>
+    <% } %>
+
+    <div class="panel margin-top-m">
+
+        <div class="beta-banner"></div>
+
+        <h3>Créer ma fiche Github</h3>
+
+        <p>Bienvenue dans la communauté</p>
+        <p>Crée ta fiche Github pour avoir accès aux différents outils de la communauté</p>
+
+        <form action="/onboarding" method="POST">
+            <h4>Tes infos persos</h4>
+
+            <div class="form__group">
+                <label>
+                    Ton nom sera affiché sur la page <a href="https://beta.gouv.fr/communaute/"
+                        target="_blank">Communauté</a> du site BetaGouv.
+                </label>
+                <label for="firstName">
+                    <strong>Prénom (obligatoire)</strong>
+                </label>
+                <input name="firstName" required>
+                <label for="lastName">
+                    <strong>Nom de famille (obligatoire)</strong>
+                </label>
+                <input name="lastName" required>
+            </div>
+
+            <div class="form__group">
+                <label for="website">
+                    <span>Ton site personnel</span><br />
+                    Il sera affiché sur la page <a href="https://beta.gouv.fr/communaute/"
+                        target="_blank">Communauté</a> du site BetaGouv.
+                </label>
+                <input name="website">
+            </div>
+
+            <div class="form__group">
+                <label for="github">
+                    <span>Utilisateur Github</span><br />
+                    Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv
+                </label>
+                <input name="github">
+            </div>
+
+
+            <h4>Ta mission</h4>
+            <div class="form__group">
+                <label for="role">
+                    <strong>Ton rôle chez BetaGouv (obligatoire)</strong><br />
+                    Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
+                </label>
+                <input name="role" required>
+            </div>
+
+            <div class="form__group">
+                <label for="start">
+                    <strong>Début de ta mission (obligatoire)</strong><br />
+                    En format YYY-MM-DD, par exemple : 2020-01-31
+                </label>
+                <input pattern="^\d{4}-\d{2}-\d{2}$" name="start" required>
+            </div>
+
+            <div class="form__group">
+                <label for="end">
+                    <strong>Fin de ta mission (obligatoire)</strong><br />
+                    En format YYY-MM-DD, par exemple : 2020-01-31
+                </label>
+                <input pattern="^\d{4}-\d{2}-\d{2}$" name="end" required>
+            </div>
+
+            <div class="form__group">
+                <label for="status">
+                    <strong>Ton statut (obligatoire)</strong><br />
+                </label>
+                <input type="radio" required name="status" value="independent">Indépendant<br>
+                <input type="radio" required name="status" value="admin">Administration (agent public)<br>
+                <input type="radio" required name="status" value="service">Société de service<br>
+            </div>
+
+            <div class="form__group">
+                <label for="startup">
+                    <span>Ta Startup d'État</span><br />
+                </label>
+                <input name="startup">
+            </div>
+
+            <div class="form__group">
+                <label for="employer">
+                    <span>Ton employeur</span><br />
+                    L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
+                </label>
+                <input name="employer">
+            </div>
+
+
+            <button class="button" type="submit">Créer ma fiche Github</button>
+        </form>
+    </div>
+</div>
