@@ -32,7 +32,7 @@
     "express-session": "^1.17.1",
     "front-matter": "^4.0.2",
     "jsonwebtoken": "^8.2.2",
-    "knex": "^0.21.5",
+    "knex": "^0.21.6",
     "nodemailer": "^6.4.11",
     "ovh": "^2.0.1",
     "pg": "^8.3.3",
