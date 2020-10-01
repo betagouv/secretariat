@@ -49,7 +49,7 @@
     "nodemon": "^2.0.4",
     "pg-connection-string": "^2.3.0",
     "prettier": "^2.1.2",
-    "sinon": "^9.0.3"
+    "sinon": "^9.1.0"
   },
   "prettier": {
     "singleQuote": true
