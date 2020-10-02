@@ -33,7 +33,7 @@
     "front-matter": "^4.0.2",
     "jsonwebtoken": "^8.2.2",
     "knex": "^0.21.6",
-    "nodemailer": "^6.4.11",
+    "nodemailer": "^6.4.12",
     "ovh": "^2.0.1",
     "pg": "^8.3.3",
     "promise-memoize": "^1.2.1",
