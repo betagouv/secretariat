@@ -20,7 +20,7 @@
         <aside class="side-menu" role="navigation" id="navigation">
             <button id="drawer-toggle" class="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
             <h4 id="logo">🤖&nbsp;Secrétariat</h4>
-            <ul style="margin-bottom: 5px;" class="hidden-mobile" id="drawer">
+            <ul class="hidden-mobile margin-bottom-5" id="drawer">
                 <li>
                     <a href="/community" id="community"
                         class="nav-item <% if(activeTab === 'community') { %> active <% } %>">
@@ -39,12 +39,12 @@
                         Administration
                     </a>
                 </li>
-                <li class="nav-end" style="margin-top: 50px;">
+                <li class="nav-end">
                     <hr />
                     <% if (userInfos) { %>
                     <div>
                         Identifié·e en tant que<br />
-                        <span style="font-weight: bold;"><%= currentUserId %></span>
+                        <span class="font-weight-bold"><%= currentUserId %></span>
                     </div>
                     <% } %>
                     <hr />
@@ -52,7 +52,7 @@
                     <hr />
                     <img src="/static/images/betagouv.png" width="150" alt="">
                     <a href="https://github.com/betagouv/secretariat/" target="_blank"
-                        style="font-size: 0.8em; color: #53657d;">Code source du sécretariat</a>
+                        class="text-size-caption text-color-darker-grey">Code source du sécretariat</a>
                 </li>
             </ul>
         </aside>
