@@ -19,6 +19,7 @@ githubNotificationController = require('./controllers/githubNotificationControll
 accountController = require('./controllers/accountController');
 communityController = require('./controllers/communityController');
 adminController = require('./controllers/adminController');
+onboardingController = require('./controllers/onboardingController');
 
 const app = express();
 
@@ -76,7 +77,15 @@ app.use(
     secret: config.secret,
     algorithms: ['HS256'],
     getToken: req => req.cookies.token || null,
-  }).unless({ path: ['/', '/login', '/marrainage/accept', '/marrainage/decline', '/notifications/github'] })
+  }).unless({ path: [
+    '/',
+    '/login',
+    '/marrainage/accept',
+    '/marrainage/decline',
+    '/notifications/github',
+    '/onboarding',
+    '/onboardingSuccess'
+  ]})
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
@@ -117,5 +126,8 @@ app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
 app.get('/community/:id', communityController.getMember);
 app.get('/admin', adminController.getEmailLists);
+app.get('/onboarding', onboardingController.getForm);
+app.post('/onboarding', onboardingController.postForm);
+app.get('/onboardingSuccess', onboardingController.getConfirmation);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
