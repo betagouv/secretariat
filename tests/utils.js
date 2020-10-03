@@ -1,25 +1,34 @@
 const jwt = require('jsonwebtoken');
-const nock = require('nock')
-const testUsers = require('./users.json')
-const { Client } = require('pg')
-const knex = require('../db/index')
-const parse = require('pg-connection-string').parse
+const nock = require('nock');
+const { Client } = require('pg');
+const parse = require('pg-connection-string').parse;
+
+const config = require('../config');
+const testUsers = require('./users.json');
+const testStartups = require('./startups.json');
+const knex = require('../db/index');
 
 module.exports = {
   getJWT(id) {
-    return jwt.sign({ id: id }, process.env.SESSION_SECRET, { expiresIn: '1 hours' });
+    return jwt.sign({ id: id }, config.secret, { expiresIn: '1 hours' });
   },
   mockUsers() {
-    const url = process.env.USERS_API || 'https://beta.gouv.fr'
+    const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
     return nock(url)
       .get('/api/v1.6/authors.json')
       .reply(200, testUsers)
       .persist()
   },
+  mockStartups() {
+    const url = process.env.STARTUPS_API || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
+    return nock(url)
+      .get('/api/v2/startups.json')
+      .reply(200, testStartups)
+      .persist()
+  },
   mockSlack() {
-    const url = process.env.SLACK_WEBHOOK_URL
-    if (url) {
-      return nock(url)
+    if (config.slackWebhookURL) {
+      return nock(config.slackWebhookURL)
         .post(/.*/)
         .reply(200)
         .persist()
