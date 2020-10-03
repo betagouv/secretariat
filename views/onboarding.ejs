@@ -38,7 +38,7 @@
                 <label for="lastName">
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
-                <input name="lastName"  value="<%= formData.lastName %>" required>
+                <input name="lastName" value="<%= formData.lastName %>" required>
             </div>
 
             <div class="form__group">
@@ -47,7 +47,7 @@
                     Il sera affiché sur la page <a href="https://beta.gouv.fr/communaute/"
                         target="_blank">Communauté</a> du site BetaGouv.
                 </label>
-                <input name="website"  value="<%= formData.website %>">
+                <input name="website" value="<%= formData.website %>">
             </div>
 
             <div class="form__group">
@@ -55,7 +55,7 @@
                     <span>Utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv
                 </label>
-                <input name="github"  value="<%= formData.github %>">
+                <input name="github" value="<%= formData.github %>">
             </div>
 
 
@@ -65,23 +65,22 @@
                     <strong>Ton rôle chez BetaGouv (obligatoire)</strong><br />
                     Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
-                <input name="role"  value="<%= formData.role %>" required>
+                <input name="role" value="<%= formData.role %>" required>
             </div>
 
             <div class="form__group">
                 <label for="start">
                     <strong>Début de ta mission (obligatoire)</strong><br />
-                    En format YYY-MM-DD, par exemple : 2020-01-31
                 </label>
-                <input pattern="^\d{4}-\d{2}-\d{2}$" name="start" value="<%= formData.start %>" required>
+                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="2020-01-01" title="En format YYY-MM-DD, par exemple : 2020-01-31" value="<%= formData.start %>" required>
             </div>
 
             <div class="form__group">
                 <label for="end">
                     <strong>Fin de ta mission (obligatoire)</strong><br />
-                    En format YYY-MM-DD, par exemple : 2020-01-31
+                    
                 </label>
-                <input pattern="^\d{4}-\d{2}-\d{2}$" name="end" value="<%= formData.end %>" required>
+                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
@@ -106,7 +105,7 @@
                     <span>Ton employeur</span><br />
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                 </label>
-                <input name="employer"  value="<%= formData.employer %>">
+                <input name="employer" value="<%= formData.employer %>">
             </div>
 
 

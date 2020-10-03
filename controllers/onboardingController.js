@@ -63,7 +63,7 @@ module.exports.getForm = async function (req, res) {
 }
 module.exports.postForm = async function (req, res) {
   try {
-    formValidationErrors = [];
+    var formValidationErrors = [];
 
     function requiredError(field) {
       formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
@@ -71,7 +71,6 @@ module.exports.postForm = async function (req, res) {
 
     function isValidDate(field, date) {
       if (date instanceof Date && !isNaN(date)) {
-        console.log(date)
         return date;
       } else {
         formValidationErrors.push(`${field} : la date n'est pas valide`);

@@ -74,6 +74,26 @@ describe('Onboarding', () => {
         .send({
           lastName: 'Úñíbe',
           role: 'Dev',
+          start: 'aaaa-bb-cc',
+          end: '2021-01-01',
+          status: 'Independant'
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it("should not call Github API if a date doesn't exist", (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          lastName: 'Úñíbe',
+          role: 'Dev',
           start: '2020-42-42',
           end: '2021-01-01',
           status: 'Independant'
