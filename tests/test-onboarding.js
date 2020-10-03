@@ -1,13 +1,19 @@
 const chai = require('chai');
 const sinon = require('sinon');
+const nock = require('nock');
 
 const app = require('../index');
+const utils = require('./utils.js');
 const controllerUtils = require('../controllers/utils');
 
 describe('Onboarding', () => {
 
   describe("GET /onboarding", () => {
     it('should return a valid page', (done) => {
+      nock.cleanAll()
+
+      utils.mockStartups()
+
       chai.request(app)
         .get('/onboarding')
         .end((err, res) => {
