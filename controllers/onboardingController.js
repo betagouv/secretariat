@@ -3,6 +3,7 @@ const crypto = require('crypto');
 
 const config = require('../config');
 const utils = require('./utils');
+const BetaGouv = require('../betagouv');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -41,7 +42,9 @@ async function createNewcomerGithubFile(username, content) {
 
 module.exports.getForm = async function (req, res) {
   try {
+    const startups = await BetaGouv.startupsInfos();
     res.render('onboarding', {
+      startups: startups,
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
@@ -60,6 +63,7 @@ module.exports.getForm = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
+    req.flash('error', `Erreur interne: impossible de récupérer la liste des startups sur ${config.domain}`);
     res.send(err);
   }
 }

@@ -1,7 +1,8 @@
 const chai = require('chai');
+const sinon = require('sinon');
+
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
-const sinon = require('sinon');
 
 describe('Onboarding', () => {
 
@@ -52,6 +53,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          // firstName missing
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2020-01-01',

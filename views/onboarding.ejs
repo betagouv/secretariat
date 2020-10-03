@@ -94,9 +94,15 @@
 
             <div class="form__group">
                 <label for="startup">
-                    <span>Ta Startup d'État</span><br />
+                    <strong>Ta Startup d'État</strong><br />
+                    Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
                 </label>
-                <input name="startup" value="<%= formData.startup %>">
+                <select name="startup">
+                    <option value=""></option>
+                    <% startups.forEach(function(startup) { %>
+                        <option value='<%= startup.id %>'><%= startup.attributes.name %></option>
+                    <% }) %>
+                </select>
             </div>
 
             <div class="form__group">

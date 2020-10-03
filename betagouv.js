@@ -144,9 +144,11 @@ const BetaGouv = {
     return users.find(element => element.id == id);
   },
   startupsInfos: async () => {
-    return axios.get(config.startupsAPI).then(x => x.data).catch((err) => {
-      throw new Error(`Error to get startups infos in ${config.domain}: ${err}`)
-    })
+    return axios.get(config.startupsAPI)
+      .then(x => x.data.data) // data key
+      .catch((err) => {
+        throw new Error(`Error to get startups infos in ${config.domain}: ${err}`)
+      })
   },
 };
 
