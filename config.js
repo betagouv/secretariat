@@ -9,5 +9,6 @@ module.exports = {
   senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net",
   githubToken: process.env.GITHUB_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
-  githubFork: process.env.GITHUB_FORK
+  githubFork: process.env.GITHUB_FORK,
+  defaultLoggedInRedirectUrl: '/community',
 };
