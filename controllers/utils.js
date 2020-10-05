@@ -1,7 +1,8 @@
-const config = require('../config');
-const BetaGouv = require('../betagouv');
 const nodemailer = require('nodemailer');
 const { request } = require('@octokit/request');
+
+const config = require('../config');
+const BetaGouv = require('../betagouv');
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',

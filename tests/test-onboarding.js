@@ -1,12 +1,19 @@
 const chai = require('chai');
-const app = require('../index');
-const controllerUtils = require('../controllers/utils');
 const sinon = require('sinon');
+const nock = require('nock');
+
+const app = require('../index');
+const utils = require('./utils.js');
+const controllerUtils = require('../controllers/utils');
 
 describe('Onboarding', () => {
 
   describe("GET /onboarding", () => {
     it('should return a valid page', (done) => {
+      nock.cleanAll()
+
+      utils.mockStartups()
+
       chai.request(app)
         .get('/onboarding')
         .end((err, res) => {
@@ -52,6 +59,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          // firstName missing
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2020-01-01',

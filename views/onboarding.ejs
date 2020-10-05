@@ -87,16 +87,22 @@
                 <label for="status">
                     <strong>Ton statut (obligatoire)</strong><br />
                 </label>
-                <% memberConfig.statusOptions.forEach(function(option) { %>
-                    <input type="radio" name="status" value="<%= option.value %>" <%= (option.value === formData.status) ? 'checked' : '' %> required><%= option.name %><br>
+                <% memberConfig.statusOptions.forEach(function(status) { %>
+                    <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.name %><br>
                 <% }) %>
             </div>
 
             <div class="form__group">
                 <label for="startup">
                     <span>Ta Startup d'État</span><br />
+                    Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
                 </label>
-                <input name="startup" value="<%= formData.startup %>">
+                <select name="startup">
+                    <option value=""></option>
+                    <% startups.forEach(function(startup) { %>
+                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
+                    <% }) %>
+                </select>
             </div>
 
             <div class="form__group">

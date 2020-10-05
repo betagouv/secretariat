@@ -14,6 +14,7 @@ beforeEach(() => {
   nock.disableNetConnect()
   nock.enableNetConnect('127.0.0.1')
   utils.mockUsers()
+  utils.mockStartups()
   utils.mockSlack()
   utils.mockOvhTime()
   utils.mockOvhUserEmailInfos()
