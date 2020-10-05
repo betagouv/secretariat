@@ -1,11 +1,21 @@
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
+const memberStatusOptions = [
+  { name: 'Indépendant', value: 'independent' },
+  { name: 'Administration (agent public)', value: 'admin' },
+  { name: 'Société de service', value: 'service' },
+];
+
 module.exports = {
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',
   port: process.env.PORT || 8100,
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
+  member: {
+    statusOptions: memberStatusOptions,
+    minStartDate: "2013-07-01"
+  },
   senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net",
   githubToken: process.env.GITHUB_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,

@@ -1,7 +1,8 @@
-const config = require('../config');
 const ejs = require('ejs');
-const utils = require('./utils');
 const crypto = require('crypto');
+
+const config = require('../config');
+const utils = require('./utils');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -43,6 +44,7 @@ module.exports.getForm = async function (req, res) {
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
+      memberConfig: config.member,
       formData: {
         firstName: "",
         lastName: "",
@@ -93,8 +95,8 @@ module.exports.postForm = async function (req, res) {
     startDate = isValidDate('date de début', new Date(start));
     endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
-      if (startDate.getFullYear() < 2020) {
-        formValidationErrors.push('date de début : l\'année doit être au moins 2020');
+      if (startDate < new Date(config.member.minStartDate)) {
+        formValidationErrors.push('date de début : l\'année doit être au moins 2013');
       }
       if (endDate < startDate) {
         formValidationErrors.push('dates : la date de fin doit être supérieure à la date de début');

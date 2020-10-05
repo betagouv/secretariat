@@ -72,7 +72,7 @@
                 <label for="start">
                     <strong>Début de ta mission (obligatoire)</strong><br />
                 </label>
-                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="2020-01-01" title="En format YYY-MM-DD, par exemple : 2020-01-31" value="<%= formData.start %>" required>
+                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= memberConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
@@ -80,15 +80,14 @@
                     <strong>Fin de ta mission (obligatoire)</strong><br />
                     
                 </label>
-                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYY-MM-DD, par exemple : 2020-01-31" required>
+                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
                 <label for="status">
                     <strong>Ton statut (obligatoire)</strong><br />
                 </label>
-                <% var options = [{ name: 'Indépendant', value: 'independent' }, { name: 'Administration (agent public)', value: 'admin' }, { name: 'Société de service', value: 'service' }]; %>
-                <% options.forEach(function(option) { %>
+                <% memberConfig.statusOptions.forEach(function(option) { %>
                     <input type="radio" name="status" value="<%= option.value %>" <%= (option.value === formData.status) ? 'checked' : '' %> required><%= option.name %><br>
                 <% }) %>
             </div>
