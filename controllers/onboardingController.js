@@ -68,7 +68,7 @@ module.exports.postForm = async function (req, res) {
 
     const name = `${firstName} ${lastName}`;
     const username = utils.createUsername(firstName, lastName);
-    const content = await ejs.renderFile("./views/githubAuthor.ejs", {
+    const content = await ejs.renderFile("./views/markdown/githubAuthor.ejs", {
       name,
       website,
       github,
