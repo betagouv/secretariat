@@ -44,17 +44,17 @@ module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     res.render('onboarding', {
-      startups: startups,
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
+      startups: startups,
       formData: {
         firstName: "",
         lastName: "",
         website: "",
         github: "",
         role: "",
-        start: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+        start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
         end: "",
         status: "",
         startup: "",
@@ -100,10 +100,10 @@ module.exports.postForm = async function (req, res) {
     endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
       if (startDate < new Date(config.member.minStartDate)) {
-        formValidationErrors.push('date de début : l\'année doit être au moins 2013');
+        formValidationErrors.push(`date de début : la date doit être au moins ${config.member.minStartDate}`);
       }
       if (endDate < startDate) {
-        formValidationErrors.push('dates : la date de fin doit être supérieure à la date de début');
+        formValidationErrors.push('date de fin : la date doit être supérieure à la date de début');
       }
     }
 
@@ -129,9 +129,12 @@ module.exports.postForm = async function (req, res) {
     res.redirect('/onboardingSuccess');
 
   } catch (err) {
+    const startups = await BetaGouv.startupsInfos();
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
+      memberConfig: config.member,
+      startups: startups,
       formData: req.body
     });
   }

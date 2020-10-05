@@ -87,8 +87,8 @@
                 <label for="status">
                     <strong>Ton statut (obligatoire)</strong><br />
                 </label>
-                <% memberConfig.statusOptions.forEach(function(option) { %>
-                    <input type="radio" name="status" value="<%= option.value %>" <%= (option.value === formData.status) ? 'checked' : '' %> required><%= option.name %><br>
+                <% memberConfig.statusOptions.forEach(function(status) { %>
+                    <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.name %><br>
                 <% }) %>
             </div>
 
@@ -100,7 +100,7 @@
                 <select name="startup">
                     <option value=""></option>
                     <% startups.forEach(function(startup) { %>
-                        <option value='<%= startup.id %>'><%= startup.attributes.name %></option>
+                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
                     <% }) %>
                 </select>
             </div>
