@@ -1,7 +1,8 @@
-const config = require('../config');
 const ejs = require('ejs');
-const utils = require('./utils');
 const crypto = require('crypto');
+
+const config = require('../config');
+const utils = require('./utils');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -43,6 +44,19 @@ module.exports.getForm = async function (req, res) {
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
+      memberConfig: config.member,
+      formData: {
+        firstName: "",
+        lastName: "",
+        website: "",
+        github: "",
+        role: "",
+        start: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+        end: "",
+        status: "",
+        startup: "",
+        employer: ""
+      }
     });
   } catch (err) {
     console.error(err);
@@ -51,20 +65,48 @@ module.exports.getForm = async function (req, res) {
 }
 module.exports.postForm = async function (req, res) {
   try {
-    function throwValidationError(field) {
-      throw new Error(`Le champ ${field} n'est pas renseigné`);
+    var formValidationErrors = [];
+
+    function requiredError(field) {
+      formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
     }
 
-    const firstName = req.body.firstName || throwValidationError('prénom');
-    const lastName = req.body.lastName || throwValidationError('nom de famille');
+    function isValidDate(field, date) {
+      if (date instanceof Date && !isNaN(date)) {
+        return date;
+      } else {
+        formValidationErrors.push(`${field} : la date n'est pas valide`);
+        return null;
+      }
+    }
+
+    const firstName = req.body.firstName || requiredError('prénom');
+    const lastName = req.body.lastName || requiredError('nom de famille');
     const website = req.body.website || null;
     const github = req.body.github || null;
-    const role = req.body.role || throwValidationError('role');
-    const start = req.body.start || throwValidationError('début de la mission');
-    const end = req.body.end || throwValidationError('fin de la mission');
-    const status = req.body.status || throwValidationError('statut');
+    const role = req.body.role || requiredError('role');
+    const start = req.body.start || requiredError('début de la mission');
+    const end = req.body.end || requiredError('fin de la mission');
+    const status = req.body.status || requiredError('statut');
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
+
+    // check start & end dates
+    startDate = isValidDate('date de début', new Date(start));
+    endDate = isValidDate('date de fin', new Date(end));
+    if (startDate && endDate) {
+      if (startDate < new Date(config.member.minStartDate)) {
+        formValidationErrors.push('date de début : l\'année doit être au moins 2013');
+      }
+      if (endDate < startDate) {
+        formValidationErrors.push('dates : la date de fin doit être supérieure à la date de début');
+      }
+    }
+
+    if (formValidationErrors.length) {
+      req.flash('error', formValidationErrors);
+      throw new Error();
+    }
 
     const name = `${firstName} ${lastName}`;
     const username = utils.createUsername(firstName, lastName);
@@ -83,9 +125,11 @@ module.exports.postForm = async function (req, res) {
     res.redirect('/onboardingSuccess');
 
   } catch (err) {
-    console.error(err);
-    req.flash('error', err.message);
-    return res.redirect('/onboarding');
+    res.render('onboarding', {
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+      formData: req.body
+    });
   }
 }
 module.exports.getConfirmation = async function (req, res) {

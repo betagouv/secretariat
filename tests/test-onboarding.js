@@ -67,6 +67,86 @@ describe('Onboarding', () => {
         });
     });
 
+    it("should not call Github API if a date is wrong", (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: 'aaaa-bb-cc',
+          end: '2021-01-01',
+          status: 'Independant'
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it("should not call Github API if a date doesn't exist", (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-42-42',
+          end: '2021-01-01',
+          status: 'Independant'
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it("should not call Github API if the end date is smaller than the start date", (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-12-31',
+          end: '2021-01-01',
+          status: 'Independant'
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it("should not call Github API if the start date is too small", (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2000-01-01',
+          end: '2021-01-01',
+          status: 'Independant'
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
     it("should call Github API if mandatory fields are present", (done) => {
       chai.request(app)
         .post('/onboarding')
