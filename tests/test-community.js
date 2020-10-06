@@ -1,7 +1,8 @@
 const chai = require('chai');
+const nock = require('nock');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock')
 
 
 describe("Community", () => {
@@ -133,4 +134,3 @@ describe("Community", () => {
 
   });
 });
-

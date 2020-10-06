@@ -1,14 +1,14 @@
 const sinon = require('sinon');
-const controllerUtils = require('../controllers/utils');
 const chai = require('chai');
-const app = require('../index');
-const knex = require('../db');
 const crypto = require('crypto');
 
+const app = require('../index');
+const knex = require('../db');
+const controllerUtils = require('../controllers/utils');
+const config = require('../config');
+
+
 describe("Login token", () => {
-
-  const domain = `${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`
-
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     done();
@@ -20,7 +20,7 @@ describe("Login token", () => {
   });
 
   it('should be stored after login request', (done) => {
-    const userEmail = `utilisateur.nouveau@${domain}`;
+    const userEmail = `utilisateur.nouveau@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -42,7 +42,7 @@ describe("Login token", () => {
   });
 
   it('should be deleted after use', (done) => {
-    const userEmail = `utilisateur.actif@${domain}`;
+    const userEmail = `utilisateur.actif@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -71,7 +71,7 @@ describe("Login token", () => {
   });
 
   it('should only be usable once', (done) => {
-    const userEmail = `utilisateur.actif@${domain}`;
+    const userEmail = `utilisateur.actif@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
@@ -111,7 +111,7 @@ describe("Login token", () => {
   it('should not be used if expired', (done) => {
 
     // Create expired token
-    const userEmail = `utilisateur.actif@${domain}`;
+    const userEmail = `utilisateur.actif@${config.domain}`;
     const token = crypto.randomBytes(256).toString('base64');
     let expirationDate = new Date();
 
