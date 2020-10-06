@@ -30,15 +30,13 @@ fieldset {
 
 /* custom css */
 
-/* adds a 'opens in new tab' icon */
-a[target="_blank"]::after {
-  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
-  margin: 0 3px 0 5px;
-}
-
 #header, #footer {
   /* color: rgba(0,0,0,0.4); */
   margin: 1em;
+  text-align: center;
+}
+
+.text-center {
   text-align: center;
 }
 
@@ -46,11 +44,27 @@ a[target="_blank"]::after {
   width: 50%;
 }
 
+.width-auto {
+  width: auto;
+}
+
 .no-margin {
   margin: 0 !important;
 }
 .margin-top-m {
   margin-top: var(--space-m);
+}
+
+.margin-top-0 {
+  margin-top: 0;
+}
+
+.margin-bottom-5 {
+  margin-bottom: 5px;
+}
+
+.margin-10-0 {
+  margin: 10px 0;
 }
 
 .no-padding {
@@ -81,13 +95,17 @@ a[target="_blank"]::after {
   max-width: 1000px;
 }
 
-.module button.button, .module a.button {
-  margin: 0;
-}
-
 .panel {
   margin-bottom: var(--space-m);
   overflow-x: auto;
+}
+
+.panel-full-width {
+  min-width: 100%;
+}
+
+.panel-partial-width {
+  min-width: 45%;
 }
 
 .panel p, .panel label {
@@ -115,6 +133,7 @@ h4, h5, h6 {
   font-size: 0.9em;
   position: absolute;
   bottom: 10px;
+  margin-top: 50px;
 }
 
 .main-end {
@@ -149,9 +168,33 @@ a.button[target="_blank"]::after {
   content:  url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAAD1BMVEUAAACjo6Pn5+fDw8P///8mXC3WAAAABHRSTlMAfb49zZRSvgAAADBJREFUCNdjAAIXFxBicmFwYGAQUQGSjI4sQFJEgIHBgdmRAUgyGAAxUBZOugCBAwCrDAY9nvSvKAAAAABJRU5ErkJggg==');
 }
 
+/* adds a 'opens in new tab' icon */
+a[target="_blank"]::after {
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+  margin: 0 3px 0 5px;
+}
+
+a.no-decoration {
+  text-decoration: none;
+  background-color: transparent;
+  color: inherit;
+}
+
+.redirection-form {
+  display: inline;
+}
+
 .redirection-list {
   color: #8393a7 ;
   font-size: 0.875em;
+}
+
+.redirection-item {
+  padding-bottom: 10px;
+}
+
+button.redirection-remove {
+  margin: 0 10px;
 }
 
 #drawer-toggle {
@@ -194,6 +237,50 @@ a.button[target="_blank"]::after {
   color: #fff;
   line-height: 27px;
   transform: rotate(45deg);
+}
+
+.row {
+  justify-content: start;
+}
+
+.account-split-panel {
+  display: flex;
+  justify-content: space-between;
+}
+
+.account-split-panel-shrink {
+  flex-shrink: 3;
+  margin-left: 10px;
+  max-width: 130px;
+}
+
+.footer-octocat {
+  position: relative;
+  top: 2px;
+}
+
+/* Typography styles */
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+.text-size-caption {
+  font-size: 0.8em;
+}
+
+/* Colors as declared in https://template.data.gouv.fr/#colors */
+
+.text-color-blue {
+  color: #0053b3 !important;
+}
+
+.text-color-darker-grey {
+  color: #53657d !important;
+}
+
+.text-color-almost-black {
+  color: #26353f !important;
 }
 
 /* media */

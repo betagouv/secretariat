@@ -1,7 +1,9 @@
 const chai = require('chai');
-const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock')
+const nock = require('nock');
+
+const app = require('../index');
+const config = require('../config');
 
 
 describe("Account", () => {
@@ -50,12 +52,11 @@ describe("Account", () => {
     });
 
     it("should include a link to OVH's webmail", (done) => {
-      const domain = `${process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr"}`
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${domain}"`)
+          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${config.domain}"`)
           done();
         })
     });

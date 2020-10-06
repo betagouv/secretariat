@@ -1,14 +1,14 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
 
-    <div class="panel" style="min-width: 100%;">
+    <div class="panel panel-full-width">
         <h3>
             Rechercher
         </h3>
         <form class="no-margin" action="/community">
             <div class="form__group">
                 <label>Adresse email du membre</label>
-                <input placeholder="prenom.nom" style="width: auto;" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="id" required  list="user_ids"> @<%= domain %>
+                <input placeholder="prenom.nom" class="width-auto" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="id" required  list="user_ids"> @<%= domain %>
                 <datalist id="user_ids">
                 <% users.forEach(function(user) { %>
                     <option value="<%= user.id %>">
@@ -16,13 +16,13 @@
                 </datalist>
             </div>
             <div class="form__group">
-            <button class="button" type="submit">Voir la fiche</button>
+            <button class="button no-margin" type="submit">Voir la fiche</button>
             </div>
         </form>
     </div>
 
 
-    <div class="panel" style="min-width: 100%;">
+    <div class="panel panel-full-width">
         <h3>
             Créer un compte email
         </h3>
@@ -30,7 +30,7 @@
         <form id="email-creation" class="no-margin"  method="POST">
             <div class="form__group">
                 <label>Email à créer</label>
-                <input placeholder="prenom.nom" style="width: auto;" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="email_id" required  list="user_ids"> @<%= domain %>
+                <input placeholder="prenom.nom" class="width-auto" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="email_id" required  list="user_ids"> @<%= domain %>
                 <datalist id="user_ids">
                 <% users.forEach(function(user) { %>
                     <option value="<%= user.id %>">
@@ -39,11 +39,11 @@
             </div>
 
             <div class="form__group">
-                <label><span style="color: rgb(38, 53, 63)">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
+                <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
                 <input name="to_email" type="email" required>
             </div>
             <div class="form__group">
-            <button class="button" type="submit">Créer l'email</button>
+            <button class="button no-margin" type="submit">Créer l'email</button>
             </div>
         </form>
         <script>

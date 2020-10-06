@@ -3,7 +3,11 @@
 <div class="container container-small">
 
     <% if (errors.length) { %>
-    <div class="notification error"><%= errors %></div>
+    <div class="notification error">
+        <% errors.forEach(function(error) { %>
+            <li><%= error %></li>
+        <% }) %>
+    </div>
     <% } %>
 
     <% if (messages.length) { %>
@@ -11,13 +15,14 @@
     <% } %>
 
     <div class="panel margin-top-m">
-
-        <div class="beta-banner"></div>
-
         <h3>Créer ma fiche Github</h3>
 
-        <p>Bienvenue dans la communauté</p>
-        <p>Crée ta fiche Github pour avoir accès aux différents outils de la communauté</p>
+        <p>
+            Bienvenue dans la communauté !<br>
+            Crée ta fiche Github pour avoir accès aux différents outils de la communauté
+        </p>
+
+        <div class="beta-banner"></div>
 
         <form action="/onboarding" method="POST">
             <h4>Tes infos persos</h4>
@@ -30,11 +35,11 @@
                 <label for="firstName">
                     <strong>Prénom (obligatoire)</strong>
                 </label>
-                <input name="firstName" required>
+                <input name="firstName" value="<%= formData.firstName %>" required>
                 <label for="lastName">
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
-                <input name="lastName" required>
+                <input name="lastName" value="<%= formData.lastName %>" required>
             </div>
 
             <div class="form__group">
@@ -43,7 +48,7 @@
                     Il sera affiché sur la page <a href="https://beta.gouv.fr/communaute/"
                         target="_blank">Communauté</a> du site BetaGouv.
                 </label>
-                <input name="website">
+                <input name="website" value="<%= formData.website %>">
             </div>
 
             <div class="form__group">
@@ -51,7 +56,7 @@
                     <span>Utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv
                 </label>
-                <input name="github">
+                <input name="github" value="<%= formData.github %>">
             </div>
 
 
@@ -61,39 +66,44 @@
                     <strong>Ton rôle chez BetaGouv (obligatoire)</strong><br />
                     Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
-                <input name="role" required>
+                <input name="role" value="<%= formData.role %>" required>
             </div>
 
             <div class="form__group">
                 <label for="start">
                     <strong>Début de ta mission (obligatoire)</strong><br />
-                    En format YYY-MM-DD, par exemple : 2020-01-31
                 </label>
-                <input pattern="^\d{4}-\d{2}-\d{2}$" name="start" required>
+                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= memberConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
                 <label for="end">
                     <strong>Fin de ta mission (obligatoire)</strong><br />
-                    En format YYY-MM-DD, par exemple : 2020-01-31
+                    
                 </label>
-                <input pattern="^\d{4}-\d{2}-\d{2}$" name="end" required>
+                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
                 <label for="status">
                     <strong>Ton statut (obligatoire)</strong><br />
                 </label>
-                <input type="radio" required name="status" value="independent">Indépendant<br>
-                <input type="radio" required name="status" value="admin">Administration (agent public)<br>
-                <input type="radio" required name="status" value="service">Société de service<br>
+                <% memberConfig.statusOptions.forEach(function(status) { %>
+                    <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.name %><br>
+                <% }) %>
             </div>
 
             <div class="form__group">
                 <label for="startup">
                     <span>Ta Startup d'État</span><br />
+                    Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
                 </label>
-                <input name="startup">
+                <select name="startup">
+                    <option value=""></option>
+                    <% startups.forEach(function(startup) { %>
+                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
+                    <% }) %>
+                </select>
             </div>
 
             <div class="form__group">
@@ -101,7 +111,7 @@
                     <span>Ton employeur</span><br />
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                 </label>
-                <input name="employer">
+                <input name="employer" value="<%= formData.employer %>">
             </div>
 
 
