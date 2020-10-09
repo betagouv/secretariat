@@ -49,18 +49,26 @@
                 Parler avec un humain ?
             </h4>
             <p>
-                Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.
-                Son role sera de t'accompagner dans tes démarches et t'aider
-                à t'orienter au sein de la communauté.
-            </p>
-
-
-            <form class="no-margin" action="/marrainage" method="POST">
-                <div class="form__group">
-                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
-                </div>
-                <button class="button secondary no-margin" type="submit">Chercher un·e marrain·e</button>
-            </form>
+            <% if(marrainageState) { %>
+                <% if (marrainageState.completed) { %>
+                    Tu peux peut parler à ton ou ta marrain·e qui est <b><%= marrainageState.last_onboarder %></b>.
+                <% } else { %>
+                    Nous avons demander à <b><%= marrainageState.last_onboarder %></b> de devenir ton ou ta marrain·e, nous attendons sa réponse. 
+                <% } %>
+            <% } else { %>
+                    Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.            
+            <% } %>
+                Son role est de t'accompagner dans tes démarches et t'aider
+                    à t'orienter au sein de la communauté.
+                </p>
+            <% if(!marrainageState) { %>
+                <form class="no-margin" action="/marrainage" method="POST">
+                    <div class="form__group">
+                    <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                    </div>
+                    <button class="button secondary no-margin" type="submit">Chercher un·e marrain·e</button>
+                </form>
+            <% } %>
         </div>
     </div>
 

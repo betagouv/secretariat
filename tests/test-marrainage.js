@@ -6,6 +6,7 @@ const controllerUtils = require('../controllers/utils');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const testUsers = require('./users.json');
+const knex = require('../db');
 
 describe("Marrainage", () => {
 
@@ -37,10 +38,18 @@ describe("Marrainage", () => {
 
     it("should email newcomer and onboarder if accepted", (done) => {
 
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
       const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === 'utilisateur.nouveau'),
-        onboarder: testUsers.find(x => x.id === 'utilisateur.actif')
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
       }, config.secret);
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      })
 
       chai.request(app)
         .get(`/marrainage/accept?details=${encodeURIComponent(token)}`)
@@ -63,10 +72,18 @@ describe("Marrainage", () => {
 
     it("should email newcomer if declined", (done) => {
 
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
       const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === 'utilisateur.nouveau'),
-        onboarder: testUsers.find(x => x.id === 'utilisateur.actif')
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
       }, config.secret);
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      })
 
       chai.request(app)
         .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
@@ -92,10 +109,18 @@ describe("Marrainage", () => {
 
     it("should select a new onboarder if declined", (done) => {
 
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
       const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === 'utilisateur.nouveau'),
-        onboarder: testUsers.find(x => x.id === 'utilisateur.actif')
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
       }, config.secret);
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      })
 
       chai.request(app)
         .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
@@ -142,6 +167,22 @@ describe("Marrainage", () => {
           emailBody.should.include('marrainage/decline');
           done();
         });
+    });
+
+    it("should add info in db when sollicited", (done) => {
+      chai.request(app)
+        .post("/marrainage")
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .type("form")
+        .send({
+          'newcomerId': 'utilisateur.actif'
+        })
+        .redirects(0)
+        .then(() => knex('marrainage').select().where({ username: 'utilisateur.actif' }))
+        .then(dbRes => dbRes[0].newcomer)
+        .then(done)
+        .catch(done)
+        ;
     });
 
     it("should not allow expired users to create a request", (done) => {

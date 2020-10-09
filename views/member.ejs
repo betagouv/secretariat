@@ -30,15 +30,27 @@
     </div>
 
     <div class="panel">
-        <h3>L'accueillir ?</h3>
-        <form class="no-margin" action="/marrainage" method="POST">
-            <div class="form__group margin-10-0">
-                <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
-                    Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
-                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
-            </div>
-            <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
-        </form>
+        <% if(marrainageState) { %>
+            <h3>Marrainage</h3>
+            <p>
+                <% if (marrainageState.completed) { %>
+                    Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
+                <% } else { %>
+                    Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b>.
+                <% } %>
+            </p>
+  
+        <% } else { %>
+            <h3>L'accueillir ?</h3>
+            <form class="no-margin" action="/marrainage" method="POST">
+                <div class="form__group margin-10-0">
+                    <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                        Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
+                    <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                </div>
+                <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
+            </form>
+        <% } %>
     </div>
 
     <div class="panel">
