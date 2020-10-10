@@ -41,15 +41,15 @@ describe("Marrainage", () => {
       const newcomerId = 'utilisateur.nouveau';
       const onboarderId = 'utilisateur.actif';
 
-      const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === newcomerId),
-        onboarder: testUsers.find(x => x.id === onboarderId)
-      }, config.secret);
-
       knex('marrainage').insert({
         username: newcomerId,
         last_onboarder: onboarderId
       })
+
+      const token = jwt.sign({
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
+      }, config.secret);
 
       chai.request(app)
         .get(`/marrainage/accept?details=${encodeURIComponent(token)}`)
@@ -75,15 +75,15 @@ describe("Marrainage", () => {
       const newcomerId = 'utilisateur.nouveau';
       const onboarderId = 'utilisateur.actif';
 
-      const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === newcomerId),
-        onboarder: testUsers.find(x => x.id === onboarderId)
-      }, config.secret);
-
       knex('marrainage').insert({
         username: newcomerId,
         last_onboarder: onboarderId
       })
+
+      const token = jwt.sign({
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
+      }, config.secret);
 
       chai.request(app)
         .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
@@ -112,15 +112,15 @@ describe("Marrainage", () => {
       const newcomerId = 'utilisateur.nouveau';
       const onboarderId = 'utilisateur.actif';
 
-      const token = jwt.sign({
-        newcomer: testUsers.find(x => x.id === newcomerId),
-        onboarder: testUsers.find(x => x.id === onboarderId)
-      }, config.secret);
-
       knex('marrainage').insert({
         username: newcomerId,
         last_onboarder: onboarderId
       })
+
+      const token = jwt.sign({
+        newcomer: testUsers.find(x => x.id === newcomerId),
+        onboarder: testUsers.find(x => x.id === onboarderId)
+      }, config.secret);
 
       chai.request(app)
         .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
@@ -179,7 +179,10 @@ describe("Marrainage", () => {
         })
         .redirects(0)
         .then(() => knex('marrainage').select().where({ username: 'utilisateur.actif' }))
-        .then(dbRes => dbRes[0].newcomer)
+        .then(dbRes => {
+          dbRes.length.should.equal(1);
+          dbRes[0].username.should.equal('utilisateur.actif');
+        })
         .then(done)
         .catch(done)
         ;
