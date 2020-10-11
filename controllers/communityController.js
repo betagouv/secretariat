@@ -37,6 +37,12 @@ module.exports.getMember = async function(req, res) {
     }
 
     const user = await utils.userInfos(requestedUserId, isCurrentUser);
+    
+    if (!user.userInfos && (!user.emailInfos || redirections.length === 0)) {	
+      req.flash('error', `Inexistante (nécessaire pour créer le compte mail) Vous pouvez créer la fiche sur Github`);	
+      res.redirect(`/community`);	
+      return;	
+    }
 
     res.render('member', {
       requestedUserId,
