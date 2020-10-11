@@ -2,40 +2,45 @@
 <div class="module">
     <div class="panel">
         <div>
-            <h3>
-                <%= userInfos.fullname %>
-            </h3>
-            <% if (userInfos.start) { %>
-            <p>
-                <span class="font-weight-bold">Mission :</span>
-                du <%= userInfos.start %>
-                <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
-            </p>
-            <% } %>
-            <% if (userInfos.employer) { %>
-            <p>
-                <span class="font-weight-bold">Employeur : </span> <%= userInfos.employer %>
-            </p>
-            <% } %>
-            <p>
-                <span class="font-weight-bold">Compte Github : </span> 
-                <% if (userInfos.github) { %>
-                <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
-                <% } else { %>
-                    Non renseigné
+            <% if(userInfos) { %>
+                <h3>
+                    <%= userInfos.fullname %>
+                </h3>
+                <% if (userInfos.start) { %>
+                <p>
+                    <span class="font-weight-bold">Mission :</span>
+                    du <%= userInfos.start %>
+                    <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
+                </p>
                 <% } %>
-            </p>
+                <% if (userInfos.employer) { %>
+                <p>
+                    <span class="font-weight-bold">Employeur : </span> <%= userInfos.employer %>
+                </p>
+                <% } %>
+                <p>
+                    <span class="font-weight-bold">Compte Github : </span> 
+                    <% if (userInfos.github) { %>
+                    <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                    <% } else { %>
+                        Non renseigné
+                    <% } %>
+                </p>
+            <% } else { %>
+                <p>Il n'y a de fiche pour ce membre sur github</p>
+            <% } %>
         </div>
-        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= currentUserId %>.md" target="_blank">Modifier sur Github</a>
+    
     </div>
 
     <div class="panel">
         <h3>L'accueillir ?</h3>
         <form class="no-margin" action="/marrainage" method="POST">
             <div class="form__group margin-10-0">
-                <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                <label><%= userInfos.fullname || currentUserId %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
                     Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
-                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                <input type="hidden" name="newcomerId" value="<%= currentUserId %>">
             </div>
             <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
         </form>
@@ -48,8 +53,8 @@
         <p class="text-color-darker-grey font-weight-bold"><%= emailInfos.email %></p>
         <% }%>
         <% if (canCreateEmail) { %>
-        <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
-        <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST">
+        <p>Tu peux créer un compte mail pour <%= userInfos.fullname || currentUserId %>.</p>
+        <form class="no-margin" action="/users/<%= currentUserId %>/email" method="POST">
             <div class="form__group">
                 <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
                 <input name="to_email" type="email" required>
@@ -61,7 +66,7 @@
         <% } else { %>
         <% if (isExpired) { %>
         <div class="notification error">
-            Le compte <%= userInfos.id %> est expiré.
+            Le compte <%= currentUserId %> est expiré.
         </div>
         <% } %>
         <% } %>
