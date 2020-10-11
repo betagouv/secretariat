@@ -26,19 +26,20 @@ module.exports.getCommunity = async function (req, res) {
 }
 
 module.exports.getMember = async function(req, res) {
-  const id = req.params.id;
+  const requestedUserId = req.params.id;
 
   try {
-    const isCurrentUser = req.user.id === id;
+    const isCurrentUser = req.user.id === requestedUserId;
 
     if (isCurrentUser) {
       res.redirect(`/account`);
       return;
     }
 
-    const user = await utils.userInfos(id, req.user.id === id);
+    const user = await utils.userInfos(requestedUserId, isCurrentUser);
 
     res.render('member', {
+      requestedUserId,
       currentUserId: req.user.id,
       emailInfos: user.emailInfos,
       redirections: user.redirections,
