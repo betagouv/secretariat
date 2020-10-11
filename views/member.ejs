@@ -36,14 +36,18 @@
 
     <div class="panel">
         <h3>L'accueillir ?</h3>
-        <form class="no-margin" action="/marrainage" method="POST">
-            <div class="form__group margin-10-0">
-                <label><%= userInfos.fullname || requestedUserId %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
-                    Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
-                <input type="hidden" name="newcomerId" value="<%= requestedUserId %>">
-            </div>
-            <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
-        </form>
+        <% if(userInfos) { %>
+            <form class="no-margin" action="/marrainage" method="POST">
+                <div class="form__group margin-10-0">
+                    <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                        Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
+                    <input type="hidden" name="newcomerId" value="<%= requestedUserId %>">
+                </div>
+                <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
+            </form>
+       <% } else { %>
+            <p>Sans fiche sur Github, la fonction marrainage n'est pas disponible.</p>
+       <% } %>
     </div>
 
     <div class="panel">
