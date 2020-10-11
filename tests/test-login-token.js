@@ -120,15 +120,11 @@ describe("Login token", () => {
       username: "utilisateur.actif",
       email: userEmail,
       expires_at: expirationDate
-    })
-
-    // Try to login using this expired token
-    .then(() => {
+    }) 
+    .then(() => { // Try to login using this expired token
       return chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0);
     })
-
-    // Ensure the response did NOT set an auth cookie
-    .then(res => {
+    .then(res => {     // Ensure the response did NOT set an auth cookie
       res.should.not.have.cookie('token');
     })
     .then(done)
