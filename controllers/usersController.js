@@ -41,7 +41,7 @@ module.exports.createEmailForUser = async function (req, res) {
       .slice(-10);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
