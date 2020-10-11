@@ -32,7 +32,7 @@
                             <% }) %>
                         </div>
                     </td>
-                    <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.github) { %><a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md" target="_blank">✔ Oui</a><% } else { %>❌ Non !<% } %></td>
                     <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                     <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                 </tr>
