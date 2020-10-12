@@ -1,8 +1,8 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
     <div class="panel">
-        <div>
-            <% if(userInfos) { %>
+        <% if(userInfos) { %>
+            <div>
                 <h3>
                     <%= userInfos.fullname %>
                 </h3>
@@ -26,12 +26,12 @@
                         Non renseigné
                     <% } %>
                 </p>
+                <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= requestedUserId %>.md" target="_blank">Modifier sur Github</a> 
+             </div>
             <% } else { %>
                 <p>Il n'y a de fiche pour ce membre sur github</p>
+                <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=<%= requestedUserId %>.md" target="_blank">Créer sur Github</a>
             <% } %>
-        </div>
-        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= requestedUserId %>.md" target="_blank">Modifier sur Github</a>
-    
     </div>
 
     <div class="panel">
@@ -57,7 +57,7 @@
         <p class="text-color-darker-grey font-weight-bold"><%= emailInfos.email %></p>
         <% }%>
         <% if (canCreateEmail) { %>
-        <p>Tu peux créer un compte mail pour <%= userInfos.fullname || requestedUserId %>.</p>
+        <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
         <form class="no-margin" action="/users/<%= requestedUserId %>/email" method="POST">
             <div class="form__group">
                 <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
