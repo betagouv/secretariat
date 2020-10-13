@@ -50,7 +50,7 @@
         <table class="sortable">
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>Email</th>
                     <th>Date de fin</th>
                     <th>Compte Email</th>
                     <th>Fiche sur Github</th>
@@ -59,7 +59,7 @@
             <tbody>
                 <% expiredEmails.forEach(function(email) { %>
                 <tr>
-                    <td><a href="/community/<%= email.id %>"><%= email.id %></a>
+                    <td><a href="/community/<%= email.id %>"><%= email.email %></a>
                         <div data-id="<%= email.id %>" class="redirection-list">
                             <% email.redirections.forEach(function(redirection) { %>
                             <%= redirection %><br />
