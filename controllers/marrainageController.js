@@ -46,7 +46,7 @@ async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
   const html = await ejs.renderFile("./views/emails/marrainageRequest.ejs", { newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl });
 
   try {
-    return await utils.sendMail([utils.buildBetaEmail(onboarder.id),config.senderEmail], `Tu as été sélectionné·e comme marrain·e 🙌`, html);
+    return await utils.sendMail([utils.buildBetaEmail(onboarder.id)], `Tu as été sélectionné·e comme marrain·e 🙌`, html);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -117,7 +117,7 @@ module.exports.declineRequest = async function (req, res) {
     const html = await ejs.renderFile("./views/emails/marrainageDecline.ejs", { newcomer, declinedOnboarder, onboarder });
 
     try {
-      await utils.sendMail([utils.buildBetaEmail(newcomer.id),config.senderEmail], `La recherche de marrain·e se poursuit !`, html);
+      await utils.sendMail([utils.buildBetaEmail(newcomer.id)], `La recherche de marrain·e se poursuit !`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }

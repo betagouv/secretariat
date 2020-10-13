@@ -8,12 +8,7 @@ const ovh = require('ovh')({
   consumerKey: process.env.OVH_CONSUMER_KEY
 });
 
-const config = {
-  domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
-  usersAPI:
-    process.env.USERS_API || 'https://beta.gouv.fr/api/v1.6/authors.json',
-  slackWebhookURL: process.env.SLACK_WEBHOOK_URL
-};
+const config = require('./config');
 
 const betaOVH = {
   emailInfos: async id => {
@@ -146,9 +141,15 @@ const BetaGouv = {
   },
   userInfosById: async id => {
     const users = await BetaGouv.usersInfos();
-
     return users.find(element => element.id == id);
-  }
+  },
+  startupsInfos: async () => {
+    return axios.get(config.startupsAPI)
+      .then(x => x.data.data) // data key
+      .catch((err) => {
+        throw new Error(`Error to get startups infos in ${config.domain}: ${err}`)
+      })
+  },
 };
 
 module.exports = BetaGouv;

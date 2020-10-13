@@ -1,7 +1,8 @@
 const chai = require('chai');
+const nock = require('nock');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const nock = require('nock')
 
 
 describe("Community", () => {
@@ -12,7 +13,8 @@ describe("Community", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/community');
           done();
         });
     });
@@ -133,4 +135,3 @@ describe("Community", () => {
 
   });
 });
-
