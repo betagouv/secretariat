@@ -102,10 +102,10 @@ app.use((err, req, res, next) => {
       'error',
       "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)"
     );
-
-    return res.redirect('/login');
+    // Save the requested url in a query param, and redirect to login
+    var nextParam = req.url ? `?next=${req.url}` : '';
+    return res.redirect(`/login${nextParam}`);
   }
-
   next(err);
 });
 

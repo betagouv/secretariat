@@ -41,7 +41,7 @@ module.exports.createEmailForUser = async function (req, res) {
       .slice(-10);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -93,7 +93,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&createRedirection=${req.body.createRedirection}&keep_copy=${req.body.keep_copy}`
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
