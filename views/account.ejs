@@ -68,6 +68,17 @@
                     </div>
                     <button class="button secondary no-margin" type="submit">Chercher un·e marrain·e</button>
                 </form>
+            <% } else if(!marrainageState.completed) { %>
+                <div class="form__group margin-10-0 display-flex">
+                    <form action="/marrainage/reload" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Relancer</button>
+                    </form>
+                    <form action="/marrainage/cancel" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Annuler</button>
+                    </form>
+                </div>
             <% } %>
         </div>
     </div>

@@ -32,13 +32,26 @@
     <div class="panel">
         <% if(marrainageState) { %>
             <h3>Marrainage</h3>
-            <p>
-                <% if (marrainageState.completed) { %>
+           
+            <% if (marrainageState.completed) { %> 
+                <p>
                     Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
-                <% } else { %>
-                    Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b>.
-                <% } %>
-            </p>
+                </p>
+            <% } else { %>
+                <p>
+                Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b>.
+                </p>
+                <div class="form__group margin-10-0 display-flex">
+                    <form action="/marrainage/reload" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Relancer</button>
+                    </form>
+                    <form action="/marrainage/cancel" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Annuler</button>
+                    </form>
+                </div>
+            <% } %>
   
         <% } else { %>
             <h3>L'accueillir ?</h3>

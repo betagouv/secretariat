@@ -283,6 +283,10 @@ button.redirection-remove {
   color: #26353f !important;
 }
 
+.display-flex {
+  display: flex;
+}
+
 /* media */
 
 @media (max-width: 749px) {
