@@ -39,7 +39,8 @@
                 </p>
             <% } else { %>
                 <p>
-                Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b>.
+                Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
+                Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
                 </p>
                 <div class="form__group margin-10-0 display-flex">
                     <form action="/marrainage/reload" method="POST">
