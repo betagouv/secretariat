@@ -107,7 +107,7 @@ describe("Account", () => {
       knex('marrainage').insert({
         username: 'utilisateur.actif',
         last_onboarder: 'utilisateur.peutimporte',
-        last_updated: new Date(Date.now() - 24*3600*1000 - 5)
+        last_updated: new Date(Date.now() - 24*3601*1000)
       }).then(() => {
         chai.request(app)
           .get('/account')
