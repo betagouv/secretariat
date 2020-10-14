@@ -22,5 +22,6 @@ module.exports = {
   startupsAPI: process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   githubToken: process.env.GITHUB_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
-  githubFork: process.env.GITHUB_FORK
+  githubFork: process.env.GITHUB_FORK,
+  defaultLoggedInRedirectUrl: '/community',
 };

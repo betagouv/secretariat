@@ -10,6 +10,7 @@ function renderLogin(req, res, params) {
   // init params
   params.currentUser = undefined;
   params.domain = config.domain;
+  params.nextParam = req.query.next ? `?next=${req.query.next}` : '';
   // enrich params
   params.errors = req.flash('error');
   params.messages = req.flash('message');
@@ -21,25 +22,25 @@ function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
-async function sendLoginEmail(id, url, token) {
+async function sendLoginEmail(id, loginUrl, token) {
   const user = await BetaGouv.userInfosById(id);
 
   if (!user) {
     throw new Error(
-      `Utilisateur·rice ${id} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
+      `Utilisateur·rice <strong>${id}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur·rice ${id} a une date de fin expiré sur Github.`
+      `Utilisateur·rice <strong>${id}</strong> a une date de fin expiré sur Github.`
     );
   }
 
   const email = utils.buildBetaEmail(id);
-  const loginUrl = `${url}/community?token=${encodeURIComponent(token)}`;
-
-  const html = await ejs.renderFile("./views/emails/login.ejs", { loginUrl });
+  const html = await ejs.renderFile("./views/emails/login.ejs", {
+    loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`
+  });
 
   try {
     await utils.sendMail(email, 'Connexion au secrétariat BetaGouv', html);
@@ -73,19 +74,22 @@ module.exports.getLogin = async function (req, res) {
 }
 
 module.exports.postLogin = async function (req, res) {
+  var nextParam = req.query.next ? `?next=${req.query.next}` : '';
+
   if (
     req.body.id === undefined ||
     !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
   ) {
     req.flash('error', "L'email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.'.<br />Exemple : charlotte.duret");
-    return res.redirect('/login');
+    return res.redirect(`/login${nextParam}`);
   }
 
   const secretariatUrl = `${config.protocol}://${req.get('host')}`;
+  const loginUrl = secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl);
 
   try {
     const token = generateToken();
-    await sendLoginEmail(req.body.id, secretariatUrl, token);
+    await sendLoginEmail(req.body.id, loginUrl, token);
     await saveToken(req.body.id, token)
 
     renderLogin(req, res, {
@@ -95,6 +99,6 @@ module.exports.postLogin = async function (req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    return res.redirect('/login');
+    return res.redirect(`/login${nextParam}`);
   }
 }

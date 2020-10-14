@@ -19,7 +19,8 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/email');
           done();
         });
     });
@@ -148,7 +149,8 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/redirections');
           done();
         });
     });
@@ -217,7 +219,8 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/redirections/test@example.com/delete');
           done();
         });
     });
@@ -280,7 +283,8 @@ describe("User", () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/users/utilisateur.actif/password');
           done();
         });
     });

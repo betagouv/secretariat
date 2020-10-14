@@ -23,6 +23,23 @@ describe("Login", () => {
   //   });
   // });
 
+  describe("POST /login with next query param", () => {
+    it("should keep the next query param", (done) => {
+      chai.request(app)
+        .post('/login?next=/users')
+        .type('form')
+        .send({
+          id: undefined
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/login?next=/users');
+          done();
+        });
+    });
+  });
+
   describe("POST /login with user undefined", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
