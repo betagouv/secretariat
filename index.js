@@ -121,6 +121,8 @@ app.post('/notifications/github', githubNotificationController.processNotificati
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
+app.post('/marrainage/cancel', marrainageController.cancelRequest);
+app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);

@@ -1,6 +1,7 @@
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
+const knex = require('../db');
 
 module.exports.getCommunity = async function (req, res) {
   if (req.query.id) {
@@ -43,6 +44,9 @@ module.exports.getMember = async function(req, res) {
       res.redirect(`/community`);
       return;
     }
+    const marrainageStateResponse = await knex('marrainage').select()
+        .where({ username: id });
+    const marrainageState = marrainageStateResponse[0];
 
     res.render('member', {
       currentUserId: req.user.id,
@@ -54,6 +58,7 @@ module.exports.getMember = async function(req, res) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       domain: config.domain,
+      marrainageState,
       activeTab: 'community'
     });
   } catch (err) {

@@ -30,15 +30,41 @@
     </div>
 
     <div class="panel">
-        <h3>L'accueillir ?</h3>
-        <form class="no-margin" action="/marrainage" method="POST">
-            <div class="form__group margin-10-0">
-                <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
-                    Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
-                <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
-            </div>
-            <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
-        </form>
+        <% if(marrainageState) { %>
+            <h3>Marrainage</h3>
+           
+            <% if (marrainageState.completed) { %> 
+                <p>
+                    Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
+                </p>
+            <% } else { %>
+                <p>
+                Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
+                Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
+                </p>
+                <div class="form__group margin-10-0 display-flex">
+                    <form action="/marrainage/reload" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Relancer</button>
+                    </form>
+                    <form action="/marrainage/cancel" method="POST">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <button class="button secondary no-margin" type="submit">Annuler</button>
+                    </form>
+                </div>
+            <% } %>
+  
+        <% } else { %>
+            <h3>L'accueillir ?</h3>
+            <form class="no-margin" action="/marrainage" method="POST">
+                <div class="form__group margin-10-0">
+                    <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                        Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
+                    <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                </div>
+                <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
+            </form>
+        <% } %>
     </div>
 
     <div class="panel">
