@@ -90,8 +90,8 @@ describe("Account", () => {
     
     it("don't show reload button if last change is under 24h", (done) => {
       knex('marrainage').insert({
-        username: newcomerId,
-        last_onboarder: onboarderId
+        username: 'utilisateur.actif',
+        last_onboarder: 'utilisateur.peutimporte'
       }).then(() => {
         chai.request(app)
           .get('/account')
@@ -105,8 +105,8 @@ describe("Account", () => {
     
     it("show reload button if last change is after 24h", (done) => {
       knex('marrainage').insert({
-        username: newcomerId,
-        last_onboarder: onboarderId,
+        username: 'utilisateur.actif',
+        last_onboarder: 'utilisateur.peutimporte',
         last_updated: (Date.now() - 24*3600*1000 - 5)
       }).then(() => {
         chai.request(app)
