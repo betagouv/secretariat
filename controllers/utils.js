@@ -4,24 +4,12 @@ const { request } = require('@octokit/request');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 
-if(process.env.MAIL_SERVICE) {
-  const service = process.env.MAIL_SERVICE;
-  const host = null;
-  const port = null;
-  const ignoreTLS = null;
-} else {
-  const service = null;
-  const host = process.env.MAIL_HOST;
-  const port = parseInt(process.env.MAIL_PORT || "25");
-  const ignoreTLS = process.env.MAIL_IGNORE_TLS === 'true';
-}
-
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
-  service,
-  host,
-  port,
-  ignoreTLS,
+  service: process.env.MAIL_SERVICE ? process.env.MAIL_SERVICE : null,
+  host: process.env.MAIL_SERVICE ? null : process.env.MAIL_HOST,
+  port: process.env.MAIL_SERVICE ? null : parseInt(process.env.MAIL_PORT || "25"),
+  ignoreTLS: process.env.MAIL_SERVICE ? null : process.env.MAIL_IGNORE_TLS === 'true',
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
