@@ -97,7 +97,7 @@ describe("Account", () => {
           .get('/account')
           .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
-            res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
+            res.text.should.not.include('action="/marrainage/reload" method="POST"')
             done();
           })
       });
@@ -113,7 +113,7 @@ describe("Account", () => {
           .get('/account')
           .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
-            res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
+            res.text.should.include('action="/marrainage/reload" method="POST"')
             done();
           })
       });
