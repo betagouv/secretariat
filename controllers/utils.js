@@ -6,7 +6,10 @@ const BetaGouv = require('../betagouv');
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
-  service: process.env.MAIL_SERVICE,
+  //service: process.env.MAIL_SERVICE,
+  host: "maildev",
+  port: 25,
+  ignoreTLS: true,
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS

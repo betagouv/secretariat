@@ -24,7 +24,7 @@ services:
     env_file: 
       - ../.env.secretariat.dev
     environment:
-      DATABASE_URL: postgres://secretariat:secretariat@db/secretariat
+      DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
       MAIL_PASS: mailuser
       MAIL_USER: mailpassword
       MAIL_SERVICE: Maildev
