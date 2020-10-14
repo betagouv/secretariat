@@ -167,6 +167,31 @@ describe("Marrainage", () => {
           .catch(done);
         });
       });
+
+    it("should now allow reloading a request", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/reload')
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .then(() => knex('marrainage').select().where({ username: newcomerId }))
+          .then(dbRes => {
+            dbRes.length.should.equal(1);
+            dbRes[0].count.should.equal(1);
+          })
+          .then(done)
+          .catch(done);
+        });
+      });
   });
 
   describe("authenticated", () => {
@@ -275,6 +300,57 @@ describe("Marrainage", () => {
           .then(() => knex('marrainage').select().where({ username: newcomerId }))
           .then((dbRes) => {
             dbRes.length.should.equal(0);
+          })
+          .then(done)
+          .catch(done);
+      });
+    });
+
+    it("reloading a request redirects to the newcommer page", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/reload')
+          .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .redirects(0)
+          .end((err, res) => {
+            res.should.have.status(302);
+            res.headers.location.should.equal(`/community/${newcomerId}`);
+            done();
+          });
+      })
+    });
+
+    it("reloading a request increases the count of the DB entry", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+  
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/reload')
+          .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .then(() => knex('marrainage').select().where({ username: newcomerId }))
+          .then((dbRes) => {
+            dbRes.length.should.equal(1);
+            dbRes[0].count.should.equal(2);
           })
           .then(done)
           .catch(done);
