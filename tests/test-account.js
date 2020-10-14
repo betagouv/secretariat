@@ -8,8 +8,9 @@ const knex = require('../db');
 
 
 describe("Account", () => {
-    afterEach((done) => {
+  afterEach((done) => {
     knex('marrainage').truncate()
+    .then(() => done())
   });
   
   describe("GET /account unauthenticated", () => {
