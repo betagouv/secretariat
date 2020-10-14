@@ -4,9 +4,14 @@ const nock = require('nock');
 
 const app = require('../index');
 const config = require('../config');
+const knex = require('../db');
 
 
 describe("Account", () => {
+    afterEach((done) => {
+    knex('marrainage').truncate()
+  });
+  
   describe("GET /account unauthenticated", () => {
     it("should redirect to login", (done) => {
       chai.request(app)
@@ -80,6 +85,37 @@ describe("Account", () => {
           res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
           done();
         })
+    });
+    
+    it("don't show reload button if last change is under 24h", (done) => {
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .get('/account')
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .end((err, res) => {
+            res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
+            done();
+          })
+      });
+    });
+    
+    it("show reload button if last change is after 24h", (done) => {
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId,
+        last_updated: (Date.now() - 24*3600*1000 - 5)
+      }).then(() => {
+        chai.request(app)
+          .get('/account')
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .end((err, res) => {
+            res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
+            done();
+          })
+      });
     });
   });
 });
