@@ -71,7 +71,7 @@
             <% } else if(!marrainageState.completed) { %>
                 Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
                 <div class="form__group margin-10-0 display-flex">
-                    <% if( Date.now() - marrainageState.last_updated.toLocaleDateString() > 24*3600*1000 ) { %>
+                    <% if( Date.now() - marrainageState.last_updated.valueOf() > 24*3600*1000 ) { %>
                         <form action="/marrainage/reload" method="POST">
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                             <button class="button secondary no-margin" type="submit">Relancer</button>
