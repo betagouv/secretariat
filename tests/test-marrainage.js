@@ -143,6 +143,30 @@ describe("Marrainage", () => {
           });
       })
     });
+
+    it("should now allow canceling a request", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/cancel')
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .then(() => knex('marrainage').select().where({ username: newcomerId }))
+          .then(dbRes => {
+            dbRes.length.should.equal(1);
+          })
+          .then(done)
+          .catch(done);
+        });
+      });
   });
 
   describe("authenticated", () => {
@@ -206,6 +230,55 @@ describe("Marrainage", () => {
           done();
         });
     });
+
+    it("canceling a request redirects to the newcommer page", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/cancel')
+          .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .redirects(0)
+          .end((err, res) => {
+            res.should.have.status(302);
+            res.headers.location.should.equal(`/community/${newcomerId}`);
+            done();
+          });
+      })
+    });
+
+    it("canceling a request removes the DB entry", (done) => {
+
+      const newcomerId = 'utilisateur.nouveau';
+      const onboarderId = 'utilisateur.actif';
+  
+      knex('marrainage').insert({
+        username: newcomerId,
+        last_onboarder: onboarderId
+      }).then(() => {
+        chai.request(app)
+          .post('/marrainage/cancel')
+          .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
+          .type("form")
+          .send({
+            'newcomerId': newcomerId
+          })
+          .then(() => knex('marrainage').select().where({ username: newcomerId }))
+          .then((dbRes) => {
+            dbRes.length.should.equal(0);
+          })
+          .then(done)
+          .catch(done);
+      });
+    });
   });
 });
-
