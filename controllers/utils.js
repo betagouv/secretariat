@@ -6,7 +6,11 @@ const BetaGouv = require('../betagouv');
 
 if(process.env.MAIL_SERVICE) {
   const service = process.env.MAIL_SERVICE;
+  const host = null;
+  const port = null;
+  const ignoreTLS = null;
 } else {
+  const service = null;
   const host = process.env.MAIL_HOST;
   const port = parseInt(process.env.MAIL_PORT || "25");
   const ignoreTLS = process.env.MAIL_IGNORE_TLS === 'true';
