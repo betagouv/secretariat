@@ -71,11 +71,11 @@
             <% } else if(!marrainageState.completed) { %>
                 Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
                 <div class="form__group margin-10-0 display-flex">
-                    <form action="/marrainage/reload" method="POST">
+                    <form class="margin-right-10" action="/marrainage/reload" method="POST">
                         <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         <button class="button secondary no-margin" type="submit">Relancer</button>
                     </form>
-                    <form action="/marrainage/cancel" method="POST">
+                    <form class="margin-right-10" action="/marrainage/cancel" method="POST">
                         <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         <button class="button secondary no-margin" type="submit">Annuler</button>
                     </form>
