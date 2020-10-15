@@ -108,7 +108,7 @@
                 <select name="startup">
                     <option value=""></option>
                     <% startups.forEach(function(startup) { %>
-                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.label %></option>
+                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
                     <% }) %>
                 </select>
             </div>
