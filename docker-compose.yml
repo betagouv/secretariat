@@ -27,9 +27,7 @@ services:
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
       MAIL_PASS: mailuser
       MAIL_USER: mailpassword
-      MAIL_HOST: maildev
-      MAIL_PORT: 25
-      MAIL_IGNORE_TLS: true
+      MAIL_SERVICE: Maildev
       SECURE: "false"
     ports:
       - "8100:8100"

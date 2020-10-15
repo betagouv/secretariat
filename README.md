@@ -11,7 +11,7 @@ Le secrétariat de l’incubateur
    - `OVH_APP_SECRET`
    - `OVH_CONSUMER_KEY`
    - `SESSION_SECRET` - Clé de 32 caractère aléatoires, important en prod
-   - `MAIL_SERVICE` - Service [géré par nodemailer](https://nodemailer.com/smtp/well-known/) ([Débugger SMTP en local](#Debug-avec-le-serveur-SMTP-Maildev)). Si absente, `MAIL_HOST`, `MAIL_PORT`, et `MAIL_IGNORE_TLS` seront utilisées.
+   - `MAIL_SERVICE` - Service [géré par nodemailer](https://nodemailer.com/smtp/well-known/) ([Débugger SMTP en local](#Debug-avec-le-serveur-SMTP-Maildev))
    - `MAIL_USER`
    - `MAIL_PASS`
    - `SECURE` - _true_ si https sinon _false_
@@ -25,9 +25,6 @@ Le secrétariat de l’incubateur
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
    - `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
    - `POSTGRES_PASSWORD` - Cette variable sert à lancer l'image docker de postgres et donc seulement nécessaire si Docker est utilisé pour le développement.
-   - `MAIL_HOST` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le hostname ou adresse IP à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
-   - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
-   - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
 
 ### Lancer en mode développement
 
