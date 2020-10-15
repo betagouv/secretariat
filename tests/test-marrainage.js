@@ -47,10 +47,7 @@ describe("Marrainage", () => {
         username: newcomerId,
         last_onboarder: onboarderId
       }).then(() => {
-        const token = jwt.sign({
-          newcomer: testUsers.find(x => x.id === newcomerId),
-          onboarder: testUsers.find(x => x.id === onboarderId)
-        }, config.secret);
+        const token = jwt.sign({newcomerId, onboarderId}, config.secret);
 
         chai.request(app)
           .get(`/marrainage/accept?details=${encodeURIComponent(token)}`)
@@ -82,10 +79,7 @@ describe("Marrainage", () => {
         username: newcomerId,
         last_onboarder: onboarderId
       }).then(() => {
-        const token = jwt.sign({
-          newcomer: testUsers.find(x => x.id === newcomerId),
-          onboarder: testUsers.find(x => x.id === onboarderId)
-        }, config.secret);
+        const token = jwt.sign({newcomerId, onboarderId}, config.secret);
   
         chai.request(app)
           .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
@@ -119,11 +113,8 @@ describe("Marrainage", () => {
         username: newcomerId,
         last_onboarder: onboarderId
       }).then(() => {
-        const token = jwt.sign({
-          newcomer: testUsers.find(x => x.id === newcomerId),
-          onboarder: testUsers.find(x => x.id === onboarderId)
-        }, config.secret);
-  
+        const token = jwt.sign({newcomerId, onboarderId}, config.secret);
+
         chai.request(app)
           .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
           .redirects(0)
