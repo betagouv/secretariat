@@ -21,29 +21,29 @@
                 <p>
                     <span class="font-weight-bold">Compte Github : </span> 
                     <% if (userInfos.github) { %>
-                    <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                        <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
                     <% } else { %>
                         Non renseigné
                     <% } %>
                 </p>
                 <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= requestedUserId %>.md" target="_blank">Modifier sur Github</a> 
-             </div>
-            <% } else { %>
-                <p>Il n'y a de fiche pour ce membre sur github</p>
-                <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=<%= requestedUserId %>.md" target="_blank">Créer sur Github</a>
-            <% } %>
+            </div>
+        <% } else { %>
+            <p>Il n'y a de fiche pour ce membre sur github</p>
+            <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=<%= requestedUserId %>.md" target="_blank">Créer sur Github</a>
+        <% } %>
     </div>
 
     <div class="panel">
         <% if(userInfos) { %>
-          <% if(marrainageState) { %>
-              <h3>Marrainage</h3>
+            <% if(marrainageState) { %>
+                <h3>Marrainage</h3>
 
-              <% if (marrainageState.completed) { %> 
+                <% if (marrainageState.completed) { %> 
                   <p>
                       Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
                   </p>
-              <% } else { %>
+                <% } else { %>
                   <p>
                   Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
                   Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
@@ -60,9 +60,8 @@
                           <button class="button secondary no-margin" type="submit">Annuler</button>
                       </form>
                   </div>
-              <% } %>
-
-          <% } else { %>
+                <% } %>
+            <% } else { %>
               <h3>L'accueillir ?</h3>
               <form class="no-margin" action="/marrainage" method="POST">
                   <div class="form__group margin-10-0">
@@ -72,10 +71,10 @@
                   </div>
                   <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
               </form>
-          <% } %>
-       <% } else { %>
+            <% } %>
+        <% } else { %>
             <p>Sans fiche sur Github, la fonction marrainage n'est pas disponible.</p>
-       <% } %>
+        <% } %>
     </div>
 
     <div class="panel">

@@ -47,7 +47,7 @@ module.exports.getMember = async function(req, res) {
       return;	
     }
     const marrainageStateResponse = await knex('marrainage').select()
-        .where({ username: id });
+        .where({ username: requestedUserId });
     const marrainageState = marrainageStateResponse[0];
 
     res.render('member', {
