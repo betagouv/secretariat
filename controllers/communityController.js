@@ -38,9 +38,9 @@ module.exports.getMember = async function(req, res) {
 
     const user = await utils.userInfos(requestedUserId, isCurrentUser);
     
-    const haveAnGithubMemberCard = user.userInfos;
-    const haveAnEmailAddress = (user.emailInfos || user.redirections.length > 0);
-    if (!haveAnGithubMemberCard && !haveAnEmailAddress) {	
+    const hasGithubFile = user.userInfos;
+    const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
+    if (!hasGithubFile && !hasEmailAddress) {	
       req.flash('error', `Il n'y a pas d'utilisateurs avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.`);	
       res.redirect(`/community`);	
       return;	
