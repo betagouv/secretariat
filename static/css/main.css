@@ -67,6 +67,10 @@ fieldset {
   margin: 10px 0;
 }
 
+.margin-right-10 {
+  margin: 0 10px 0 0;
+}
+
 .no-padding {
   padding: 0;
 }
