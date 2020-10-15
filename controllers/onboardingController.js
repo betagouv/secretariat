@@ -29,7 +29,7 @@ async function createNewcomerGithubFile(username, content) {
         if (err.status === 422)
           throw new Error(`Une fiche avec l\'utilisateur ${username} existe déjà`);
         throw err;
-      });;
+      });
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
@@ -37,6 +37,9 @@ async function createNewcomerGithubFile(username, content) {
     })
     .then(() => {
       console.log(`Pull request pour la fiche de ${username} ouverte`);
+    })
+    .catch(err => {
+      throw new Error(`Erreur Github lors de la création de la fiche de ${username}`);
     });
 }
 
@@ -59,7 +62,8 @@ module.exports.getForm = async function (req, res) {
         end: "",
         status: "",
         startup: "",
-        employer: ""
+        employer: "",
+        badge: ""
       }
     });
   } catch (err) {
@@ -96,6 +100,7 @@ module.exports.postForm = async function (req, res) {
     const status = req.body.status || requiredError('statut');
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
+    const badge = req.body.badge || null;
 
     // check start & end dates
     startDate = isValidDate('date de début', new Date(start));
@@ -126,12 +131,14 @@ module.exports.postForm = async function (req, res) {
       end,
       status,
       startup,
-      employer
+      employer,
+      badge
     });
     await createNewcomerGithubFile(username, content);
     res.redirect('/onboardingSuccess');
 
   } catch (err) {
+    req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
     res.render('onboarding', {
       errors: req.flash('error'),

@@ -45,7 +45,7 @@
                 <label for="description">
                     <span>Description</span><br />
                     Raconte-nous qui tu es dans une phrase percutante !
-                    <textarea rows="2" name="description" value="<%= formData.description %>"></textarea>
+                    <textarea rows="2" name="description"><%= formData.description %></textarea>
                 </label>
             </div>
 
@@ -119,6 +119,19 @@
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                 </label>
                 <input name="employer" value="<%= formData.employer %>">
+            </div>
+
+            <div class="form__group">
+                <label for="badge">
+                    <span>Badge</span><br />
+                    Si tu souhaites accéder aux bureaux, il te faudra un badge.
+                </label>
+                <select name="badge">
+                    <option value=""></option>
+                    <% memberConfig.badgeOptions.forEach(function(badge) { %>
+                        <option value="<%= badge.value %>" <%= (badge.value === formData.badge) ? 'selected' : '' %>><%= badge.name %></option>
+                    <% }) %>
+                </select>
             </div>
 
 

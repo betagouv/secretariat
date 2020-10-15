@@ -18,8 +18,12 @@ missions:
 startups:
   - <%- startup %>
 <% } -%>
+<% if (badge) { -%>
+badges:
+  - <%- badge %>
+<% } -%>
 ---
 
 <% if (description) { -%>
-  <%- website %>
+<%- description %>
 <% } -%>

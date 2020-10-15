@@ -6,6 +6,10 @@ const memberStatusOptions = [
   { name: 'Société de service', value: 'service' },
 ];
 
+const memberBadgeOptions = [
+  { name: 'Ségur', value: 'segur' }
+]
+
 module.exports = {
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
@@ -14,7 +18,8 @@ module.exports = {
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   member: {
     statusOptions: memberStatusOptions,
-    minStartDate: "2013-07-01"
+    minStartDate: "2013-07-01",
+    badgeOptions: memberBadgeOptions,
   },
   senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net",
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
