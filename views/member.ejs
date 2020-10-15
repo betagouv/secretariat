@@ -1,71 +1,79 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
     <div class="panel">
-        <div>
-            <h3>
-                <%= userInfos.fullname %>
-            </h3>
-            <% if (userInfos.start) { %>
-            <p>
-                <span class="font-weight-bold">Mission :</span>
-                du <%= userInfos.start %>
-                <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
-            </p>
-            <% } %>
-            <% if (userInfos.employer) { %>
-            <p>
-                <span class="font-weight-bold">Employeur : </span> <%= userInfos.employer %>
-            </p>
-            <% } %>
-            <p>
-                <span class="font-weight-bold">Compte Github : </span> 
-                <% if (userInfos.github) { %>
-                <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
-                <% } else { %>
-                    Non renseigné
+        <% if(userInfos) { %>
+            <div>
+                <h3>
+                    <%= userInfos.fullname %>
+                </h3>
+                <% if (userInfos.start) { %>
+                <p>
+                    <span class="font-weight-bold">Mission :</span>
+                    du <%= userInfos.start %>
+                    <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
+                </p>
                 <% } %>
-            </p>
-        </div>
-        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+                <% if (userInfos.employer) { %>
+                <p>
+                    <span class="font-weight-bold">Employeur : </span> <%= userInfos.employer %>
+                </p>
+                <% } %>
+                <p>
+                    <span class="font-weight-bold">Compte Github : </span> 
+                    <% if (userInfos.github) { %>
+                        <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                    <% } else { %>
+                        Non renseigné
+                    <% } %>
+                </p>
+                <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= requestedUserId %>.md" target="_blank">Modifier sur Github</a> 
+            </div>
+        <% } else { %>
+            <p>Il n'y a de fiche pour ce membre sur github</p>
+            <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=<%= requestedUserId %>.md" target="_blank">Créer sur Github</a>
+        <% } %>
     </div>
 
     <div class="panel">
-        <% if(marrainageState) { %>
-            <h3>Marrainage</h3>
-           
-            <% if (marrainageState.completed) { %> 
-                <p>
-                    Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
-                </p>
-            <% } else { %>
-                <p>
-                Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
-                Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
-                </p>
-                <div class="form__group margin-10-0 display-flex">
+        <% if(userInfos) { %>
+            <% if(marrainageState) { %>
+                <h3>Marrainage</h3>
+
+                <% if (marrainageState.completed) { %> 
+                  <p>
+                      Marrain·e : <b><%= marrainageState.last_onboarder %></b>.
+                  </p>
+                <% } else { %>
+                  <p>
+                  Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
+                  Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
+                  </p>
+                  <div class="form__group margin-10-0 display-flex">
                     <% if( Date.now() - marrainageState.last_updated.valueOf() > 24*3600*1000 ) { %>
-                        <form action="/marrainage/reload" method="POST">
+                        <form class="margin-right-10" action="/marrainage/reload" method="POST">
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                             <button class="button secondary no-margin" type="submit">Relancer</button>
                         </form>
                     <% } %>
-                    <form action="/marrainage/cancel" method="POST">
+                    <form class="margin-right-10" action="/marrainage/cancel" method="POST">
                         <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         <button class="button secondary no-margin" type="submit">Annuler</button>
                     </form>
                 </div>
+                <% } %>
+            <% } else { %>
+              <h3>L'accueillir ?</h3>
+              <form class="no-margin" action="/marrainage" method="POST">
+                  <div class="form__group margin-10-0">
+                      <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
+                          Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
+                      <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                  </div>
+                  <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
+              </form>
             <% } %>
-  
         <% } else { %>
-            <h3>L'accueillir ?</h3>
-            <form class="no-margin" action="/marrainage" method="POST">
-                <div class="form__group margin-10-0">
-                    <label><%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
-                        Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
-                    <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
-                </div>
-                <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
-            </form>
+            <p>Sans fiche sur Github, la fonction marrainage n'est pas disponible.</p>
         <% } %>
     </div>
 
@@ -77,7 +85,7 @@
         <% }%>
         <% if (canCreateEmail) { %>
         <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
-        <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST">
+        <form class="no-margin" action="/users/<%= requestedUserId %>/email" method="POST">
             <div class="form__group">
                 <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
                 <input name="to_email" type="email" required>
@@ -89,7 +97,7 @@
         <% } else { %>
         <% if (isExpired) { %>
         <div class="notification error">
-            Le compte <%= userInfos.id %> est expiré.
+            Le compte <%= requestedUserId %> est expiré.
         </div>
         <% } %>
         <% } %>
