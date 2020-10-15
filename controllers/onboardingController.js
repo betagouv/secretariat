@@ -51,6 +51,7 @@ module.exports.getForm = async function (req, res) {
       formData: {
         firstName: "",
         lastName: "",
+        description: "",
         website: "",
         github: "",
         role: "",
@@ -86,6 +87,7 @@ module.exports.postForm = async function (req, res) {
 
     const firstName = req.body.firstName || requiredError('prénom');
     const lastName = req.body.lastName || requiredError('nom de famille');
+    const description = req.body.description || null;
     const website = req.body.website || null;
     const github = req.body.github || null;
     const role = req.body.role || requiredError('role');
@@ -116,6 +118,7 @@ module.exports.postForm = async function (req, res) {
     const username = utils.createUsername(firstName, lastName);
     const content = await ejs.renderFile("./views/markdown/githubAuthor.ejs", {
       name,
+      description,
       website,
       github,
       role,

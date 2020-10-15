@@ -28,10 +28,9 @@
             <h4>Tes infos persos</h4>
 
             <div class="form__group">
-                <label>
-                    Ton nom sera affiché sur la page <a href="https://beta.gouv.fr/communaute/"
-                        target="_blank">Communauté</a> du site BetaGouv.
-                </label>
+                <p>
+                    Ton nom, ton rôle et ta description seront affichés sur la page <a href="https://beta.gouv.fr/communaute/" target="_blank">Communauté</a> du site BetaGouv, ainsi que dans la fiche de ta startup.
+                </p>
                 <label for="firstName">
                     <strong>Prénom (obligatoire)</strong>
                 </label>
@@ -40,6 +39,14 @@
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
                 <input name="lastName" value="<%= formData.lastName %>" required>
+            </div>
+
+            <div class="form__group">
+                <label for="description">
+                    <span>Description</span><br />
+                    Raconte-nous qui tu es dans une phrase percutante !
+                    <textarea rows="2" name="description" value="<%= formData.description %>"></textarea>
+                </label>
             </div>
 
             <div class="form__group">
