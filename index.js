@@ -102,10 +102,10 @@ app.use((err, req, res, next) => {
       'error',
       "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)"
     );
-
-    return res.redirect('/login');
+    // Save the requested url in a query param, and redirect to login
+    var nextParam = req.url ? `?next=${req.url}` : '';
+    return res.redirect(`/login${nextParam}`);
   }
-
   next(err);
 });
 
@@ -121,6 +121,8 @@ app.post('/notifications/github', githubNotificationController.processNotificati
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
+app.post('/marrainage/cancel', marrainageController.cancelRequest);
+app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);

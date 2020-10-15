@@ -15,14 +15,14 @@ module.exports = {
   mockUsers() {
     const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
     return nock(url)
-      .get('/api/v1.6/authors.json')
+      .get(uri => uri.includes('authors.json'))
       .reply(200, testUsers)
       .persist()
   },
   mockStartups() {
     const url = process.env.STARTUPS_API || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
     return nock(url)
-      .get('/api/v2/startups.json')
+      .get(uri => uri.includes('startups.json'))
       .reply(200, testStartups)
       .persist()
   },

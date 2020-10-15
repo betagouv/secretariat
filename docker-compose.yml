@@ -2,18 +2,35 @@ version: '3'
 services:
   db:
     image: postgres
-    env_file:
-      - ../.env.secretariat
-
+    environment:
+      POSTGRES_USER: secretariat
+      POSTGRES_PASSWORD: secretariat
+    ports:
+      - "5432:5432"
+  maildev:
+    image: maildev/maildev
+    environment: 
+      MAILDEV_INCOMING_USER: mailuser
+      MAILDEV_INCOMING_PASS: mailpassword
+    ports:
+      - "1080:80"
+      - "1025:1025"
   web:
     build: .
+    command: nodemon --inspect=0.0.0.0:9229 ./index.js
+    links:
+      - db
+      - maildev
+    env_file: 
+      - ../.env.secretariat.dev
+    environment:
+      DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
+      MAIL_PASS: mailuser
+      MAIL_USER: mailpassword
+      MAIL_SERVICE: Maildev
+      SECURE: "false"
     ports:
       - "8100:8100"
       - "9229:9229"
     volumes:
       - .:/app
-    env_file:
-      - ../.env.secretariat
-    command: nodemon --inspect=0.0.0.0:9229 ./index.js
-    depends_on: 
-      - db

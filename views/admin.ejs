@@ -25,14 +25,14 @@
                 <% emails.forEach(function(email) { %>
                 <tr>
                     <td>
-                        <%= email.email %>
+                        <a href="/community/<%= email.id %>"><%= email.email %></a>
                         <div data-id="<%= email.id %>" class="redirection-list">
                             <% email.redirections.forEach(function(redirection) { %>
                             <%= redirection %><br />
                             <% }) %>
                         </div>
                     </td>
-                    <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.github) { %><a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md" target="_blank">✔ Oui</a><% } else { %>❌ Non !<% } %></td>
                     <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                     <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
                 </tr>
@@ -50,7 +50,7 @@
         <table class="sortable">
             <thead>
                 <tr>
-                    <th>Id</th>
+                    <th>Email</th>
                     <th>Date de fin</th>
                     <th>Compte Email</th>
                     <th>Fiche sur Github</th>
@@ -59,7 +59,7 @@
             <tbody>
                 <% expiredEmails.forEach(function(email) { %>
                 <tr>
-                    <td><%= email.id %>
+                    <td><a href="/community/<%= email.id %>"><%= email.email %></a>
                         <div data-id="<%= email.id %>" class="redirection-list">
                             <% email.redirections.forEach(function(redirection) { %>
                             <%= redirection %><br />
@@ -68,7 +68,7 @@
                     </td>
                     <td><% if (email.endDate) { %><%= email.endDate %><% } else { %>❌ Non !<% } %></td>
                     <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                    <td><% if (email.github) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
+                    <td><% if (email.github) { %><a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md" target="_blank">✔ Oui</a><% } else { %>❌ Non !<% } %></td>
                 </tr>
                 <% }) %>
             </tbody>
