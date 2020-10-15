@@ -1,10 +1,14 @@
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const memberStatusOptions = [
-  { name: 'Indépendant', value: 'independent' },
-  { name: 'Administration (agent public)', value: 'admin' },
-  { name: 'Société de service', value: 'service' },
+  { label: 'Indépendant', value: 'independent' },
+  { label: 'Administration (agent public)', value: 'admin' },
+  { label: 'Société de service', value: 'service' },
 ];
+
+const memberBadgeOptions = [
+  { label: 'Ségur', value: 'segur' }
+]
 
 module.exports = {
   secret: process.env.SESSION_SECRET,
@@ -14,7 +18,8 @@ module.exports = {
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   member: {
     statusOptions: memberStatusOptions,
-    minStartDate: "2013-07-01"
+    minStartDate: "2013-07-01",
+    badgeOptions: memberBadgeOptions,
   },
   senderEmail: process.env.MAIL_SENDER || "secretariat@incubateur.net",
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
