@@ -1,13 +1,13 @@
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const memberStatusOptions = [
-  { name: 'Indépendant', value: 'independent' },
-  { name: 'Administration (agent public)', value: 'admin' },
-  { name: 'Société de service', value: 'service' },
+  { label: 'Indépendant', value: 'independent' },
+  { label: 'Administration (agent public)', value: 'admin' },
+  { label: 'Société de service', value: 'service' },
 ];
 
 const memberBadgeOptions = [
-  { name: 'Ségur', value: 'segur' }
+  { label: 'Ségur', value: 'segur' }
 ]
 
 module.exports = {
