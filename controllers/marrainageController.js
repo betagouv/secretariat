@@ -52,7 +52,7 @@ async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
   const token = jwt.sign({
     newcomerId: newcomer.id,
     onboarderId: onboarder.id
-  }, config.secret);
+  }, config.secret, { expiresIn: 7 * 24 * 3600 });
 
   const marrainageAcceptUrl = `${config.protocol}://${req.get('host')}/marrainage/accept?details=${encodeURIComponent(token)}`;
   const marrainageDeclineUrl = `${config.protocol}://${req.get('host')}/marrainage/decline?details=${encodeURIComponent(token)}`;
