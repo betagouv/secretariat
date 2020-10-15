@@ -31,6 +31,14 @@ async function getMarrainageTokenData(token) {
   if (!data) {
     throw new Error('Corrupted data in token');
   }
+
+  const isLegacyToken = data.newcomer && data.onboarder;
+  if (isLegacyToken) {
+    return {
+      newcomer: data.newcomer,
+      onboarder: data.onboarder
+    };
+  }
   const newcomerId = data.newcomerId;
   const onboarderId = data.onboarderId;
   const userInfos = await BetaGouv.usersInfos();
