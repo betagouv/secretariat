@@ -19,7 +19,7 @@ async function selectRandomOnboarder(newcomerId) {
   return onboarder;
 }
 
-function getDataFromToken(token) {
+async function getMarrainageTokenData(token) {
   if (!token) {
     throw new Error('Token missing');
   }
@@ -31,14 +31,28 @@ function getDataFromToken(token) {
   if (!data) {
     throw new Error('Corrupted data in token');
   }
-  return data;
+
+  const isLegacyToken = data.newcomer && data.onboarder;
+  if (isLegacyToken) {
+    return {
+      newcomer: data.newcomer,
+      onboarder: data.onboarder
+    };
+  }
+  const newcomerId = data.newcomerId;
+  const onboarderId = data.onboarderId;
+  const userInfos = await BetaGouv.usersInfos();
+  return {
+    newcomer: userInfos.find(x => x.id == newcomerId),
+    onboarder: userInfos.find(x => x.id == onboarderId)
+  };
 }
 
 async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
   const token = jwt.sign({
-    newcomer: newcomer,
-    onboarder: onboarder
-  }, config.secret);
+    newcomerId: newcomer.id,
+    onboarderId: onboarder.id
+  }, config.secret, { expiresIn: 7 * 24 * 3600 });
 
   const marrainageAcceptUrl = `${config.protocol}://${req.get('host')}/marrainage/accept?details=${encodeURIComponent(token)}`;
   const marrainageDeclineUrl = `${config.protocol}://${req.get('host')}/marrainage/decline?details=${encodeURIComponent(token)}`;
@@ -87,7 +101,7 @@ module.exports.createRequest = async function (req, res) {
 
 module.exports.acceptRequest = async function (req, res) {
   try {
-    const details = getDataFromToken(req.query.details);
+    const details = await getMarrainageTokenData(req.query.details);
     const newcomer = details.newcomer;
     const onboarder = details.onboarder;
 
@@ -122,7 +136,7 @@ module.exports.acceptRequest = async function (req, res) {
 
 module.exports.declineRequest = async function (req, res) {
   try {
-    const details = getDataFromToken(req.query.details);
+    const details = await getMarrainageTokenData(req.query.details);
     const newcomer = details.newcomer;
     const declinedOnboarder = details.onboarder;
 
