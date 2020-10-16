@@ -69,7 +69,7 @@ module.exports.getForm = async function (req, res) {
   } catch (err) {
     console.error(err);
     req.flash('error', `Erreur interne: impossible de récupérer la liste des startups sur ${config.domain}`);
-    res.send(err);
+    res.send(err.message);
   }
 }
 module.exports.postForm = async function (req, res) {

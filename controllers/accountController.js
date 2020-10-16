@@ -25,6 +25,6 @@ module.exports.getCurrentAccount = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.send(err);
+    res.send(err.message);
   }
 }
