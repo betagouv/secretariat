@@ -34,6 +34,33 @@
         <% } %>
     </div>
 
+<% if(isExpired && emailInfos) { %>
+    <div class="panel">
+        <h3>Membre parti ?</h3>
+        <p>
+            La date de fin de <%= userInfos.fullname %> est le <%= userInfos.end %>.
+            Si <%= userInfos.fullname %> ne fait plus partie de la communauté Beta.gouv,
+            clique sur le bouton ci-dessous.
+        </p>
+        <p>
+            <strong>Attention ! </strong> En signalant son départ, nous alons :
+            <ul>
+                <li>
+                    Clôturer son compte email
+                </li>
+                <li>
+                    Supprimer toutes ses redirections
+                </li>
+            </ul>
+        </p>
+        <form onsubmit="return confirm('Es tu sur de vouloir supprimer le compte mail et ses redirections pour <%= userInfos.fullname %> ?');" class="no-margin" action="/users/<%= requestedUserId %>/email/delete" method="POST">
+            <div class="form__group">
+                <button class="button no-margin" type="submit">Signaler le départ de <%= userInfos.fullname %></button>
+            </div>
+        </form>
+    </div>
+<% } %>
+
     <div class="panel">
         <% if(userInfos) { %>
             <% if(marrainageState) { %>

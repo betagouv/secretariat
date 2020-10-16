@@ -114,6 +114,7 @@ app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
 app.get('/logout', logoutController.getLogout);
 app.post('/users/:id/email', usersController.createEmailForUser);
+app.post('/users/:id/email/delete', usersController.deleteEmailForUser);
 app.post('/users/:id/redirections', usersController.createRedirectionForUser);
 app.post('/users/:id/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:id/password', usersController.updatePasswordForUser);

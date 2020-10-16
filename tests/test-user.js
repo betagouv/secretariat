@@ -1,6 +1,6 @@
 const chai = require('chai');
 const nock = require('nock');
-
+const config = require('../config');
 const app = require('../index');
 const utils = require('./utils.js');
 
@@ -408,4 +408,124 @@ describe("User", () => {
         });
     });
   });
+
+  describe("POST /users/:id/email/delete unauthenticated", () => {
+    it("should redirect to login", (done) => {
+      chai.request(app)
+        .post('/users/utilisateur.parti/email/delete')
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.include('/login');
+          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/email/delete');
+          done();
+        });
+    });
+  });
+
+  describe("POST /users/:id/redirections/:email/delete authenticated", () => {
+    it("should ask OVH to delete the email account", (done) => {
+
+      let ovhEmailDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/account\/utilisateur.expire/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/email/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhEmailDeletion.isDone().should.be.true;
+          done();
+        });
+    });
+
+    it("should ask OVH to delete all redirections", (done) => {
+
+      nock.cleanAll()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection/)
+        .query(x => x.from || x.to)
+        .reply(200, ['123123'])
+        .persist()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200, {
+          "id": "123123",
+          "from": `utilisateur.expire@${config.domain}`,
+          "to": "perso@example.ovh"
+        }).persist()
+
+      utils.mockUsers()
+      utils.mockOvhTime()
+      utils.mockOvhUserEmailInfos()
+      utils.mockOvhAllEmailInfos()
+
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.expire/email/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.true;
+          done();
+        });
+    });
+
+    it("should not allow email deletion for active users", (done) => {
+
+      let ovhEmailDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/account\/utilisateur.expire/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhEmailDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should not allow redirection deletion for active users", (done) => {
+
+      nock.cleanAll()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection/)
+        .query(x => x.from || x.to)
+        .reply(200, ['123123'])
+        .persist()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200, {
+          "id": "123123",
+          "from": `utilisateur.actif@${config.domain}`,
+          "to": "perso@example.ovh"
+        }).persist()
+
+      utils.mockUsers()
+      utils.mockOvhTime()
+      utils.mockOvhUserEmailInfos()
+      utils.mockOvhAllEmailInfos()
+
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+  });
+
+
 });
