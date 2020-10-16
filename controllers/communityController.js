@@ -66,6 +66,6 @@ module.exports.getMember = async function(req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.send(err.message);
+    res.send('Erreur interne : impossible de récupérer les informations du membre de la communauté');
   }
 }
