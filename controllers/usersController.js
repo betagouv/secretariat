@@ -1,5 +1,5 @@
 const ejs = require('ejs');
-
+const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
@@ -36,9 +36,9 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     const email = utils.buildBetaEmail(id);
-    const password = Math.random()
+    const password = parseInt(crypto.randomBytes(7).toString('hex'), 16)
       .toString(36)
-      .slice(-10);
+      .slice(-10)
 
     console.log(
       `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`
