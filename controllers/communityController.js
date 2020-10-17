@@ -19,8 +19,7 @@ module.exports.getCommunity = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    req.flash('error', `Erreur interne: impossible de récupérer la liste des membres sur ${config.domain}`);
-    res.redirect(`/account`);
+    res.send('Erreur interne : impossible de récupérer les informations de la communauté');
   }
 }
 
@@ -64,6 +63,7 @@ module.exports.getMember = async function(req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.send(err);
+    req.flash('error', 'Erreur interne : impossible de récupérer les informations du membre de la communauté');
+    return res.redirect('/');
   }
 }
