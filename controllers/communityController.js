@@ -9,12 +9,10 @@ module.exports.getCommunity = async function (req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
-    const currentUser = await utils.userInfos(req.user.id, true);
     res.render('community', {
       currentUserId: req.user.id,
       domain: config.domain,
       users: users,
-      userInfos: currentUser.userInfos,
       activeTab: 'community',
       errors: req.flash('error'),
       messages: req.flash('message')
