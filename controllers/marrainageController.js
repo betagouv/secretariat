@@ -186,7 +186,7 @@ module.exports.reloadRequest = async function (req, res) {
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage non existant pour ${newcomer.id}.`);
       req.flash("error", "Il n'y a pas de demande de marrainage existant pour cette personne.");
-      return res.redirect(`/community/${newcomer.id}`);;
+      return res.redirect(`/community/${newcomer.id}`);
     }
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
@@ -222,7 +222,7 @@ module.exports.cancelRequest = async function (req, res) {
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage non existant pour ${newcomer.id}.`);
       req.flash("error", "Il n'y a pas de demande de marrainage existant pour cette personne.");
-      return res.redirect(`/community/${newcomer.id}`);;
+      return res.redirect(`/community/${newcomer.id}`);
     }
 
     await knex('marrainage')
