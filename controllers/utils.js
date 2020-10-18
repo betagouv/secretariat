@@ -37,7 +37,7 @@ function removeAccents(str) {
   return str;
 }
 
-module.exports.sendMail = async function (to_email, subject, html, text) {
+module.exports.sendMail = async function (to_email, subject, html) {
   const mail = {
     to: to_email,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,

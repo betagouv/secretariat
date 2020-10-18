@@ -8,6 +8,7 @@
     "migrate": "knex migrate:latest",
     "makeMigration": "knex migrate:make",
     "dev": "nodemon index.js",
+    "lint":  "eslint . --fix",
     "test": "mocha tests/*.js --exit --require ./tests/env-setup.js"
   },
   "repository": {
@@ -20,9 +21,13 @@
     "url": "https://github.com/betagouv/secretariat/issues"
   },
   "homepage": "https://github.com/betagouv/secretariat#readme",
+  "engines": {
+    "node": ">=8.3.0"
+  },
   "dependencies": {
     "@octokit/request": "^5.4.9",
     "axios": "^0.20.0",
+    "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",

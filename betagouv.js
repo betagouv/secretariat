@@ -1,6 +1,5 @@
 // betagouv.js
 // ======
-const https = require('https');
 const axios = require('axios').default;
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,

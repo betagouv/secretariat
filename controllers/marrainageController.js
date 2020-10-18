@@ -75,7 +75,6 @@ module.exports.createRequest = async function (req, res) {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const user = req.user;
-    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
     await knex('marrainage').insert({
       username: newcomer.id,
@@ -208,7 +207,7 @@ module.exports.reloadRequest = async function (req, res) {
     res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
-    res.redirect(`/community/${newcomer.id}`);
+    res.redirect(`/community/${req.body.newcomerId}`);
   }
 }
 
@@ -236,6 +235,6 @@ module.exports.cancelRequest = async function (req, res) {
     res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
-    res.redirect(`/community/${newcomer.id}`);
+    res.redirect(`/community/${req.body.newcomerId}`);
   }
 }

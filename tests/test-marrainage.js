@@ -1,12 +1,13 @@
 const chai = require('chai');
+const sinon = require('sinon');
+const jwt = require('jsonwebtoken');
+
 const app = require('../index');
 const utils = require('./utils.js');
-const sinon = require('sinon');
 const controllerUtils = require('../controllers/utils');
-const jwt = require('jsonwebtoken');
 const config = require('../config');
-const testUsers = require('./users.json');
 const knex = require('../db');
+
 
 describe("Marrainage", () => {
 
@@ -57,7 +58,7 @@ describe("Marrainage", () => {
             res.text.should.include('Votre décision a été prise en compte')
             this.sendEmailStub.calledOnce.should.be.true;
 
-            const toEmail = this.sendEmailStub.args[0][0];
+            // const toEmail = this.sendEmailStub.args[0][0];
             const subject = this.sendEmailStub.args[0][1];
             const emailBody = this.sendEmailStub.args[0][2];
 

@@ -45,7 +45,7 @@ module.exports.processNotification = async function (req, res) {
   if (emailData.messages.length) {
     emailData.to.push('badges@incubateur.net')
 
-    if (emailData.messages.length === 1) {
+    if (emailData.messages.length === 1) {
       const emailContent = `
       <p>Bonjour,</p>
       <p>${emailData.messages[0]}</p>

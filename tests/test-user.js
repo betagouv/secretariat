@@ -306,7 +306,7 @@ describe("User", () => {
     });
   });
 
-  describe("POST /users/:id/password unauthenticated", (done) => {
+  describe("POST /users/:id/password unauthenticated", () => {
     it("should redirect to user page", (done) => {
       chai.request(app)
         .post('/users/utilisateur.actif/password')

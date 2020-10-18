@@ -63,7 +63,6 @@ module.exports.getEmailLists = async function (req, res) {
       userInfos: currentUser.userInfos,
       emails,
       expiredEmails,
-      errors: [],
       activeTab: 'admin',
       errors: req.flash('error'),
       messages: req.flash('message')

@@ -10,16 +10,16 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const knex = require('./db');
 
-indexController = require('./controllers/indexController');
-loginController = require('./controllers/loginController');
-logoutController = require('./controllers/logoutController');
-usersController = require('./controllers/usersController');
-marrainageController = require('./controllers/marrainageController');
-githubNotificationController = require('./controllers/githubNotificationController');
-accountController = require('./controllers/accountController');
-communityController = require('./controllers/communityController');
-adminController = require('./controllers/adminController');
-onboardingController = require('./controllers/onboardingController');
+const indexController = require('./controllers/indexController');
+const loginController = require('./controllers/loginController');
+const logoutController = require('./controllers/logoutController');
+const usersController = require('./controllers/usersController');
+const marrainageController = require('./controllers/marrainageController');
+const githubNotificationController = require('./controllers/githubNotificationController');
+const accountController = require('./controllers/accountController');
+const communityController = require('./controllers/communityController');
+const adminController = require('./controllers/adminController');
+const onboardingController = require('./controllers/onboardingController');
 
 const app = express();
 

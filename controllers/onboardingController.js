@@ -27,7 +27,7 @@ async function createNewcomerGithubFile(username, content) {
       return utils.createGithubFile(path, branch, content)
       .catch(err => {
         if (err.status === 422)
-          throw new Error(`Une fiche avec l\'utilisateur ${username} existe déjà`);
+          throw new Error(`Une fiche avec l'utilisateur ${username} existe déjà`);
         throw err;
       });
     })
@@ -72,6 +72,8 @@ module.exports.getForm = async function (req, res) {
     return res.redirect('/');
   }
 }
+
+
 module.exports.postForm = async function (req, res) {
   try {
     var formValidationErrors = [];
@@ -103,8 +105,8 @@ module.exports.postForm = async function (req, res) {
     const badge = req.body.badge || null;
 
     // check start & end dates
-    startDate = isValidDate('date de début', new Date(start));
-    endDate = isValidDate('date de fin', new Date(end));
+    const startDate = isValidDate('date de début', new Date(start));
+    const endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
       if (startDate < new Date(config.member.minStartDate)) {
         formValidationErrors.push(`date de début : la date doit être au moins ${config.member.minStartDate}`);
