@@ -2,8 +2,7 @@ const chai = require('chai');
 
 const app = require('../index');
 
-
-describe("Login", () => {
+describe('Login', () => {
   // describe("POST /login with user actif", () => {
   //   it("should render login with message", (done) => {
   //     utils.mockUsers();
@@ -22,13 +21,13 @@ describe("Login", () => {
   //   });
   // });
 
-  describe("POST /login with next query param", () => {
-    it("should keep the next query param", (done) => {
+  describe('POST /login with next query param', () => {
+    it('should keep the next query param', (done) => {
       chai.request(app)
         .post('/login?next=/users')
         .type('form')
         .send({
-          id: undefined
+          id: undefined,
         })
         .redirects(0)
         .end((err, res) => {
@@ -39,13 +38,13 @@ describe("Login", () => {
     });
   });
 
-  describe("POST /login with user undefined", () => {
-    it("should redirect to login", (done) => {
+  describe('POST /login with user undefined', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          id: undefined
+          id: undefined,
         })
         .redirects(0)
         .end((err, res) => {
@@ -56,13 +55,13 @@ describe("Login", () => {
     });
   });
 
-  describe("POST /login with user with accent", () => {
-    it("should redirect to login", (done) => {
+  describe('POST /login with user with accent', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          id: 'prénom.nom'
+          id: 'prénom.nom',
         })
         .redirects(0)
         .end((err, res) => {
@@ -73,13 +72,13 @@ describe("Login", () => {
     });
   });
 
-  describe("POST /login with user expiré", () => {
-    it("should redirect to login", (done) => {
+  describe('POST /login with user expiré', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          id: 'utilisateur.expire'
+          id: 'utilisateur.expire',
         })
         .redirects(0)
         .end((err, res) => {

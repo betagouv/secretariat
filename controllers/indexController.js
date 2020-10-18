@@ -6,4 +6,4 @@ module.exports.getIndex = function (req, res) {
   }
 
   res.redirect(config.defaultLoggedInRedirectUrl);
-}
+};

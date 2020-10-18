@@ -4,9 +4,8 @@ const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
-
 module.exports.createEmailForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
   const isCurrentUser = req.user.id === id;
 
   try {
@@ -14,13 +13,13 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -29,9 +28,9 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     if (!isCurrentUser) {
-      const loggedUserInfo = await BetaGouv.userInfosById(req.user.id)
+      const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
       if (utils.checkUserIsExpired(loggedUserInfo)) {
-        throw new Error("Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.");
+        throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
       }
     }
 
@@ -41,7 +40,7 @@ module.exports.createEmailForUser = async function (req, res) {
       .slice(-10);
 
     console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`
+      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`,
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -51,7 +50,7 @@ module.exports.createEmailForUser = async function (req, res) {
     await BetaGouv.sendInfoToSlack(message);
     await BetaGouv.createEmail(id, password);
 
-    const html = await ejs.renderFile("./views/emails/createEmail.ejs", { email, password, secretariatUrl });
+    const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
     try {
       await utils.sendMail(req.body.to_email, `Création compte ${email}`, html);
@@ -65,12 +64,12 @@ module.exports.createEmailForUser = async function (req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    res.redirect(`/community`);
+    res.redirect('/community');
   }
-}
+};
 
 module.exports.createRedirectionForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
@@ -78,13 +77,13 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -93,7 +92,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${id}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`,
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -105,7 +104,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(id),
         req.body.to_email,
-        req.body.keep_copy === 'true'
+        req.body.keep_copy === 'true',
       );
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
@@ -119,7 +118,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
-}
+};
 
 module.exports.deleteRedirectionForUser = async function (req, res) {
   const { id, email: to_email } = req.params;
@@ -153,23 +152,23 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
-}
+};
 
 module.exports.updatePasswordForUser = async function (req, res) {
-  const id = req.params.id;
+  const { id } = req.params;
 
   try {
     const user = await utils.userInfos(id, req.user.id === id);
 
     if (!user.userInfos) {
       throw new Error(
-        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
+        `L'utilisateur·rice ${id} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte de l'utilisateur·rice ${id} est expiré.`
+        `Le compte de l'utilisateur·rice ${id} est expiré.`,
       );
     }
 
@@ -180,13 +179,13 @@ module.exports.updatePasswordForUser = async function (req, res) {
     const password = req.body.new_password;
 
     if (
-      !password ||
-      password.length < 9 ||
-      password.length > 30 ||
-      password !== password.trim()
+      !password
+      || password.length < 9
+      || password.length > 30
+      || password !== password.trim()
     ) {
       throw new Error(
-        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin."
+        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
       );
     }
 
@@ -209,7 +208,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
-}
+};
 
 module.exports.deleteEmailForUser = async function(req, res) {
   const id = req.params.id;
@@ -247,4 +246,4 @@ module.exports.deleteEmailForUser = async function(req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
-}
+};

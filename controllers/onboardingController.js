@@ -7,29 +7,28 @@ const BetaGouv = require('../betagouv');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
-  const randomSuffix = crypto.randomBytes(3).toString('hex')
+  const randomSuffix = crypto.randomBytes(3).toString('hex');
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
 
 async function createNewcomerGithubFile(username, content) {
-  const branch = createBranchName(username)
-  console.log(`Début de la création de fiche pour ${username}...`)
+  const branch = createBranchName(username);
+  console.log(`Début de la création de fiche pour ${username}...`);
 
   await utils.getGithubMasterSha()
-    .then(response => {
-      const sha = response.data.object.sha;
-      console.log(`SHA du master obtenu`);
+    .then((response) => {
+      const { sha } = response.data.object;
+      console.log('SHA du master obtenu');
       return utils.createGithubBranch(sha, branch);
     })
     .then(() => {
       console.log(`Branche ${branch} créée`);
-      const path = `content/_authors/${username}.md`
+      const path = `content/_authors/${username}.md`;
       return utils.createGithubFile(path, branch, content)
-      .catch(err => {
-        if (err.status === 422)
-          throw new Error(`Une fiche avec l'utilisateur ${username} existe déjà`);
-        throw err;
-      });
+        .catch((err) => {
+          if (err.status === 422) throw new Error(`Une fiche avec l'utilisateur ${username} existe déjà`);
+          throw err;
+        });
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
@@ -38,7 +37,7 @@ async function createNewcomerGithubFile(username, content) {
     .then(() => {
       console.log(`Pull request pour la fiche de ${username} ouverte`);
     })
-    .catch(err => {
+    .catch((err) => {
       throw new Error(`Erreur Github lors de la création de la fiche de ${username}`);
     });
 }
@@ -50,33 +49,32 @@ module.exports.getForm = async function (req, res) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
-      startups: startups,
+      startups,
       formData: {
-        firstName: "",
-        lastName: "",
-        description: "",
-        website: "",
-        github: "",
-        role: "",
+        firstName: '',
+        lastName: '',
+        description: '',
+        website: '',
+        github: '',
+        role: '',
         start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
-        end: "",
-        status: "",
-        startup: "",
-        employer: "",
-        badge: ""
-      }
+        end: '',
+        status: '',
+        startup: '',
+        employer: '',
+        badge: '',
+      },
     });
   } catch (err) {
     console.error(err);
     req.flash('error', `Erreur interne: impossible de récupérer la liste des startups sur ${config.domain}`);
     return res.redirect('/');
   }
-}
-
+};
 
 module.exports.postForm = async function (req, res) {
   try {
-    var formValidationErrors = [];
+    const formValidationErrors = [];
 
     function requiredError(field) {
       formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
@@ -85,10 +83,9 @@ module.exports.postForm = async function (req, res) {
     function isValidDate(field, date) {
       if (date instanceof Date && !isNaN(date)) {
         return date;
-      } else {
-        formValidationErrors.push(`${field} : la date n'est pas valide`);
-        return null;
       }
+      formValidationErrors.push(`${field} : la date n'est pas valide`);
+      return null;
     }
 
     const firstName = req.body.firstName || requiredError('prénom');
@@ -123,7 +120,7 @@ module.exports.postForm = async function (req, res) {
 
     const name = `${firstName} ${lastName}`;
     const username = utils.createUsername(firstName, lastName);
-    const content = await ejs.renderFile("./views/markdown/githubAuthor.ejs", {
+    const content = await ejs.renderFile('./views/markdown/githubAuthor.ejs', {
       name,
       description,
       website,
@@ -134,11 +131,10 @@ module.exports.postForm = async function (req, res) {
       status,
       startup,
       employer,
-      badge
+      badge,
     });
     await createNewcomerGithubFile(username, content);
     res.redirect('/onboardingSuccess');
-
   } catch (err) {
     req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
@@ -146,11 +142,11 @@ module.exports.postForm = async function (req, res) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
-      startups: startups,
-      formData: req.body
+      startups,
+      formData: req.body,
     });
   }
-}
+};
 module.exports.getConfirmation = async function (req, res) {
   try {
     res.render('onboardingSuccess', {
@@ -160,4 +156,4 @@ module.exports.getConfirmation = async function (req, res) {
     console.error(err);
     res.redirect('/');
   }
-}
+};

@@ -5,15 +5,14 @@ const app = require('../index');
 const config = require('../config');
 const knex = require('../db');
 
-
-describe("Account", () => {
+describe('Account', () => {
   afterEach((done) => {
     knex('marrainage').truncate()
-    .then(() => done())
+      .then(() => done());
   });
-  
-  describe("GET /account unauthenticated", () => {
-    it("should redirect to login", (done) => {
+
+  describe('GET /account unauthenticated', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .get('/account')
         .redirects(0)
@@ -26,8 +25,8 @@ describe("Account", () => {
     });
   });
 
-  describe("GET /account authenticated", () => {
-    it("should return a valid page", (done) => {
+  describe('GET /account authenticated', () => {
+    it('should return a valid page', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
@@ -37,24 +36,24 @@ describe("Account", () => {
         });
     });
 
-    it("should show the logged user name", (done) => {
+    it('should show the logged user name', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('Utilisateur Actif')
+          res.text.should.include('Utilisateur Actif');
           done();
-        })
+        });
     });
 
-    it("should show the logged user employer", (done) => {
+    it('should show the logged user employer', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('independent/octo')
+          res.text.should.include('independent/octo');
           done();
-        })
+        });
     });
 
     it("should include a link to OVH's webmail", (done) => {
@@ -62,59 +61,59 @@ describe("Account", () => {
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${config.domain}"`)
+          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${config.domain}"`);
           done();
-        })
+        });
     });
 
-    it("should include a redirection creation form", (done) => {
+    it('should include a redirection creation form', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('action="/users/utilisateur.actif/redirections" method="POST"')
+          res.text.should.include('action="/users/utilisateur.actif/redirections" method="POST"');
           done();
-        })
+        });
     });
 
-    it("should include a password modification form", (done) => {
+    it('should include a password modification form', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('action="/users/utilisateur.actif/password" method="POST"')
+          res.text.should.include('action="/users/utilisateur.actif/password" method="POST"');
           done();
-        })
+        });
     });
-    
+
     it("don't show reload button if last change is under 24h", (done) => {
       knex('marrainage').insert({
         username: 'utilisateur.actif',
-        last_onboarder: 'utilisateur.peutimporte'
+        last_onboarder: 'utilisateur.peutimporte',
       }).then(() => {
         chai.request(app)
           .get('/account')
           .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
-            res.text.should.not.include('action="/marrainage/reload" method="POST"')
+            res.text.should.not.include('action="/marrainage/reload" method="POST"');
             done();
-          })
+          });
       });
     });
-    
-    it("show reload button if last change is after 24h", (done) => {
+
+    it('show reload button if last change is after 24h', (done) => {
       knex('marrainage').insert({
         username: 'utilisateur.actif',
         last_onboarder: 'utilisateur.peutimporte',
-        last_updated: new Date(Date.now() - 24*3601*1000)
+        last_updated: new Date(Date.now() - 24 * 3601 * 1000),
       }).then(() => {
         chai.request(app)
           .get('/account')
           .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
           .end((err, res) => {
-            res.text.should.include('action="/marrainage/reload" method="POST"')
+            res.text.should.include('action="/marrainage/reload" method="POST"');
             done();
-          })
+          });
       });
     });
   });

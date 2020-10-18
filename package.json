@@ -8,7 +8,7 @@
     "migrate": "knex migrate:latest",
     "makeMigration": "knex migrate:make",
     "dev": "nodemon index.js",
-    "lint":  "eslint . --fix",
+    "lint": "eslint . --fix",
     "test": "mocha tests/*.js --exit --require ./tests/env-setup.js"
   },
   "repository": {
@@ -51,7 +51,6 @@
     "chai-http": "^4.3.0",
     "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-ejs": "0.0.2",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "mocha": "^8.2.0",
