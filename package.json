@@ -11,6 +11,16 @@
     "lint": "eslint . --fix",
     "test": "mocha tests/*.js --exit --require ./tests/env-setup.js"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js}": [
+      "eslint --fix"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/betagouv/secretariat.git"
@@ -53,6 +63,8 @@
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
+    "husky": "^4.3.0",
+    "lint-staged": "^10.4.2",
     "mocha": "^8.2.0",
     "nock": "^13.0.4",
     "nodemon": "^2.0.5",
