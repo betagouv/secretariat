@@ -210,3 +210,41 @@ module.exports.updatePasswordForUser = async function (req, res) {
     res.redirect(`/community/${id}`);
   }
 }
+
+module.exports.deleteEmailForUser = async function(req, res) {
+  const id = req.params.id;
+  const isCurrentUser = req.user.id === id;
+
+  try {
+    const user = await utils.userInfos(id, isCurrentUser);
+
+    if (!isCurrentUser && !user.isExpired) {
+      throw new Error(
+        `Le compte "${id}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+      );
+    }
+
+    await BetaGouv.sendInfoToSlack(`Suppression de compte de ${id} (à la demande de ${req.user.id})`);
+
+    if (user.redirections && user.redirections.length > 0) {
+      await BetaGouv.requestRedirections('DELETE', user.redirections.map(x=> x.id));
+      console.log(`Supression des redirections de l'email de ${id} (à la demande de ${req.user.id})`);
+    }
+
+    await BetaGouv.deleteEmail(id);
+    console.log(`Supression de compte email de ${id} (à la demande de ${req.user.id})`);
+
+    if (isCurrentUser) {
+      res.clearCookie('token')
+      req.flash('message', `Ton compte email a bien été supprimé.`);
+      res.redirect('/login');
+    } else {
+      req.flash('message', `Le compte email de ${id} a bien été supprimé.`);
+      res.redirect(`/community/${id}`);
+    }
+  } catch (err) {
+    console.error(err);
+    req.flash('error', err.message);
+    res.redirect(`/community/${id}`);
+  }
+}

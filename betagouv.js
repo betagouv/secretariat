@@ -35,6 +35,17 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  deleteEmail: async (id, password) => {
+    const url = `/email/domain/${config.domain}/account/${id}`;
+
+    try {
+      console.log(`OVH DELETE ${url}`);
+
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   createRedirection: async (from, to, localCopy) => {
     const url = `/email/domain/${config.domain}/redirection`;
 

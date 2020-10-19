@@ -1,6 +1,7 @@
 <%- include('partials/nav-header'); -%>
 
 <div class="module">
+
     <div class="row">
         <div class="panel panel-partial-width">
             <div class="account-split-panel">
@@ -86,7 +87,6 @@
         </div>
     </div>
 
-
     <div class="row">
         <div class="panel panel-full-width">
             <h3>
@@ -164,5 +164,27 @@
               <% } %>
         </div>
     </div>
+
+    <% if(emailInfos || (redirections && redirections.length > 0)) { %>
+        <div class="panel">
+            <h3>❗ Clôturer mon compte</h3>
+            <p>Si tu as quitté la communauté, clôture ton compte :</p>
+
+            <ul>
+                <li>
+                    Clôturer ton compte email
+                </li>
+                <li>
+                    Supprimer toutes tes redirections
+                </li>
+            </ul>
+            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
+                <div class="form__group">
+                    <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
+                </div>
+            </form>
+        </div>
+    <% } %>
+
 </div>
 <%- include('partials/nav-footer'); -%>
