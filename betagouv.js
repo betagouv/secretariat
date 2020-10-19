@@ -9,6 +9,28 @@ const ovh = require('ovh')({
 
 const config = require('./config');
 
+const BetaGouv = {
+  sendInfoToSlack: async (text) => {
+    try {
+      return await axios.post(config.slackWebhookURL, { text });
+    } catch (err) {
+      throw new Error(`Error to notify slack: ${err}`);
+    }
+  },
+  usersInfos: async () => axios.get(config.usersAPI).then((x) => x.data).catch((err) => {
+    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+  }),
+  userInfosById: async (id) => {
+    const users = await BetaGouv.usersInfos();
+    return users.find((element) => element.id == id);
+  },
+  startupsInfos: async () => axios.get(config.startupsAPI)
+    .then((x) => x.data.data) // data key
+    .catch((err) => {
+      throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
+    }),
+};
+
 const betaOVH = {
   emailInfos: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
@@ -132,27 +154,4 @@ const betaOVH = {
   },
 };
 
-const BetaGouv = {
-  sendInfoToSlack: async (text) => {
-    try {
-      return await axios.post(config.slackWebhookURL, { text });
-    } catch (err) {
-      throw new Error(`Error to notify slack: ${err}`);
-    }
-  },
-  ...betaOVH,
-  usersInfos: async () => axios.get(config.usersAPI).then((x) => x.data).catch((err) => {
-    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
-  }),
-  userInfosById: async (id) => {
-    const users = await BetaGouv.usersInfos();
-    return users.find((element) => element.id == id);
-  },
-  startupsInfos: async () => axios.get(config.startupsAPI)
-    .then((x) => x.data.data) // data key
-    .catch((err) => {
-      throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
-    }),
-};
-
-module.exports = BetaGouv;
+module.exports = { ...BetaGouv, ...betaOVH };

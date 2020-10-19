@@ -45,7 +45,7 @@ async function createNewcomerGithubFile(username, content) {
 module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
-    res.render('onboarding', {
+    return res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
@@ -81,7 +81,7 @@ module.exports.postForm = async function (req, res) {
     }
 
     function isValidDate(field, date) {
-      if (date instanceof Date && !isNaN(date)) {
+      if (date instanceof Date && !Number.isNaN(date)) {
         return date;
       }
       formValidationErrors.push(`${field} : la date n'est pas valide`);

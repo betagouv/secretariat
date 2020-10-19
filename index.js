@@ -64,7 +64,7 @@ app.use(async (req, res, next) => {
     return res.redirect(req.path);
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
-    next(err);
+    return next(err);
   }
 });
 
@@ -104,7 +104,7 @@ app.use((err, req, res, next) => {
     const nextParam = req.url ? `?next=${req.url}` : '';
     return res.redirect(`/login${nextParam}`);
   }
-  next(err);
+  return next(err);
 });
 
 app.get('/', indexController.getIndex);

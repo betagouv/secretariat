@@ -126,10 +126,10 @@ module.exports.acceptRequest = async function (req, res) {
 
     console.log(`Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
-    res.render('marrainage', { errors: undefined });
+    return res.render('marrainage', { errors: undefined });
   } catch (err) {
     console.error(err);
-    res.render('marrainage', { errors: err.message });
+    return res.render('marrainage', { errors: err.message });
   }
 };
 
@@ -167,10 +167,10 @@ module.exports.declineRequest = async function (req, res) {
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
 
-    res.render('marrainage', { errors: undefined });
+    return res.render('marrainage', { errors: undefined });
   } catch (err) {
     console.error(err);
-    res.render('marrainage', { errors: err.message });
+    return res.render('marrainage', { errors: err.message });
   }
 };
 
@@ -201,10 +201,10 @@ module.exports.reloadRequest = async function (req, res) {
     if (newcomer.id === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
     else req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
 
-    res.redirect(`/community/${newcomer.id}`);
+    return res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
-    res.redirect(`/community/${req.body.newcomerId}`);
+    return res.redirect(`/community/${req.body.newcomerId}`);
   }
 };
 
@@ -229,9 +229,9 @@ module.exports.cancelRequest = async function (req, res) {
 
     req.flash('message', `Marrainage supprimé pour ${newcomer.id}.`);
 
-    res.redirect(`/community/${newcomer.id}`);
+    return res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     console.error(err);
-    res.redirect(`/community/${req.body.newcomerId}`);
+    return res.redirect(`/community/${req.body.newcomerId}`);
   }
 };

@@ -8,7 +8,7 @@ module.exports.getCurrentAccount = async function (req, res) {
     const marrainageStateResponse = await knex('marrainage').select()
       .where({ username: req.user.id });
     const marrainageState = marrainageStateResponse[0];
-    res.render('account', {
+    return res.render('account', {
       currentUserId: req.user.id,
       emailInfos: currentUser.emailInfos,
       userInfos: currentUser.userInfos,

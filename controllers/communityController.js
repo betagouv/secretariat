@@ -9,7 +9,7 @@ module.exports.getCommunity = async function (req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
-    res.render('community', {
+    return res.render('community', {
       currentUserId: req.user.id,
       domain: config.domain,
       users,
@@ -19,7 +19,7 @@ module.exports.getCommunity = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    res.send('Erreur interne : impossible de récupérer les informations de la communauté');
+    return res.send('Erreur interne : impossible de récupérer les informations de la communauté');
   }
 };
 
@@ -64,6 +64,6 @@ module.exports.getMember = async function (req, res) {
   } catch (err) {
     console.error(err);
     req.flash('error', 'Erreur interne : impossible de récupérer les informations du membre de la communauté');
-    return res.redirect('/');
+    res.redirect('/');
   }
 };

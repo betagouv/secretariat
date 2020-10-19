@@ -62,7 +62,7 @@ module.exports.processNotification = async function (req, res) {
     }
   }
 
-  res.json({
+  return res.json({
     status: 'OK',
   });
 };
