@@ -240,11 +240,11 @@ module.exports.deleteEmailForUser = async function(req, res) {
       res.redirect('/login');
     } else {
       req.flash('message', `Le compte email de ${id} a bien été supprimé.`);
-      res.redirect('/community');
+      res.redirect(`/community/${id}`);
     }
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);
-    res.redirect(`/community`);
+    res.redirect(`/community/${id}`);
   }
 }
