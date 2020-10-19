@@ -87,7 +87,7 @@
     </div>
 
 
-<% if(isExpired && emailInfos) { %>
+<% if(isExpired && (emailInfos || (user.redirections && user.redirections.length > 0))) { %>
     <div class="panel">
         <h3>Ta mission a terminé ?</h3>
         <p>
