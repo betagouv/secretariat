@@ -83,9 +83,7 @@ const betaOVH = {
     `/email/domain/${config.domain}/redirection/${redirectionId}`,
   ),
   /* eslint arrow-body-style: "warn" */
-  requestRedirections: async (method, redirectionIds) => {
-    Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x)));
-  },
+  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
   redirectionsForId: async (query) => {
     if (!query.from && !query.to) {
       throw new Error('paramètre \'from\' ou \'to\' manquant');

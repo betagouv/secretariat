@@ -113,10 +113,9 @@ describe('Login token', () => {
       email: userEmail,
       expires_at: expirationDate,
     })
+    // Try to login using this expired token
     /* eslint arrow-body-style: "warn" */
-    .then(() => { // Try to login using this expired token
-      chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0);
-    })
+    .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
     .then((res) => { // Ensure the response did NOT set an auth cookie
       res.should.not.have.cookie('token');
     })
