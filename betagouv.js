@@ -9,7 +9,7 @@ const ovh = require('ovh')({
 
 const config = require('./config');
 
-const BetaGouv = {
+const betaGouv = {
   sendInfoToSlack: async (text) => {
     try {
       return await axios.post(config.slackWebhookURL, { text });
@@ -21,7 +21,7 @@ const BetaGouv = {
     throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
   }),
   userInfosById: async (id) => {
-    const users = await BetaGouv.usersInfos();
+    const users = await betaGouv.usersInfos();
     return users.find((element) => element.id == id);
   },
   startupsInfos: async () => axios.get(config.startupsAPI)
@@ -82,7 +82,10 @@ const betaOVH = {
     method,
     `/email/domain/${config.domain}/redirection/${redirectionId}`,
   ),
-  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => BetaGouv.requestRedirection(method, x))),
+  /* eslint arrow-body-style: "warn" */
+  requestRedirections: async (method, redirectionIds) => {
+    Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x)));
+  },
   redirectionsForId: async (query) => {
     if (!query.from && !query.to) {
       throw new Error('paramètre \'from\' ou \'to\' manquant');
@@ -103,7 +106,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, options);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return await betaOVH.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -117,7 +120,7 @@ const betaOVH = {
         to,
       });
 
-      return await BetaGouv.requestRedirections('DELETE', redirectionIds);
+      return await betaOVH.requestRedirections('DELETE', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
@@ -128,7 +131,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return await betaOVH.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -154,4 +157,4 @@ const betaOVH = {
   },
 };
 
-module.exports = { ...BetaGouv, ...betaOVH };
+module.exports = { ...betaGouv, ...betaOVH };

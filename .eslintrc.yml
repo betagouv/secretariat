@@ -24,6 +24,10 @@ rules:
   no-restricted-syntax: "warn"
   guard-for-in: "warn"
   eqeqeq: "warn"
+  indent: 
+    - "error"
+    - 2
+    - MemberExpression: "off"
   node/no-unpublished-require: "off"
 
 ignorePatterns:
