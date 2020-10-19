@@ -1,6 +1,28 @@
 <%- include('partials/nav-header'); -%>
 
 <div class="module">
+    <% if(isExpired && (emailInfos || (user.redirections && user.redirections.length > 0))) { %>
+        <div class="panel">
+            <h3>Clotûrer ton compte</h3>
+            <p>
+                <strong>Cette action est irréversible.</strong>
+                <ul>
+                    <li>
+                        Tu ne pourras plus recevoir d'emails <strong>@beta.gouv.fr</strong>
+                    </li>
+                    <li>
+                        Tu ne pourras plus te connecter aux applications (le pad...) avec ton compte @beta.gouv.fr
+                    </li>
+                </ul>
+            </p>
+            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
+                <div class="form__group">
+                    <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
+                    <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> Oups, non finalement </a>
+                </div>
+            </form>
+        </div>
+    <% } %>
     <div class="row">
         <div class="panel panel-partial-width">
             <div class="account-split-panel">
@@ -85,35 +107,6 @@
             <% } %>
         </div>
     </div>
-
-
-<% if(isExpired && (emailInfos || (user.redirections && user.redirections.length > 0))) { %>
-    <div class="panel">
-        <h3>Ta mission a terminé ?</h3>
-        <p>
-            La date de fin dans ta fiche est le <%= userInfos.end %>.
-            Si tu ne fais plus partie de la communauté Beta.gouv,
-            clique sur le bouton ci-dessous.
-        </p>
-        <p>
-            <strong>Attention !</strong> En signalant ton départ, nous allons :
-            <ul>
-                <li>
-                    Clôturer ton compte email
-                </li>
-                <li>
-                    Supprimer toutes tes redirections
-                </li>
-            </ul>
-        </p>
-        <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
-            <div class="form__group">
-                <button class="button no-margin" type="submit">Signaler mon départ</button>
-            </div>
-        </form>
-    </div>
-<% } %>
-
 
     <div class="row">
         <div class="panel panel-full-width">

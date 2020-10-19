@@ -112,7 +112,7 @@ fieldset {
   min-width: 45%;
 }
 
-.panel p, .panel label {
+.panel p, .panel label, .panel li {
   color: #53657d;
   margin-top: 0;
 }
