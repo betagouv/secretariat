@@ -461,6 +461,7 @@ describe("User", () => {
       utils.mockOvhTime()
       utils.mockOvhUserEmailInfos()
       utils.mockOvhAllEmailInfos()
+      utils.mockSlack()
 
       let ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)
@@ -512,6 +513,7 @@ describe("User", () => {
       utils.mockOvhTime()
       utils.mockOvhUserEmailInfos()
       utils.mockOvhAllEmailInfos()
+      utils.mockSlack()
 
       let ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)

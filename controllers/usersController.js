@@ -224,6 +224,8 @@ module.exports.deleteEmailForUser = async function(req, res) {
       );
     }
 
+    await BetaGouv.sendInfoToSlack(`Suppression de compte de ${id} (à la demande de ${req.user.id})`);
+
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map(x=> x.id));
       console.log(`Supression des redirections de l'email de ${id} (à la demande de ${req.user.id})`);
