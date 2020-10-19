@@ -491,7 +491,44 @@ describe("User", () => {
         });
     });
 
-    it("should not allow redirection deletion for active users", (done) => {
+    it("should not allow redirection deletion for another user if active", (done) => {
+
+      nock.cleanAll()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection/)
+        .query(x => x.from || x.to)
+        .reply(200, ['123123'])
+        .persist()
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200, {
+          "id": "123123",
+          "from": `utilisateur.actif@${config.domain}`,
+          "to": "perso@example.ovh"
+        }).persist()
+
+      utils.mockUsers()
+      utils.mockOvhTime()
+      utils.mockOvhUserEmailInfos()
+      utils.mockOvhAllEmailInfos()
+      utils.mockSlack()
+
+      let ovhRedirectionDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/redirection\/123123/)
+        .reply(200)
+
+      chai.request(app)
+        .post('/users/utilisateur.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.nouveau')}`)
+        .end((err, res) => {
+          ovhRedirectionDeletion.isDone().should.be.false;
+          done();
+        });
+    });
+
+    it("should allow redirection deletion for requester even if active", (done) => {
 
       nock.cleanAll()
 
@@ -523,7 +560,7 @@ describe("User", () => {
         .post('/users/utilisateur.actif/email/delete')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          ovhRedirectionDeletion.isDone().should.be.false;
+          ovhRedirectionDeletion.isDone().should.be.true;
           done();
         });
     });

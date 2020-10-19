@@ -218,9 +218,9 @@ module.exports.deleteEmailForUser = async function(req, res) {
   try {
     const user = await utils.userInfos(id, isCurrentUser);
 
-    if (!user.isExpired) {
+    if (!isCurrentUser && !user.isExpired) {
       throw new Error(
-        `Le compte de ${id} n'est pas expiré, vous ne pouvez pas supprimer son compte.`
+        `Le compte "${id}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
       );
     }
 
