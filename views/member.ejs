@@ -1,25 +1,25 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
 
-<% if(isExpired && (emailInfos || (user.redirections && user.redirections.length > 0))) { %>
+<% if(isExpired && (emailInfos || (redirections && redirections.length > 0))) { %>
     <div class="panel">
-        <h3>Clotûrer le compte de <%= userInfos.fullname %> ?</h3>
+        <h3>❗ Contrat de <%= userInfos.fullname %> arrivé à expiration</h3>
 
-        <p>
-            <strong>Cette action est irréversible.</strong>
-            <ul>
-                <li>
-                    <%= userInfos.fullname %> ne pourra plus recevoir d'emails <strong>@beta.gouv.fr</strong>
-                </li>
-                <li>
-                    <%= userInfos.fullname %> ne pourra plus se connecter aux applications (le pad...) avec son compte @beta.gouv.fr
-                </li>
-            </ul>
-        </p>
+        <p>Le contrat de <%= userInfos.fullname %> est arrivé à terme le <strong><%= userInfos.end %></strong>.</p>
+        <p>Si <%= userInfos.fullname %> a effectivement quitté la communauté, clôturez son compte :</p>
+
+        <ul>
+            <li>
+                Clôturer son compte email
+            </li>
+            <li>
+                Supprimer toutes ses redirections
+            </li>
+        </ul>
         <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections pour <%= userInfos.fullname %> ?');" class="no-margin" action="/users/<%= requestedUserId %>/email/delete" method="POST">
             <div class="form__group">
                 <button class="button margin-right-10" type="submit">Clotûrer le compte</button>
-                <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> Oups, non finalement </a>
+                <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Mettre à jour le contrat</a>
             </div>
         </form>
     </div>

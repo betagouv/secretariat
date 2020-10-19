@@ -1,28 +1,7 @@
 <%- include('partials/nav-header'); -%>
 
 <div class="module">
-    <% if(isExpired && (emailInfos || (user.redirections && user.redirections.length > 0))) { %>
-        <div class="panel">
-            <h3>Clotûrer ton compte</h3>
-            <p>
-                <strong>Cette action est irréversible.</strong>
-                <ul>
-                    <li>
-                        Tu ne pourras plus recevoir d'emails <strong>@beta.gouv.fr</strong>
-                    </li>
-                    <li>
-                        Tu ne pourras plus te connecter aux applications (le pad...) avec ton compte @beta.gouv.fr
-                    </li>
-                </ul>
-            </p>
-            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
-                <div class="form__group">
-                    <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
-                    <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank"> Oups, non finalement </a>
-                </div>
-            </form>
-        </div>
-    <% } %>
+
     <div class="row">
         <div class="panel panel-partial-width">
             <div class="account-split-panel">
@@ -185,5 +164,27 @@
               <% } %>
         </div>
     </div>
+
+    <% if(emailInfos || (redirections && redirections.length > 0)) { %>
+        <div class="panel">
+            <h3>❗ Clôturer mon compte</h3>
+            <p>Si tu as quitté la communauté, clôture ton compte :</p>
+
+            <ul>
+                <li>
+                    Clôturer ton compte email
+                </li>
+                <li>
+                    Supprimer toutes tes redirections
+                </li>
+            </ul>
+            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
+                <div class="form__group">
+                    <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
+                </div>
+            </form>
+        </div>
+    <% } %>
+
 </div>
 <%- include('partials/nav-footer'); -%>
