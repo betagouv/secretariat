@@ -34,7 +34,7 @@
                 <label for="firstName">
                     <strong>Prénom (obligatoire)</strong>
                 </label>
-                <input name="firstName" value="<%= formData.firstName %>" required>
+                <input name="firstName" id="firstName" value="<%= formData.firstName %>" required>
                 <label for="lastName">
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
@@ -53,7 +53,7 @@
                 <label for="website">
                     <span>Site personnel</span>
                 </label>
-                <input name="website" value="<%= formData.website %>">
+                <input name="website" id="website" value="<%= formData.website %>">
             </div>
 
             <div class="form__group">
@@ -61,7 +61,7 @@
                     <span>Utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
                 </label>
-                <input name="github" value="<%= formData.github %>">
+                <input name="github" id="github" value="<%= formData.github %>">
             </div>
 
 
@@ -71,7 +71,7 @@
                     <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
                     Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
-                <input name="role" value="<%= formData.role %>" required>
+                <input name="role" id="role" value="<%= formData.role %>" required>
             </div>
 
             <div class="form__group">
@@ -79,7 +79,7 @@
                     <strong>Début de la mission (obligatoire)</strong><br />
                     Au format JJ/MM/YYYY
                 </label>
-                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= memberConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <input type="date" id="start" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= memberConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
@@ -87,7 +87,7 @@
                     <strong>Fin de la mission (obligatoire)</strong><br />
                     Au format JJ/MM/YYYY
                 </label>
-                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <input type="date" id="end" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
 
             <div class="form__group">
@@ -117,7 +117,7 @@
                     <span>Employeur</span><br />
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                 </label>
-                <input name="employer" value="<%= formData.employer %>">
+                <input name="employer" id="employer" value="<%= formData.employer %>">
             </div>
 
             <div class="form__group">
