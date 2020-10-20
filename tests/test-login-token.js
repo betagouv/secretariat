@@ -7,8 +7,7 @@ const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const config = require('../config');
 
-
-describe("Login token", () => {
+describe('Login token', () => {
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     done();
@@ -27,12 +26,12 @@ describe("Login token", () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.nouveau'
+        id: 'utilisateur.nouveau',
       })
 
       // Verify the token has been stored in the database
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then(dbRes => {
+      .then((dbRes) => {
         dbRes.length.should.equal(1);
         dbRes[0].email.should.equal(userEmail);
         dbRes[0].username.should.equal('utilisateur.nouveau');
@@ -49,17 +48,15 @@ describe("Login token", () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.actif'
+        id: 'utilisateur.actif',
       })
 
       // Extract token from the DB
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then(dbRes => dbRes[0].token)
+      .then((dbRes) => dbRes[0].token)
 
       // Use the token making a GET request
-      .then(token => {
-        return chai.request(app).get(`/users?token=${encodeURIComponent(token)}`);
-      })
+      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`))
 
       // Ensure no tokens for this user remain
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
@@ -78,30 +75,26 @@ describe("Login token", () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.actif'
+        id: 'utilisateur.actif',
       })
 
       // Extract token from the DB
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then(dbRes => dbRes[0].token)
+      .then((dbRes) => dbRes[0].token)
 
       // Use the token to make a first GET request
-      .then(token => {
-        return chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0);
-      })
+      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
 
       // Ensure the response sets the token auth cookie
-      .then(res => {
+      .then((res) => {
         res.should.have.cookie('token');
       })
 
       // Make the same GET request again (second time)
-      .then(token => {
-        return chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0);
-      })
+      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
 
       // Ensure the response did NOT set an auth cookie
-      .then(res => {
+      .then((res) => {
         res.should.not.have.cookie('token');
       })
       .then(done)
@@ -109,25 +102,24 @@ describe("Login token", () => {
   });
 
   it('should not be used if expired', (done) => {
-
     // Create expired token
     const userEmail = `utilisateur.actif@${config.domain}`;
     const token = crypto.randomBytes(256).toString('base64');
-    let expirationDate = new Date();
+    const expirationDate = new Date();
 
     knex('login_tokens').insert({
-      token: token,
-      username: "utilisateur.actif",
+      token,
+      username: 'utilisateur.actif',
       email: userEmail,
-      expires_at: expirationDate
-    }) 
-    .then(() => { // Try to login using this expired token
-      return chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0);
+      expires_at: expirationDate,
     })
-    .then(res => {     // Ensure the response did NOT set an auth cookie
+    // Try to login using this expired token
+    .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+    // Ensure the response did NOT set an auth cookie
+    .then((res) => {
       res.should.not.have.cookie('token');
     })
     .then(done)
-    .catch(done)
+    .catch(done);
   });
-})
+});

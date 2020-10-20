@@ -1,17 +1,38 @@
 // betagouv.js
 // ======
-const https = require('https');
 const axios = require('axios').default;
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
-  consumerKey: process.env.OVH_CONSUMER_KEY
+  consumerKey: process.env.OVH_CONSUMER_KEY,
 });
 
 const config = require('./config');
 
+const betaGouv = {
+  sendInfoToSlack: async (text) => {
+    try {
+      return await axios.post(config.slackWebhookURL, { text });
+    } catch (err) {
+      throw new Error(`Error to notify slack: ${err}`);
+    }
+  },
+  usersInfos: async () => axios.get(config.usersAPI).then((x) => x.data).catch((err) => {
+    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+  }),
+  userInfosById: async (id) => {
+    const users = await betaGouv.usersInfos();
+    return users.find((element) => element.id == id);
+  },
+  startupsInfos: async () => axios.get(config.startupsAPI)
+    .then((x) => x.data.data) // data key
+    .catch((err) => {
+      throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
+    }),
+};
+
 const betaOVH = {
-  emailInfos: async id => {
+  emailInfos: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
@@ -29,7 +50,7 @@ const betaOVH = {
 
       return await ovh.requestPromised('POST', url, {
         accountName: id,
-        password
+        password,
       });
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
@@ -57,17 +78,15 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  requestRedirection: async (method, redirectionId) =>
-    ovh.requestPromised(
-      method,
-      `/email/domain/${config.domain}/redirection/${redirectionId}`
-    ),
-  requestRedirections: async (method, redirectionIds) => {
-    return Promise.all(redirectionIds.map(x => BetaGouv.requestRedirection(method, x)))
-  },
-  redirectionsForId: async query => {
+  requestRedirection: async (method, redirectionId) => ovh.requestPromised(
+    method,
+    `/email/domain/${config.domain}/redirection/${redirectionId}`,
+  ),
+  /* eslint arrow-body-style: "warn" */
+  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
+  redirectionsForId: async (query) => {
     if (!query.from && !query.to) {
-      throw new Error(`paramètre 'from' ou 'to' manquant`);
+      throw new Error('paramètre \'from\' ou \'to\' manquant');
     }
 
     const url = `/email/domain/${config.domain}/redirection`;
@@ -85,7 +104,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, options);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return await betaOVH.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -96,10 +115,10 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, {
         from,
-        to
+        to,
       });
 
-      return await BetaGouv.requestRedirections('DELETE', redirectionIds);
+      return await betaOVH.requestRedirections('DELETE', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
@@ -110,7 +129,7 @@ const betaOVH = {
     try {
       const redirectionIds = await ovh.requestPromised('GET', url);
 
-      return await BetaGouv.requestRedirections('GET', redirectionIds);
+      return await betaOVH.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
@@ -133,34 +152,7 @@ const betaOVH = {
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
-  }
-};
-
-const BetaGouv = {
-  sendInfoToSlack: async text => {
-    try {
-      return await axios.post(config.slackWebhookURL, { text })
-    } catch (err) {
-      throw new Error(`Error to notify slack: ${err}`);
-    }
-  },
-  ...betaOVH,
-  usersInfos: async () => {
-    return axios.get(config.usersAPI).then(x => x.data).catch((err) => {
-      throw new Error(`Error to get users infos in ${config.domain}: ${err}`)
-    })
-  },
-  userInfosById: async id => {
-    const users = await BetaGouv.usersInfos();
-    return users.find(element => element.id == id);
-  },
-  startupsInfos: async () => {
-    return axios.get(config.startupsAPI)
-      .then(x => x.data.data) // data key
-      .catch((err) => {
-        throw new Error(`Error to get startups infos in ${config.domain}: ${err}`)
-      })
   },
 };
 
-module.exports = BetaGouv;
+module.exports = { ...betaGouv, ...betaOVH };

@@ -27,19 +27,19 @@ async function sendLoginEmail(id, loginUrl, token) {
 
   if (!user) {
     throw new Error(
-      `Utilisateur·rice <strong>${id}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
+      `Utilisateur·rice <strong>${id}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur·rice <strong>${id}</strong> a une date de fin expiré sur Github.`
+      `Utilisateur·rice <strong>${id}</strong> a une date de fin expiré sur Github.`,
     );
   }
 
   const email = utils.buildBetaEmail(id);
-  const html = await ejs.renderFile("./views/emails/login.ejs", {
-    loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`
+  const html = await ejs.renderFile('./views/emails/login.ejs', {
+    loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`,
   });
 
   try {
@@ -53,32 +53,32 @@ async function sendLoginEmail(id, loginUrl, token) {
 async function saveToken(id, token) {
   const email = utils.buildBetaEmail(id);
   try {
-    let expirationDate = new Date();
+    const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
 
     await knex('login_tokens').insert({
-      token: token,
+      token,
       username: id,
-      email: email,
-      expires_at: expirationDate
+      email,
+      expires_at: expirationDate,
     });
     console.log(`Login token créé pour ${email}`);
   } catch (err) {
     console.error(`Erreur de sauvegarde du token : ${err}`);
-    throw new Error(`Erreur de sauvegarde du token`);
+    throw new Error('Erreur de sauvegarde du token');
   }
 }
 
 module.exports.getLogin = async function (req, res) {
   renderLogin(req, res, {});
-}
+};
 
 module.exports.postLogin = async function (req, res) {
-  var nextParam = req.query.next ? `?next=${req.query.next}` : '';
+  const nextParam = req.query.next ? `?next=${req.query.next}` : '';
 
   if (
-    req.body.id === undefined ||
-    !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
+    req.body.id === undefined
+    || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
   ) {
     req.flash('error', "L'email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.'.<br />Exemple : charlotte.duret");
     return res.redirect(`/login${nextParam}`);
@@ -90,10 +90,10 @@ module.exports.postLogin = async function (req, res) {
   try {
     const token = generateToken();
     await sendLoginEmail(req.body.id, loginUrl, token);
-    await saveToken(req.body.id, token)
+    await saveToken(req.body.id, token);
 
-    renderLogin(req, res, {
-      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${req.body.id}@${config.domain}</strong>. Il est valable une heure.`)
+    return renderLogin(req, res, {
+      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${req.body.id}@${config.domain}</strong>. Il est valable une heure.`),
     });
   } catch (err) {
     console.error(err);
@@ -101,4 +101,4 @@ module.exports.postLogin = async function (req, res) {
     req.flash('error', err.message);
     return res.redirect(`/login${nextParam}`);
   }
-}
+};

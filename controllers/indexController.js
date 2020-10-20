@@ -5,5 +5,5 @@ module.exports.getIndex = function (req, res) {
     return res.redirect('/login');
   }
 
-  res.redirect(config.defaultLoggedInRedirectUrl);
-}
+  return res.redirect(config.defaultLoggedInRedirectUrl);
+};

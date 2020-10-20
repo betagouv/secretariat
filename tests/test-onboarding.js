@@ -7,12 +7,11 @@ const utils = require('./utils.js');
 const controllerUtils = require('../controllers/utils');
 
 describe('Onboarding', () => {
-
-  describe("GET /onboarding", () => {
+  describe('GET /onboarding', () => {
     it('should return a valid page', (done) => {
-      nock.cleanAll()
+      nock.cleanAll();
 
-      utils.mockStartups()
+      utils.mockStartups();
 
       chai.request(app)
         .get('/onboarding')
@@ -24,19 +23,18 @@ describe('Onboarding', () => {
     });
   });
 
-  describe("POST /onboarding", () => {
-
+  describe('POST /onboarding', () => {
     beforeEach((done) => {
       this.getGithubMasterSha = sinon
         .stub(controllerUtils, 'getGithubMasterSha')
-        .resolves({ data: { object: { sha: 'sha' } }});
+        .resolves({ data: { object: { sha: 'sha' } } });
 
       this.createGithubBranch = sinon
         .stub(controllerUtils, 'createGithubBranch')
         .resolves(true);
 
-      this.createGithubFile = sinon.
-        stub(controllerUtils, 'createGithubFile')
+      this.createGithubFile = sinon
+        .stub(controllerUtils, 'createGithubFile')
         .resolves(true);
 
       this.makeGithubPullRequest = sinon
@@ -44,7 +42,7 @@ describe('Onboarding', () => {
         .resolves(true);
 
       done();
-    })
+    });
 
     afterEach((done) => {
       this.getGithubMasterSha.restore();
@@ -54,7 +52,7 @@ describe('Onboarding', () => {
       done();
     });
 
-    it("should not call Github API if a mandatory field is missing", (done) => {
+    it('should not call Github API if a mandatory field is missing', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -64,7 +62,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -75,7 +73,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it("should not call Github API if a date is wrong", (done) => {
+    it('should not call Github API if a date is wrong', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -84,7 +82,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: 'aaaa-bb-cc',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -104,7 +102,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-42-42',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -115,7 +113,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it("should not call Github API if the end date is smaller than the start date", (done) => {
+    it('should not call Github API if the end date is smaller than the start date', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -124,7 +122,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-12-31',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -135,7 +133,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it("should not call Github API if the start date is too small", (done) => {
+    it('should not call Github API if the start date is too small', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -144,7 +142,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2000-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -155,7 +153,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it("should call Github API if mandatory fields are present", (done) => {
+    it('should call Github API if mandatory fields are present', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -165,7 +163,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           this.getGithubMasterSha.calledOnce.should.be.true;
@@ -176,7 +174,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it("branch should be created on latest SHA", (done) => {
+    it('branch should be created on latest SHA', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -186,16 +184,16 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           const sha = this.createGithubBranch.args[0][0];
-          sha.should.equal('sha')
+          sha.should.equal('sha');
           done();
         });
     });
 
-    it("filename should not contain accents", (done) => {
+    it('filename should not contain accents', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -205,16 +203,16 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
-          path.should.contain('fernandao.unibe.md')
+          path.should.contain('fernandao.unibe.md');
           done();
         });
     });
 
-    it("branch name should not contain accents", (done) => {
+    it('branch name should not contain accents', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -224,16 +222,16 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
-          branch.should.contain('author-fernandao-unibe-')
+          branch.should.contain('author-fernandao-unibe-');
           done();
         });
     });
 
-    it("special characters should be replaced with dashes in the filename", (done) => {
+    it('special characters should be replaced with dashes in the filename', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -243,16 +241,16 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
-          path.should.contain('rene-d-herblay.d-aramitz.md')
+          path.should.contain('rene-d-herblay.d-aramitz.md');
           done();
         });
     });
 
-    it("should redirect to onboarding success page", (done) => {
+    it('should redirect to onboarding success page', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -262,7 +260,7 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
-          status: 'Independant'
+          status: 'Independant',
         })
         .redirects(0)
         .end((err, res) => {
