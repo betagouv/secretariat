@@ -26,7 +26,7 @@ describe('Login token', () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.nouveau',
+        username: 'utilisateur.nouveau',
       })
 
       // Verify the token has been stored in the database
@@ -48,7 +48,7 @@ describe('Login token', () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.actif',
+        username: 'utilisateur.actif',
       })
 
       // Extract token from the DB
@@ -75,7 +75,7 @@ describe('Login token', () => {
       .post('/login')
       .type('form')
       .send({
-        id: 'utilisateur.actif',
+        username: 'utilisateur.actif',
       })
 
       // Extract token from the DB
