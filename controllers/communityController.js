@@ -9,7 +9,9 @@ module.exports.getCommunity = async function (req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
+    const title = 'Communauté';
     return res.render('community', {
+      title: title,
       currentUserId: req.user.id,
       domain: config.domain,
       users,
@@ -35,6 +37,7 @@ module.exports.getMember = async function (req, res) {
     }
 
     const user = await utils.userInfos(requestedUserId, isCurrentUser);
+    const title = user.userInfos.fullname;
 
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
@@ -48,6 +51,7 @@ module.exports.getMember = async function (req, res) {
     const marrainageState = marrainageStateResponse[0];
 
     res.render('member', {
+      title: title,
       requestedUserId,
       currentUserId: req.user.id,
       emailInfos: user.emailInfos,
