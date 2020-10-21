@@ -7,44 +7,57 @@ Le secrétariat de l’incubateur
 ### Variables d'environnement
 
 - Variables d'environnement nécessaires :
-   - `OVH_APP_KEY` - [Obtenir les credentials OVH pour débugger](#Générer-clé-API-OVH)
-   - `OVH_APP_SECRET`
-   - `OVH_CONSUMER_KEY`
-   - `SESSION_SECRET` - Clé de 32 caractère aléatoires, important en prod
-   - `MAIL_SERVICE` - Service [géré par nodemailer](https://nodemailer.com/smtp/well-known/) ([Débugger SMTP en local](#Debug-avec-le-serveur-SMTP-Maildev)). Si absente, `MAIL_HOST`, `MAIL_PORT`, et `MAIL_IGNORE_TLS` seront utilisées.
-   - `MAIL_USER`
-   - `MAIL_PASS`
-   - `SECURE` - _true_ si https sinon _false_
-   - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
-   - `DATABASE_URL` - Le [string de connexion](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) pour se connecter à Postgres (pensez à échapper les caractères spéciaux s'il s'agit d'une URI). Le string de connexion doit contenir le *user*, *password*, *host*, *port* et le nom de la base de données.
-   - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues
-   - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`)
-   - `GITHUB_FORK` - Le fork du GITHUB_REPOSITORY utilisé pour créer les PRs, (par ex: `test-user/beta.gouv.fr`).
+  - `OVH_APP_KEY` - [Obtenir les credentials OVH pour débugger](#Générer-clé-API-OVH)
+  - `OVH_APP_SECRET`
+  - `OVH_CONSUMER_KEY`
+  - `SESSION_SECRET` - Clé de 32 caractère aléatoires, important en prod
+  - `MAIL_SERVICE` - Service [géré par nodemailer](https://nodemailer.com/smtp/well-known/) ([Débugger SMTP en local](#Debug-avec-le-serveur-SMTP-Maildev)). Si absente, `MAIL_HOST`, `MAIL_PORT`, et `MAIL_IGNORE_TLS` seront utilisées.
+  - `MAIL_USER`
+  - `MAIL_PASS`
+  - `SECURE` - _true_ si https sinon _false_
+  - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _<https://hooks.slack.com/services/>..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
+  - `DATABASE_URL` - Le [string de connexion](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) pour se connecter à Postgres (pensez à échapper les caractères spéciaux s'il s'agit d'une URI). Le string de connexion doit contenir le *user*, *password*, *host*, *port* et le nom de la base de données.
+  - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues
+  - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`)
+  - `GITHUB_FORK` - Le fork du GITHUB_REPOSITORY utilisé pour créer les PRs, (par ex: `test-user/beta.gouv.fr`).
 
 - Variables d'environnement optionnelles :
-   - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
-   - `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
-   - `POSTGRES_PASSWORD` - Cette variable sert à lancer l'image docker de postgres et donc seulement nécessaire si Docker est utilisé pour le développement.
-   - `MAIL_HOST` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le hostname ou adresse IP à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
-   - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
-   - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
+  - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
+   `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
+   `POSTGRES_PASSWORD` - Cette variable sert à lancer l'image docker de postgres et donc seulement nécessaire si Docker est utilisé pour le développement.
+   `MAIL_HOST` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le hostname ou adresse IP à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
+  - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
+  - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
 
 ### Lancer en mode développement
 
-Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes :
+Prérequis d'une base de données PostgreSQL:
 
+```shell
+docker run -d --name secretariat-db -e POSTGRES_USER=secretariat -e POSTGRES_PASSWORD=secretariat -p 5432:5432 postgres
 ```
+
+si besoin d'un serveur mail:
+
+```shell
+docker run -d --name secretariat-mail -e MAILDEV_INCOMING_USER=mailuser -e MAILDEV_INCOMING_PASS=mailpass -p 1080:80 -p 1025:25 maildev/maildev
+```
+
+Une fois la base lancée, vous pouvez démarrer l'application avec ces commandes en précisant la variable d'environnement `DATABASE_URL=postgres://secretariat:secretariat@0.0.0.0:5432/secretariat` :
+
+```shell
 » npm install # Récupère les dépendances
 » npm run migrate # Applique les migrations
 » npm run dev
    ...
    Running on port: 8100
 ```
+
 L'application sera disponible sur `http://localhost:8100` (8100 est le port par défaut, vous pouvez le changer avec la variable d'env `PORT`)
 
 ### Lancer en mode production
 
-```
+```shell
 » npm run start
    ...
    Running on port: 8100
@@ -52,7 +65,7 @@ L'application sera disponible sur `http://localhost:8100` (8100 est le port par 
 
 ### Lancer les tests
 
-```
+```shell
 » npm run test
 ```
 
@@ -60,10 +73,11 @@ L'application sera disponible sur `http://localhost:8100` (8100 est le port par 
 
 _Si vous n'avez pas les droits pour générer les credentials OVH, postez un message sur [#incubateur-amélioration-secretariat](https://startups-detat.slack.com/archives/C017J6CUN2V)._
 
-Lien : https://eu.api.ovh.com/createToken/
+Lien : <https://eu.api.ovh.com/createToken/>
 
-- Nécessaires pour les fonctionalités en cours
-```
+- Nécessaires pour les fonctionalités en cours:
+
+```shell
 GET /email/domain/beta.gouv.fr/*
 POST /email/domain/beta.gouv.fr/account
 DELETE /email/domain/beta.gouv.fr/account/*
@@ -72,8 +86,9 @@ DELETE /email/domain/beta.gouv.fr/redirection/*
 POST /email/domain/beta.gouv.fr/account/*/changePassword
 ```
 
-- Nécessaires pour les prochaines fonctionalités
-```
+- Nécessaires pour les prochaines fonctionalités:
+
+```shell
 POST /email/domain/beta.gouv.fr/mailingList
 POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
 DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
@@ -104,21 +119,22 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 Configurer la variable d'environnement `USERS_API` (par défaut à `https://beta.gouv.fr/api/v1.6/authors.json`)
 
 ### Créer des migrations
+
 [KnexJS](http://knexjs.org/#Migrations) permet de créer des migrations de base de données. Un shortcut a été ajouté au `package.json` pour créer une migration :
 
-```
+```shell
 npm run makeMigration <nom de la migration>
 ```
 
 Une fois la migration créée, vous pouvez l'appliquer avec :
 
-```
+```shell
 npm run migrate
 ```
 
 Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migrations) est disponible avec `./node_modules/knex/bin/cli.js`. Par exemple, pour faire un rollback :
 
-```
+```shell
 ./node_modules/knex/bin/cli.js migrate:rollback
 ```
 
@@ -145,4 +161,9 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 ### Dev docker sans docker-compose
 
 - Exemple pour développer dans un container :
-	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev)
+
+```shell
+docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash
+```
+
+avec vos variables d'environnement dans ../.env.secretariat.dev
