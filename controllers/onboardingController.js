@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const utils = require('./utils');
 const BetaGouv = require('../betagouv');
+const { title } = require('process');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -45,7 +46,9 @@ async function createNewcomerGithubFile(username, content) {
 module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
+    const title = 'Créer ma fiche';
     return res.render('onboarding', {
+      title: title,
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
