@@ -36,7 +36,7 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     const email = utils.buildBetaEmail(id);
-    const password = parseInt(crypto.randomBytes(7).toString('hex'), 16)
+    const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
       .toString(36)
       .slice(-10)
 
