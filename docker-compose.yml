@@ -29,7 +29,7 @@ services:
       MAIL_USER: mailpassword
       MAIL_HOST: maildev
       MAIL_PORT: 25
-      MAIL_IGNORE_TLS: true
+      MAIL_IGNORE_TLS: "true"
       SECURE: "false"
     ports:
       - "8100:8100"
