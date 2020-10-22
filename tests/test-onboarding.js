@@ -78,6 +78,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
           start: 'aaaa-bb-cc',
@@ -98,6 +99,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2020-42-42',
@@ -118,10 +120,11 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
-          start: '2020-12-31',
-          end: '2021-01-01',
+          start: '2021-12-31',
+          end: '2020-01-01',
           status: 'Independant',
         })
         .end((err, res) => {
@@ -138,11 +141,34 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
+          firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2000-01-01',
           end: '2021-01-01',
           status: 'Independant',
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if the website lacks the protocol', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          website: 'example.com/me',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -185,6 +211,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          website: 'https://example.com/me',
         })
         .end((err, res) => {
           const sha = this.createGithubBranch.args[0][0];

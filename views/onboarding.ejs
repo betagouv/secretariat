@@ -51,9 +51,10 @@
 
             <div class="form__group">
                 <label for="website">
-                    <span>Site personnel</span>
+                    <span>Site personnel</span><br />
+                    Commençant avec <em>http://</em> ou <em>https://</em>
                 </label>
-                <input name="website" value="<%= formData.website %>">
+                <input name="website" pattern="^(http|https)://$" value="<%= formData.website %>">
             </div>
 
             <div class="form__group">
