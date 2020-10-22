@@ -23,7 +23,7 @@ module.exports = {
   },
   senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
-  usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v1.6/authors.json',
+  usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',
   startupsAPI: process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   githubToken: process.env.GITHUB_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
