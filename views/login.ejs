@@ -18,9 +18,9 @@
       <div class="notification"><%- messages %></div>
     <% } else { %>
       <form action="/login<%= nextParam %>" method="POST">
-        <label for="id">Adresse email :</label>
+        <label for="username">Adresse email :</label>
         <div class="input__group">
-          <input name="id" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="off">
+          <input name="username" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="username">
           <span class="padding-10">@<%= domain %></span>
         </div>
         <button class="button" type="submit">Recevoir le lien de connexion</button>

@@ -1,5 +1,30 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
+
+<% if(isExpired && (emailInfos || (redirections && redirections.length > 0))) { %>
+    <div class="panel">
+        <h3>❗ Contrat de <%= userInfos.fullname %> arrivé à expiration</h3>
+
+        <p>Le contrat de <%= userInfos.fullname %> est arrivé à terme le <strong><%= userInfos.end %></strong>.</p>
+        <p>Si <%= userInfos.fullname %> a effectivement quitté la communauté, clôturez son compte :</p>
+
+        <ul>
+            <li>
+                Clôturer son compte email
+            </li>
+            <li>
+                Supprimer toutes ses redirections
+            </li>
+        </ul>
+        <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections pour <%= userInfos.fullname %> ?');" class="no-margin" action="/users/<%= requestedUserId %>/email/delete" method="POST">
+            <div class="form__group">
+                <button class="button margin-right-10" type="submit">Clotûrer le compte</button>
+                <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Mettre à jour le contrat</a>
+            </div>
+        </form>
+    </div>
+<% } %>
+
     <div class="panel">
         <% if(userInfos) { %>
             <div>
