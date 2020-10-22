@@ -58,7 +58,9 @@ module.exports.getEmailLists = async function (req, res) {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter((user) => user.expired);
     const currentUser = await utils.userInfos(req.user.id, true);
+    const title = 'Administration';
     res.render('admin', {
+      title: title,
       currentUserId: req.user.id,
       userInfos: currentUser.userInfos,
       emails,

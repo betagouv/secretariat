@@ -45,7 +45,9 @@ async function createNewcomerGithubFile(username, content) {
 module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
+    const title = 'Créer ma fiche';
     return res.render('onboarding', {
+      title: title,
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
