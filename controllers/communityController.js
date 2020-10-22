@@ -37,7 +37,6 @@ module.exports.getMember = async function (req, res) {
     }
 
     const user = await utils.userInfos(requestedUserId, isCurrentUser);
-    const title = user.userInfos.fullname;
 
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
@@ -50,6 +49,7 @@ module.exports.getMember = async function (req, res) {
       .where({ username: requestedUserId });
     const marrainageState = marrainageStateResponse[0];
 
+    const title = user.userInfos.fullname;
     res.render('member', {
       title: title,
       requestedUserId,
