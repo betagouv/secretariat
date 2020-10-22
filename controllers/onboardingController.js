@@ -4,7 +4,6 @@ const crypto = require('crypto');
 const config = require('../config');
 const utils = require('./utils');
 const BetaGouv = require('../betagouv');
-const { title } = require('process');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
