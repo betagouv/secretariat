@@ -36,6 +36,14 @@ function removeAccents(str) {
   return str;
 }
 
+function removeRedundantWhitespace(str) {
+  return str.trim().replace(/\s\s+/g, ' ');
+}
+
+function replaceSpecialCharacters(str) {
+  return str.replace(/( |'|\.)/gi, '-');
+}
+
 module.exports.sendMail = async function (to_email, subject, html) {
   const mail = {
     to: to_email,
@@ -147,7 +155,8 @@ module.exports.makeGithubPullRequest = function (branch, title) {
 };
 
 module.exports.createUsername = function (firstName, lastName) {
-  const firstNameSegment = removeAccents(firstName).replace(/( |'|\.)/gi, '-');
-  const lastNameSegment = removeAccents(lastName).replace(/( |'|\.)/gi, '-');
-  return `${firstNameSegment}.${lastNameSegment}`.toLowerCase();
+  const prepareName = function (str) {
+    return replaceSpecialCharacters(removeRedundantWhitespace(removeAccents(str)));
+  };
+  return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 };
