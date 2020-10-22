@@ -75,10 +75,10 @@ module.exports.getLogin = async function (req, res) {
 
 module.exports.postLogin = async function (req, res) {
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-
+  const username = req.body.username
   if (
-    req.body.id === undefined
-    || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(req.body.id)
+    username === undefined
+    || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)
   ) {
     req.flash('error', "L'email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.'.<br />Exemple : charlotte.duret");
     return res.redirect(`/login${nextParam}`);
@@ -89,11 +89,11 @@ module.exports.postLogin = async function (req, res) {
 
   try {
     const token = generateToken();
-    await sendLoginEmail(req.body.id, loginUrl, token);
-    await saveToken(req.body.id, token);
+    await sendLoginEmail(username, loginUrl, token);
+    await saveToken(username, token);
 
     return renderLogin(req, res, {
-      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${req.body.id}@${config.domain}</strong>. Il est valable une heure.`),
+      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${username}@${config.domain}</strong>. Il est valable une heure.`),
     });
   } catch (err) {
     console.error(err);

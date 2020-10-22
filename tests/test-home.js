@@ -23,7 +23,7 @@ describe('Home', () => {
         .get('/')
         .end((err, res) => {
           res.text.should.include('<form action="/login" method="POST">');
-          res.text.should.include('<input name="id"');
+          res.text.should.include('<input name="username"');
           res.text.should.include('<button class="button" type="submit">');
           done();
         });
