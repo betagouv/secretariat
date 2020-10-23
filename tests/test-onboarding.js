@@ -239,6 +239,25 @@ describe('Onboarding', () => {
         });
     });
 
+    it('filename should handle multiple spaces gracefully', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Jean   .  Jacques\'    .',
+          lastName: '    Dupont    ',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+        })
+        .end((err, res) => {
+          const path = this.createGithubFile.args[0][0];
+          path.should.contain('jean-jacques.dupont.md');
+          done();
+        });
+    });
+
     it('branch name should not contain accents', (done) => {
       chai.request(app)
         .post('/onboarding')
