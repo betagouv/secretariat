@@ -21,6 +21,8 @@ const communityController = require('./controllers/communityController');
 const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 
+const marrainageScheduler = require('./schedulers/marrainageScheduler');
+
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -130,5 +132,7 @@ app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess', onboardingController.getConfirmation);
+
+marrainageScheduler.reloadMarrainageJob.start();
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
