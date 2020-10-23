@@ -118,5 +118,16 @@ describe('Account', () => {
           });
       });
     });
+
+    it('should display dates in french locale', (done) => {
+      chai.request(app)
+        .get('/account')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          res.text.should.include('du 03/11/2016');
+          res.text.should.include('du 03/11/2016');
+          done();
+        });
+    });
   });
 });
