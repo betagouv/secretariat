@@ -51,9 +51,10 @@
 
             <div class="form__group">
                 <label for="website">
-                    <span>Site personnel</span>
+                    <span>Site personnel</span><br />
+                    Commençant avec <em>http://</em> ou <em>https://</em>
                 </label>
-                <input name="website" value="<%= formData.website %>">
+                <input name="website" pattern="^(http|https)://$" value="<%= formData.website %>">
             </div>
 
             <div class="form__group">
@@ -97,6 +98,19 @@
                 <% memberConfig.statusOptions.forEach(function(status) { %>
                     <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.label %><br>
                 <% }) %>
+            </div>
+
+            <div class="form__group">
+                <label for="referent">
+                    Référent<br />
+                    Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
+                </label>
+                <input name="referent" list="user_names">
+                <datalist id="user_names">
+                <% users.forEach(function(user) { %>
+                    <option value="<%= user.fullname %>">
+                <% }) %>
+                </datalist>
             </div>
 
             <div class="form__group">

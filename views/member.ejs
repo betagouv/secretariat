@@ -34,8 +34,8 @@
                 <% if (userInfos.start) { %>
                 <p>
                     <span class="font-weight-bold">Mission :</span>
-                    du <%= userInfos.start %>
-                    <% if (userInfos.end) { %> au <%= userInfos.end %><% } %>
+                    du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
+                    <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %>
                 </p>
                 <% } %>
                 <% if (userInfos.employer) { %>
@@ -71,7 +71,7 @@
                 <% } else { %>
                   <p>
                   Marrain·e en attente de réponse : <b><%= marrainageState.last_onboarder %></b><br>
-                  Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString() %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString() %>.
+                  Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString('fr-FR') %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString('fr-FR') %>.
                   </p>
                   <div class="form__group margin-10-0 display-flex">
                     <% if( Date.now() - marrainageState.last_updated.valueOf() > 24*3600*1000 ) { %>
