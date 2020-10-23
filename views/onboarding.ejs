@@ -101,6 +101,19 @@
             </div>
 
             <div class="form__group">
+                <label for="referent">
+                    Référent<br />
+                    Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
+                </label>
+                <input name="referent" list="user_names">
+                <datalist id="user_names">
+                <% users.forEach(function(user) { %>
+                    <option value="<%= user.fullname %>">
+                <% }) %>
+                </datalist>
+            </div>
+
+            <div class="form__group">
                 <label for="startup">
                     <span>Startup d'État</span><br />
                     Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
