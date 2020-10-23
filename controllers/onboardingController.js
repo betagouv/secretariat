@@ -85,17 +85,24 @@ module.exports.postForm = async function (req, res) {
     }
 
     function isValidDate(field, date) {
-      if (date instanceof Date && !Number.isNaN(date)) {
+      if (date instanceof Date && !Number.isNaN(date.getTime())) {
         return date;
       }
       formValidationErrors.push(`${field} : la date n'est pas valide`);
       return null;
     }
 
+    function isValidUrl(field, url) {
+      if (!url || url.indexOf('http') === 0) {
+        return url;
+      }
+      formValidationErrors.push(`${field} : l'URL ne commence pas avec http ou https`);
+      return null;
+    }
+
     const firstName = req.body.firstName || requiredError('prénom');
     const lastName = req.body.lastName || requiredError('nom de famille');
     const description = req.body.description || null;
-    const website = req.body.website || null;
     const github = req.body.github || null;
     const role = req.body.role || requiredError('role');
     const start = req.body.start || requiredError('début de la mission');
@@ -106,7 +113,8 @@ module.exports.postForm = async function (req, res) {
     const badge = req.body.badge || null;
     const referent = req.body.referent || null;
 
-    // check start & end dates
+    const website = isValidUrl('Site personnel', req.body.website);
+
     const startDate = isValidDate('date de début', new Date(start));
     const endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
