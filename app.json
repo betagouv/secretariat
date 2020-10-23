@@ -25,6 +25,9 @@
     "SECURE": {
       "required": true
     },
+    "HOSTNAME": {
+      "required": true
+    },
     "SLACK_WEBHOOK_URL": {
       "required": true
     },
