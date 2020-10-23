@@ -231,6 +231,45 @@ describe('Onboarding', () => {
         });
     });
 
+    it('PR title should contain the referent if specified', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          referent: 'John Doe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+        })
+        .end((err, res) => {
+          const prTitle = this.makeGithubPullRequest.args[0][1];
+          prTitle.should.contain('Référent : John Doe.');
+          done();
+        });
+    });
+
+    it('PR title should specfiy if no referent was given', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+        })
+        .end((err, res) => {
+          const prTitle = this.makeGithubPullRequest.args[0][1];
+          prTitle.should.contain('Référent : pas renseigné.');
+          done();
+        });
+    });
+
     it('special characters should be replaced with dashes in the filename', (done) => {
       chai.request(app)
         .post('/onboarding')
