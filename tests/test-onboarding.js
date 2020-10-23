@@ -244,7 +244,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Jean     Jacques    ',
+          firstName: 'Jean   .  Jacques\'    .',
           lastName: '    Dupont    ',
           role: 'Dev',
           start: '2020-01-01',

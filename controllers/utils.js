@@ -36,12 +36,12 @@ function removeAccents(str) {
   return str;
 }
 
-function removeRedundantWhitespace(str) {
-  return str.trim().replace(/\s\s+/g, ' ');
+function hyphenateWhitespace(str) {
+  return str.trim().replace(/\s+/g, '-');
 }
 
 function replaceSpecialCharacters(str) {
-  return str.replace(/( |'|\.)/gi, '-');
+  return str.replace(/( |'|\.)/gi, ' ');
 }
 
 module.exports.sendMail = async function (to_email, subject, html) {
@@ -156,7 +156,7 @@ module.exports.makeGithubPullRequest = function (branch, title) {
 
 module.exports.createUsername = function (firstName, lastName) {
   const prepareName = function (str) {
-    return replaceSpecialCharacters(removeRedundantWhitespace(removeAccents(str)));
+    return hyphenateWhitespace(replaceSpecialCharacters(removeAccents(str)));
   };
   return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 };
