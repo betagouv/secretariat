@@ -220,12 +220,12 @@ describe('Onboarding', () => {
         });
     });
 
-    it('filename should not contain accents', (done) => {
+    it('branch name should not contain accents or special characters', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Férnàndáô',
+          firstName: 'Raphaël Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2020-01-01',
@@ -233,8 +233,8 @@ describe('Onboarding', () => {
           status: 'Independant',
         })
         .end((err, res) => {
-          const path = this.createGithubFile.args[0][0];
-          path.should.contain('fernandao.unibe.md');
+          const branch = this.createGithubBranch.args[0][1];
+          branch.should.contain('author-raphael-fernandao-unibe-');
           done();
         });
     });
