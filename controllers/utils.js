@@ -25,7 +25,7 @@ const requestWithAuth = request.defaults({
 function removeAccents(str) {
   const map = {
     a: 'á|à|ã|â|À|Á|Ã|Â',
-    e: 'é|è|ê|É|È|Ê',
+    e: 'é|è|ê|ë|É|È|Ê|Ë',
     i: 'í|ì|î|Í|Ì|Î',
     o: 'ó|ò|ô|õ|Ó|Ò|Ô|Õ',
     u: 'ú|ù|û|ü|Ú|Ù|Û|Ü',
