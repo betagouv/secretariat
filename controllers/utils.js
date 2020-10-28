@@ -25,7 +25,7 @@ const requestWithAuth = request.defaults({
 function removeAccents(str) {
   const map = {
     a: 'á|à|ã|â|À|Á|Ã|Â',
-    e: 'é|è|ê|É|È|Ê',
+    e: 'é|è|ê|ë|É|È|Ê|Ë',
     i: 'í|ì|î|Í|Ì|Î',
     o: 'ó|ò|ô|õ|Ó|Ò|Ô|Õ',
     u: 'ú|ù|û|ü|Ú|Ù|Û|Ü',
@@ -34,6 +34,14 @@ function removeAccents(str) {
   };
   for (const pattern in map) str = str.replace(new RegExp(map[pattern], 'g'), pattern);
   return str;
+}
+
+function hyphenateWhitespace(str) {
+  return str.trim().replace(/\s+/g, '-');
+}
+
+function replaceSpecialCharacters(str) {
+  return str.replace(/( |'|\.)/gi, ' ');
 }
 
 module.exports.sendMail = async function (to_email, subject, html) {
@@ -147,7 +155,8 @@ module.exports.makeGithubPullRequest = function (branch, title) {
 };
 
 module.exports.createUsername = function (firstName, lastName) {
-  const firstNameSegment = removeAccents(firstName).replace(/( |'|\.)/gi, '-');
-  const lastNameSegment = removeAccents(lastName).replace(/( |'|\.)/gi, '-');
-  return `${firstNameSegment}.${lastNameSegment}`.toLowerCase();
+  const prepareName = function (str) {
+    return hyphenateWhitespace(replaceSpecialCharacters(removeAccents(str)));
+  };
+  return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 };
