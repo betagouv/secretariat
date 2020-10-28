@@ -11,12 +11,14 @@ const knex = require('../db');
 describe('Marrainage', () => {
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    this.clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });
 
   afterEach((done) => {
     knex('marrainage').truncate()
       .then(() => this.sendEmailStub.restore())
+      .then(() => this.clock.restore())
       .then(() => done());
   });
 
@@ -331,6 +333,52 @@ describe('Marrainage', () => {
           })
           .then(done)
           .catch(done);
+      });
+    });
+  });
+
+  describe('cronjob', () => {
+    it('should reload stale marrainage requests', (done) => {
+      const staleRequest = {
+        username: 'utilisateur.nouveau',
+        last_onboarder: 'utilisateur.parti',
+        created_at: new Date(new Date().setDate(new Date().getDate() - 3)),
+        last_updated: new Date(new Date().setDate(new Date().getDate() - 3)),
+        completed: false,
+        count: 1,
+      };
+
+      const validRequest = {
+        username: 'utilisateur.actif',
+        last_onboarder: 'utilisateur.nouveau',
+        created_at: new Date(),
+        last_updated: new Date(),
+        completed: false,
+        count: 1,
+      };
+
+      knex('marrainage').insert([staleRequest, validRequest]).then(() => {
+        // Disabels global require since requiring the cron job
+        // will immediatly start it.
+        /* eslint-disable global-require */
+        const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
+        this.clock.tick(1001);
+
+        knex.on('query-response', (response, obj, builder) => {
+          if (obj.method !== 'update') {
+            return;
+          }
+          knex('marrainage').select().where({ username: staleRequest.username })
+          .then((res) => {
+            res[0].count.should.equal(2);
+          })
+          .then(() => knex('marrainage').select().where({ username: validRequest.username }))
+          .then((res) => {
+            res[0].count.should.equal(1);
+          })
+          .then(done)
+          .catch(done);
+        });
       });
     });
   });

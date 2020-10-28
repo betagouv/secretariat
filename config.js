@@ -14,6 +14,7 @@ module.exports = {
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',
+  host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
   member: {

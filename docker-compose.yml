@@ -31,6 +31,7 @@ services:
       MAIL_PORT: 25
       MAIL_IGNORE_TLS: "true"
       SECURE: "false"
+      HOSTNAME: "localhost"
     ports:
       - "8100:8100"
       - "9229:9229"
