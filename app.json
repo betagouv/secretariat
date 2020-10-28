@@ -25,7 +25,7 @@
     "SECURE": {
       "required": true
     },
-    "HOSTNAME": {
+    "HEROKU_APP_NAME": {
       "required": true
     },
     "SLACK_WEBHOOK_URL": {
