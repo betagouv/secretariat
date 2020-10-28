@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { CronJob } = require('cron');
 const knex = require('../db');
 const { reloadMarrainage } = require('../controllers/marrainageController');
@@ -8,19 +9,22 @@ const reloadMarrainages = async function () {
   const marrainageDetailsResponse = await knex('marrainage').select()
       .where({ completed: false })
       .where('last_updated', '<', cutoffDate);
+
+  const reloadItems = [];
   for (let i = 0; i < marrainageDetailsResponse.length; i += 1) {
     try {
-      reloadMarrainage(marrainageDetailsResponse[i].username);
+      reloadItems.push(reloadMarrainage(marrainageDetailsResponse[i].username));
     } catch (err) {
       console.error(err);
     }
   }
+  return Promise.all(reloadItems);
 };
 
 module.exports.reloadMarrainageJob = new CronJob(
-  '* 0 10 */2 * *', // every two days
+  '* 0 10 * * *', // every day
   reloadMarrainages,
   null,
-  false,
+  true,
   'Europe/Paris',
 );
