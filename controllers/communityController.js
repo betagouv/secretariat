@@ -11,7 +11,7 @@ module.exports.getCommunity = async function (req, res) {
     const users = await BetaGouv.usersInfos();
     const title = 'Communauté';
     return res.render('community', {
-      title: title,
+      title,
       currentUserId: req.user.id,
       domain: config.domain,
       users,
@@ -51,7 +51,7 @@ module.exports.getMember = async function (req, res) {
 
     const title = user.userInfos.fullname;
     res.render('member', {
-      title: title,
+      title,
       requestedUserId,
       currentUserId: req.user.id,
       emailInfos: user.emailInfos,

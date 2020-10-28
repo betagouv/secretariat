@@ -75,7 +75,7 @@ module.exports.getLogin = async function (req, res) {
 
 module.exports.postLogin = async function (req, res) {
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  const username = req.body.username
+  const { username } = req.body;
   if (
     username === undefined
     || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)

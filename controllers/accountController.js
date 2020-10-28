@@ -10,7 +10,7 @@ module.exports.getCurrentAccount = async function (req, res) {
     const marrainageState = marrainageStateResponse[0];
     const title = 'Mon compte';
     return res.render('account', {
-      title: title,
+      title,
       currentUserId: req.user.id,
       emailInfos: currentUser.emailInfos,
       userInfos: currentUser.userInfos,

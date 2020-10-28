@@ -71,8 +71,8 @@ describe('Community', () => {
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('Utilisateur Parti');
-          res.text.should.include('du 2016-11-03');
-          res.text.should.include('au 2050-10-30');
+          res.text.should.include('du 03/11/2016');
+          res.text.should.include('au 30/10/2050');
           res.text.should.include('independent/octo');
           res.text.should.include('test-github');
           done();

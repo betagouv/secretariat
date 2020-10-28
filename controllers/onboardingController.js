@@ -11,7 +11,7 @@ function createBranchName(username) {
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
 
-async function createNewcomerGithubFile(username, content) {
+async function createNewcomerGithubFile(username, content, referent) {
   const branch = createBranchName(username);
   console.log(`Début de la création de fiche pour ${username}...`);
 
@@ -32,7 +32,7 @@ async function createNewcomerGithubFile(username, content) {
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
-      return utils.makeGithubPullRequest(branch, `Création de fiche pour ${username}`);
+      return utils.makeGithubPullRequest(branch, `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`);
     })
     .then(() => {
       console.log(`Pull request pour la fiche de ${username} ouverte`);
@@ -45,12 +45,14 @@ async function createNewcomerGithubFile(username, content) {
 module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
+    const users = await BetaGouv.usersInfos();
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
-      title: title,
+      title,
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
+      users,
       startups,
       formData: {
         firstName: '',
@@ -83,17 +85,24 @@ module.exports.postForm = async function (req, res) {
     }
 
     function isValidDate(field, date) {
-      if (date instanceof Date && !Number.isNaN(date)) {
+      if (date instanceof Date && !Number.isNaN(date.getTime())) {
         return date;
       }
       formValidationErrors.push(`${field} : la date n'est pas valide`);
       return null;
     }
 
+    function isValidUrl(field, url) {
+      if (!url || url.indexOf('http') === 0) {
+        return url;
+      }
+      formValidationErrors.push(`${field} : l'URL ne commence pas avec http ou https`);
+      return null;
+    }
+
     const firstName = req.body.firstName || requiredError('prénom');
     const lastName = req.body.lastName || requiredError('nom de famille');
     const description = req.body.description || null;
-    const website = req.body.website || null;
     const github = req.body.github || null;
     const role = req.body.role || requiredError('role');
     const start = req.body.start || requiredError('début de la mission');
@@ -102,8 +111,10 @@ module.exports.postForm = async function (req, res) {
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
     const badge = req.body.badge || null;
+    const referent = req.body.referent || null;
 
-    // check start & end dates
+    const website = isValidUrl('Site personnel', req.body.website);
+
     const startDate = isValidDate('date de début', new Date(start));
     const endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
@@ -135,7 +146,7 @@ module.exports.postForm = async function (req, res) {
       employer,
       badge,
     });
-    await createNewcomerGithubFile(username, content);
+    await createNewcomerGithubFile(username, content, referent);
     res.redirect('/onboardingSuccess');
   } catch (err) {
     req.flash('error', err.message);
