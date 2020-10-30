@@ -48,14 +48,14 @@ async function getMarrainageTokenData(token) {
   };
 }
 
-async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
+async function sendOnboarderRequestEmail(newcomer, onboarder) {
   const token = jwt.sign({
     newcomerId: newcomer.id,
     onboarderId: onboarder.id,
   }, config.secret, { expiresIn: 7 * 24 * 3600 });
 
-  const marrainageAcceptUrl = `${config.protocol}://${req.get('host')}/marrainage/accept?details=${encodeURIComponent(token)}`;
-  const marrainageDeclineUrl = `${config.protocol}://${req.get('host')}/marrainage/decline?details=${encodeURIComponent(token)}`;
+  const marrainageAcceptUrl = `${config.protocol}://${config.host}/marrainage/accept?details=${encodeURIComponent(token)}`;
+  const marrainageDeclineUrl = `${config.protocol}://${config.host}/marrainage/decline?details=${encodeURIComponent(token)}`;
 
   const html = await ejs.renderFile('./views/emails/marrainageRequest.ejs', {
     newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl,
@@ -67,6 +67,27 @@ async function sendOnboarderRequestEmail(newcomer, onboarder, req) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
 }
+
+module.exports.reloadMarrainage = async function (newcomerId) {
+  const newcomer = await BetaGouv.userInfosById(newcomerId);
+
+  const marrainageDetailsReponse = await knex('marrainage').select()
+    .where({ username: newcomer.id, completed: false });
+
+  if (marrainageDetailsReponse.length !== 1) {
+    throw new Error("Il n'y a pas de demande de marrainage existant pour cette personne.");
+  }
+  const onboarder = await selectRandomOnboarder(newcomer.id);
+
+  await knex('marrainage')
+    .where({ username: newcomer.id })
+    .increment('count', 1)
+    .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
+
+  await sendOnboarderRequestEmail(newcomer, onboarder);
+  console.log(`Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`);
+  return { newcomer, onboarder };
+};
 
 module.exports.createRequest = async function (req, res) {
   try {
@@ -176,33 +197,16 @@ module.exports.declineRequest = async function (req, res) {
 
 module.exports.reloadRequest = async function (req, res) {
   try {
-    const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
+    const { newcomer, onboarder } = await module.exports.reloadMarrainage(req.body.newcomerId);
 
-    const marrainageDetailsReponse = await knex('marrainage').select()
-      .where({ username: newcomer.id, completed: false });
-
-    if (marrainageDetailsReponse.length !== 1) {
-      console.log(`Marrainage non existant pour ${newcomer.id}.`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne.");
-      return res.redirect(`/community/${newcomer.id}`);
-    }
-
-    const onboarder = await selectRandomOnboarder(newcomer.id);
-
-    await knex('marrainage')
-      .where({ username: newcomer.id })
-      .increment('count', 1)
-      .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
-
-    await sendOnboarderRequestEmail(newcomer, onboarder, req);
-
-    console.log(`Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`);
-
-    if (newcomer.id === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
+    if (req.body.newcomerId === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
     else req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
 
     return res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
+    if (err.message.includes('Marrainage non existant')) {
+      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne.");
+    }
     console.error(err);
     return res.redirect(`/community/${req.body.newcomerId}`);
   }
