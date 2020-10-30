@@ -22,7 +22,7 @@ const reloadMarrainages = async function () {
 };
 
 module.exports.reloadMarrainageJob = new CronJob(
-  '* 0 10 * * *', // every day
+  '0 0 10 * * *', // every day at 10:00:00
   reloadMarrainages,
   null,
   true,
