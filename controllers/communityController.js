@@ -49,7 +49,7 @@ module.exports.getMember = async function (req, res) {
       .where({ username: requestedUserId });
     const marrainageState = marrainageStateResponse[0];
 
-    const title = user.userInfos.fullname;
+    const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('member', {
       title,
       requestedUserId,
