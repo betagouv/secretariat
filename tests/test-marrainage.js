@@ -335,6 +335,40 @@ describe('Marrainage', () => {
           .catch(done);
       });
     });
+
+    it('should not choose a busy marrainage candidate', (done) => {
+      const newcomerId = 'utilisateur.nouveau';
+      const busyOnboarders = [
+        'utilisateur.actif',
+        'utilisateur.parti',
+        'julien.dauphant',
+        'laurent.bossavit',
+        'loup.wolff',
+        'thomas.guillet',
+      ];
+      const dbEntries = [];
+      for (let i = 0; i < busyOnboarders.length; i += 1) {
+        const onboarder = busyOnboarders[i];
+        dbEntries.push({
+          username: `test_${i}`,
+          last_onboarder: onboarder,
+        });
+      }
+      knex('marrainage').insert(dbEntries).then(() => {
+        chai.request(app)
+          .post('/marrainage')
+          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .type('form')
+          .send({ newcomerId })
+          .then(() => knex('marrainage').select().where({ username: newcomerId }))
+          .then((dbRes) => {
+            // Since all onboarders are busy, the newcomer was not able to ask for a marraine
+            dbRes.length.should.equal(0);
+          })
+          .then(done)
+          .catch(done);
+      });
+    });
   });
 
   describe('cronjob', () => {
