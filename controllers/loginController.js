@@ -22,22 +22,22 @@ function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
-async function sendLoginEmail(id, loginUrl, token) {
-  const user = await BetaGouv.userInfosById(id);
+async function sendLoginEmail(username, loginUrl, token) {
+  const user = await BetaGouv.userInfosById(username);
 
   if (!user) {
     throw new Error(
-      `Utilisateur·rice <strong>${id}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
+      `Utilisateur·rice <strong>${username}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Utilisateur·rice <strong>${id}</strong> a une date de fin expiré sur Github.`,
+      `Utilisateur·rice <strong>${username}</strong> a une date de fin expiré sur Github.`,
     );
   }
 
-  const email = utils.buildBetaEmail(id);
+  const email = utils.buildBetaEmail(username);
   const html = await ejs.renderFile('./views/emails/login.ejs', {
     loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`,
   });
@@ -50,15 +50,15 @@ async function sendLoginEmail(id, loginUrl, token) {
   }
 }
 
-async function saveToken(id, token) {
-  const email = utils.buildBetaEmail(id);
+async function saveToken(username, token) {
+  const email = utils.buildBetaEmail(username);
   try {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
 
     await knex('login_tokens').insert({
       token,
-      username: id,
+      username,
       email,
       expires_at: expirationDate,
     });

@@ -5,7 +5,7 @@ const app = require('../index');
 const utils = require('./utils.js');
 
 describe('User', () => {
-  describe('POST /users/:id/email unauthenticated', () => {
+  describe('POST /users/:username/email unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/email')
@@ -24,7 +24,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/email authenticated', () => {
+  describe('POST /users/:username/email authenticated', () => {
     it('should ask OVH to create an email', (done) => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
@@ -133,7 +133,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/redirections unauthenticated', () => {
+  describe('POST /users/:username/redirections unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/redirections')
@@ -151,7 +151,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/redirections authenticated', () => {
+  describe('POST /users/:username/redirections authenticated', () => {
     it('should ask OVH to create a redirection', (done) => {
       const ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
@@ -207,7 +207,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/redirections/:email/delete unauthenticated', () => {
+  describe('POST /users/:username/redirections/:email/delete unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/redirections/test@example.com/delete')
@@ -221,7 +221,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/redirections/:email/delete authenticated', () => {
+  describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     it('should ask OVH to delete a redirection', (done) => {
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
@@ -265,7 +265,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/password unauthenticated', () => {
+  describe('POST /users/:username/password unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/users/utilisateur.actif/password')
@@ -299,7 +299,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/password unauthenticated', () => {
+  describe('POST /users/:username/password unauthenticated', () => {
     it('should redirect to user page', (done) => {
       chai.request(app)
         .post('/users/utilisateur.actif/password')
@@ -402,7 +402,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/email/delete unauthenticated', () => {
+  describe('POST /users/:username/email/delete unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/email/delete')
@@ -416,7 +416,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:id/redirections/:email/delete authenticated', () => {
+  describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     it('should ask OVH to delete the email account', (done) => {
       const ovhEmailDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/account\/utilisateur.expire/)

@@ -26,17 +26,17 @@ module.exports.getCommunity = async function (req, res) {
 };
 
 module.exports.getMember = async function (req, res) {
-  const requestedUserId = req.params.id;
+  const { username } = req.params;
 
   try {
-    const isCurrentUser = req.user.id === requestedUserId;
+    const isCurrentUser = req.user.id === username;
 
     if (isCurrentUser) {
       res.redirect('/account');
       return;
     }
 
-    const user = await utils.userInfos(requestedUserId, isCurrentUser);
+    const user = await utils.userInfos(username, isCurrentUser);
 
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
@@ -46,13 +46,13 @@ module.exports.getMember = async function (req, res) {
       return;
     }
     const marrainageStateResponse = await knex('marrainage').select()
-      .where({ username: requestedUserId });
+      .where({ username });
     const marrainageState = marrainageStateResponse[0];
 
     const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('member', {
       title,
-      requestedUserId,
+      username,
       currentUserId: req.user.id,
       emailInfos: user.emailInfos,
       redirections: user.redirections,

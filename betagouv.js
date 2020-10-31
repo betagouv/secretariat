@@ -33,7 +33,7 @@ const betaGouv = {
   }),
   userInfosById: async (id) => {
     const users = await betaGouv.usersInfos();
-    return users.find((element) => element.id == id);
+    return users.find((user) => user.id === id);
   },
   startupsInfos: async () => axios.get(config.startupsAPI)
     .then((x) => x.data.data) // data key
