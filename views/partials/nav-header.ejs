@@ -58,9 +58,13 @@
         </aside>
         <main role="main" class="main">
             <% if (errors.length) { %>
-                <div class="notification error"><%= errors %></div>
+                <div class="notification error">
+                    <strong>Erreur : </strong><%= errors %>
+                </div>
             <% } %>
             <% if (messages.length) { %>
-                <div class="notification"><%- messages %></div>
+                <div class="notification">
+                    <%- messages %>
+                </div>
             <% } %>
             <section class="section section-grey no-padding">

@@ -3,11 +3,15 @@
 <div class="container container-small">
 
   <% if (errors.length) { %>
-    <div class="notification error"><%= errors %></div>
+    <div class="notification error">
+      <strong>Erreur : </strong><%= errors %>
+    </div>
   <% } %>
 
   <% if (messages.length) { %>
-    <div class="notification"><%- messages %></div>
+    <div class="notification">
+      <%- messages %>
+    </div>
   <% } %>
 
   <p>

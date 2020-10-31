@@ -8,7 +8,9 @@
   </p>
 
   <% if (errors.length) { %>
-    <div class="notification error"><%- errors %></div>
+    <div class="notification error">
+      <strong>Erreur : </strong><%= errors %>
+    </div>
   <% } %>
 
   <div class="panel margin-top-m">

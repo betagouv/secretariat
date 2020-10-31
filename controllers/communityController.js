@@ -41,7 +41,7 @@ module.exports.getMember = async function (req, res) {
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
     if (!hasGithubFile && !hasEmailAddress) {
-      req.flash('error', '<strong>Erreur : <strong>il n\'y a pas d\'utilisateurs avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.');
+      req.flash('error', 'Il n\'y a pas d\'utilisateurs avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.');
       res.redirect('/community');
       return;
     }
@@ -67,7 +67,7 @@ module.exports.getMember = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    req.flash('error', '<strong>Erreur : <strong>impossible de récupérer les informations du membre de la communauté.');
+    req.flash('error', 'Impossible de récupérer les informations du membre de la communauté.');
     res.redirect('/');
   }
 };

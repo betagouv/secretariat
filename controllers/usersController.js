@@ -61,7 +61,7 @@ module.exports.createEmailForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     res.redirect('/community');
   }
 };
@@ -113,7 +113,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
 };
@@ -147,7 +147,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
 };
@@ -203,7 +203,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
   } catch (err) {
     console.error(err);
 
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
 };
@@ -241,7 +241,7 @@ module.exports.deleteEmailForUser = async function (req, res) {
     }
   } catch (err) {
     console.error(err);
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     res.redirect(`/community/${id}`);
   }
 };

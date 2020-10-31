@@ -71,7 +71,7 @@ module.exports.getForm = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    req.flash('error', `<strong>Erreur : <strong>impossible de récupérer la liste des startups sur ${config.domain}`);
+    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
     return res.redirect('/');
   }
 };
@@ -149,7 +149,7 @@ module.exports.postForm = async function (req, res) {
     await createNewcomerGithubFile(username, content, referent);
     res.redirect('/onboardingSuccess');
   } catch (err) {
-    req.flash('error', `<strong>Erreur : <strong>${err.message}`);
+    req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
     res.render('onboarding', {
       errors: req.flash('error'),
