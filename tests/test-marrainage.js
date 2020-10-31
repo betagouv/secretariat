@@ -345,6 +345,7 @@ describe('Marrainage', () => {
         'laurent.bossavit',
         'loup.wolff',
         'thomas.guillet',
+        'utilisateur.plusieurs.missions',
       ];
       const dbEntries = [];
       for (let i = 0; i < busyOnboarders.length; i += 1) {
