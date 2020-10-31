@@ -46,13 +46,13 @@ app.use(async (req, res, next) => {
       .andWhere('expires_at', '>', new Date());
 
     if (tokenDbResponse.length !== 1) {
-      req.flash('error', 'Ce lien de connexion a expiré');
+      req.flash('error', '<strong>Erreur : <strong>ce lien de connexion a expiré.');
       return res.redirect('/');
     }
 
     const dbToken = tokenDbResponse[0];
     if (dbToken.token !== req.query.token) {
-      req.flash('error', 'Ce lien de connexion a expiré');
+      req.flash('error', '<strong>Erreur : <strong>ce lien de connexion a expiré.');
       return res.redirect('/');
     }
 
