@@ -9,11 +9,18 @@ const knex = require('../db');
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
+  const existingCandidates = await knex('marrainage')
+    .select('last_onboarder')
+    .where({ completed: false })
+    .distinct()
+    .then((results) => results.map((x) => x.last_onboarder));
+
   const onboarders = users.filter((x) => {
+    const existingCandidate = existingCandidates.includes(x.id);
     const senior = new Date(minimumSeniority) > new Date(x.start);
     const stillActive = !utils.checkUserIsExpired(x);
     const isRequester = x.id === newcomerId;
-    return senior && stillActive && !isRequester;
+    return !existingCandidate && senior && stillActive && !isRequester;
   });
   const onboarder = onboarders[Math.floor(Math.random() * onboarders.length)];
   return onboarder;
@@ -79,6 +86,10 @@ module.exports.reloadMarrainage = async function (newcomerId) {
   }
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
+  if (!onboarder) {
+    throw new Error(`Erreur lors de la relance de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`);
+  }
+
   await knex('marrainage')
     .where({ username: newcomer.id })
     .increment('count', 1)
@@ -98,6 +109,10 @@ module.exports.createRequest = async function (req, res) {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
     const { user } = req;
+
+    if (!onboarder) {
+      throw new Error("Aucun·e marrain·e n'est disponible pour le moment");
+    }
 
     await knex('marrainage').insert({
       username: newcomer.id,
@@ -170,6 +185,12 @@ module.exports.declineRequest = async function (req, res) {
     }
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
+
+    if (!onboarder) {
+      console.log(`Erreur lors du refus de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`);
+      req.flash('error', "Aucun·e autre marrain·e n'est disponible pour le moment");
+      return res.redirect('/');
+    }
 
     await knex('marrainage')
       .where({ username: newcomer.id })
