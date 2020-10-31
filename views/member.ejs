@@ -87,7 +87,7 @@
                         Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
                     </p>
                     <form class="no-margin" action="/marrainage" method="POST">
-                        <div class="form__group">
+                        <div class="form__group  margin-10-0">
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         </div>
                         <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
@@ -103,34 +103,37 @@
         <h3>Compte mail</h3>
 
         <% if (emailInfos) { %>
-            <p class="text-color-darker-grey font-weight-bold"><%= emailInfos.email %></p>
-        <% }%>
-        <% if (canCreateEmail) { %>
-            <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
-            <form class="no-margin" action="/users/<%= username %>/email" method="POST">
-                <div class="form__group">
-                    <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
-                    <input name="to_email" type="email" required>
-                </div>
-                <div class="form__group">
-                    <button class="button no-margin" type="submit">Créer un compte</button>
-                </div>
-            </form>
+            <p class="text-color-blue font-weight-bold"><%= emailInfos.email %></p>
         <% } else { %>
-            <% if (isExpired) { %>
+            <% if (canCreateEmail) { %>
+                <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
+                <form class="no-margin" action="/users/<%= username %>/email" method="POST">
+                    <div class="form__group  margin-10-0">
+                        <label>
+                            <span class="text-color-almost-black">Email personnel ou professionnel</span><br />
+                            Le mot de passe et les informations de connexion seront envoyées à cet email
+                        </label>
+                        <input name="to_email" type="email" required>
+                    </div>
+                    <button class="button no-margin" type="submit">Créer un compte</button>
+                </form>
+            <% }%>
+        <% }%>
+        <% if (isExpired) { %>
             <div class="notification error">
                 Le compte <%= username %> est expiré.
             </div>
-            <% } %>
         <% } %>
-        <div class="text-color-blue font-weight-bold">Redirections</div>
-        <% redirections.forEach(function(redirection) { %>
-            <div class="redirection-item">
-                <%= redirection.to %>
-            </div>
-        <% }) %>
-        <% if (redirections.length === 0) { %>
-            <strong>Aucune</strong>
+        <% if (emailInfos) { %>
+            <h6>Redirections</h6>
+            <% redirections.forEach(function(redirection) { %>
+                <div class="redirection-item">
+                    <%= redirection.to %>
+                </div>
+            <% }) %>
+            <% if (redirections.length === 0) { %>
+                <p><strong>Aucune</strong></p>
+            <% } %>
         <% } %>
     </div>
 </div>
