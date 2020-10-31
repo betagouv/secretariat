@@ -54,7 +54,7 @@
                     <span>Site personnel</span><br />
                     Commençant avec <em>http://</em> ou <em>https://</em>
                 </label>
-                <input name="website" pattern="^(http|https)://$" value="<%= formData.website %>">
+                <input name="website" pattern="^(http|https)://$" value="<%= formData.website %>" title="Doit commencer par http:// ou https://">
             </div>
 
             <div class="form__group">
@@ -62,7 +62,7 @@
                     <span>Utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
                 </label>
-                <input name="github" value="<%= formData.github %>">
+                <input name="github" pattern="^(?!http://|https://).+" value="<%= formData.github %>" title="Pas d'url, juste ton nom d'utilisateur Github">
             </div>
 
 

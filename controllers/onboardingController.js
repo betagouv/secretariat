@@ -100,10 +100,17 @@ module.exports.postForm = async function (req, res) {
       return null;
     }
 
+    function shouldBeOnlyUsername(field, value) {
+      if (!value || (!value.startsWith('http') && !value.startsWith('https') && !value.includes('/'))) {
+        return value;
+      }
+      formValidationErrors.push(`${field} : la valeur doit être le nom d'utilisateur seul et ne doit pas être l'URL de l'utilisateur`);
+      return null;
+    }
+
     const firstName = req.body.firstName || requiredError('prénom');
     const lastName = req.body.lastName || requiredError('nom de famille');
     const description = req.body.description || null;
-    const github = req.body.github || null;
     const role = req.body.role || requiredError('role');
     const start = req.body.start || requiredError('début de la mission');
     const end = req.body.end || requiredError('fin de la mission');
@@ -114,6 +121,7 @@ module.exports.postForm = async function (req, res) {
     const referent = req.body.referent || null;
 
     const website = isValidUrl('Site personnel', req.body.website);
+    const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
 
     const startDate = isValidDate('date de début', new Date(start));
     const endDate = isValidDate('date de fin', new Date(end));
