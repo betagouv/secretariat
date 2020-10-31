@@ -124,16 +124,15 @@
                 Le compte <%= username %> est expiré.
             </div>
         <% } %>
-        <% if (emailInfos) { %>
-            <h6>Redirections</h6>
-            <% redirections.forEach(function(redirection) { %>
-                <div class="redirection-item">
-                    <%= redirection.to %>
-                </div>
-            <% }) %>
-            <% if (redirections.length === 0) { %>
-                <p><strong>Aucune</strong></p>
-            <% } %>
+
+        <h6>Redirections</h6>
+        <% redirections.forEach(function(redirection) { %>
+            <div class="redirection-item">
+                <%= redirection.to %>
+            </div>
+        <% }) %>
+        <% if (redirections.length === 0) { %>
+            <p><strong>Aucune</strong></p>
         <% } %>
     </div>
 </div>

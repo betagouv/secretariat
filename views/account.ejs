@@ -109,18 +109,18 @@
 
             <% redirections.forEach(function(redirection) { %>
                 <div class="redirection-item">
-                <%= redirection.to %>
-                <% if (canCreateRedirection) { %>
-                    <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
-                    <button class="redirection-remove button-outline small warning" type="submit">Supprimer</button>
-                    </form>
-                <% } %>
+                    <%= redirection.to %>
+                    <% if (canCreateRedirection) { %>
+                        <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
+                        <button class="redirection-remove button-outline small warning" type="submit">Supprimer</button>
+                        </form>
+                    <% } %>
                 </div>
             <% }) %>
             <% if (redirections.length === 0) { %>
                 <p><strong>Aucune redirections</strong></p>
             <% } %>
-              <% if (canCreateRedirection) { %>
+            <% if (canCreateRedirection) { %>
                 <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST">
                     <div class="form__group">
                         <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
@@ -132,7 +132,7 @@
                     </div>
                     <button class="button no-margin" type="submit">Ajouter la redirection</button>
                 </form>
-              <% } else { %>
+            <% } else { %>
                 <% if (isExpired) { %>
                   <div class="notification error">
                     Le compte <%= userInfos.id %> est expiré.
@@ -142,7 +142,7 @@
                     Seul <%= userInfos.id %> peut créer ou modifier les redirections.
                   </div>
                 <% } %>
-              <% } %>
+            <% } %>
 
 
             <hr />

@@ -85,7 +85,6 @@ describe('Community', () => {
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('action="/users/utilisateur.parti/email" method="POST">');
-          res.text.should.not.include('<h6>Redirections</h6>');
           done();
         });
     });
@@ -106,7 +105,6 @@ describe('Community', () => {
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.not.include('action="/users/utilisateur.parti/email" method="POST">');
-          res.text.should.include('<h6>Redirections</h6>');
           done();
         });
     });
