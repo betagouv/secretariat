@@ -4,8 +4,8 @@ const utils = require('./utils');
 const knex = require('../db');
 
 module.exports.getCommunity = async function (req, res) {
-  if (req.query.id) {
-    return res.redirect(`/community/${req.query.id}`);
+  if (req.query.username) {
+    return res.redirect(`/community/${req.query.username}`);
   }
   try {
     const users = await BetaGouv.usersInfos();
@@ -27,10 +27,9 @@ module.exports.getCommunity = async function (req, res) {
 
 module.exports.getMember = async function (req, res) {
   const { username } = req.params;
+  const isCurrentUser = req.user.id === username;
 
   try {
-    const isCurrentUser = req.user.id === username;
-
     if (isCurrentUser) {
       res.redirect('/account');
       return;
