@@ -23,18 +23,15 @@ describe('Marrainage', () => {
   });
 
   describe('unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/marrainage')
         .type('form')
         .send({
           newcomerId: 'utilisateur.actif',
         })
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/marrainage');
+          res.should.have.status(401);
           done();
         });
     });

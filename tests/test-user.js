@@ -6,7 +6,7 @@ const utils = require('./utils.js');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/email')
         .type('form')
@@ -14,11 +14,8 @@ describe('User', () => {
           _method: 'POST',
           to_email: 'test@example.com',
         })
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/email');
+          res.should.have.status(401);
           done();
         });
     });
@@ -134,18 +131,15 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/redirections')
         .type('form')
         .send({
           to_email: 'test@example.com',
         })
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/redirections');
+          res.should.have.status(401);
           done();
         });
     });
@@ -208,14 +202,11 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections/:email/delete unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/redirections/test@example.com/delete')
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/redirections/test@example.com/delete');
+          res.should.have.status(401);
           done();
         });
     });
@@ -266,18 +257,15 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/password unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/users/utilisateur.actif/password')
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
         })
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/users/utilisateur.actif/password');
+          res.should.have.status(401);
           done();
         });
     });
@@ -403,14 +391,11 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/email/delete unauthenticated', () => {
-    it('should redirect to login', (done) => {
+    it('should return an Unauthorized error', (done) => {
       chai.request(app)
         .post('/users/utilisateur.parti/email/delete')
-        .redirects(0)
         .end((err, res) => {
-          res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/users/utilisateur.parti/email/delete');
+          res.should.have.status(401);
           done();
         });
     });
