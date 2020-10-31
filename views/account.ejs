@@ -52,20 +52,20 @@
             <p>
             <% if(marrainageState) { %>
                 <% if (marrainageState.completed) { %>
-                    Tu peux peut parler à ton ou ta marrain·e qui est <b><%= marrainageState.last_onboarder %></b>.
+                    Tu peux peut parler à ton ou ta marrain·e qui est <strong><%= marrainageState.last_onboarder %></strong>.
                 <% } else { %>
-                    Nous avons demandé à <b><%= marrainageState.last_onboarder %></b> de devenir ton ou ta marrain·e, nous attendons sa réponse. 
+                    Nous avons demandé à <strong><%= marrainageState.last_onboarder %></strong> de devenir ton ou ta marrain·e, nous attendons sa réponse. 
                 <% } %>
             <% } else { %>
                     Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.            
             <% } %>
                 Son role est de t'accompagner dans tes démarches et t'aider
                     à t'orienter au sein de la communauté.
-                </p>
+            </p>
             <% if(!marrainageState) { %>
                 <form class="no-margin" action="/marrainage" method="POST">
                     <div class="form__group">
-                    <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
+                        <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                     </div>
                     <button class="button secondary no-margin" type="submit">Chercher un·e marrain·e</button>
                 </form>
