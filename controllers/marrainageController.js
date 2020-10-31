@@ -145,7 +145,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage accepté non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${onboarder.id}`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (Vous avez peut-être déjà accepté ou refusé cette demande)");
+      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (vous avez peut-être déjà accepté ou refusé cette demande).");
       return res.redirect('/');
     }
 
@@ -180,7 +180,7 @@ module.exports.declineRequest = async function (req, res) {
 
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage refusé non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${declinedOnboarder.id}`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (Vous avez peut-être déjà accepté ou refusé cette demande)");
+      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (vous avez peut-être déjà accepté ou refusé cette demande).");
       return res.redirect('/');
     }
 

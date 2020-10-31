@@ -71,7 +71,7 @@ module.exports.getForm = async function (req, res) {
     });
   } catch (err) {
     console.error(err);
-    req.flash('error', `Erreur interne: impossible de récupérer la liste des startups sur ${config.domain}`);
+    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
     return res.redirect('/');
   }
 };

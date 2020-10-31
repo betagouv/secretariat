@@ -5,13 +5,15 @@
     <% if (errors.length) { %>
     <div class="notification error">
         <% errors.forEach(function(error) { %>
-            <li><%= error %></li>
+            <li><strong>Erreur : </strong><%= error %></li>
         <% }) %>
     </div>
     <% } %>
 
     <% if (messages.length) { %>
-    <div class="notification"><%- messages %></div>
+    <div class="notification">
+        <%- messages %>
+    </div>
     <% } %>
 
     <div class="panel margin-top-m">
