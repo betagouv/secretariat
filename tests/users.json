@@ -2,100 +2,184 @@
   {
     "id": "utilisateur.actif",
     "fullname": "Utilisateur Actif",
-    "start": "2016-11-03",
-    "employer": "independent/octo"
+    "missions": [
+      { 
+        "start": "2016-11-03",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "utilisateur.expire",
     "fullname": "Utilisateur Expiré",
-    "start": "2016-11-03",
-    "end": "2017-11-02",
-    "employer": "independent/octo"
+    "missions": [
+      { 
+        "start": "2016-11-03",
+        "end": "2017-11-02",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "utilisateur.parti",
     "fullname": "Utilisateur Parti",
-    "start": "2016-11-03",
-    "end": "2050-10-30",
-    "employer": "independent/octo",
-    "github": "test-github"
+    "github": "test-github",
+    "missions": [
+      { 
+        "start": "2016-11-03",
+        "end": "2050-10-30",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "utilisateur.nouveau",
     "fullname": "Utilisateur Nouveau",
-    "start": "2020-07-03"
+    "missions": [
+      { 
+        "start": "2020-07-03"
+      }
+    ]
+  },
+  {
+    "id": "utilisateur.plusieurs.missions",
+    "fullname": "Utilisateur Plusieurs Missions",
+    "missions": [
+      { 
+        "start": "2016-11-03",
+        "end": "2017-10-30",
+        "status": "independent",
+        "employer": "octo"
+      },
+      { 
+        "start": "2014-11-03",
+        "end": "2021-10-30",
+        "status": "admin",
+        "employer": "Département du Var"
+      }
+    ]
   },
   {
     "id": "julien.dauphant",
     "fullname": "Julien Dauphant",
-    "start": "2016-11-03",
-    "end": "2050-10-30",
-    "employer": "independent/octo"
+
+    "missions": [
+      { 
+        "start": "2016-11-03",
+        "end": "2050-10-30",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "hela.ghariani",
     "fullname": "Hela Ghariani",
-    "start": "2014-11-01",
-    "end": "2019-10-30",
-    "employer": "dinsic"
+    "missions": [
+      { 
+        "start": "2014-11-01",
+        "end": "2019-10-30",
+        "employer": "dinsic"
+      }
+    ]
   },
   {
     "id": "nicolas.bouilleaud",
     "fullname": "Nicolas Bouilleaud",
-    "start": "2018-04-09",
-    "end": "2018-12-31",
-    "employer": "independent/octo",
-    "github": "n-b"
+    "github": "n-b",
+    "missions": [
+      { 
+        "start": "2018-04-09",
+        "end": "2018-12-31",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "laurent.bossavit",
     "fullname": "Laurent Bossavit",
-    "start": "2016-03-01",
-    "end": "2021-04-05",
-    "employer": "dinsic"  
+    "missions": [
+      { 
+        "start": "2016-03-01",
+        "end": "2021-04-05",
+        "employer": "dinsic"
+      }
+    ]
   },
   {
     "id": "stephane.legouffe",
     "fullname": "Stéphane Legouffe",
-    "start": "2018-03-08",
-    "end": "2018-06-08",
-    "employer": "independent",
-    "github": "slegouffe"
+    "github": "slegouffe",
+    "missions": [
+      { 
+        "start": "2018-03-08",
+        "end": "2018-06-08",
+        "employer": "independent"
+      }
+    ]
   },
   {
     "id": "sandra.chakroun",
     "fullname": "Sandra Chakroun",
-    "start": "2017-05-10",
-    "end": "2018-10-05",
-    "employer": "independent/octo"
+    "missions": [
+      { 
+        "start": "2017-05-10",
+      "end": "2018-10-05",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "loup.wolff",
     "fullname": "Loup Wolff",
-    "start": "2018-03-27",
-    "end": "",
-    "employer": "admin/Ministère de la Culture"  
+    "missions": [
+      { 
+        "start": "2018-03-27",
+        "end": "",
+        "status": "admin",
+        "employer": "Ministère de la Culture"
+      }
+    ]
   },
   {
     "id": "ishan.bhojwani",
     "fullname": "Ishan Bhojwani",
-    "start": "2017-05-23",
-    "end": "2018-12-31",
-    "employer": "independent/octo",
-    "github": "IshanB"
+    "github": "IshanB",
+    "missions": [
+      { 
+        "start": "2017-05-23",
+        "end": "2018-12-31",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "pierre.de_la_morinerie",
     "fullname": "Pierre de La Morinerie",
-    "start": "2017-01-24",
-    "end": "2017-07-31",
-    "employer": "independent/octo"
+    "missions": [
+      { 
+        "start": "2017-01-24",
+        "end": "2017-07-31",
+        "status": "independent",
+        "employer": "octo"
+      }
+    ]
   },
   {
     "id": "thomas.guillet",
     "fullname": "Thomas Guillet",
-    "start": "2017-03-06",
-    "end": "2020-12-24",
-    "employer": "dinsic"
+    "missions": [
+      { 
+        "start": "2017-03-06",
+      "end": "2020-12-24",
+        "employer": "dinsic"
+      }
+    ]
   }
 ]
