@@ -157,7 +157,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should not call Github API if the website lacks the protocol', (done) => {
+    it('should not call Github API if the website field is not a full url', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -169,6 +169,28 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           website: 'example.com/me',
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if the github username field is an url', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          github: 'https://github.com/betagouv',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
