@@ -50,8 +50,8 @@ async function getMarrainageTokenData(token) {
   const { onboarderId } = data;
   const userInfos = await BetaGouv.usersInfos();
   return {
-    newcomer: userInfos.find((x) => x.id == newcomerId),
-    onboarder: userInfos.find((x) => x.id == onboarderId),
+    newcomer: userInfos.find((x) => x.id === newcomerId),
+    onboarder: userInfos.find((x) => x.id === onboarderId),
   };
 }
 

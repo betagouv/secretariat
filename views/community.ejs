@@ -8,7 +8,7 @@
         <form class="no-margin" action="/community">
             <div class="form__group">
                 <label>Adresse email du membre</label>
-                <input placeholder="prenom.nom" class="width-auto" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="id" required  list="user_ids"> @<%= domain %>
+                <input name="username" class="width-auto" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids" required> @<%= domain %>
                 <datalist id="user_ids">
                 <% users.forEach(function(user) { %>
                     <option value="<%= user.id %>">
@@ -31,10 +31,10 @@
             Créer un compte email
         </h3>
         <p>Tu peux créer un compte mail pour une nouvelle recrue de la communauté si elle a créé sa fiche GitHub.</p>
-        <form id="email-creation" class="no-margin"  method="POST">
+        <form id="email-creation" class="no-margin" method="POST">
             <div class="form__group">
                 <label>Email à créer</label>
-                <input placeholder="prenom.nom" class="width-auto" pattern="[a-z0-9_-]+.[a-z0-9_-]+" name="email_id" required  list="user_ids"> @<%= domain %>
+                <input name="email_id" class="width-auto" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids" required> @<%= domain %>
                 <datalist id="user_ids">
                 <% users.forEach(function(user) { %>
                     <option value="<%= user.id %>">
