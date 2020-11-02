@@ -3,8 +3,7 @@
 <div class="container container-small">
 
   <p>
-    Le secrétariat te permet de gérer ton compte (email, mot de passe, redirections, etc).
-    Tu peux aussi créer une adresse pour un nouveau membre de la communauté.
+    Gère ton compte email (mot de passe, redirections, etc) et les membres de la communauté (arrivées et départs).
   </p>
 
   <% if (errors.length) { %>
@@ -32,18 +31,15 @@
   </div>
 
   <div class="panel border-left-primary">
-    ℹ️&nbsp;<strong>Nouvel·le arrivant·e ?</strong><br>
+    <h6>👋&nbsp;Tu viens d'arriver ?</h6>
+    Crée ta fiche Github pour qu'un membre de la communauté puisse créer ton adresse email @<%= domain %>.<br />
     <a class="button" href="/onboarding" role="button">Créer ma fiche Github</a>
   </div>
+
   <div class="panel border-left-primary">
-      ℹ️&nbsp;<strong>Pas encore d'adresse @<%= domain %> ?</strong><br>
-      Tu peux demander à une autre personne qui en a une de te la créer.
-      Plus d'informations <a href="https://doc.incubateur.net/communaute/outils/emails#creer-un-compte-email-a-un-nouveau-membre" target="_blank" title="lien vers la documentation pour créer un compte email">sur la documentation de l'incubateur</a>.
-  </div>
-  <div class="panel border-left-primary">
-      ℹ️&nbsp;<strong>Problème d'accès à ton adresse @<%= domain %> ?</strong><br>
-      Si tu as oublié ton mot de passe : demande de l'aide sur le Slack #incubateur-secretariat, un des administrateurs pourra t'aider.<br />
-      Si tu as besoin d'aide pour configurer ton client webmail : regarde la <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">documentation de l'incubateur</a>.
+      <h6>⚠️&nbsp;Problème d'accès à ton adresse @<%= domain %> ?</h6>
+      Si tu as <strong>oublié ton mot de passe</strong> : demande de l'aide sur le Slack #incubateur-secretariat, un des administrateurs pourra t'aider.<br />
+      Si tu as besoin d'aide pour <strong>configurer ton client webmail</strong> : regarde la <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">documentation de l'incubateur</a>.
   </div>
 </div>
 
