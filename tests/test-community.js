@@ -65,7 +65,7 @@ describe('Community', () => {
         });
     });
 
-    it("should show the user's information", (done) => {
+    it("should show the user's information if the user exists", (done) => {
       chai.request(app)
         .get('/community/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
@@ -85,7 +85,6 @@ describe('Community', () => {
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
           res.text.should.include('action="/users/utilisateur.parti/email" method="POST">');
-          res.text.should.not.include('action="/users/utilisateur.parti/password" method="POST">');
           done();
         });
     });
@@ -125,6 +124,7 @@ describe('Community', () => {
         .get('/community/utilisateur.expire')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
+          res.text.should.include('Contrat de Utilisateur Expiré arrivé à expiration');
           res.text.should.not.include('action="/users/utilisateur.expire/email" method="POST">');
           res.text.should.not.include('action="/users/utilisateur.expire/password" method="POST">');
           res.text.should.include('Le compte utilisateur.expire est expiré.');
