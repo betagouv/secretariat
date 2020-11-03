@@ -80,7 +80,7 @@
                             </form>
                         </div>
                     <% } %>
-                <% } else { %>
+                <% } else if (!isExpired) { %>
                     <h3>L'accueillir ?</h3>
                     <p>
                         <%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
@@ -92,6 +92,8 @@
                         </div>
                         <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
                     </form>
+                <% } else { %>
+                    <p>La fonction marrainage n'est pas disponible pour les comptes expirés.</p>
                 <% } %>
             <% } else { %>
                 <p>Sans fiche sur Github, la fonction marrainage n'est pas disponible.</p>
