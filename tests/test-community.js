@@ -131,5 +131,17 @@ describe('Community', () => {
           done();
         });
     });
+
+    it('should not show marrainage for expired users', (done) => {
+      chai.request(app)
+        .get('/community/utilisateur.expire')
+        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .end((err, res) => {
+          res.text.should.not.include("L'accueillir ?");
+          res.text.should.not.include('Chercher un·e marrain·e');
+          res.text.should.include("La fonction marrainage n'est pas disponible pour les comptes expirés.");
+          done();
+        });
+    });
   });
 });
