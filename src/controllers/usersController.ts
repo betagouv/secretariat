@@ -321,3 +321,104 @@ export async function updateSecondaryEmailForUser(req, res) {
     res.redirect(`/community/${username}`);
   }
 }
+};
+
+function createBranchName(username) {
+  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
+  const randomSuffix = crypto.randomBytes(3).toString('hex');
+  return `author${username.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
+}
+
+async function updateAuthorGithubFile(username, changes) {
+  const branch = createBranchName(username);
+  const path = `content/_authors/${username}.md`;
+  console.log(`Début de la mise à jour de la fiche pour ${username}...`);
+
+  await utils.getGithubMasterSha()
+    .then((response) => {
+      const { sha } = response.data.object;
+      console.log('SHA du master obtenu');
+      return utils.createGithubBranch(sha, branch);
+    })
+    .then(() => {
+      console.log(`Branche ${branch} créée`);
+      return utils.getGithubFile(path, branch);
+    })
+    .then((res) => {
+      console.log(changes);
+      let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
+      console.log(content);
+      changes.forEach((change) => {
+        console.log(`${content.key}: ${content.old}`);
+        console.log(`${content.key}: ${content.new}`);
+        content = content.replace(`${content.key}: ${content.old}`, `${content.key}: ${content.new}`);
+      });
+      console.log(content);
+      return utils.createGithubFile(path, branch, res.data.content)
+        .then(() => {
+          throw new Error(`Erreur Github la fiche ${username} n'existe pas encore`);
+        })
+        .catch((err) => {
+          // `Une fiche avec l'utilisateur ${username} existe déjà`
+          if (err.status === 422) return true;
+          console.log(err);
+          throw err;
+        });
+    })
+    .then(() => {
+      console.log(`Fiche Github pour ${username} mise à jour dans la branche ${branch}`);
+      return utils.makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}.`);
+    })
+    .then(() => {
+      console.log(`Pull request pour la mise à jour de la fiche de ${username} ouverte`);
+    })
+    .catch((err) => {
+      throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${username}`);
+    });
+}
+
+export async function updateEndDateForUser(req, res) {
+  const { username } = req.params;
+  const isCurrentUser = req.user.id === username;
+
+  try {
+    const formValidationErrors = [];
+
+    function requiredError(field) {
+      formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+    }
+
+    function isValidDate(field, date) {
+      if (date instanceof Date && !Number.isNaN(date.getTime())) {
+        return date;
+      }
+      formValidationErrors.push(`${field} : la date n'est pas valide`);
+      return null;
+    }
+
+    const { start } = req.body;
+    const { end } = req.body; // can be empty
+    const newEnd = req.body.newEnd || requiredError('nouvelle date de fin');
+
+    const startDate = new Date(start);
+    const newEndDate = isValidDate('nouvelle date de fin', new Date(newEnd));
+
+    if (startDate && newEndDate) {
+      if (newEndDate < startDate) {
+        formValidationErrors.push('nouvelle date de fin : la date doit être supérieure à la date de début');
+      }
+    }
+
+    if (formValidationErrors.length) {
+      req.flash('error', formValidationErrors);
+      throw new Error();
+    }
+
+    const changes = [{ key: 'end', old: end, new: newEnd }];
+    await updateAuthorGithubFile(username, changes);
+    res.redirect(`/community/${username}`);
+  } catch (err) {
+    console.error(err);
+    res.redirect(`/community/${username}`);
+  }
+};

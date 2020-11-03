@@ -32,6 +32,9 @@ export async function getCurrentAccount(req, res) {
       secondaryEmail,
       activeTab: 'account',
       marrainageState,
+      formData: {
+        newEnd: '',
+      },
       errors: req.flash('error'),
       messages: req.flash('message'),
     });
