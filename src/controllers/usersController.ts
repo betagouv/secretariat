@@ -345,34 +345,22 @@ async function updateAuthorGithubFile(username, changes) {
       return utils.getGithubFile(path, branch);
     })
     .then((res) => {
-      console.log(changes);
       let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-      console.log(content);
       changes.forEach((change) => {
-        console.log(`${content.key}: ${content.old}`);
-        console.log(`${content.key}: ${content.new}`);
-        content = content.replace(`${content.key}: ${content.old}`, `${content.key}: ${content.new}`);
+        // replace old keys by new keys
+        content = content.replace(`${change.key}: ${change.old}`, `${change.key}: ${change.new}`);
       });
-      console.log(content);
-      return utils.createGithubFile(path, branch, res.data.content)
-        .then(() => {
-          throw new Error(`Erreur Github la fiche ${username} n'existe pas encore`);
-        })
-        .catch((err) => {
-          // `Une fiche avec l'utilisateur ${username} existe déjà`
-          if (err.status === 422) return true;
-          console.log(err);
-          throw err;
-        });
+      return utils.createGithubFile(path, branch, content, res.data.sha);
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} mise à jour dans la branche ${branch}`);
-      return utils.makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}.`);
+      return utils.makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}`);
     })
     .then(() => {
       console.log(`Pull request pour la mise à jour de la fiche de ${username} ouverte`);
     })
     .catch((err) => {
+      console.log(err);
       throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${username}`);
     });
 }
@@ -416,9 +404,13 @@ export async function updateEndDateForUser(req, res) {
 
     const changes = [{ key: 'end', old: end, new: newEnd }];
     await updateAuthorGithubFile(username, changes);
+    // TODO: get actual PR url instead
+    const pullRequestsUrl = `https://github.com/${config.githubRepository}/pulls`;
+    req.flash('message', `Pull request pour la mise à jour de la fiche de ${username} ouverte <a href="${pullRequestsUrl}" target="_blank">ici</a>. Une fois mergée, votre profil sera mis à jour.`);
     res.redirect(`/community/${username}`);
   } catch (err) {
     console.error(err);
+    req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
 };

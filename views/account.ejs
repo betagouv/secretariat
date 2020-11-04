@@ -20,7 +20,7 @@
                             <span class="font-weight-bold">Mission :</span>
                             du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
                             <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %>
-                            <a id="update-end-date-form-toggle" href="#">✍️&nbsp;Mettre à jour ma date de fin</a>
+                            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">✍️</a>
                         </p>
                         <section id="update-end-date-form" style="display:none" class="panel">
                             <form action="/users/<%= userInfos.id %>/end-date" method="POST">
@@ -37,8 +37,7 @@
                                 </p>
                                 <div class="form__group">
                                     <label for="end">
-                                        <strong>Nouvelle date de fin</strong><br />
-                                        Au format JJ/MM/YYYY
+                                        <strong>Nouvelle date de fin</strong>
                                     </label>
                                     <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                                 </div>
