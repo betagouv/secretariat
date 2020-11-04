@@ -73,6 +73,24 @@ module.exports.checkUserIsExpired = function (user) {
     && new Date(user.end).getTime() < new Date().getTime();
 };
 
+module.exports.emailForName = async function (fullname) {
+  try {
+    const userInfos = await BetaGouv.userInfosByName(fullname);
+    if (!userInfos) {
+      throw new Error(`Nous n'avons pas trouvé l'utilisateur·rice ${fullname}`);
+    }
+
+    const emailInfos = await BetaGouv.emailInfos(userInfos.id);
+    return emailInfos ? emailInfos.email : null;
+  } catch (err) {
+    console.error(err);
+
+    throw new Error(
+      `Problème pour récupérer l'adresse email de l'utilisateur·rice ${fullname}`,
+    );
+  }
+};
+
 module.exports.userInfos = async function (id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([

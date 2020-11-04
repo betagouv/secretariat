@@ -39,7 +39,11 @@ describe('Onboarding', () => {
 
       this.makeGithubPullRequest = sinon
         .stub(controllerUtils, 'makeGithubPullRequest')
-        .resolves(true);
+        .resolves({ status: 201, data: { html_url: 'https://example.com/' } });
+
+      this.sendEmailStub = sinon
+        .stub(controllerUtils, 'sendMail')
+        .returns(true);
 
       done();
     });
@@ -49,6 +53,7 @@ describe('Onboarding', () => {
       this.createGithubBranch.restore();
       this.createGithubFile.restore();
       this.makeGithubPullRequest.restore();
+      this.sendEmailStub.restore();
       done();
     });
 
@@ -337,6 +342,36 @@ describe('Onboarding', () => {
         .end((err, res) => {
           const prTitle = this.makeGithubPullRequest.args[0][1];
           prTitle.should.contain('Référent : John Doe.');
+          done();
+        });
+    });
+
+    it('Referent should be notified by email', (done) => {
+      nock.cleanAll();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, { email: 'utilisateur.actif@example.com' });
+
+      utils.mockUsers();
+
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          referent: 'Utilisateur Actif',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+        })
+        .end((err, res) => {
+          this.sendEmailStub.calledOnce.should.be.true;
+
+          const toEmail = this.sendEmailStub.args[0][0];
+          toEmail.should.equal('utilisateur.actif@example.com');
           done();
         });
     });
