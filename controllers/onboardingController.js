@@ -169,7 +169,7 @@ module.exports.postForm = async function (req, res) {
         await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
       }
     }
-    res.redirect('/onboardingSuccess');
+    res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
     req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
@@ -186,9 +186,9 @@ module.exports.postForm = async function (req, res) {
 };
 module.exports.getConfirmation = async function (req, res) {
   try {
-    res.render('onboardingSuccess', {
-      pullRequestsUrl: `https://github.com/${config.githubRepository}/pulls`,
-    });
+    const { prNumber } = req.params;
+    const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
+    res.render('onboardingSuccess', { prUrl });
   } catch (err) {
     console.error(err);
     res.redirect('/');
