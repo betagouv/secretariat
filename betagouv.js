@@ -35,10 +35,6 @@ const betaGouv = {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
   },
-  userInfosByName: async (fullname) => {
-    const users = await betaGouv.usersInfos();
-    return users.find((user) => user.fullname === fullname);
-  },
   startupsInfos: async () => axios.get(config.startupsAPI)
     .then((x) => x.data.data) // data key
     .catch((err) => {

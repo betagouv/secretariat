@@ -103,17 +103,33 @@
             </div>
 
             <div class="form__group">
-                <label for="referent">
+                <label for="referentList">
                     Référent<br />
                     Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
                 </label>
-                <input name="referent" list="user_names">
+                <input name="referentList" list="user_names" id="referentList">
                 <datalist id="user_names">
                 <% users.forEach(function(user) { %>
-                    <option value="<%= user.fullname %>">
+                    <option data-value="<%= user.id %>" value="<%= user.fullname %>">
                 <% }) %>
                 </datalist>
+                <input type="hidden" name="referent" id="referentInput_hidden">
             </div>
+
+            <script>
+            document.getElementById('referentList').addEventListener('input', (e) => {
+                const input = e.target
+                const hiddenInput = document.getElementById('referentInput_hidden')
+                const options = document.querySelectorAll('#user_names option')
+
+                for (let i = 0; i < options.length ; i++) {
+                    const option = options[i]
+                    if (option.value === input.value.trim() && option.hasAttribute('data-value')) {
+                        hiddenInput.value = option.getAttribute('data-value')
+                    }
+                }
+            })
+            </script>
 
             <div class="form__group">
                 <label for="startup">

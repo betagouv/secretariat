@@ -350,7 +350,7 @@ describe('Onboarding', () => {
       nock.cleanAll();
 
       nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .get(/^.*email\/domain\/.*\/account\/.*utilisateur.actif/)
         .reply(200, { email: 'utilisateur.actif@example.com' });
 
       utils.mockUsers();
@@ -361,7 +361,7 @@ describe('Onboarding', () => {
         .send({
           firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
-          referent: 'Utilisateur Actif',
+          referent: 'utilisateur.actif',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',

@@ -159,14 +159,14 @@ module.exports.postForm = async function (req, res) {
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
     if (referent && prInfo.status === 201 && prInfo.data.html_url) {
-      const referentEmail = await utils.emailForName(referent);
-      if (referentEmail) {
+      const referentEmailInfos = await BetaGouv.emailInfos(referent);
+      if (referentEmailInfos && referentEmailInfos.email) {
         const prUrl = prInfo.data.html_url;
         const memberUrl = `${config.protocol}://${config.host}/community/${username}}`;
         const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
           referent, prUrl, name, memberUrl,
         });
-        await utils.sendMail(referentEmail, `${name} vient de créer sa fiche Github`, html);
+        await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
       }
     }
     res.redirect('/onboardingSuccess');
