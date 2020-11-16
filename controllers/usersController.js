@@ -51,7 +51,7 @@ module.exports.createEmailForUser = async function (req, res) {
     const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
     try {
-      await utils.sendMail(req.body.to_email, `Ton adresse ${email} est prête`, html);
+      await utils.sendMail(req.body.to_email, `Bienvenue chez BetaGouv`, html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
