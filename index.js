@@ -81,7 +81,7 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
-      '/onboardingSuccess',
+      /onboardingSuccess\/*/,
     ],
   }),
 );
