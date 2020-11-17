@@ -39,7 +39,11 @@ describe('Onboarding', () => {
 
       this.makeGithubPullRequest = sinon
         .stub(controllerUtils, 'makeGithubPullRequest')
-        .resolves(true);
+        .resolves({ status: 201, data: { html_url: 'https://example.com/' } });
+
+      this.sendEmailStub = sinon
+        .stub(controllerUtils, 'sendMail')
+        .returns(true);
 
       done();
     });
@@ -49,6 +53,7 @@ describe('Onboarding', () => {
       this.createGithubBranch.restore();
       this.createGithubFile.restore();
       this.makeGithubPullRequest.restore();
+      this.sendEmailStub.restore();
       done();
     });
 
@@ -341,6 +346,36 @@ describe('Onboarding', () => {
         });
     });
 
+    it('Referent should be notified by email', (done) => {
+      nock.cleanAll();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*utilisateur.actif/)
+        .reply(200, { email: 'utilisateur.actif@example.com' });
+
+      utils.mockUsers();
+
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          referent: 'utilisateur.actif',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+        })
+        .end((err, res) => {
+          this.sendEmailStub.calledOnce.should.be.true;
+
+          const toEmail = this.sendEmailStub.args[0][0];
+          toEmail.should.equal('utilisateur.actif@example.com');
+          done();
+        });
+    });
+
     it('PR title should specfiy if no referent was given', (done) => {
       chai.request(app)
         .post('/onboarding')
@@ -394,7 +429,7 @@ describe('Onboarding', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/onboardingSuccess');
+          res.headers.location.should.contain('/onboardingSuccess/');
           done();
         });
     });

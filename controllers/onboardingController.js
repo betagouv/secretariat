@@ -15,7 +15,7 @@ async function createNewcomerGithubFile(username, content, referent) {
   const branch = createBranchName(username);
   console.log(`Début de la création de fiche pour ${username}...`);
 
-  await utils.getGithubMasterSha()
+  const prInfo = await utils.getGithubMasterSha()
     .then((response) => {
       const { sha } = response.data.object;
       console.log('SHA du master obtenu');
@@ -34,12 +34,14 @@ async function createNewcomerGithubFile(username, content, referent) {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
       return utils.makeGithubPullRequest(branch, `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`);
     })
-    .then(() => {
+    .then((response) => {
       console.log(`Pull request pour la fiche de ${username} ouverte`);
+      return response;
     })
     .catch((err) => {
       throw new Error(`Erreur Github lors de la création de la fiche de ${username}`);
     });
+  return prInfo;
 }
 
 module.exports.getForm = async function (req, res) {
@@ -154,25 +156,39 @@ module.exports.postForm = async function (req, res) {
       employer,
       badge,
     });
-    await createNewcomerGithubFile(username, content, referent);
-    res.redirect('/onboardingSuccess');
+    const prInfo = await createNewcomerGithubFile(username, content, referent);
+
+    if (referent && prInfo.status === 201 && prInfo.data.html_url) {
+      const referentEmailInfos = await BetaGouv.emailInfos(referent);
+      if (referentEmailInfos && referentEmailInfos.email) {
+        const prUrl = prInfo.data.html_url;
+        const memberUrl = `${config.protocol}://${config.host}/community/${username}}`;
+        const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
+          referent, prUrl, name, memberUrl,
+        });
+        await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
+      }
+    }
+    res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
     req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
+    const users = await BetaGouv.usersInfos();
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
       memberConfig: config.member,
       startups,
+      users,
       formData: req.body,
     });
   }
 };
 module.exports.getConfirmation = async function (req, res) {
   try {
-    res.render('onboardingSuccess', {
-      pullRequestsUrl: `https://github.com/${config.githubRepository}/pulls`,
-    });
+    const { prNumber } = req.params;
+    const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
+    res.render('onboardingSuccess', { prUrl });
   } catch (err) {
     console.error(err);
     res.redirect('/');

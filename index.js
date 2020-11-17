@@ -81,7 +81,7 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
-      '/onboardingSuccess',
+      /onboardingSuccess\/*/,
     ],
   }),
 );
@@ -131,6 +131,6 @@ app.get('/community/:username', communityController.getMember);
 app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
-app.get('/onboardingSuccess', onboardingController.getConfirmation);
+app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
