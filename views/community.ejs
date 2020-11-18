@@ -7,18 +7,34 @@
         </h3>
         <form class="no-margin" action="/community">
             <div class="form__group">
-                <label>Adresse email du membre</label>
-                <input name="username" class="width-auto" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids" required> @<%= domain %>
-                <datalist id="user_ids">
+                <label><strong>Nom ou prénom du membre</strong></label>
+
+                <input name="username_list" list="user_fullnames" id="username_list">
+                <datalist id="user_fullnames">
                 <% users.forEach(function(user) { %>
-                    <option value="<%= user.id %>">
+                    <option data-value="<%= user.id %>" value="<%= user.fullname %>">
                 <% }) %>
                 </datalist>
+                <input type="hidden" name="username" id="username_input_hidden">
             </div>
             <div class="form__group">
                 <button class="button no-margin" type="submit">Voir la fiche</button>
             </div>
         </form>
+        <script>
+            document.getElementById('username_list').addEventListener('input', (e) => {
+                const input = e.target
+                const hiddenInput = document.getElementById('username_input_hidden')
+                const options = document.querySelectorAll('#user_fullnames option')
+
+                for (let i = 0; i < options.length ; i++) {
+                    const option = options[i]
+                    if (option.value === input.value.trim() && option.hasAttribute('data-value')) {
+                        hiddenInput.value = option.getAttribute('data-value')
+                    }
+                }
+            })
+            </script>
         <br />
         <p>
             Le membre que vous cherchez n'existe pas ? Vous pouvez créer sa fiche Github <a href="/onboarding">en cliquant ici</a>.
