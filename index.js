@@ -98,7 +98,7 @@ app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     req.flash(
       'error',
-      "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
+      "Vous n'êtes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
     );
     // Save the requested url in a query param, and redirect to login
     const nextParam = req.url ? `?next=${req.url}` : '';

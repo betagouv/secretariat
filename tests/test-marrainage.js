@@ -60,8 +60,8 @@ describe('Marrainage', () => {
             const subject = this.sendEmailStub.args[0][1];
             const emailBody = this.sendEmailStub.args[0][2];
 
-            subject.should.equal('Mise en contact pour marrainage');
-            emailBody.should.include("Utilisateur Actif a accepté d'être marrain·e de Utilisateur Nouveau");
+            subject.should.equal('Mise en contact 👋');
+            emailBody.should.include("Utilisateur Actif a accepté de te marrainer");
             done();
           });
       });
