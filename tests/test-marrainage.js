@@ -54,18 +54,17 @@ describe('Marrainage', () => {
             res.text.should.include('Votre décision a été prise en compte');
             this.sendEmailStub.calledOnce.should.be.true;
 
-            // const toEmail = this.sendEmailStub.args[0][0];
             const subject = this.sendEmailStub.args[0][1];
             const emailBody = this.sendEmailStub.args[0][2];
 
-            subject.should.equal('Mise en contact pour marrainage');
-            emailBody.should.include("Utilisateur Actif a accepté d'être marrain·e de Utilisateur Nouveau");
+            subject.should.equal('Mise en contact 👋');
+            emailBody.should.include('Utilisateur Actif a accepté de te marrainer');
             done();
           });
       });
     });
 
-    it('should email newcomer if declined', (done) => {
+    it('should select and email a new onboarder if declined', (done) => {
       const newcomerId = 'utilisateur.nouveau';
       const onboarderId = 'utilisateur.actif';
 
@@ -81,39 +80,7 @@ describe('Marrainage', () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.text.should.include('Votre décision a été prise en compte');
-            this.sendEmailStub.calledTwice.should.be.true;
-
-            const newcomerEmailArgs = this.sendEmailStub.args[1];
-
-            const toEmail = newcomerEmailArgs[0][0];
-            const subject = newcomerEmailArgs[1];
-            const emailBody = newcomerEmailArgs[2];
-
-            toEmail.should.include('utilisateur.nouveau@');
-            subject.should.equal('La recherche de marrain·e se poursuit !');
-            emailBody.should.include("Malheureusement, Utilisateur Actif n'est pas disponible en ce moment.");
-            done();
-          });
-      });
-    });
-
-    it('should select a new onboarder if declined', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
-
-      knex('marrainage').insert({
-        username: newcomerId,
-        last_onboarder: onboarderId,
-      }).then(() => {
-        const token = jwt.sign({ newcomerId, onboarderId }, config.secret);
-
-        chai.request(app)
-          .get(`/marrainage/decline?details=${encodeURIComponent(token)}`)
-          .redirects(0)
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.text.should.include('Votre décision a été prise en compte');
-            this.sendEmailStub.calledTwice.should.be.true;
+            this.sendEmailStub.calledOnce.should.be.true;
 
             const newOnboarderEmailArgs = this.sendEmailStub.args[0];
 

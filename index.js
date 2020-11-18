@@ -100,7 +100,7 @@ app.use((err, req, res, next) => {
     if (req.method === 'GET') {
       req.flash(
         'error',
-        "Vous n'étes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
+        "Vous n'êtes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
       );
       const nextParam = req.url ? `?next=${req.url}` : '';
       return res.redirect(`/login${nextParam}`);
