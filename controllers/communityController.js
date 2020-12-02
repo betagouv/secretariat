@@ -9,6 +9,8 @@ module.exports.getCommunity = async function (req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Communauté';
     return res.render('community', {
       title,
@@ -18,6 +20,7 @@ module.exports.getCommunity = async function (req, res) {
       activeTab: 'community',
       errors: req.flash('error'),
       messages: req.flash('message'),
+      useSelectList: isMobileFirefox,
     });
   } catch (err) {
     console.error(err);

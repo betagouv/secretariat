@@ -48,6 +48,8 @@ module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
       title,
@@ -70,6 +72,7 @@ module.exports.getForm = async function (req, res) {
         employer: '',
         badge: '',
       },
+      useSelectList: isMobileFirefox,
     });
   } catch (err) {
     console.error(err);
