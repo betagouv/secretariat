@@ -177,6 +177,8 @@ module.exports.postForm = async function (req, res) {
     req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -184,6 +186,7 @@ module.exports.postForm = async function (req, res) {
       startups,
       users,
       formData: req.body,
+      useSelectList: isMobileFirefox,
     });
   }
 };
