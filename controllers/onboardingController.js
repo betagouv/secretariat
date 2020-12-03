@@ -171,7 +171,6 @@ module.exports.postForm = async function (req, res) {
     }
     res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
-    req.flash('error', err.message);
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
     res.render('onboarding', {
