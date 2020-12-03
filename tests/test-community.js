@@ -84,7 +84,7 @@ describe('Community', () => {
         .get('/community/utilisateur.parti')
         .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
         .end((err, res) => {
-          res.text.should.include('action="/users/utilisateur.parti/email" method="POST">');
+          res.text.should.include('action="/users/utilisateur.parti/email" method="POST"');
           done();
         });
     });

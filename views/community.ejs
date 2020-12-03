@@ -69,8 +69,9 @@
         <script>
             const emailCreationForm = document.getElementById('email-creation')
             emailCreationForm.addEventListener('submit', (e) => {
-                const emailId = e.target.email_id.value
-                e.target.action = '/users/' + emailId + '/email'
+                const emailId = e.target.email_id.value;
+                e.target.action = '/users/' + emailId + '/email';
+                e.submitter && (e.submitter.disabled = true);
             })
         </script>
     </div>
