@@ -51,6 +51,16 @@ module.exports.getMember = async function (req, res) {
       .where({ username });
     const marrainageState = marrainageStateResponse[0];
 
+    let secondaryEmail = '';
+    if (!user.emailInfos) {
+      await knex('users').where({ username })
+        .then((dbRes) => {
+          if (dbRes.length === 1) {
+            secondaryEmail = dbRes[0].secondary_email;
+          }
+        });
+    }
+
     const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('member', {
       title,
@@ -66,6 +76,7 @@ module.exports.getMember = async function (req, res) {
       domain: config.domain,
       marrainageState,
       activeTab: 'community',
+      secondaryEmail,
     });
   } catch (err) {
     console.error(err);
