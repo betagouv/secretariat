@@ -50,40 +50,5 @@
         </p>
     </div>
 
-
-    <div class="panel panel-full-width">
-        <h3>
-            Créer un compte email
-        </h3>
-        <p>Tu peux créer un compte mail pour une nouvelle recrue de la communauté si elle a créé sa fiche GitHub.</p>
-        <form id="email-creation" class="no-margin" method="POST">
-            <div class="form__group">
-                <label>Email à créer</label>
-                <input name="email_id" class="width-auto" placeholder="prenom.nom" pattern="[a-z0-9_-]+.[a-z0-9_-]+" list="user_ids" required> @<%= domain %>
-                <datalist id="user_ids">
-                <% users.forEach(function(user) { %>
-                    <option value="<%= user.id %>">
-                <% }) %>
-                </datalist>
-            </div>
-
-            <div class="form__group">
-                <label><span class="text-color-almost-black">Email personnel ou professionnel</span><br />Le mot de passe et les informations de connexion seront envoyées à cet email</label>
-                <input name="to_email" type="email" required>
-            </div>
-            <div class="form__group">
-            <button class="button no-margin" type="submit">Créer l'email</button>
-            </div>
-        </form>
-        <script>
-            const emailCreationForm = document.getElementById('email-creation')
-            emailCreationForm.addEventListener('submit', (e) => {
-                const emailId = e.target.email_id.value;
-                e.target.action = '/users/' + emailId + '/email';
-                e.submitter && (e.submitter.disabled = true);
-            })
-        </script>
-    </div>
-
 </div>
 <%- include('partials/nav-footer'); -%>
