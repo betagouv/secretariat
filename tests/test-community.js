@@ -3,6 +3,7 @@ const nock = require('nock');
 
 const app = require('../index');
 const utils = require('./utils.js');
+const knex = require('../db');
 
 describe('Community', () => {
   describe('GET /community unauthenticated', () => {
@@ -20,6 +21,11 @@ describe('Community', () => {
   });
 
   describe('GET /community authenticated', () => {
+    afterEach((done) => {
+      knex('users').truncate()
+        .then(() => done());
+    });
+
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/community')
@@ -86,6 +92,22 @@ describe('Community', () => {
         .end((err, res) => {
           res.text.should.include('action="/users/utilisateur.parti/email" method="POST"');
           done();
+        });
+    });
+
+    it('should prefill the secondary email for email-less users', (done) => {
+      knex('users')
+        .insert({
+          username: 'utilisateur.parti',
+          secondary_email: 'perso@example.com',
+        }).then(() => {
+          chai.request(app)
+            .get('/community/utilisateur.parti')
+            .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+            .end((err, res) => {
+              res.text.should.include('<input value="perso@example.com" name="to_email"');
+              done();
+            });
         });
     });
 

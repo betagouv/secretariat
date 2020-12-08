@@ -1,9 +1,9 @@
 const ejs = require('ejs');
 const crypto = require('crypto');
-
 const config = require('../config');
 const utils = require('./utils');
 const BetaGouv = require('../betagouv');
+const knex = require('../db');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -48,6 +48,8 @@ module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
       title,
@@ -69,7 +71,9 @@ module.exports.getForm = async function (req, res) {
         startup: '',
         employer: '',
         badge: '',
+        email: '',
       },
+      useSelectList: isMobileFirefox,
     });
   } catch (err) {
     console.error(err);
@@ -110,6 +114,19 @@ module.exports.postForm = async function (req, res) {
       return null;
     }
 
+    function isValidEmail(field, email) {
+      if (!email) {
+        requiredError(field);
+        return null;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailRegex.test(email)) {
+        return email;
+      }
+      formValidationErrors.push(`${field} : l'adesse email n'est pas valide`);
+      return null;
+    }
+
     const firstName = req.body.firstName || requiredError('prénom');
     const lastName = req.body.lastName || requiredError('nom de famille');
     const description = req.body.description || null;
@@ -121,6 +138,7 @@ module.exports.postForm = async function (req, res) {
     const employer = req.body.employer || null;
     const badge = req.body.badge || null;
     const referent = req.body.referent || null;
+    const email = isValidEmail('email pro/perso', req.body.email);
 
     const website = isValidUrl('Site personnel', req.body.website);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
@@ -169,11 +187,23 @@ module.exports.postForm = async function (req, res) {
         await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
       }
     }
+    await knex('users')
+      .insert({
+        username,
+        secondary_email: email,
+      })
+      .onConflict('username')
+      .merge();
+
     res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
-    req.flash('error', err.message);
+    if (err.message) {
+      req.flash('error', err.message);
+    }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -181,6 +211,7 @@ module.exports.postForm = async function (req, res) {
       startups,
       users,
       formData: req.body,
+      useSelectList: isMobileFirefox,
     });
   }
 };

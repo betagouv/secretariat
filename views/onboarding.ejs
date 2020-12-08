@@ -107,15 +107,24 @@
                     Référent<br />
                     Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
                 </label>
-                <input name="referentList" list="user_names" id="referentList">
-                <datalist id="user_names">
-                <% users.forEach(function(user) { %>
-                    <option data-value="<%= user.id %>" value="<%= user.fullname %>">
-                <% }) %>
-                </datalist>
-                <input type="hidden" name="referent" id="referentInput_hidden">
+                <% if(useSelectList) { %>
+                    <select name="referent" id="username_select">
+                    <% users.forEach(function(user) { %>
+                        <option value="<%= user.id %>"> <%= user.fullname %> </option>
+                    <% }) %>
+                    </select>
+                <% } else { %> 
+                    <input name="referentList" list="user_names" id="referentList">
+                    <datalist id="user_names">
+                    <% users.forEach(function(user) { %>
+                        <option data-value="<%= user.id %>" value="<%= user.fullname %>">
+                    <% }) %>
+                    </datalist>
+                    <input type="hidden" name="referent" id="referentInput_hidden">
+                <% } %> 
             </div>
 
+            <% if(!useSelectList) { %>
             <script>
             document.getElementById('referentList').addEventListener('input', (e) => {
                 const input = e.target
@@ -130,6 +139,7 @@
                 }
             })
             </script>
+            <% } %>
 
             <div class="form__group">
                 <label for="startup">
@@ -166,8 +176,14 @@
                 </select>
             </div>
 
+            <h4>Moyen de contact</h4>
+            <label for="email">
+                <strong>Email pro/perso (obligatoire)</strong><br />
+                Ton email nous servira pour t'envoyer les informations relatives à ton compte
+            </label>
+            <input name="email" value="<%= formData.email %>" required>
 
-            <button class="button" type="submit">Créer ma fiche Github</button>
+            <button class="button" type="submit">Soumettre ma demande</button>
         </form>
     </div>
 </div>
