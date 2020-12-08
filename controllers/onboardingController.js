@@ -48,6 +48,8 @@ module.exports.getForm = async function (req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
       title,
@@ -71,6 +73,7 @@ module.exports.getForm = async function (req, res) {
         badge: '',
         email: '',
       },
+      useSelectList: isMobileFirefox,
     });
   } catch (err) {
     console.error(err);
@@ -199,6 +202,8 @@ module.exports.postForm = async function (req, res) {
     }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -206,6 +211,7 @@ module.exports.postForm = async function (req, res) {
       startups,
       users,
       formData: req.body,
+      useSelectList: isMobileFirefox,
     });
   }
 };
