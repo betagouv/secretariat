@@ -26,7 +26,7 @@
 
         <div class="beta-banner"></div>
 
-        <form action="/onboarding" method="POST">
+        <form action="/onboarding" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
             <h4>Tes infos persos</h4>
 
             <div class="form__group">

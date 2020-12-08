@@ -12,7 +12,7 @@
                 <li>Clôturer son compte email</li>
                 <li>Supprimer toutes ses redirections</li>
             </ul>
-            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections pour <%= userInfos.fullname %> ?');" class="no-margin" action="/users/<%= username %>/email/delete" method="POST">
+            <form onsubmit="const proceed = confirm('Es-tu sûr de vouloir supprimer son compte email et ses redirections pour <%= userInfos.fullname %> ?'); event.submitter && (event.submitter.disabled = proceed); return proceed;" class="no-margin" action="/users/<%= username %>/email/delete" method="POST">
                 <div class="form__group">
                     <button class="button margin-right-10" type="submit">Clotûrer le compte</button>
                     <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Mettre à jour le contrat</a>
@@ -69,12 +69,12 @@
                         </p>
                         <div class="form__group margin-10-0 display-flex">
                             <% if( Date.now() - marrainageState.last_updated.valueOf() > 24*3600*1000 ) { %>
-                                <form class="margin-right-10" action="/marrainage/reload" method="POST">
+                                <form class="margin-right-10" action="/marrainage/reload" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                                     <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                                     <button class="button secondary no-margin" type="submit">Relancer</button>
                                 </form>
                             <% } %>
-                            <form class="margin-right-10" action="/marrainage/cancel" method="POST">
+                            <form class="margin-right-10" action="/marrainage/cancel" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                                 <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                                 <button class="button secondary no-margin" type="submit">Annuler</button>
                             </form>
@@ -86,7 +86,7 @@
                         <%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
                         Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
                     </p>
-                    <form class="no-margin" action="/marrainage" method="POST">
+                    <form class="no-margin" action="/marrainage" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <div class="form__group  margin-10-0">
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         </div>
@@ -109,7 +109,7 @@
         <% } else { %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
-                <form class="no-margin" action="/users/<%= username %>/email" method="POST">
+                <form class="no-margin" action="/users/<%= username %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group  margin-10-0">
                         <label>
                             <span class="text-color-almost-black">Email personnel ou professionnel</span><br />
