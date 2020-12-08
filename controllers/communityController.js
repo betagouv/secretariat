@@ -9,6 +9,8 @@ module.exports.getCommunity = async function (req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Communauté';
     return res.render('community', {
       title,
@@ -18,6 +20,7 @@ module.exports.getCommunity = async function (req, res) {
       activeTab: 'community',
       errors: req.flash('error'),
       messages: req.flash('message'),
+      useSelectList: isMobileFirefox,
     });
   } catch (err) {
     console.error(err);
@@ -48,6 +51,16 @@ module.exports.getMember = async function (req, res) {
       .where({ username });
     const marrainageState = marrainageStateResponse[0];
 
+    let secondaryEmail = '';
+    if (!user.emailInfos) {
+      await knex('users').where({ username })
+        .then((dbRes) => {
+          if (dbRes.length === 1) {
+            secondaryEmail = dbRes[0].secondary_email;
+          }
+        });
+    }
+
     const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('member', {
       title,
@@ -63,6 +76,7 @@ module.exports.getMember = async function (req, res) {
       domain: config.domain,
       marrainageState,
       activeTab: 'community',
+      secondaryEmail,
     });
   } catch (err) {
     console.error(err);

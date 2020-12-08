@@ -8,19 +8,27 @@
         <form class="no-margin" action="/community">
             <div class="form__group">
                 <label><strong>Nom ou prénom du membre</strong></label>
-
-                <input name="username_list" list="user_fullnames" id="username_list">
-                <datalist id="user_fullnames">
-                <% users.forEach(function(user) { %>
-                    <option data-value="<%= user.id %>" value="<%= user.fullname %>">
-                <% }) %>
-                </datalist>
-                <input type="hidden" name="username" id="username_input_hidden">
+                <% if(useSelectList) { %>
+                    <select name="username" id="username_select">
+                    <% users.forEach(function(user) { %>
+                        <option value="<%= user.id %>"> <%= user.fullname %> </option>
+                    <% }) %>
+                    </select>
+                <% } else { %> 
+                    <input name="username_list" list="user_fullnames" id="username_list">
+                    <datalist id="user_fullnames">
+                    <% users.forEach(function(user) { %>
+                        <option data-value="<%= user.id %>" value="<%= user.fullname %>">
+                    <% }) %>
+                    </datalist>
+                    <input type="hidden" name="username" id="username_input_hidden">
+                <% } %> 
             </div>
             <div class="form__group">
                 <button class="button no-margin" type="submit">Voir la fiche</button>
             </div>
         </form>
+        <% if(!useSelectList) { %>
         <script>
             document.getElementById('username_list').addEventListener('input', (e) => {
                 const input = e.target
@@ -35,6 +43,7 @@
                 }
             })
             </script>
+        <% } %>
         <br />
         <p>
             Le membre que vous cherchez n'existe pas ? Vous pouvez créer sa fiche Github <a href="/onboarding">en cliquant ici</a>.
@@ -69,8 +78,9 @@
         <script>
             const emailCreationForm = document.getElementById('email-creation')
             emailCreationForm.addEventListener('submit', (e) => {
-                const emailId = e.target.email_id.value
-                e.target.action = '/users/' + emailId + '/email'
+                const emailId = e.target.email_id.value;
+                e.target.action = '/users/' + emailId + '/email';
+                e.submitter && (e.submitter.disabled = true);
             })
         </script>
     </div>

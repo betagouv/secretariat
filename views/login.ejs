@@ -18,7 +18,7 @@
     <% if (messages.length) { %>
       <div class="notification"><%- messages %></div>
     <% } else { %>
-      <form action="/login<%= nextParam %>" method="POST">
+      <form action="/login<%= nextParam %>" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <label for="username">Adresse email :</label>
         <div class="input__group">
           <input name="username" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="username">
