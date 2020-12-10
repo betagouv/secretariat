@@ -63,7 +63,7 @@
                     à t'orienter au sein de la communauté.
             </p>
             <% if(!marrainageState) { %>
-                <form class="no-margin" action="/marrainage" method="POST">
+                <form class="no-margin" action="/marrainage" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group">
                         <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                     </div>
@@ -73,12 +73,12 @@
                 Essai numéro <%= marrainageState.count %>, procédure lancé le <%= marrainageState.created_at.toLocaleDateString('fr-FR') %>, dernière mise à jour <%= marrainageState.last_updated.toLocaleDateString('fr-FR') %>.
                 <div class="form__group margin-10-0 display-flex">
                     <% if( Date.now() - marrainageState.last_updated.valueOf() > 24*3600*1000 ) { %>
-                        <form class="margin-right-10" action="/marrainage/reload" method="POST">
+                        <form class="margin-right-10" action="/marrainage/reload" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                             <button class="button secondary no-margin" type="submit">Relancer</button>
                         </form>
                     <% } %>
-                    <form class="margin-right-10" action="/marrainage/cancel" method="POST">
+                    <form class="margin-right-10" action="/marrainage/cancel" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         <button class="button secondary no-margin" type="submit">Annuler</button>
                     </form>
@@ -106,12 +106,12 @@
 
             <hr />
             <h6 class="margin-10-0">Rediriger vers une autre adresse mail</h6>
-
+            <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
             <% redirections.forEach(function(redirection) { %>
                 <div class="redirection-item">
                     <%= redirection.to %>
                     <% if (canCreateRedirection) { %>
-                        <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST">
+                        <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <button class="redirection-remove button-outline small warning" type="submit">Supprimer</button>
                         </form>
                     <% } %>
@@ -121,7 +121,7 @@
                 <p><strong>Aucune redirections</strong></p>
             <% } %>
             <% if (canCreateRedirection) { %>
-                <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST">
+                <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group">
                         <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
                         <input name="to_email" type="email" required>
@@ -157,7 +157,7 @@
                 d'espace au début ou à la fin.
             </p>
             <% if (canChangePassword) { %>
-                <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST">
+                <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <input name="new_password" type="password" minlength="9" required>
                     <button class="button margin-10-0" type="submit">Changer</button>
                 </form>
@@ -178,7 +178,7 @@
                     Supprimer toutes tes redirections
                 </li>
             </ul>
-            <form onsubmit="return confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?');" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
+            <form onsubmit="const proceed = confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?'); event.submitter && (event.submitter.disabled = proceed); return proceed;" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
                 <div class="form__group">
                     <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
                 </div>

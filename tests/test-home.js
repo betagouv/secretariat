@@ -22,7 +22,7 @@ describe('Home', () => {
       chai.request(app)
         .get('/')
         .end((err, res) => {
-          res.text.should.include('<form action="/login" method="POST">');
+          res.text.should.include('<form action="/login" method="POST"');
           res.text.should.include('<input name="username"');
           res.text.should.include('<button class="button" type="submit">');
           done();
