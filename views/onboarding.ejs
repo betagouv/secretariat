@@ -5,7 +5,7 @@
     <% if (errors.length) { %>
     <div class="notification error">
         <% errors.forEach(function(error) { %>
-            <li><strong>Erreur : </strong><%= error %></li>
+            <li><strong>Erreur : </strong><%- error %></li>
         <% }) %>
     </div>
     <% } %>
