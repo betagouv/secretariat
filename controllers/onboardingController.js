@@ -197,9 +197,6 @@ module.exports.postForm = async function (req, res) {
 
     res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
-    if (err.message) {
-      req.flash('error', err.message);
-    }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
