@@ -51,7 +51,7 @@ describe('Marrainage', () => {
           .redirects(0)
           .end((err, res) => {
             res.should.have.status(200);
-            res.text.should.include('Votre décision a été prise en compte');
+            res.text.should.include('Vous allez recevoir un email avec tous les deux en copie');
             this.sendEmailStub.calledOnce.should.be.true;
 
             const subject = this.sendEmailStub.args[0][1];
