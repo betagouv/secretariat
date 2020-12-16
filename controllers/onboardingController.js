@@ -180,7 +180,7 @@ module.exports.postForm = async function (req, res) {
       const referentEmailInfos = await BetaGouv.emailInfos(referent);
       if (referentEmailInfos && referentEmailInfos.email) {
         const prUrl = prInfo.data.html_url;
-        const memberUrl = `${config.protocol}://${config.host}/community/${username}}`;
+        const memberUrl = `${config.protocol}://${config.host}/community/${username}`;
         const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
           referent, prUrl, name, memberUrl,
         });
