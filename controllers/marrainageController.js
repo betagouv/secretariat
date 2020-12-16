@@ -162,7 +162,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     console.log(`Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
-    return res.render('marrainage', { errors: undefined });
+    return res.render('marrainage', { errors: undefined, accepted: true });
   } catch (err) {
     console.error(err);
     return res.render('marrainage', { errors: err.message });
@@ -201,7 +201,7 @@ module.exports.declineRequest = async function (req, res) {
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
 
-    return res.render('marrainage', { errors: undefined });
+    return res.render('marrainage', { errors: undefined, accepted: false });
   } catch (err) {
     console.error(err);
     return res.render('marrainage', { errors: err.message });
