@@ -4,6 +4,30 @@ const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
 
+module.exports.createEmail = async function (username, creator, toEmail) {
+  const email = utils.buildBetaEmail(username);
+  const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
+
+  console.log(
+    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`,
+  );
+
+  const secretariatUrl = `${config.protocol}://${config.host}`;
+
+  const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
+
+  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.createEmail(username, password);
+
+  const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
+
+  try {
+    await utils.sendMail(toEmail, 'Bienvenue chez BetaGouv 🙂', html);
+  } catch (err) {
+    throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
+  }
+};
+
 module.exports.createEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
@@ -34,27 +58,7 @@ module.exports.createEmailForUser = async function (req, res) {
       }
     }
 
-    const email = utils.buildBetaEmail(username);
-    const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
-
-    console.log(
-      `Création de compte by=${req.user.id}&email=${email}&to_email=${req.body.to_email}`,
-    );
-
-    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
-
-    await BetaGouv.sendInfoToSlack(message);
-    await BetaGouv.createEmail(username, password);
-
-    const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
-
-    try {
-      await utils.sendMail(req.body.to_email, 'Bienvenue chez BetaGouv 🙂', html);
-    } catch (err) {
-      throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
-    }
+    await module.exports.createEmail(username, req.body.id, req.body.to_email);
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);

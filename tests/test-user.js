@@ -1,8 +1,12 @@
 const chai = require('chai');
 const nock = require('nock');
+const sinon = require('sinon');
 const config = require('../config');
 const app = require('../index');
 const utils = require('./utils.js');
+const knex = require('../db');
+const controllerUtils = require('../controllers/utils');
+const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -536,6 +540,83 @@ describe('User', () => {
           ovhRedirectionDeletion.isDone().should.be.true;
           done();
         });
+    });
+  });
+
+  describe('cronjob', () => {
+    beforeEach((done) => {
+      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      done();
+    });
+
+    afterEach((done) => {
+      knex('users').truncate()
+        .then(() => this.sendEmailStub.restore())
+        .then(() => done());
+    });
+
+    it('should create missing email accounts', (done) => {
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      knex('users').insert({
+        username: 'utilisateur.nouveau',
+        secondary_email: 'utilisateur.nouveau.perso@example.com',
+      }).then(async () => {
+        await createEmailAddresses();
+        ovhEmailCreation.isDone().should.be.true;
+        this.sendEmailStub.calledOnce.should.be.true;
+        done();
+      });
+    });
+
+    it('should not create email accounts if already created', (done) => {
+      // For this case we need to reset the basic nocks in order to return
+      // a different response to indicate that newcomer.test has an
+      // email address
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlack();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+
+      // We return an email for utilisateur.nouveau to indicate he already has one
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: 'utilisateur.nouveau',
+          email: 'utilisateur.nouveau@example.com',
+        });
+
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      knex('users').insert({
+        username: 'utilisateur.nouveau',
+        secondary_email: 'utilisateur.nouveau.perso@example.com',
+      }).then(async () => {
+        await createEmailAddresses();
+        ovhEmailCreation.isDone().should.be.false;
+        this.sendEmailStub.notCalled.should.be.true;
+        done();
+      });
+    });
+
+    it('should not create email accounts if we dont have the secondary email', (done) => {
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      knex('users').insert({
+        username: 'utilisateur.nouveau',
+      }).then(async () => {
+        await createEmailAddresses();
+        ovhEmailCreation.isDone().should.be.false;
+        this.sendEmailStub.notCalled.should.be.true;
+        done();
+      });
     });
   });
 });
