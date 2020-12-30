@@ -2,7 +2,7 @@ const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const memberStatusOptions = [
   { label: 'Indépendant', value: 'independent' },
-  { label: 'Administration (agent public)', value: 'admin' },
+  { label: 'Administration (fonctionnaire ou contrat (stage, alternance, CDD, CDI))', value: 'admin' },
   { label: 'Société de service', value: 'service' },
 ];
 
