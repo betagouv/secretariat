@@ -1,2 +1,2 @@
 web: npm start
-clock: node ./schedulers/marrainageScheduler.js
+clock: node ./schedulers/cron.js
