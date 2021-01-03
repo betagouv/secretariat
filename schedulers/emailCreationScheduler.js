@@ -33,7 +33,7 @@ module.exports.createEmailAddresses = async function () {
 };
 
 module.exports.emailCreationJob = new CronJob(
-  '0 * * * * *', // every four minutes
+  '0 * * * * *', // every minute at second 0
   module.exports.createEmailAddresses,
   null,
   true,
