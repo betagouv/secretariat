@@ -14,7 +14,7 @@ services:
       MAILDEV_INCOMING_PASS: mailpassword
     ports:
       - "1080:80"
-      - "1025:1025"
+      - "1025:25"
   web:
     build: .
     command: nodemon --inspect=0.0.0.0:9229 ./index.js
@@ -25,8 +25,8 @@ services:
       - ../.env.secretariat.dev
     environment:
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
-      MAIL_PASS: mailuser
-      MAIL_USER: mailpassword
+      MAIL_USER: mailuser
+      MAIL_PASS: mailpassword
       MAIL_HOST: maildev
       MAIL_PORT: 25
       MAIL_IGNORE_TLS: "true"

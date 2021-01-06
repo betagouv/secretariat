@@ -64,7 +64,7 @@ module.exports.buildBetaEmail = function (id) {
 };
 
 module.exports.checkUserIsExpired = function (user) {
-  // L'utilisateur·rice est considéré comme expiré si:
+  // Le membre est considéré comme expiré si:
   // - il/elle existe
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
@@ -87,9 +87,9 @@ module.exports.userInfos = async function (id, isCurrentUser) {
 
     // On ne peut créé un compte que si:
     // - la page fiche Github existe
-    // - l'utilisateur·rice n'est pas expiré·e
+    // - le membre n'est pas expiré·e
     // - et le compte n'existe pas
-    // - et qu'il n'y a aucun redirection (sauf l'utilisateur·rice connecté qui peut créer son propre compte)
+    // - et qu'il n'y a aucun redirection (sauf le membre connecté qui peut créer son propre compte)
     const canCreateEmail = hasUserInfos
       && !isExpired
       && emailInfos === null
@@ -97,8 +97,8 @@ module.exports.userInfos = async function (id, isCurrentUser) {
 
     // On peut créer une redirection & changer un password si:
     // - la page fiche Github existe
-    // - l'utilisateur·rice n'est pas expiré·e (l'utilisateur·rice ne devrait de toute façon pas pouvoir se connecter)
-    // - et que l'on est l'utilisateur·rice connecté·e pour créer ces propres redirections.
+    // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
+    // - et que l'on est le membre connecté·e pour créer ces propres redirections.
     const canCreateRedirection = hasUserInfos
       && !isExpired
       && isCurrentUser;
@@ -119,7 +119,7 @@ module.exports.userInfos = async function (id, isCurrentUser) {
     console.error(err);
 
     throw new Error(
-      `Problème pour récupérer les infos de l'utilisateur·rice ${id}`,
+      `Problème pour récupérer les infos du membre ${id}`,
     );
   }
 };
