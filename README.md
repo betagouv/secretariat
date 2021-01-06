@@ -141,10 +141,10 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 - Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
 
 ### Dev docker-compose
-
+- Créer le fichier de configuration : `cp .env.example ../.env.secretariat.dev` et le remplir avec les identifiants OVH obtenus plus haut.
 - Récupérer les dépendences : `docker-compose run web npm install`
-- Lancer le service : `docker-compose up`
 - Créer les tables : `docker-compose run web npm run migrate`
+- Lancer le service : `docker-compose up` - Y accèder par http://localhost:8100
 - Lancer les tests : `docker-compose run web npm test`
 
 ### Dev docker sans docker-compose
