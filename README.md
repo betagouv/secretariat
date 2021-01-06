@@ -84,7 +84,11 @@ DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 
 [Maildev](http://maildev.github.io/maildev/) est un serveur SMTP avec une interface web conçus pour le développement et les tests.
 
+Sans docker:
 Une fois [installé](http://maildev.github.io/maildev/#install) et lancé, il suffit de mettre la variable d'environnement `MAIL_SERVICE` à `maildev` pour l'utiliser. `MAIL_USER` et `MAIL_PASS` ne sont pas nécessaires.
+
+Avec docker:
+ne pas préciser de MAIL_SERVICE, les bonnes variables d'environnement sont déjà précisées dans le docker-compose
 
 Tous les emails envoyés par le code du secrétariat seront visibles depuis l'interface web de Maildev (`http://localhost:1080/`).
 
