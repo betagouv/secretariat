@@ -22,7 +22,7 @@ services:
       - db
       - maildev
     env_file: 
-      - ../.env.secretariat.dev
+      - .env
     environment:
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
       MAIL_PASS: mailpassword
