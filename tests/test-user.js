@@ -571,6 +571,14 @@ describe('User', () => {
       });
     });
 
+    it('should log error when OVH is returning 500 error', async (done) => {
+        utils.mockError500OvhUserEmailInfos();
+
+        const shouldBeEmptyPromise = await createEmailAddresses();
+        shouldBeEmptyPromise.should.be.undefined;
+        done();
+    });
+
     it('should not create email accounts if already created', (done) => {
       // For this case we need to reset the basic nocks in order to return
       // a different response to indicate that newcomer.test has an
