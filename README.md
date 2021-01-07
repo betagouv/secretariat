@@ -160,7 +160,7 @@ Pour cela une une branche est créée sur un fork du repository `betagrouv/beta.
 
 ### Pourquoi utiliser un fork ?
 
-Afin de créer une branche et faire une pull request sur un repository, on donne les droit d'accès en écriture sur ce repository via un token (`GITHUB_TOKEN`) utilisé
+Afin de créer une branche et faire une pull request sur un repository, on donne les droits d'accès en écriture sur ce repository via un token (`GITHUB_TOKEN`) utilisé
 par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal. 
 
 Il faut donc préciser ces variables d'environnement:
