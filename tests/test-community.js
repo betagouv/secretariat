@@ -146,7 +146,7 @@ describe('Community', () => {
         .get('/community/membre.expire')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('Contrat de M>embre Expiré arrivé à expiration');
+          res.text.should.include('Contrat de Membre Expiré arrivé à expiration');
           res.text.should.not.include('action="/users/membre.expire/email" method="POST">');
           res.text.should.not.include('action="/users/membre.expire/password" method="POST">');
           res.text.should.include('Le compte membre.expire est expiré.');

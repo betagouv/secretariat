@@ -29,7 +29,7 @@ describe('Account', () => {
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
@@ -39,9 +39,9 @@ describe('Account', () => {
     it('should show the logged user name', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('Utilisateur Actif');
+          res.text.should.include('Membre Actif');
           done();
         });
     });
@@ -49,7 +49,7 @@ describe('Account', () => {
     it('should show the logged user employer', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('independent/octo');
           done();
@@ -59,9 +59,9 @@ describe('Account', () => {
     it("should include a link to OVH's webmail", (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=utilisateur.actif@${config.domain}"`);
+          res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=membre.actif@${config.domain}"`);
           done();
         });
     });
@@ -69,9 +69,9 @@ describe('Account', () => {
     it('should include a redirection creation form', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('action="/users/utilisateur.actif/redirections" method="POST"');
+          res.text.should.include('action="/users/membre.actif/redirections" method="POST"');
           done();
         });
     });
@@ -79,22 +79,22 @@ describe('Account', () => {
     it('should include a password modification form', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('action="/users/utilisateur.actif/password" method="POST"');
+          res.text.should.include('action="/users/membre.actif/password" method="POST"');
           done();
         });
     });
 
     it("don't show reload button if last change is under 24h", (done) => {
       knex('marrainage').insert({
-        username: 'utilisateur.actif',
-        last_onboarder: 'utilisateur.peutimporte',
+        username: 'membre.actif',
+        last_onboarder: 'membre.peutimporte',
       })
       .then(() => {
         chai.request(app)
           .get('/account')
-          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
           .end((err, res) => {
             res.text.should.not.include('action="/marrainage/reload" method="POST"');
             done();
@@ -104,14 +104,14 @@ describe('Account', () => {
 
     it('show reload button if last change is after 24h', (done) => {
       knex('marrainage').insert({
-        username: 'utilisateur.actif',
-        last_onboarder: 'utilisateur.peutimporte',
+        username: 'membre.actif',
+        last_onboarder: 'membre.peutimporte',
         last_updated: new Date(Date.now() - 24 * 3601 * 1000),
       })
       .then(() => {
         chai.request(app)
           .get('/account')
-          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
           .end((err, res) => {
             res.text.should.include('action="/marrainage/reload" method="POST"');
             done();
@@ -122,7 +122,7 @@ describe('Account', () => {
     it('should display dates in french locale', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('du 03/11/2016');
           res.text.should.include('du 03/11/2016');
