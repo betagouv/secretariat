@@ -151,3 +151,25 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 
 - Exemple pour développer dans un container :
 	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev)
+
+
+## Explication du fonctionnement des pull requests Github
+
+En prod, l'app sécrétariat génère des pulls requests sur le github reposity `betagouv/beta.gouv.fr`.
+Pour cela une une branche est créée sur un fork du repository `betagrouv/beta.gouv.fr` et une pull request est effectuée depuis ce fork vers ce repository initial `betagouv/beta.gouv.fr`.
+
+### Pourquoi utiliser un fork ?
+
+Afin de créer une branche et faire une pull request sur un repository, on donne les droits d'accès en écriture sur ce repository via un token (`GITHUB_TOKEN`) utilisé
+par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal. 
+
+Il faut donc préciser ces variables d'environnement:
+
+- `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues. Ce token doit contenir les droits d'écriture à `GITHUB_FORK`.
+- `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`). L'application n'a pas des droits d'écriture sur ce repository.
+- `GITHUB_FORK` - Le fork du `GITHUB_REPOSITORY` auquel l'application a des droits d'accès en écriture
+
+En dev : le GITHUB_REPOSITORY est un fork de `betagouv/beta.gouv.fr`, et le GITHUB_FORK un fork de ce fork.
+
+Pour simplifier, on peut utiliser des repos communs entre dev. Demandez a vos collègues le nom des repository à spécifer dans le .env
+ainsi que les droits d'accès au resository `GITHUB_FORK`
