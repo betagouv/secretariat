@@ -350,8 +350,8 @@ describe('Marrainage', () => {
       const validRequest = {
         username: 'utilisateur.actif',
         last_onboarder: 'utilisateur.nouveau',
-        created_at: new Date(),
-        last_updated: new Date(),
+        created_at: new Date(new Date().setDate(new Date().getDate() - 2)),
+        last_updated: new Date(new Date().setDate(new Date().getDate() - 2)),
         completed: false,
         count: 1,
       };
