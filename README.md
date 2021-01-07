@@ -167,7 +167,7 @@ Il faut donc préciser ces variables d'environnement:
 
 - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues. Ce token doit contenir les droits d'écriture à `GITHUB_FORK`.
 - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`). L'application n'a pas des droits d'écriture sur ce repository.
-- `GITHUB_FORK`
+- `GITHUB_FORK` - Le fork du `GITHUB_REPOSITORY` auquel l'application a des droits d'accès en écriture
 
 En dev : le GITHUB_REPOSITORY est un fork de `betagouv/beta.gouv.fr`, et le GITHUB_FORK un fork de ce fork.
 
