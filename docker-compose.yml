@@ -25,8 +25,8 @@ services:
       - ../.env.secretariat.dev
     environment:
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
-      MAIL_USER: mailuser
       MAIL_PASS: mailpassword
+      MAIL_USER: mailuser
       MAIL_HOST: maildev
       MAIL_PORT: 25
       MAIL_IGNORE_TLS: "true"
