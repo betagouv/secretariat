@@ -41,12 +41,6 @@ module.exports = {
       .reply(404)
       .persist();
   },
-  mockError500OvhUserEmailInfos() {
-    return nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account\/.*/)
-      .reply(500)
-      .persist();
-  },
   mockOvhAllEmailInfos() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)

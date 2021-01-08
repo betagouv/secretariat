@@ -8,6 +8,8 @@ const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
 
+const should = chai.should();
+
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
     it('should return an Unauthorized error', (done) => {
@@ -571,12 +573,50 @@ describe('User', () => {
       });
     });
 
-    it('should log error when OVH is returning 500 error', async (done) => {
-        utils.mockError500OvhUserEmailInfos();
+    it('should log error and return undefined when GET OVH returns 500 error', (done) => {
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlack();
+      utils.mockOvhTime();
 
-        const shouldBeEmptyPromise = await createEmailAddresses();
-        shouldBeEmptyPromise.should.be.undefined;
+      const getOvhEmailCreation = nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(500);
+
+      knex('users').insert({
+        username: 'utilisateur.nouveau',
+        secondary_email: 'utilisateur.nouveau.perso@example.com',
+      }).then(async () => {
+        const shouldBeUndefined = await createEmailAddresses();
+        getOvhEmailCreation.isDone().should.be.true;
+        should.not.exist(shouldBeUndefined);
         done();
+      });
+    });
+
+    it('should log error and return undefined when POST OVH returns 500 error', (done) => {
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlack();
+      utils.mockOvhTime();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200);
+
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(500);
+
+      knex('users').insert({
+        username: 'utilisateur.nouveau',
+        secondary_email: 'utilisateur.nouveau.perso@example.com',
+      }).then(async () => {
+        const shouldBeUndefined = await createEmailAddresses();
+        ovhEmailCreation.isDone().should.be.true;
+        should.not.exist(shouldBeUndefined);
+        done();
+      });
     });
 
     it('should not create email accounts if already created', (done) => {

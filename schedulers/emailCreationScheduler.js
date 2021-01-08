@@ -30,7 +30,7 @@ module.exports.createEmailAddresses = async function () {
       }
     }
 
-    return Promise.all(emailCreationTasks);
+    return await Promise.all(emailCreationTasks);
   } catch (err) {
     console.error(err);
     return Promise.resolve();
