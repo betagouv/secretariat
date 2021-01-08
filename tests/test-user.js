@@ -575,7 +575,7 @@ describe('User', () => {
       });
     });
 
-    it('should log error when GET OVH returns 500 error', async() => {
+    it('should log error when GET OVH returns 500 error', (done) => {
       utils.cleanMocks();
       utils.mockUsers();
       utils.mockSlack();
@@ -591,21 +591,22 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      await knex('users').insert({
+      knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
-      })
-
-      const cronOutcome = await createEmailAddresses();
-      getOvhEmailCreation.isDone().should.be.true;
-      postOvhEmailCreation.isDone().should.be.false;
-      should.not.exist(cronOutcome);
-      console.error.called.should.be.true;
-      expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error GET on /email/domain/betagouv.ovh/account/utilisateur.nouveau : {"error":500,"message":null}')
-      console.error.restore();
+      }).then(async () => {
+        const cronOutcome = await createEmailAddresses();
+        getOvhEmailCreation.isDone().should.be.true;
+        postOvhEmailCreation.isDone().should.be.false;
+        should.not.exist(cronOutcome);
+        console.error.called.should.be.true;
+        expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error GET on /email/domain/betagouv.ovh/account/utilisateur.nouveau : {"error":500,"message":null}')
+        console.error.restore();
+        done()
+      }).catch(done)
     });
 
-    it('should log error when POST OVH returns 500 error', async () => {
+    it('should log error when POST OVH returns 500 error', (done) => {
       utils.cleanMocks();
       utils.mockUsers();
       utils.mockSlack();
@@ -621,18 +622,19 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(500);
 
-      await knex('users').insert({
+      knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
-      })
-
-      const cronOutcome = await createEmailAddresses();
-      getOvhEmailCreation.isDone().should.be.true;
-      ovhEmailCreation.isDone().should.be.true;
-      should.not.exist(cronOutcome);
-      console.error.called.should.be.true;
-      expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error POST on /email/domain/betagouv.ovh/account : {"error":500,"message":null}')
-      console.error.restore();
+      }).then(async() => {
+        const cronOutcome = await createEmailAddresses();
+        getOvhEmailCreation.isDone().should.be.true;
+        ovhEmailCreation.isDone().should.be.true;
+        should.not.exist(cronOutcome);
+        console.error.called.should.be.true;
+        expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error POST on /email/domain/betagouv.ovh/account : {"error":500,"message":null}')
+        console.error.restore();
+        done()
+      }).catch(done)
     });
 
     it('should not create email accounts if already created', (done) => {
