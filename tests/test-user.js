@@ -8,7 +8,7 @@ const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
-const { assert, expect } = require('chai');
+const { expect } = require('chai');
 
 const should = chai.should();
 
