@@ -600,7 +600,7 @@ describe('User', () => {
         postOvhEmailCreation.isDone().should.be.false;
         should.not.exist(cronOutcome);
         console.error.called.should.be.true;
-        expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error GET on /email/domain/betagouv.ovh/account/utilisateur.nouveau : {"error":500,"message":null}')
+        expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error GET on /email/domain/${config.domain}/account/utilisateur.nouveau : {"error":500,"message":null}`)
         console.error.restore();
         done()
       }).catch(done)
@@ -631,7 +631,7 @@ describe('User', () => {
         ovhEmailCreation.isDone().should.be.true;
         should.not.exist(cronOutcome);
         console.error.called.should.be.true;
-        expect(consoleSpy.firstCall.args[0].message).to.be.equal('OVH Error POST on /email/domain/betagouv.ovh/account : {"error":500,"message":null}')
+        expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error POST on /email/domain/${config.domain}/account : {"error":500,"message":null}`)
         console.error.restore();
         done()
       }).catch(done)
