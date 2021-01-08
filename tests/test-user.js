@@ -633,7 +633,7 @@ describe('User', () => {
         should.not.exist(cronOutcome);
         console.error.called.should.be.true;
         expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error POST on /email/domain/${config.domain}/account : {"error":500,"message":null}`)
-        done()
+        done();
       })
       .catch(done)
       .finally(() => {
