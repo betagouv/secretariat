@@ -1,6 +1,7 @@
 const chai = require('chai');
 const nock = require('nock');
 const sinon = require('sinon');
+
 const config = require('../config');
 const app = require('../index');
 const utils = require('./utils.js');
@@ -573,11 +574,13 @@ describe('User', () => {
       });
     });
 
-    it('should log error and return undefined when GET OVH returns 500 error', (done) => {
+    it('should log error when GET OVH returns 500 error', (done) => {
       utils.cleanMocks();
       utils.mockUsers();
       utils.mockSlack();
       utils.mockOvhTime();
+
+      sinon.spy(console, 'error');
 
       const getOvhEmailCreation = nock(/.*ovh.com/)
         .get(/^.*email\/domain\/.*\/account\/.*/)
@@ -587,18 +590,21 @@ describe('User', () => {
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       }).then(async () => {
-        const shouldBeUndefined = await createEmailAddresses();
+        const cronOutcome = await createEmailAddresses();
         getOvhEmailCreation.isDone().should.be.true;
-        should.not.exist(shouldBeUndefined);
+        console.error.called.should.be.true;
+        console.error.restore();
         done();
       });
     });
 
-    it('should log error and return undefined when POST OVH returns 500 error', (done) => {
+    it('should log error when POST OVH returns 500 error', (done) => {
       utils.cleanMocks();
       utils.mockUsers();
       utils.mockSlack();
       utils.mockOvhTime();
+
+      sinon.spy(console, 'error');
 
       nock(/.*ovh.com/)
         .get(/^.*email\/domain\/.*\/account\/.*/)
@@ -612,9 +618,10 @@ describe('User', () => {
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       }).then(async () => {
-        const shouldBeUndefined = await createEmailAddresses();
+        const cronOutcome = await createEmailAddresses();
         ovhEmailCreation.isDone().should.be.true;
-        should.not.exist(shouldBeUndefined);
+        console.error.called.should.be.true;
+        console.error.restore();
         done();
       });
     });
