@@ -638,7 +638,7 @@ describe('User', () => {
       .catch(done)
       .finally(() => {
         console.error.restore();
-      })
+      });
     });
 
     it('should not create email accounts if already created', (done) => {
