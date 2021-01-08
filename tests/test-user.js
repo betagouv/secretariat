@@ -586,12 +586,18 @@ describe('User', () => {
         .get(/^.*email\/domain\/.*\/account\/.*/)
         .reply(500);
 
+      const postOvhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
       knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       }).then(async () => {
         const cronOutcome = await createEmailAddresses();
         getOvhEmailCreation.isDone().should.be.true;
+        postOvhEmailCreation.isDone().should.be.false;
+        should.not.exist(cronOutcome);
         console.error.called.should.be.true;
         console.error.restore();
         done();
@@ -606,7 +612,7 @@ describe('User', () => {
 
       sinon.spy(console, 'error');
 
-      nock(/.*ovh.com/)
+      const getOvhEmailCreation = nock(/.*ovh.com/)
         .get(/^.*email\/domain\/.*\/account\/.*/)
         .reply(200);
 
@@ -619,7 +625,9 @@ describe('User', () => {
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       }).then(async () => {
         const cronOutcome = await createEmailAddresses();
+        getOvhEmailCreation.isDone().should.be.true;
         ovhEmailCreation.isDone().should.be.true;
+        should.not.exist(cronOutcome);
         console.error.called.should.be.true;
         console.error.restore();
         done();
