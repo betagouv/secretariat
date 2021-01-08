@@ -625,16 +625,20 @@ describe('User', () => {
       knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
-      }).then(async() => {
+      })
+      .then(async() => {
         const cronOutcome = await createEmailAddresses();
         getOvhEmailCreation.isDone().should.be.true;
         ovhEmailCreation.isDone().should.be.true;
         should.not.exist(cronOutcome);
         console.error.called.should.be.true;
         expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error POST on /email/domain/${config.domain}/account : {"error":500,"message":null}`)
-        console.error.restore();
         done()
-      }).catch(done)
+      })
+      .catch(done)
+      .finally(() => {
+        console.error.restore();
+      })
     });
 
     it('should not create email accounts if already created', (done) => {
@@ -662,12 +666,16 @@ describe('User', () => {
       knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
-      }).then(async () => {
+      })
+      .then(async () => {
         await createEmailAddresses();
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
         done();
-      });
+      })
+      .finally(() => {
+        console.error.restore();
+      })
     });
 
     it('should not create email accounts if we dont have the secondary email', (done) => {
