@@ -626,7 +626,7 @@ describe('User', () => {
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       })
-      .then(async() => {
+      .then(async () => {
         const cronOutcome = await createEmailAddresses();
         getOvhEmailCreation.isDone().should.be.true;
         ovhEmailCreation.isDone().should.be.true;
