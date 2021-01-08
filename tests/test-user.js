@@ -601,9 +601,12 @@ describe('User', () => {
         should.not.exist(cronOutcome);
         console.error.called.should.be.true;
         expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error GET on /email/domain/${config.domain}/account/utilisateur.nouveau : {"error":500,"message":null}`)
+        done();
+      })
+      .catch(done)
+      .finally(() => {
         console.error.restore();
-        done()
-      }).catch(done)
+      });
     });
 
     it('should log error when POST OVH returns 500 error', (done) => {
