@@ -675,7 +675,7 @@ describe('User', () => {
       })
       .finally(() => {
         console.error.restore();
-      })
+      });
     });
 
     it('should not create email accounts if we dont have the secondary email', (done) => {
