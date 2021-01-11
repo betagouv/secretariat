@@ -21,7 +21,9 @@
 
         <p>
             Bienvenue dans la communauté 👋 !<br>
-            Créer ta fiche Github est la première étape pour avoir accès aux différents outils de la communauté.
+            Créer ta fiche Github est la première étape pour avoir accès aux différents outils de la communauté.<br>
+            Ton compte email sera automatiquement créé une fois que la fiche sera mergée par un membre de la communauté et
+            tu recevras les informations de ta nouvelle adresse mail @<%= domain %>.
         </p>
 
         <div class="beta-banner"></div>
@@ -106,6 +108,7 @@
                 <label for="referentList">
                     Référent<br />
                     Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
+                    (Nous le notifierons par email de la création de ta fiche et il pourra la merger)
                 </label>
                 <% if(useSelectList) { %>
                     <select name="referent" id="username_select">
