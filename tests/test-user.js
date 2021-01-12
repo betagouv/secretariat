@@ -1,16 +1,12 @@
 const chai = require('chai');
 const nock = require('nock');
 const sinon = require('sinon');
-
 const config = require('../config');
 const app = require('../index');
 const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
-const { expect } = require('chai');
-
-const should = chai.should();
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -575,75 +571,6 @@ describe('User', () => {
       });
     });
 
-    it('should log error when GET OVH returns 500 error', (done) => {
-      utils.cleanMocks();
-      utils.mockUsers();
-      utils.mockSlack();
-      utils.mockOvhTime();
-
-      const consoleSpy = sinon.spy(console, 'error');
-
-      const getOvhEmailCreation = nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(500);
-
-      const postOvhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-
-      knex('users').insert({
-        username: 'utilisateur.nouveau',
-        secondary_email: 'utilisateur.nouveau.perso@example.com',
-      }).then(async () => {
-        const cronOutcome = await createEmailAddresses();
-        getOvhEmailCreation.isDone().should.be.true;
-        postOvhEmailCreation.isDone().should.be.false;
-        should.not.exist(cronOutcome);
-        console.error.called.should.be.true;
-        expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error GET on /email/domain/${config.domain}/account/utilisateur.nouveau : {"error":500,"message":null}`)
-        done();
-      })
-      .catch(done)
-      .finally(() => {
-        console.error.restore();
-      });
-    });
-
-    it('should log error when POST OVH returns 500 error', (done) => {
-      utils.cleanMocks();
-      utils.mockUsers();
-      utils.mockSlack();
-      utils.mockOvhTime();
-
-      const consoleSpy = sinon.spy(console, 'error');
-
-      const getOvhEmailCreation = nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(200);
-
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(500);
-
-      knex('users').insert({
-        username: 'utilisateur.nouveau',
-        secondary_email: 'utilisateur.nouveau.perso@example.com',
-      })
-      .then(async () => {
-        const cronOutcome = await createEmailAddresses();
-        getOvhEmailCreation.isDone().should.be.true;
-        ovhEmailCreation.isDone().should.be.true;
-        should.not.exist(cronOutcome);
-        console.error.called.should.be.true;
-        expect(consoleSpy.firstCall.args[0].message).to.be.equal(`OVH Error POST on /email/domain/${config.domain}/account : {"error":500,"message":null}`)
-        done();
-      })
-      .catch(done)
-      .finally(() => {
-        console.error.restore();
-      });
-    });
-
     it('should not create email accounts if already created', (done) => {
       // For this case we need to reset the basic nocks in order to return
       // a different response to indicate that newcomer.test has an
@@ -674,9 +601,6 @@ describe('User', () => {
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
         done();
-      })
-      .finally(() => {
-        console.error.restore();
       });
     });
 
