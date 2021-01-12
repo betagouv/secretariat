@@ -26,6 +26,8 @@ describe('Account', () => {
   });
 
   describe('GET /account authenticated', () => {
+    // first render of template 'account' can be slow and exceed timeout this test may fail if timeout < 2000
+
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/account')
