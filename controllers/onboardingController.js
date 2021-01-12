@@ -52,6 +52,7 @@ module.exports.getForm = async function (req, res) {
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
+      domain: config.domain,
       title,
       errors: req.flash('error'),
       messages: req.flash('message'),
