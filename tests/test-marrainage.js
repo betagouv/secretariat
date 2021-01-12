@@ -362,8 +362,63 @@ describe('Marrainage', () => {
         /* eslint-disable global-require */
         const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
         this.clock.tick(1001);
+        this.listener = (response, obj, builder) => {
+          if (obj.method !== 'update') {
+            return;
+          }
+          knex('marrainage').select().where({ username: staleRequest.username })
+          .then((res) => {
+            res[0].count.should.equal(2);
+          })
+          .then(() => knex('marrainage').select().where({ username: validRequest.username }))
+          .then((res) => {
+            res[0].count.should.equal(1);
+            reloadMarrainageJob.stop();
+          })
+          .then(done)
+          .catch(done)
+          .finally(() => {
+            knex.off('query-response', this.listener); // remove listener else it runs in the next tests
+          });
+        };
+        knex.on('query-response', this.listener);
+      });
+    });
 
-        knex.on('query-response', (response, obj, builder) => {
+    it('should reload stale marrainage requests of edge case exactly two days ago at 00:00', (done) => {
+      const dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2));
+      dateStaleRequest.setHours(11, 0, 0);
+      const staleRequest = {
+        username: 'utilisateur.nouveau',
+        last_onboarder: 'utilisateur.parti',
+        created_at: dateStaleRequest,
+        last_updated: dateStaleRequest,
+        completed: false,
+        count: 1,
+      };
+
+      const dateValidRequest = new Date(new Date().setDate(new Date().getDate() - 1));
+      dateValidRequest.setHours(23, 59, 59);
+
+      const validRequest = {
+        username: 'utilisateur.actif',
+        last_onboarder: 'utilisateur.nouveau',
+        created_at: dateValidRequest,
+        last_updated: dateValidRequest,
+        completed: false,
+        count: 1,
+      };
+
+      knex('marrainage').insert([staleRequest, validRequest]).then(() => {
+        // Disabels global require since requiring the cron job
+        // will immediatly start it.
+        /* eslint-disable global-require */
+        const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
+        // we start it manually as it may have been stopped in previous tests
+        reloadMarrainageJob.start();
+
+        this.clock.tick(1001);
+        this.listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
             return;
           }
@@ -376,8 +431,10 @@ describe('Marrainage', () => {
             res[0].count.should.equal(1);
           })
           .then(done)
-          .catch(done);
-        });
+          .catch(done)
+          .finally(() => knex.off('query-response', this.listener)); // remove listener else it runs in the next tests
+        };
+        knex.on('query-response', this.listener);
       });
     });
   });
