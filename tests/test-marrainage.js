@@ -337,7 +337,6 @@ describe('Marrainage', () => {
   });
 
   describe('cronjob', () => {
-  
     it('should reload stale marrainage requests', (done) => {
       const staleRequest = {
         username: 'utilisateur.nouveau',
@@ -347,7 +346,7 @@ describe('Marrainage', () => {
         completed: false,
         count: 1,
       };
-      
+
       const validRequest = {
         username: 'utilisateur.actif',
         last_onboarder: 'utilisateur.nouveau',
