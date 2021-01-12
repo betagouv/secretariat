@@ -374,18 +374,20 @@ describe('Marrainage', () => {
           .then(() => knex('marrainage').select().where({ username: validRequest.username }))
           .then((res) => {
             res[0].count.should.equal(1);
-            reloadMarrainageJob.stop() 
-            knex.off('query-response', this.listener) // remove listener else it runs in the next tests
+            reloadMarrainageJob.stop();
           })
           .then(done)
-          .catch(done);
-        }
-        knex.on('query-response', this.listener)
+          .catch(done)
+          .finally(() => {
+            knex.off('query-response', this.listener); // remove listener else it runs in the next tests
+          });
+        };
+        knex.on('query-response', this.listener);
       });
     });
 
     it('should reload stale marrainage requests of edge case exactly two days ago at 00:00', (done) => {
-      let dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2));
+      const dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2));
       dateStaleRequest.setHours(11, 0, 0);
       const staleRequest = {
         username: 'utilisateur.nouveau',
@@ -396,8 +398,8 @@ describe('Marrainage', () => {
         count: 1,
       };
 
-      var dateValidRequest = new Date(new Date().setDate(new Date().getDate() - 1))
-      dateValidRequest.setHours(23, 59, 59)
+      const dateValidRequest = new Date(new Date().setDate(new Date().getDate() - 1));
+      dateValidRequest.setHours(23, 59, 59);
 
       const validRequest = {
         username: 'utilisateur.actif',
@@ -413,10 +415,11 @@ describe('Marrainage', () => {
         // will immediatly start it.
         /* eslint-disable global-require */
         const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
-        reloadMarrainageJob.start() // we start it manually as it may have been stopped in previous tests
-        this.clock.tick(1001);
+        // we start it manually as it may have been stopped in previous tests
+        reloadMarrainageJob.start();
 
-        knex.on('query-response', (response, obj, builder) => {
+        this.clock.tick(1001);
+        this.listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
             return;
           }
@@ -427,13 +430,13 @@ describe('Marrainage', () => {
           .then(() => knex('marrainage').select().where({ username: validRequest.username }))
           .then((res) => {
             res[0].count.should.equal(1);
-            knex.off('query-response', this.listener) // remove listener else it runs in the next tests
           })
           .then(done)
-          .catch(done);
-        });
+          .catch(done)
+          .finally(() => knex.off('query-response', this.listener)); // remove listener else it runs in the next tests
+        };
+        knex.on('query-response', this.listener);
       });
     });
   });
-
 });
