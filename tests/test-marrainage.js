@@ -386,7 +386,7 @@ describe('Marrainage', () => {
 
     it('should reload stale marrainage requests of edge case exactly two days ago at 00:00', (done) => {
       var dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2))
-      dateStaleRequest.setHours(0, 0, 0)
+      dateStaleRequest.setHours(11, 0, 0);
       const staleRequest = {
         username: 'utilisateur.nouveau',
         last_onboarder: 'utilisateur.parti',
