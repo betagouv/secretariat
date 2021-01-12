@@ -6,7 +6,7 @@ const { reloadMarrainage } = require('../controllers/marrainageController');
 const reloadMarrainages = async function () {
   console.log('Demarrage du cron job pour la relance de marrainages');
   const cutoffDate = new Date(new Date().setDate(new Date().getDate() - 2)); // two days ago
-  cutoffDate.setHours(23, 59, 59) // the granularity is up to the day
+  cutoffDate.setHours(23, 59, 59, 59); // end of day
   const marrainageDetailsResponse = await knex('marrainage').select()
       .where({ completed: false })
       .where('last_updated', '<=', cutoffDate);
