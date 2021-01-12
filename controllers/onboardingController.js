@@ -26,7 +26,7 @@ async function createNewcomerGithubFile(username, content, referent) {
       const path = `content/_authors/${username}.md`;
       return utils.createGithubFile(path, branch, content)
         .catch((err) => {
-          if (err.status === 422) throw new Error(`Une fiche avec le/la membre ${username} existe déjà`);
+          if (err.status === 422) throw new Error(`Une fiche pour ${username} existe déjà`);
           throw err;
         });
     })
