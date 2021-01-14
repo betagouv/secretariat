@@ -389,8 +389,8 @@ describe('Marrainage', () => {
       const dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2));
       dateStaleRequest.setHours(11, 0, 0);
       const staleRequest = {
-        username: 'utilisateur.nouveau',
-        last_onboarder: 'utilisateur.parti',
+        username: 'membre.nouveau',
+        last_onboarder: 'membre.parti',
         created_at: dateStaleRequest,
         last_updated: dateStaleRequest,
         completed: false,
@@ -401,8 +401,8 @@ describe('Marrainage', () => {
       dateValidRequest.setHours(23, 59, 59);
 
       const validRequest = {
-        username: 'utilisateur.actif',
-        last_onboarder: 'utilisateur.nouveau',
+        username: 'membre.actif',
+        last_onboarder: 'membre.nouveau',
         created_at: dateValidRequest,
         last_updated: dateValidRequest,
         completed: false,
