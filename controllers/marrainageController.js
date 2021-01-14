@@ -125,9 +125,7 @@ module.exports.createRequest = async function (req, res) {
     if (utils.checkUserIsExpired(loggedUserInfo)) {
       throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
     }
-
-    const { newcomer, onboarder } = await this.createRequestForUser(req.body.newcomerId);
-
+    const { newcomer, onboarder } = await module.exports.createRequestForUser(req.body.newcomerId);
     const { user } = req;
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
