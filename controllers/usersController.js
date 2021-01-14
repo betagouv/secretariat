@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
+const createMarrainageRequest = require('./marrainageController').createRequestForUser;
 
 module.exports.createEmail = async function (username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -18,6 +19,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
 
   await BetaGouv.sendInfoToSlack(message);
   await BetaGouv.createEmail(username, password);
+  await createMarrainageRequest(username);
 
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 

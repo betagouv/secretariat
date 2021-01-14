@@ -7,6 +7,7 @@ const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
+const { assert, should } = require('chai');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -544,31 +545,41 @@ describe('User', () => {
   });
 
   describe('cronjob', () => {
+
+    before(async () => {
+      await knex('users').truncate();
+      await knex('marrainage').truncate();
+    });
+
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       done();
     });
 
-    afterEach((done) => {
-      knex('users').truncate()
-        .then(() => this.sendEmailStub.restore())
-        .then(() => done());
+    afterEach(async () => {
+      await knex('users').truncate();
+      await knex('marrainage').truncate();
+      this.sendEmailStub.restore();
     });
 
-    it('should create missing email accounts', (done) => {
+    it('should create missing email accounts', async () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      knex('users').insert({
+      let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage.length.should.equal(0);
+      await knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
-      }).then(async () => {
-        await createEmailAddresses();
-        ovhEmailCreation.isDone().should.be.true;
-        this.sendEmailStub.calledOnce.should.be.true;
-        done();
       });
+      await createEmailAddresses();
+      ovhEmailCreation.isDone().should.be.true;
+      this.sendEmailStub.calledTwice.should.be.true;
+      marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage.length.should.equal(1);
+      marrainage[0].username.should.equal('utilisateur.nouveau');
+      marrainage[0].last_onboarder.should.not.be.null;
     });
 
     it('should not create email accounts if already created', (done) => {
