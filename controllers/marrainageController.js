@@ -100,15 +100,9 @@ module.exports.reloadMarrainage = async function (newcomerId) {
   return { newcomer, onboarder };
 };
 
-module.exports.createRequest = async function (req, res) {
-  try {
-    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
-    if (utils.checkUserIsExpired(loggedUserInfo)) {
-      throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
-    }
-    const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
+module.exports.createRequestForUser = async function (userId) {
+    const newcomer = await BetaGouv.userInfosById(userId);
     const onboarder = await selectRandomOnboarder(newcomer.id);
-    const { user } = req;
 
     if (!onboarder) {
       throw new Error("Aucun·e marrain·e n'est disponible pour le moment");
@@ -118,8 +112,26 @@ module.exports.createRequest = async function (req, res) {
       username: newcomer.id,
       last_onboarder: onboarder.id,
     });
-    await sendOnboarderRequestEmail(newcomer, onboarder, req);
+    await sendOnboarderRequestEmail(newcomer, onboarder);
+    return {
+      newcomer,
+      onboarder
+    }
+};
 
+
+module.exports.createRequest = async function (req, res) {
+  try {
+    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
+    if (utils.checkUserIsExpired(loggedUserInfo)) {
+      throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
+    }
+    const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
+    const onboarder = await selectRandomOnboarder(newcomer.id);
+
+    const { newcomer, onboarder } = this.createRequestForUser(req.body.newcomerId)
+
+    const { user } = req;
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
     if (newcomer.id === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
