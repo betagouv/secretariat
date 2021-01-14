@@ -21,7 +21,7 @@ describe('Admin', () => {
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/admin')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();

@@ -11,11 +11,11 @@ describe('Login', () => {
   //       .post('/login')
   //       .type('form')
   //       .send({
-  //         id: 'utilisateur.actif'
+  //         id: 'membre.actif'
   //       })
   //       .end((err, res) => {
   //         res.should.have.status(200);
-  //         res.text.should.include('Email de connexion envoyé pour utilisateur.actif');
+  //         res.text.should.include('Email de connexion envoyé pour membre.actif');
   //         done();
   //       });
   //   });
@@ -78,7 +78,7 @@ describe('Login', () => {
         .post('/login')
         .type('form')
         .send({
-          id: 'utilisateur.expire',
+          id: 'membre.expire',
         })
         .redirects(0)
         .end((err, res) => {

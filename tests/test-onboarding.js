@@ -358,8 +358,8 @@ describe('Onboarding', () => {
       nock.cleanAll();
 
       nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*utilisateur.actif/)
-        .reply(200, { email: 'utilisateur.actif@example.com' });
+        .get(/^.*email\/domain\/.*\/account\/.*membre.actif/)
+        .reply(200, { email: 'membre.actif@example.com' });
 
       utils.mockUsers();
 
@@ -369,7 +369,7 @@ describe('Onboarding', () => {
         .send({
           firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
-          referent: 'utilisateur.actif',
+          referent: 'membre.actif',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -380,7 +380,7 @@ describe('Onboarding', () => {
           this.sendEmailStub.calledOnce.should.be.true;
 
           const toEmail = this.sendEmailStub.args[0][0];
-          toEmail.should.equal('utilisateur.actif@example.com');
+          toEmail.should.equal('membre.actif@example.com');
           done();
         });
     });

@@ -127,7 +127,7 @@ app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
-app.get('/community/:username', communityController.getMember);
+app.get('/community/:username', communityController.getUser);
 app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);

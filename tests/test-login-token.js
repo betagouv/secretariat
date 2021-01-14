@@ -19,14 +19,14 @@ describe('Login token', () => {
   });
 
   it('should be stored after login request', (done) => {
-    const userEmail = `utilisateur.nouveau@${config.domain}`;
+    const userEmail = `membre.nouveau@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
       .post('/login')
       .type('form')
       .send({
-        username: 'utilisateur.nouveau',
+        username: 'membre.nouveau',
       })
 
       // Verify the token has been stored in the database
@@ -34,21 +34,21 @@ describe('Login token', () => {
       .then((dbRes) => {
         dbRes.length.should.equal(1);
         dbRes[0].email.should.equal(userEmail);
-        dbRes[0].username.should.equal('utilisateur.nouveau');
+        dbRes[0].username.should.equal('membre.nouveau');
       })
       .then(done)
       .catch(done);
   });
 
   it('should be deleted after use', (done) => {
-    const userEmail = `utilisateur.actif@${config.domain}`;
+    const userEmail = `membre.actif@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
       .post('/login')
       .type('form')
       .send({
-        username: 'utilisateur.actif',
+        username: 'membre.actif',
       })
 
       // Extract token from the DB
@@ -68,14 +68,14 @@ describe('Login token', () => {
   });
 
   it('should only be usable once', (done) => {
-    const userEmail = `utilisateur.actif@${config.domain}`;
+    const userEmail = `membre.actif@${config.domain}`;
 
     // Make a login request to generate a token
     chai.request(app)
       .post('/login')
       .type('form')
       .send({
-        username: 'utilisateur.actif',
+        username: 'membre.actif',
       })
 
       // Extract token from the DB
@@ -103,13 +103,13 @@ describe('Login token', () => {
 
   it('should not be used if expired', (done) => {
     // Create expired token
-    const userEmail = `utilisateur.actif@${config.domain}`;
+    const userEmail = `membre.actif@${config.domain}`;
     const token = crypto.randomBytes(256).toString('base64');
     const expirationDate = new Date();
 
     knex('login_tokens').insert({
       token,
-      username: 'utilisateur.actif',
+      username: 'membre.actif',
       email: userEmail,
       expires_at: expirationDate,
     })
