@@ -7,7 +7,6 @@ const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
-const { assert, should } = require('chai');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -545,7 +544,6 @@ describe('User', () => {
   });
 
   describe('cronjob', () => {
-
     before(async () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
