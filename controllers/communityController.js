@@ -28,7 +28,7 @@ module.exports.getCommunity = async function (req, res) {
   }
 };
 
-module.exports.getMember = async function (req, res) {
+module.exports.getUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -43,7 +43,7 @@ module.exports.getMember = async function (req, res) {
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
     if (!hasGithubFile && !hasEmailAddress) {
-      req.flash('error', 'Il n\'y a pas d\'utilisateurs avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.');
+      req.flash('error', 'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.');
       res.redirect('/community');
       return;
     }
@@ -62,7 +62,7 @@ module.exports.getMember = async function (req, res) {
     }
 
     const title = user.userInfos ? user.userInfos.fullname : null;
-    res.render('member', {
+    res.render('user', {
       title,
       username,
       currentUserId: req.user.id,

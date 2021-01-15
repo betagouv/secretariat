@@ -1,7 +1,7 @@
 [ 
   {
-    "id": "utilisateur.actif",
-    "fullname": "Utilisateur Actif",
+    "id": "membre.actif",
+    "fullname": "Membre Actif",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -11,8 +11,8 @@
     ]
   },
   {
-    "id": "utilisateur.expire",
-    "fullname": "Utilisateur Expiré",
+    "id": "membre.expire",
+    "fullname": "Membre Expiré",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -23,8 +23,8 @@
     ]
   },
   {
-    "id": "utilisateur.parti",
-    "fullname": "Utilisateur Parti",
+    "id": "membre.parti",
+    "fullname": "Membre Parti",
     "github": "test-github",
     "missions": [
       { 
@@ -36,8 +36,8 @@
     ]
   },
   {
-    "id": "utilisateur.nouveau",
-    "fullname": "Utilisateur Nouveau",
+    "id": "membre.nouveau",
+    "fullname": "Membre Nouveau",
     "missions": [
       { 
         "start": "2020-07-03"
@@ -45,8 +45,8 @@
     ]
   },
   {
-    "id": "utilisateur.plusieurs.missions",
-    "fullname": "Utilisateur Plusieurs Missions",
+    "id": "membre.plusieurs.missions",
+    "fullname": "Membre Plusieurs Missions",
     "missions": [
       { 
         "start": "2016-11-03",

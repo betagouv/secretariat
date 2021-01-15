@@ -28,7 +28,7 @@ describe('Marrainage', () => {
         .post('/marrainage')
         .type('form')
         .send({
-          newcomerId: 'utilisateur.actif',
+          newcomerId: 'membre.actif',
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -37,8 +37,8 @@ describe('Marrainage', () => {
     });
 
     it('should email newcomer and onboarder if accepted', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -58,15 +58,15 @@ describe('Marrainage', () => {
             const emailBody = this.sendEmailStub.args[0][2];
 
             subject.should.equal('Mise en contact 👋');
-            emailBody.should.include('Utilisateur Actif a accepté de te marrainer');
+            emailBody.should.include('Membre Actif a accepté de te marrainer');
             done();
           });
       });
     });
 
     it('should select and email a new onboarder if declined', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -96,8 +96,8 @@ describe('Marrainage', () => {
     });
 
     it('should now allow canceling a request', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -119,8 +119,8 @@ describe('Marrainage', () => {
     });
 
     it('should now allow reloading a request', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -147,15 +147,15 @@ describe('Marrainage', () => {
     it('should generate an email when sollicited', (done) => {
       chai.request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          newcomerId: 'utilisateur.actif',
+          newcomerId: 'membre.actif',
         })
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community/utilisateur.actif');
+          res.headers.location.should.equal('/community/membre.actif');
           this.sendEmailStub.calledOnce.should.be.true;
 
           const subject = this.sendEmailStub.args[0][1];
@@ -171,16 +171,16 @@ describe('Marrainage', () => {
     it('should add info in db when sollicited', (done) => {
       chai.request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          newcomerId: 'utilisateur.actif',
+          newcomerId: 'membre.actif',
         })
         .redirects(0)
-        .then(() => knex('marrainage').select().where({ username: 'utilisateur.actif' }))
+        .then(() => knex('marrainage').select().where({ username: 'membre.actif' }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          dbRes[0].username.should.equal('utilisateur.actif');
+          dbRes[0].username.should.equal('membre.actif');
         })
         .then(done)
         .catch(done);
@@ -189,23 +189,23 @@ describe('Marrainage', () => {
     it('should not allow expired users to create a request', (done) => {
       chai.request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('utilisateur.expire')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          newcomerId: 'utilisateur.actif',
+          newcomerId: 'membre.actif',
         })
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community/utilisateur.actif');
+          res.headers.location.should.equal('/community/membre.actif');
           this.sendEmailStub.notCalled.should.be.true;
           done();
         });
     });
 
     it('canceling a request redirects to the newcommer page', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -228,8 +228,8 @@ describe('Marrainage', () => {
     });
 
     it('canceling a request removes the DB entry', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -252,8 +252,8 @@ describe('Marrainage', () => {
     });
 
     it('reloading a request redirects to the newcommer page', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -276,8 +276,8 @@ describe('Marrainage', () => {
     });
 
     it('reloading a request increases the count of the DB entry', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
-      const onboarderId = 'utilisateur.actif';
+      const newcomerId = 'membre.nouveau';
+      const onboarderId = 'membre.actif';
 
       knex('marrainage').insert({
         username: newcomerId,
@@ -301,15 +301,15 @@ describe('Marrainage', () => {
     });
 
     it('should not choose a busy marrainage candidate', (done) => {
-      const newcomerId = 'utilisateur.nouveau';
+      const newcomerId = 'membre.nouveau';
       const busyOnboarders = [
-        'utilisateur.actif',
-        'utilisateur.parti',
+        'membre.actif',
+        'membre.parti',
         'julien.dauphant',
         'laurent.bossavit',
         'loup.wolff',
         'thomas.guillet',
-        'utilisateur.plusieurs.missions',
+        'membre.plusieurs.missions',
       ];
       const dbEntries = [];
       for (let i = 0; i < busyOnboarders.length; i += 1) {
@@ -322,7 +322,7 @@ describe('Marrainage', () => {
       knex('marrainage').insert(dbEntries).then(() => {
         chai.request(app)
           .post('/marrainage')
-          .set('Cookie', `token=${utils.getJWT('utilisateur.actif')}`)
+          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
           .type('form')
           .send({ newcomerId })
           .then(() => knex('marrainage').select().where({ username: newcomerId }))
@@ -339,8 +339,8 @@ describe('Marrainage', () => {
   describe('cronjob', () => {
     it('should reload stale marrainage requests', (done) => {
       const staleRequest = {
-        username: 'utilisateur.nouveau',
-        last_onboarder: 'utilisateur.parti',
+        username: 'membre.nouveau',
+        last_onboarder: 'membre.parti',
         created_at: new Date(new Date().setDate(new Date().getDate() - 3)),
         last_updated: new Date(new Date().setDate(new Date().getDate() - 3)),
         completed: false,
@@ -348,8 +348,8 @@ describe('Marrainage', () => {
       };
 
       const validRequest = {
-        username: 'utilisateur.actif',
-        last_onboarder: 'utilisateur.nouveau',
+        username: 'membre.actif',
+        last_onboarder: 'membre.nouveau',
         created_at: new Date(),
         last_updated: new Date(),
         completed: false,
@@ -362,8 +362,63 @@ describe('Marrainage', () => {
         /* eslint-disable global-require */
         const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
         this.clock.tick(1001);
+        this.listener = (response, obj, builder) => {
+          if (obj.method !== 'update') {
+            return;
+          }
+          knex('marrainage').select().where({ username: staleRequest.username })
+          .then((res) => {
+            res[0].count.should.equal(2);
+          })
+          .then(() => knex('marrainage').select().where({ username: validRequest.username }))
+          .then((res) => {
+            res[0].count.should.equal(1);
+            reloadMarrainageJob.stop();
+          })
+          .then(done)
+          .catch(done)
+          .finally(() => {
+            knex.off('query-response', this.listener); // remove listener else it runs in the next tests
+          });
+        };
+        knex.on('query-response', this.listener);
+      });
+    });
 
-        knex.on('query-response', (response, obj, builder) => {
+    it('should reload stale marrainage requests of edge case exactly two days ago at 00:00', (done) => {
+      const dateStaleRequest = new Date(new Date().setDate(new Date().getDate() - 2));
+      dateStaleRequest.setHours(11, 0, 0);
+      const staleRequest = {
+        username: 'membre.nouveau',
+        last_onboarder: 'membre.parti',
+        created_at: dateStaleRequest,
+        last_updated: dateStaleRequest,
+        completed: false,
+        count: 1,
+      };
+
+      const dateValidRequest = new Date(new Date().setDate(new Date().getDate() - 1));
+      dateValidRequest.setHours(23, 59, 59);
+
+      const validRequest = {
+        username: 'membre.actif',
+        last_onboarder: 'membre.nouveau',
+        created_at: dateValidRequest,
+        last_updated: dateValidRequest,
+        completed: false,
+        count: 1,
+      };
+
+      knex('marrainage').insert([staleRequest, validRequest]).then(() => {
+        // Disabels global require since requiring the cron job
+        // will immediatly start it.
+        /* eslint-disable global-require */
+        const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
+        // we start it manually as it may have been stopped in previous tests
+        reloadMarrainageJob.start();
+
+        this.clock.tick(1001);
+        this.listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
             return;
           }
@@ -376,8 +431,10 @@ describe('Marrainage', () => {
             res[0].count.should.equal(1);
           })
           .then(done)
-          .catch(done);
-        });
+          .catch(done)
+          .finally(() => knex.off('query-response', this.listener)); // remove listener else it runs in the next tests
+        };
+        knex.on('query-response', this.listener);
       });
     });
   });
