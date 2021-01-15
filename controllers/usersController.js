@@ -19,7 +19,6 @@ module.exports.createEmail = async function (username, creator, toEmail) {
 
   await BetaGouv.sendInfoToSlack(message);
   await BetaGouv.createEmail(username, password);
-  await createMarrainageRequest(username);
 
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
@@ -61,6 +60,7 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     await module.exports.createEmail(username, req.body.id, req.body.to_email);
+    await createMarrainageRequest(username);
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);

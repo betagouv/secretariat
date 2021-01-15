@@ -3,8 +3,24 @@ const { CronJob } = require('cron');
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const { createEmail } = require('../controllers/usersController');
+const createMarrainageRequest = require('../controllers/marrainageController').createRequestForUser;
 
-module.exports.createEmailAddresses = async function () {
+const createEmailAndMarrainage = async (user, creator) => {
+  await createEmail(user.id, creator, user.toEmail);
+  // once email is created we generate marrainage request
+  const dateInTwoMonth = new Date();
+  dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2)
+  try {
+    const userStartDate = new Date(user.start)
+    if (userStartDate < dateInTwoMonth) {
+      await createMarrainageRequest(user.id);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+module.exports.createEmailAddresses = async function createEmailAddresses() {
   console.log('Demarrage du cron job pour la création des adresses email');
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
@@ -25,7 +41,9 @@ module.exports.createEmailAddresses = async function () {
   for (let i = 0; i < concernedUsers.length; i += 1) {
     const emailInfos = await BetaGouv.emailInfos(concernedUsers[i].id);
     if (!emailInfos || !emailInfos.email) {
-      emailCreationTasks.push(createEmail(concernedUsers[i].id, 'Secretariat Cron', concernedUsers[i].toEmail));
+      emailCreationTasks.push(
+        createEmailAndMarrainage(concernedUsers[i], 'Secretariat Cron', concernedUsers[i]),
+      );
     }
   }
 
