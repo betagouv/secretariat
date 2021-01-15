@@ -99,6 +99,29 @@ fieldset {
   max-width: 1000px;
 }
 
+.collapse {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  text-align: left;
+  font-size: 15px;
+  border:5px;
+}
+
+.collapse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapse-content.show {
+  display: block;
+}
+
+.collapse-content.hide {
+  display: none;
+}
+
 .panel {
   margin-bottom: var(--space-m);
   overflow-x: auto;

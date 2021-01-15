@@ -95,73 +95,98 @@
             <% if (emailInfos) { %>
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
             <% } %>
-            <h6 class="margin-10-0">Accéder au webmail</h6>
-            <p>
-                Tu peux consulter tes mails directement sur l'interface d'OVH. Elle n'est pas très
-                confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
-                accès à ton client web habituel
-            </p>
-            <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
-
-
-            <hr />
-            <h6 class="margin-10-0">Rediriger vers une autre adresse mail</h6>
-            <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
-            <% redirections.forEach(function(redirection) { %>
-                <div class="redirection-item">
-                    <%= redirection.to %>
+            <div class="collapse">
+                <div class="collapse-header">
+                    <h6 class="margin-10-0">Accéder au webmail</h6>
+                    <div>^</div>
+                </div>
+                <div class="collapse-content show">
+                    <p>
+                        Tu peux consulter tes mails directement sur l'interface d'OVH. Elle n'est pas très
+                        confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
+                        accès à ton client web habituel
+                    </p>
+                    <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
+                    <hr />
+                </div>
+            </div>
+            <div class="collapse">
+                <div class="collapse-header">
+                    <h6 class="margin-10-0">Rediriger vers une autre adresse mail</h6>
+                    <div>^</div>
+                </div>
+                <div class="collapse-content show">
+                    <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
+                    <% redirections.forEach(function(redirection) { %>
+                        <div class="!-item">
+                            <%= redirection.to %>
+                            <% if (canCreateRedirection) { %>
+                                <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                                <button class="redirection-remove button-outline small warning" type="submit">Supprimer</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                    <% if (redirections.length === 0) { %>
+                        <p><strong>Aucune redirections</strong></p>
+                    <% } %>
                     <% if (canCreateRedirection) { %>
-                        <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <button class="redirection-remove button-outline small warning" type="submit">Supprimer</button>
+                        <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                            <div class="form__group">
+                                <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
+                                <input name="to_email" type="email" required>
+                            </div>
+                            <div class="input__group margin-10-0">
+                            <input type="checkbox" name="keep_copy" value="true">
+                            <label>Garder une copie des emails si un compte existe</label>
+                            </div>
+                            <button class="button no-margin" type="submit">Ajouter la redirection</button>
+                        </form>
+                    <% } else { %>
+                        <% if (isExpired) { %>
+                        <div class="notification error">
+                            Le compte <%= userInfos.id %> est expiré.
+                        </div>
+                        <% } else { %>
+                        <div class="notification warning">
+                            Seul <%= userInfos.id %> peut créer ou modifier les redirections.
+                        </div>
+                        <% } %>
+                    <% } %>
+                    <hr />
+                </div>
+            </div>
+
+            <div class="collapse">
+                <div class="collapse-header">
+                    <h6 class="margin-10-0">Configurer son client mail</h6>
+                    <div>^</div>
+                </div>
+                <div class="collapse-content show">
+                    <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
+                    <hr />
+                </div>
+            </div>
+
+            <div class="collapse">
+                <div class="collapse-header">
+                    <h6 class="margin-10-0">Changer le mot de passe</h6>
+                    <div>^</div>
+                </div>
+                <div class="collapse-content show">
+                    <p>
+                        Nouveau mot de passe POP/IMAP/SMTP :<br .>
+                        Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
+                        d'espace au début ou à la fin.
+                    </p>
+                    <% if (canChangePassword) { %>
+                        <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                            <input name="new_password" type="password" minlength="9" required>
+                            <button class="button margin-10-0" type="submit">Changer</button>
                         </form>
                     <% } %>
                 </div>
-            <% }) %>
-            <% if (redirections.length === 0) { %>
-                <p><strong>Aucune redirections</strong></p>
-            <% } %>
-            <% if (canCreateRedirection) { %>
-                <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                    <div class="form__group">
-                        <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
-                        <input name="to_email" type="email" required>
-                    </div>
-                    <div class="input__group margin-10-0">
-                      <input type="checkbox" name="keep_copy" value="true">
-                      <label>Garder une copie des emails si un compte existe</label>
-                    </div>
-                    <button class="button no-margin" type="submit">Ajouter la redirection</button>
-                </form>
-            <% } else { %>
-                <% if (isExpired) { %>
-                  <div class="notification error">
-                    Le compte <%= userInfos.id %> est expiré.
-                  </div>
-                <% } else { %>
-                  <div class="notification warning">
-                    Seul <%= userInfos.id %> peut créer ou modifier les redirections.
-                  </div>
-                <% } %>
-            <% } %>
-
-
-            <hr />
-            <h6 class="margin-10-0">Configurer son client mail</h6>
-            <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
-
-            <hr />
-            <h6 class="margin-10-0">Changer le mot de passe</h6>
-            <p>
-                Nouveau mot de passe POP/IMAP/SMTP :<br .>
-                Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
-                d'espace au début ou à la fin.
-            </p>
-            <% if (canChangePassword) { %>
-                <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                    <input name="new_password" type="password" minlength="9" required>
-                    <button class="button margin-10-0" type="submit">Changer</button>
-                </form>
-              <% } %>
+            </div>
         </div>
     </div>
 
@@ -187,4 +212,24 @@
     <% } %>
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        const collapseElements = document.getElementsByClassName('collapse');
+        for (let elem of collapseElements) {
+            elem.addEventListener('click', event => {
+                const [contentElem] = elem.getElementsByClassName('collapse-content');
+                const isShow = contentElem.classList.contains('show')
+                if (isShow) {
+                    contentElem.classList.replace('show', 'hide');
+                } else {
+                    contentElem.classList.replace('hide', 'show');
+
+                }
+            });
+        }
+
+    });
+</script>
 <%- include('partials/nav-footer'); -%>
