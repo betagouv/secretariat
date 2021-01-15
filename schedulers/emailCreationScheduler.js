@@ -9,14 +9,11 @@ const createEmailAndMarrainage = async (user, creator) => {
   await createEmail(user.id, creator, user.toEmail);
   // once email is created we generate marrainage request
   const dateInTwoMonth = new Date();
-  dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2)
-  try {
-    const userStartDate = new Date(user.start)
-    if (userStartDate < dateInTwoMonth) {
-      await createMarrainageRequest(user.id);
-    }
-  } catch (e) {
-    console.error(e);
+  dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
+  const userStartDate = new Date(user.start);
+  if (userStartDate < dateInTwoMonth) {
+    // may throw an error when marrainage fail
+    await createMarrainageRequest(user.id);
   }
 };
 

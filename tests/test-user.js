@@ -628,7 +628,7 @@ describe('User', () => {
       const today = new Date();
       const startDate = new Date(today.setMonth(today.getMonth() + 3));
       const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
-      const test = nock(url)
+      nock(url)
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
           {
@@ -670,7 +670,51 @@ describe('User', () => {
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       });
       await createEmailAddresses();
-      test.isDone().should.be.true;
+      ovhEmailCreation.isDone().should.be.true;
+      this.sendEmailStub.calledOnce.should.be.true;
+      marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage.length.should.equal(0);
+    });
+
+    it('should create missing email accounts and not send error even if no marrainage possible', async () => {
+      utils.cleanMocks();
+      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'utilisateur.nouveau',
+            fullname: 'Utilisateur Nouveau',
+            missions: [
+              {
+                start: new Date().toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+        .persist();
+      utils.mockSlack();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      utils.mockOvhUserEmailInfos();
+      utils.mockOvhAllEmailInfos();
+
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+
+      let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage.length.should.equal(0);
+      await knex('users').insert({
+        username: 'utilisateur.nouveau',
+        secondary_email: 'utilisateur.nouveau.perso@example.com',
+      });
+      try {
+        await createEmailAddresses();
+      } catch (e) {
+        e.should.be.instanceOf(Error);
+        e.message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
+      }
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();

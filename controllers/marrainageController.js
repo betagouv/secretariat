@@ -105,9 +105,6 @@ module.exports.createRequestForUser = async function (userId) {
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
-    await knex('marrainage').insert({
-      username: newcomer.id,
-    });
     throw new Error("Aucun·e marrain·e n'est disponible pour le moment");
   }
 
