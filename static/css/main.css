@@ -110,8 +110,14 @@ fieldset {
 
 .collapse-header {
   display: flex;
+  border-bottom: 1px solid #EBEFF3;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 10px;
+}
+
+.collapse-header h6 {
+  margin-bottom: 0;
 }
 
 .collapse-content.show {
