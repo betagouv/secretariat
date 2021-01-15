@@ -100,7 +100,7 @@
             <div class="collapse">
                 <div class="collapse-header">
                     <h6 class="margin-10-0">Accéder au webmail</h6>
-                    <div class="fa fa-plus"></div>
+                    <div class="fa fa-chevron-down"></div>
                 </div>
                 <div class="collapse-content hide">
                     <p>
@@ -115,7 +115,7 @@
             <div class="collapse">
                 <div class="collapse-header">
                     <h6 class="margin-10-0">Rediriger vers une autre adresse mail</h6>
-                    <div class="fa fa-plus"></div>
+                    <div class="fa fa-chevron-down"></div>
                 </div>
                 <div class="collapse-content hide">
                     <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
@@ -162,7 +162,7 @@
             <div class="collapse">
                 <div class="collapse-header">
                     <h6 class="margin-10-0">Configurer son client mail</h6>
-                    <div class="fa fa-plus"></div>
+                    <div class="fa fa-chevron-down"></div>
                 </div>
                 <div class="collapse-content hide">
                     <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
@@ -173,7 +173,7 @@
             <div class="collapse">
                 <div class="collapse-header">
                     <h6 class="margin-10-0">Changer le mot de passe</h6>
-                    <div class="fa fa-plus"></div>
+                    <div class="fa fa-chevron-down"></div>
                 </div>
                 <div class="collapse-content hide">
                     <p>
@@ -223,13 +223,12 @@
             elem.addEventListener('click', event => {
 
                 const [contentEvent]  = event.target.getElementsByClassName('fa');
-                console.log(contentEvent.classList);
-                const isPlus = contentEvent.classList.contains('fa-plus');
-                console.log(isPlus);
-                if (isPlus) {
-                    contentEvent.classList.replace('fa-plus', 'fa-minus');
+                const isDown = contentEvent.classList.contains('fa-chevron-down');
+                console.log(isDown);
+                if (isDown) {
+                    contentEvent.classList.replace('fa-chevron-down', 'fa-chevron-up');
                 } else {
-                    contentEvent.classList.replace('fa-minus', 'fa-plus');
+                    contentEvent.classList.replace('fa-chevron-up', 'fa-chevron-down');
                 };
 
                 const [contentElem] = elem.getElementsByClassName('collapse-content');
