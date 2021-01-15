@@ -1,7 +1,9 @@
 require('dotenv').config();
 const { CronJob } = require('cron');
+const config = require('../config');
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
+const utils = require('../controllers/utils');
 const { createEmail } = require('../controllers/usersController');
 const createMarrainageRequest = require('../controllers/marrainageController').createRequestForUser;
 
@@ -13,7 +15,17 @@ const createEmailAndMarrainage = async (user, creator) => {
   const userStartDate = new Date(user.start);
   if (userStartDate < dateInTwoMonth) {
     // may throw an error when marrainage fail
-    await createMarrainageRequest(user.id);
+    try {
+      await createMarrainageRequest(user.id);
+    } catch (e) {
+      console.warn(e);
+      const recipientEmailList = [config.senderEmail];
+      const emailContent = `
+        <p>Bonjour,</p>
+        <p>Erreur de création de la demande de marrainage pour ${user.id} avec l'erreur :</>
+        <p>${e.message}</p>`;
+      utils.sendMail(recipientEmailList, `La demande de marrainage pour ${user.id} n'a pas fonctionné`, emailContent);
+    }
   }
 };
 
@@ -39,7 +51,7 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
     const emailInfos = await BetaGouv.emailInfos(concernedUsers[i].id);
     if (!emailInfos || !emailInfos.email) {
       emailCreationTasks.push(
-        createEmailAndMarrainage(concernedUsers[i], 'Secretariat Cron', concernedUsers[i]),
+        createEmailAndMarrainage(concernedUsers[i], 'Secretariat Cron'),
       );
     }
   }

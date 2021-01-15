@@ -702,6 +702,7 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
+      const consoleSpy = sinon.spy(console, 'warn');
 
       let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
       marrainage.length.should.equal(0);
@@ -709,16 +710,13 @@ describe('User', () => {
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
       });
-      try {
-        await createEmailAddresses();
-      } catch (e) {
-        e.should.be.instanceOf(Error);
-        e.message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
-      }
+      await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.sendEmailStub.calledOnce.should.be.true;
+      consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
+      this.sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
       marrainage.length.should.equal(0);
+      console.warn.restore();
     });
 
     it('should not create email accounts if already created', (done) => {
