@@ -665,21 +665,6 @@ describe('User', () => {
 
       let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
       marrainage.length.should.equal(0);
-      // console.log('LCS URL TEST', url);
-      // const test = nock(url)
-      //   .get((uri) => uri.includes('authors.json'))
-      //   .reply(200, [
-      //     {
-      //       id: 'utilisateur.nouveau',
-      //       fullname: 'Utilisateur Nouveau',
-      //       missions: [
-      //         {
-      //           start: startDate.toISOString().split('T')[0],
-      //         },
-      //       ],
-      //     },
-      //   ])
-      //   .persist();
       await knex('users').insert({
         username: 'utilisateur.nouveau',
         secondary_email: 'utilisateur.nouveau.perso@example.com',
