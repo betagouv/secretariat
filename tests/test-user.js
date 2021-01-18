@@ -73,7 +73,7 @@ describe('User', () => {
 
     it('should ask OVH to create an email and should send a console.warn if no marain.e available', (done) => {
       utils.cleanMocks();
-      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
       nock(url)
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
@@ -644,7 +644,7 @@ describe('User', () => {
 
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
       utils.cleanMocks();
-      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
       nock(url)
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
