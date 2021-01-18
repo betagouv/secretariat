@@ -17,7 +17,7 @@ const createEmailAndMarrainage = async (user, creator) => {
     try {
       await createMarrainageRequest(user.id);
     } catch (e) {
-      // throw an error when marrainage fail
+      // send an email to secretariat when marrainage request fails
       console.warn(e);
       const recipientEmailList = [config.senderEmail];
       const emailContent = `
