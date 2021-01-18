@@ -566,8 +566,8 @@ describe('User', () => {
       const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
       console.log([
         {
-          id: 'utilisateur.nouveau',
-          fullname: 'Utilisateur Nouveau',
+          id: 'membre.nouveau',
+          fullname: 'membre Nouveau',
           missions: [
             {
               start: new Date().toISOString().split('T')[0],
@@ -579,8 +579,8 @@ describe('User', () => {
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
           {
-            id: 'utilisateur.actif',
-            fullname: 'Utilisateur Actif',
+            id: 'membre.actif',
+            fullname: 'membre Actif',
             missions: [
               {
                 start: '2016-11-03',
@@ -590,8 +590,8 @@ describe('User', () => {
             ],
           },
           {
-            id: 'utilisateur.nouveau',
-            fullname: 'Utilisateur Nouveau',
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
             missions: [
               {
                 start: new Date().toISOString().split('T')[0],
@@ -608,19 +608,19 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
       .post(/^.*email\/domain\/.*\/account/)
       .reply(200);
-      let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
-        username: 'utilisateur.nouveau',
-        secondary_email: 'utilisateur.nouveau.perso@example.com',
+        username: 'membre.nouveau',
+        secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
       test.isDone().should.be.true;
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(1);
-      marrainage[0].username.should.equal('utilisateur.nouveau');
+      marrainage[0].username.should.equal('membre.nouveau');
       marrainage[0].last_onboarder.should.not.be.null;
     });
 
@@ -633,8 +633,8 @@ describe('User', () => {
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
           {
-            id: 'utilisateur.actif',
-            fullname: 'Utilisateur Actif',
+            id: 'membre.actif',
+            fullname: 'membre Actif',
             missions: [
               {
                 start: '2016-11-03',
@@ -644,8 +644,8 @@ describe('User', () => {
             ],
           },
           {
-            id: 'utilisateur.nouveau',
-            fullname: 'Utilisateur Nouveau',
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
             missions: [
               {
                 start: startDate.toISOString().split('T')[0],
@@ -664,16 +664,16 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
-        username: 'utilisateur.nouveau',
-        secondary_email: 'utilisateur.nouveau.perso@example.com',
+        username: 'membre.nouveau',
+        secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledOnce.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
     });
 
@@ -684,8 +684,8 @@ describe('User', () => {
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
           {
-            id: 'utilisateur.nouveau',
-            fullname: 'Utilisateur Nouveau',
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
             missions: [
               {
                 start: new Date().toISOString().split('T')[0],
@@ -705,7 +705,7 @@ describe('User', () => {
         .reply(200);
       const consoleSpy = sinon.spy(console, 'warn');
 
-      let marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
         username: 'membre.nouveau',
@@ -715,7 +715,7 @@ describe('User', () => {
       ovhEmailCreation.isDone().should.be.true;
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       this.sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'utilisateur.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
       console.warn.restore();
     });
