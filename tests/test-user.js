@@ -66,13 +66,12 @@ describe('User', () => {
           })
           .catch(done)
           .finally(() => {
-            consoleSpy.restore();
             this.sendEmailStub.restore();
           });
       });
     });
 
-    it('should ask OVH to create an email and not create marrainage if no marain.s.es available', (done) => {
+    it('should ask OVH to create an email and should send a console.warn if no marain.e available', (done) => {
       utils.cleanMocks();
       const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
       nock(url)
