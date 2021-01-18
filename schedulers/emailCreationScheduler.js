@@ -14,10 +14,10 @@ const createEmailAndMarrainage = async (user, creator) => {
   dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
   const userStartDate = new Date(user.start);
   if (userStartDate < dateInTwoMonth) {
-    // may throw an error when marrainage fail
     try {
       await createMarrainageRequest(user.id);
     } catch (e) {
+      // throw an error when marrainage fail
       console.warn(e);
       const recipientEmailList = [config.senderEmail];
       const emailContent = `

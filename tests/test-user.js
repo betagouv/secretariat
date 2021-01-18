@@ -24,25 +24,107 @@ describe('User', () => {
         });
     });
   });
-  
-  
   describe('POST /users/:username/email authenticated', () => {
-    it('should ask OVH to create an email', (done) => {
+    before(async () => {
+      await knex('marrainage').truncate();
+    });
+
+    beforeEach((done) => {
+      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      done();
+    });
+
+    afterEach(async () => {
+      await knex('marrainage').truncate();
+      this.sendEmailStub.restore();
+    });
+
+    it('should ask OVH to create an email and create marrainage', (done) => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
+      knex('marrainage').where({ username: 'membre.nouveau' }).select()
+      .then((marrainage) => {
+        marrainage.length.should.equal(0);
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/users/membre.nouveau/email')
+          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+          .type('form')
+          .send({
+            to_email: 'test@example.com',
+          })
+          .then(async (err, res) => {
+            ovhEmailCreation.isDone().should.be.true;
+            this.sendEmailStub.calledTwice.should.be.true;
+            const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+            marrainage.length.should.equal(1);
+            marrainage[0].username.should.equal('membre.nouveau');
+            marrainage[0].last_onboarder.should.not.be.null;
+            done();
+          })
+          .catch(done)
+          .finally(() => {
+            consoleSpy.restore();
+            this.sendEmailStub.restore();
+          });
+      });
+    });
 
-      chai.request(app)
-        .post('/users/membre.nouveau/email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .type('form')
-        .send({
-          to_email: 'test@example.com',
-        })
-        .end((err, res) => {
-          ovhEmailCreation.isDone().should.be.true;
-          done();
-        });
+    it('should ask OVH to create an email and not create marrainage if no marain.s.es available', (done) => {
+      utils.cleanMocks();
+      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                start: new Date().toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+        .persist();
+      utils.mockSlack();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      utils.mockOvhUserEmailInfos();
+      utils.mockOvhAllEmailInfos();
+      const consoleSpy = sinon.spy(console, 'warn');
+
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+      knex('marrainage').where({ username: 'membre.nouveau' }).select()
+      .then((marrainage) => {
+        marrainage.length.should.equal(0);
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/users/membre.nouveau/email')
+          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+          .type('form')
+          .send({
+            to_email: 'test@example.com',
+          })
+          .then(async (err, res) => {
+            ovhEmailCreation.isDone().should.be.true;
+            this.sendEmailStub.calledTwice.should.be.true;
+            consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
+            const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+            marrainage.length.should.equal(0);
+            done();
+          })
+          .catch(done)
+          .finally(() => {
+            consoleSpy.restore();
+            this.sendEmailStub.restore();
+          });
+      });
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {

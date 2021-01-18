@@ -60,7 +60,17 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     await module.exports.createEmail(username, req.body.id, req.body.to_email);
-    await createMarrainageRequest(username);
+    try {
+      await createMarrainageRequest(username);
+    } catch (e) {
+      console.warn(e);
+      const recipientEmailList = [config.senderEmail];
+      const emailContent = `
+        <p>Bonjour,</p>
+        <p>Erreur de création de la demande de marrainage pour ${username} avec l'erreur :</>
+        <p>${e.message}</p>`;
+      utils.sendMail(recipientEmailList, `La demande de marrainage pour ${username} n'a pas fonctionné`, emailContent);
+    }
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);
