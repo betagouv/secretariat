@@ -64,17 +64,12 @@ module.exports.createEmailForUser = async function (req, res) {
       await createMarrainageRequest(username);
     } catch (e) {
       console.warn(e);
-      const regex = /[a-z.-]/gm;
-      // test username is in valid format to prevent HTML injection vulnerability
-      if (regex.test(username)) {
-        let test = username;
-        const recipientEmailList = [config.senderEmail];
-        const emailContent = `
-          <p>Bonjour,</p>
-          <p>Erreur de création de la demande de marrainage pour ${test} avec l'erreur :</>
-          <p>${e.message}</p>`;
-        utils.sendMail(recipientEmailList, `La demande de marrainage pour ${test} n'a pas fonctionné`, emailContent);
-      }
+      const recipientEmailList = [config.senderEmail];
+      const emailContent = `
+        <p>Bonjour,</p>
+        <p>Erreur de création de la demande de marrainage pour ${test} avec l'erreur :</>
+        <p>${e.message}</p>`;
+      utils.sendMail(recipientEmailList, `La demande de marrainage pour ${test} n'a pas fonctionné`, emailContent);
     }
 
     req.flash('message', 'Le compte email a bien été créé.');
