@@ -646,18 +646,7 @@ describe('User', () => {
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
       utils.cleanMocks();
       const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
-      console.log([
-        {
-          id: 'membre.nouveau',
-          fullname: 'membre Nouveau',
-          missions: [
-            {
-              start: new Date().toISOString().split('T')[0],
-            },
-          ],
-        },
-      ]);
-      const test = nock(url)
+      nock(url)
         .get((uri) => uri.includes('authors.json'))
         .reply(200, [
           {
@@ -697,7 +686,6 @@ describe('User', () => {
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
-      test.isDone().should.be.true;
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
