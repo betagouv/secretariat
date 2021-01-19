@@ -30,7 +30,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
 };
 
 module.exports.createEmailForUser = async function (req, res) {
-  const { username } = req.params;
+  const username = req.sanitize(req.params.username);
   const isCurrentUser = req.user.id === username;
 
   try {
