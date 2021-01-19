@@ -63,10 +63,13 @@
 
             <div class="form__group">
                 <label for="github">
-                    <span>Utilisateur Github</span><br />
+                    <span>Nom d'utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
                 </label>
-                <input name="github" pattern="^(?!http://|https://).+" value="<%= formData.github %>" title="Pas d'url, juste ton nom d'utilisateur Github">
+                <input name="github" pattern="^(?!http://|https://).+"
+                    value="<%= formData.github %>"
+                    title="Pas d'url, juste ton nom d'utilisateur Github sans l'@"
+                    placeholder="Pas d'url, juste ton nom d'utilisateur Github sans l'@">
             </div>
 
 
