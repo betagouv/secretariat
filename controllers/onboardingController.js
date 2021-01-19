@@ -4,6 +4,7 @@ const config = require('../config');
 const utils = require('./utils');
 const BetaGouv = require('../betagouv');
 const knex = require('../db');
+const { isValidGithubUserName } = require('../lib/github');
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -108,7 +109,7 @@ module.exports.postForm = async function (req, res) {
     }
 
     function shouldBeOnlyUsername(field, value) {
-      if (!value || (!value.startsWith('http') && !value.startsWith('https') && !value.includes('/'))) {
+      if (isValidGithubUserName(value)) {
         return value;
       }
       formValidationErrors.push(`${field} : la valeur doit être le nom du membre seul et ne doit pas être l'URL du membre`);
