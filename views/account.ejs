@@ -98,26 +98,30 @@
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
             <% } %>
             <div class="collapse">
-                <div class="collapse-header">
-                    <h6 class="margin-10-0">Accéder au webmail</h6>
-                    <div class="fa fa-chevron-down"></div>
-                </div>
-                <div class="collapse-content hide">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Accéder au webmail
+                        <div class="chevron fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
                     <p>
                         Tu peux consulter tes mails directement sur l'interface d'OVH. Elle n'est pas très
                         confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
-                        accès à ton client web habituel
+                        accès à ton client web habituel 
                     </p>
                     <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
                     <hr />
                 </div>
             </div>
             <div class="collapse">
-                <div class="collapse-header">
-                    <h6 class="margin-10-0">Rediriger vers une autre adresse mail</h6>
-                    <div class="fa fa-chevron-down"></div>
-                </div>
-                <div class="collapse-content hide">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Rediriger vers une autre adresse mail
+                        <div class="chevron fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
                     <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
                     <% redirections.forEach(function(redirection) { %>
                         <div class="!-item">
@@ -160,22 +164,25 @@
             </div>
 
             <div class="collapse">
-                <div class="collapse-header">
-                    <h6 class="margin-10-0">Configurer son client mail</h6>
-                    <div class="fa fa-chevron-down"></div>
-                </div>
-                <div class="collapse-content hide">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer son client mail
+                        <div class="chevron fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
                     <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
                     <hr />
                 </div>
             </div>
-
             <div class="collapse">
-                <div class="collapse-header">
-                    <h6 class="margin-10-0">Changer le mot de passe</h6>
-                    <div class="fa fa-chevron-down"></div>
-                </div>
-                <div class="collapse-content hide">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Changer le mot de passe
+                        <div class="chevron fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
                     <p>
                         Nouveau mot de passe POP/IMAP/SMTP :<br .>
                         Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
@@ -217,29 +224,20 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        
-        const collapseElements = document.getElementsByClassName('collapse');
-        for (let elem of collapseElements) {
-            elem.addEventListener('click', event => {
 
-                const [contentEvent]  = event.target.getElementsByClassName('fa');
-                const isDown = contentEvent.classList.contains('fa-chevron-down');
-                console.log(isDown);
-                if (isDown) {
-                    contentEvent.classList.replace('fa-chevron-down', 'fa-chevron-up');
-                } else {
-                    contentEvent.classList.replace('fa-chevron-up', 'fa-chevron-down');
-                };
+        const headings = document.querySelectorAll('h6');
 
-                const [contentElem] = elem.getElementsByClassName('collapse-content');
-                const isShow = contentElem.classList.contains('show');
-                if (isShow) {
-                    contentElem.classList.replace('show', 'hide');
-                } else {
-                    contentElem.classList.replace('hide', 'show');
-                }
-            });
-        }
+        Array.prototype.forEach.call(headings, heading => {
+            let btn = heading.querySelector('button')
+            let target = heading.nextElementSibling
+
+            btn.onclick = () => {
+            let expanded = btn.getAttribute('aria-expanded') === 'true' || false
+
+            btn.setAttribute('aria-expanded', !expanded)
+            target.hidden = expanded    
+            }
+        })
     });
 </script>
 <%- include('partials/nav-footer'); -%>
