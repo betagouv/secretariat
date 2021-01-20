@@ -99,33 +99,26 @@ fieldset {
   max-width: 1000px;
 }
 
+h6 button {
+  all: inherit;
+  border-bottom: 1px solid #EBEFF3;
+  width: 100%;
+}
+
 .collapse {
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-  text-align: left;
-  font-size: 15px;
-  border:5px;
 }
 
 .collapse-header {
   display: flex;
-  border-bottom: 1px solid #EBEFF3;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
 }
 
-.collapse-header h6 {
-  margin-bottom: 0;
-}
-
-.collapse-content.show {
-  display: block;
-}
-
-.collapse-content.hide {
-  display: none;
+.chevron {
+  display: flex;
+  cursor: pointer;
 }
 
 .panel {
