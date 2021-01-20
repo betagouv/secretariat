@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
-const createMarrainageRequest = require('./marrainageController').createRequestForUser;
+const { createRequestForUser } = require('./marrainageController');
 
 module.exports.createEmail = async function (username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -61,15 +61,11 @@ module.exports.createEmailForUser = async function (req, res) {
 
     await module.exports.createEmail(username, req.body.id, req.body.to_email);
     try {
-      await createMarrainageRequest(username);
+      // create marrainage request
+      await createRequestForUser(username);
     } catch (e) {
+      // marrainage may fail if no member available
       console.warn(e);
-      const recipientEmailList = [config.senderEmail];
-      const emailContent = `
-        <p>Bonjour,</p>
-        <p>Erreur de création de la demande de marrainage pour ${username} avec l'erreur :</>
-        <p>${e.message}</p>`;
-      utils.sendMail(recipientEmailList, `La demande de marrainage pour ${username} n'a pas fonctionné`, emailContent);
     }
 
     req.flash('message', 'Le compte email a bien été créé.');

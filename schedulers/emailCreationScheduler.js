@@ -5,7 +5,7 @@ const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const utils = require('../controllers/utils');
 const { createEmail } = require('../controllers/usersController');
-const createMarrainageRequest = require('../controllers/marrainageController').createRequestForUser;
+const { createRequestForUser } = require('../controllers/marrainageController');
 
 const createEmailAndMarrainage = async (user, creator) => {
   await createEmail(user.id, creator, user.toEmail);
@@ -15,16 +15,11 @@ const createEmailAndMarrainage = async (user, creator) => {
   const userStartDate = new Date(user.start);
   if (userStartDate < dateInTwoMonth) {
     try {
-      await createMarrainageRequest(user.id);
+      // create marrainage request
+      await createRequestForUser(user.id);
     } catch (e) {
-      // send an email to secretariat when marrainage request fails
+      // marrainage may fail if no member available
       console.warn(e);
-      const recipientEmailList = [config.senderEmail];
-      const emailContent = `
-        <p>Bonjour,</p>
-        <p>Erreur de création de la demande de marrainage pour ${user.id} avec l'erreur :</>
-        <p>${e.message}</p>`;
-      utils.sendMail(recipientEmailList, `La demande de marrainage pour ${user.id} n'a pas fonctionné`, emailContent);
     }
   }
 };

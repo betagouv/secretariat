@@ -105,7 +105,14 @@ module.exports.createRequestForUser = async function (userId) {
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
-    throw new Error("Aucun·e marrain·e n'est disponible pour le moment");
+    const recipientEmailList = [config.senderEmail];
+    const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
+    const emailContent = `
+      <p>Bonjour,</p>
+      <p>Erreur de création de la demande de marrainage pour ${userId} avec l'erreur :</>
+      <p>${errorMessage}</p>`;
+    utils.sendMail(recipientEmailList, `La demande de marrainage pour ${userId} n'a pas fonctionné`, emailContent);
+    throw new Error(errorMessage);
   }
 
   await knex('marrainage').insert({
