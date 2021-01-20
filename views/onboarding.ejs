@@ -66,7 +66,7 @@
                     <span>Nom d'utilisateur Github</span><br />
                     Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
                 </label>
-                <input name="github" pattern="^(?!http://|https://).+"
+                <input name="github" pattern="^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$"
                     value="<%= formData.github %>"
                     title="Pas d'url, juste ton nom d'utilisateur Github sans l'@"
                     placeholder="Pas d'url, juste ton nom d'utilisateur Github sans l'@">
