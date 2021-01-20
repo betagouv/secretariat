@@ -16,6 +16,7 @@ describe('Github lib', () => {
       it('should return false if github input starts or ends with a hyphen ', () => {
         isValidGithubUserName('-username').should.be.false;
         isValidGithubUserName('username-').should.be.false;
+        isValidGithubUserName('user-name').should.be.true;
       });
 
       it('should return true if username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen', () => {
