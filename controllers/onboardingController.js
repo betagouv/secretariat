@@ -112,7 +112,7 @@ module.exports.postForm = async function (req, res) {
       if (isValidGithubUserName(value)) {
         return value;
       }
-      formValidationErrors.push(`${field} : la valeur doit être le nom du membre seul et ne doit pas être l'URL du membre`);
+      formValidationErrors.push(`${field} : la valeur doit être le nom du membre seul et ne doit pas être l'URL du membre ni commencer avec "@"`);
       return null;
     }
 
