@@ -99,11 +99,6 @@ fieldset {
   max-width: 1000px;
 }
 
-.icon {
-  display: flex;
-  cursor: pointer;
-}
-
 .panel {
   margin-bottom: var(--space-m);
   overflow-x: auto;

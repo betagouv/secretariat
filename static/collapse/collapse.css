@@ -5,18 +5,23 @@
     width: 100%;
 }
 
-    .collapse-header button:focus {
+.collapse-header button:focus {
     border-radius: 3px;
     background-color: var(--theme-background-grey);
 }
 
-    .collapse {
+.collapse {
     display: flex;
     flex-direction: column;
 }
 
-    .collapse-header {
+.collapse-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
+.collapse-icon {
+    display: flex;
+    cursor: pointer;
+  }
