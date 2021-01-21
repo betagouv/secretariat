@@ -9,11 +9,10 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.onclick = () => {
             let expanded = btn.getAttribute('aria-expanded') === 'true' || false
 
-            const isDown = btn.querySelector('div').classList.contains('fa-chevron-down')
-            if (isDown) {
-                btn.querySelector('div').classList.replace('fa-chevron-down', 'fa-chevron-up');
-            } else {
+            if (expanded) {
                 btn.querySelector('div').classList.replace('fa-chevron-up', 'fa-chevron-down');
+            } else {
+                btn.querySelector('div').classList.replace('fa-chevron-down', 'fa-chevron-up');
             }
 
             btn.setAttribute('aria-expanded', !expanded)
