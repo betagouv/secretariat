@@ -124,7 +124,7 @@
                 <div hidden class="collapse-content">
                     <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
                     <% redirections.forEach(function(redirection) { %>
-                        <div class="!-item">
+                        <div class="redirection-item">
                             <%= redirection.to %>
                             <% if (canCreateRedirection) { %>
                                 <form class="redirection-form" action="/users/<%= userInfos.id %>/redirections/<%= redirection.to %>/delete" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
