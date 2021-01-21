@@ -101,6 +101,7 @@ fieldset {
 
 h6 button {
   all: inherit;
+  cursor: pointer;
   border-bottom: 1px solid #EBEFF3;
   width: 100%;
 }
