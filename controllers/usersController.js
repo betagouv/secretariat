@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
+const { createRequestForUser } = require('./marrainageController');
 
 module.exports.createEmail = async function (username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -29,7 +30,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
 };
 
 module.exports.createEmailForUser = async function (req, res) {
-  const { username } = req.params;
+  const username = req.sanitize(req.params.username);
   const isCurrentUser = req.user.id === username;
 
   try {
@@ -59,6 +60,13 @@ module.exports.createEmailForUser = async function (req, res) {
     }
 
     await module.exports.createEmail(username, req.body.id, req.body.to_email);
+    try {
+      // create marrainage request
+      await createRequestForUser(username);
+    } catch (e) {
+      // marrainage may fail if no member available
+      console.warn(e);
+    }
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);

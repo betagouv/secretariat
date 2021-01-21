@@ -100,26 +100,41 @@ module.exports.reloadMarrainage = async function (newcomerId) {
   return { newcomer, onboarder };
 };
 
+module.exports.createRequestForUser = async function (userId) {
+  const newcomer = await BetaGouv.userInfosById(userId);
+  const onboarder = await selectRandomOnboarder(newcomer.id);
+
+  if (!onboarder) {
+    const recipientEmailList = [config.senderEmail];
+    const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
+    const emailContent = `
+      <p>Bonjour,</p>
+      <p>Erreur de création de la demande de marrainage pour ${userId} avec l'erreur :</>
+      <p>${errorMessage}</p>`;
+    utils.sendMail(recipientEmailList, `La demande de marrainage pour ${userId} n'a pas fonctionné`, emailContent);
+    throw new Error(errorMessage);
+  }
+
+  await knex('marrainage').insert({
+    username: newcomer.id,
+    last_onboarder: onboarder.id,
+  });
+  await sendOnboarderRequestEmail(newcomer, onboarder);
+  return {
+    newcomer,
+    onboarder,
+  };
+};
+
 module.exports.createRequest = async function (req, res) {
   try {
+    const newcomerId = req.sanitize(req.body.newcomerId);
     const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
     if (utils.checkUserIsExpired(loggedUserInfo)) {
       throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
     }
-    const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
-    const onboarder = await selectRandomOnboarder(newcomer.id);
+    const { newcomer, onboarder } = await module.exports.createRequestForUser(newcomerId);
     const { user } = req;
-
-    if (!onboarder) {
-      throw new Error("Aucun·e marrain·e n'est disponible pour le moment");
-    }
-
-    await knex('marrainage').insert({
-      username: newcomer.id,
-      last_onboarder: onboarder.id,
-    });
-    await sendOnboarderRequestEmail(newcomer, onboarder, req);
-
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
     if (newcomer.id === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
