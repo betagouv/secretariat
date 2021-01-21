@@ -1,0 +1,22 @@
+.collapse-header button {
+    all: inherit;
+    cursor: pointer;
+    border-bottom: 1px solid var(--theme-background-grey);
+    width: 100%;
+}
+
+    .collapse-header button:focus {
+    border-radius: 3px;
+    background-color: var(--theme-background-grey);
+}
+
+    .collapse {
+    display: flex;
+    flex-direction: column;
+}
+
+    .collapse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

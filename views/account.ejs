@@ -2,6 +2,9 @@
 
 <%- include('partials/nav-header'); -%>
 
+<link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<script src="/static/collapse/collapse.js"></script>
+
 <div class="module">
 
     <div class="row">
@@ -101,7 +104,7 @@
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
                         Accéder au webmail
-                        <div class="chevron fa fa-chevron-down"></div>
+                        <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
@@ -118,7 +121,7 @@
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
                         Rediriger vers une autre adresse mail
-                        <div class="chevron fa fa-chevron-down"></div>
+                        <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
@@ -167,7 +170,7 @@
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
                         Configurer son client mail
-                        <div class="chevron fa fa-chevron-down"></div>
+                        <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
@@ -179,7 +182,7 @@
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
                         Changer le mot de passe
-                        <div class="chevron fa fa-chevron-down"></div>
+                        <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
@@ -222,29 +225,4 @@
 
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const headings = document.querySelectorAll('h6');
-
-        Array.prototype.forEach.call(headings, heading => {
-            let btn = heading.querySelector('button')
-            let target = heading.nextElementSibling
-
-            btn.onclick = () => {
-            let expanded = btn.getAttribute('aria-expanded') === 'true' || false
-
-            const isDown = btn.querySelector('div').classList.contains('fa-chevron-down')
-            if (isDown) {
-                btn.querySelector('div').classList.replace('fa-chevron-down', 'fa-chevron-up');
-            } else {
-                btn.querySelector('div').classList.replace('fa-chevron-up', 'fa-chevron-down');
-            }
-
-            btn.setAttribute('aria-expanded', !expanded)
-            target.hidden = expanded    
-            }
-        })
-    });
-</script>
 <%- include('partials/nav-footer'); -%>
