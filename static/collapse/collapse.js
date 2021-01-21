@@ -7,17 +7,17 @@ document.addEventListener('DOMContentLoaded', function () {
         let target = heading.nextElementSibling
 
         btn.onclick = () => {
-        let expanded = btn.getAttribute('aria-expanded') === 'true' || false
+            let expanded = btn.getAttribute('aria-expanded') === 'true' || false
 
-        const isDown = btn.querySelector('div').classList.contains('fa-chevron-down')
-        if (isDown) {
-            btn.querySelector('div').classList.replace('fa-chevron-down', 'fa-chevron-up');
-        } else {
-            btn.querySelector('div').classList.replace('fa-chevron-up', 'fa-chevron-down');
-        }
+            const isDown = btn.querySelector('div').classList.contains('fa-chevron-down')
+            if (isDown) {
+                btn.querySelector('div').classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                btn.querySelector('div').classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
 
-        btn.setAttribute('aria-expanded', !expanded)
-        target.hidden = expanded    
+            btn.setAttribute('aria-expanded', !expanded)
+            target.hidden = expanded
         }
     })
 });
