@@ -7,6 +7,7 @@ const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
+const expressSanitizer = require('express-sanitizer');
 const config = require('./config');
 const knex = require('./db');
 
@@ -32,7 +33,7 @@ app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/templat
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
-
+app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const getJwtTokenForUser = (id) => jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
