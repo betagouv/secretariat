@@ -24,16 +24,15 @@ const createEmailAndMarrainage = async (user, creator) => {
   }
 };
 
-// get all accounts from OVH to check differences between registered and unregistered accounts
-const getUnregisteredOVHUsers = async (concernedUsers) => {
-  const allEmailsInfos = await BetaGouv.getAllEmailInfos();
-  console.warn('allEmailsInfos', allEmailsInfos);
+// get the difference between github users and ovh users
+const getUnregisteredOVHUsers = async (githubUsers) => {
+  const allOvhEmails = await BetaGouv.getAllEmailInfos();
 
-  if (allEmailsInfos !== null) {
-    return concernedUsers.filter((x) => !allEmailsInfos.has(x.id));
+  if (allOvhEmails !== null) {
+    return githubUsers.filter((x) => allOvhEmails.includes(x.id));
   }
 
-  return concernedUsers;
+  return githubUsers;
 };
 
 module.exports.createEmailAddresses = async function createEmailAddresses() {
@@ -52,8 +51,6 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   }, []);
 
   const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
-
-  console.log('before map', unregisteredUsers);
 
   // create email and marrainage
   return Promise.all(

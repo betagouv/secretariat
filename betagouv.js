@@ -55,7 +55,7 @@ const betaOVH = {
   },
   getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
     const url = `/email/domain/${config.domain}/account/`;
-    console.info('my url', url);
+
     try {
       return await ovh.requestPromised('GET', url, {});
     } catch (err) {
