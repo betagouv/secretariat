@@ -24,10 +24,23 @@ const createEmailAndMarrainage = async (user, creator) => {
   }
 };
 
+// get all accounts from OVH to check differences between registered and unregistered accounts
+const getUnregisteredOVHUsers = async (concernedUsers) => {
+  const allEmailsInfos = await BetaGouv.getAllEmailInfos();
+  console.debug('allEmailsInfos', allEmailsInfos);
+
+  if (allEmailsInfos !== null) {
+    return concernedUsers.filter((x) => !allEmailsInfos.has(x.id));
+  }
+
+  return concernedUsers;
+};
+
 module.exports.createEmailAddresses = async function createEmailAddresses() {
   console.log('Demarrage du cron job pour la création des adresses email');
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
+
   const githubUsers = await BetaGouv.usersInfos();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
@@ -38,20 +51,12 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
     return acc;
   }, []);
 
-  const emailCreationTasks = [];
+  const unregisteredUsers = getUnregisteredOVHUsers(concernedUsers);
 
-  /* https://eslint.org/docs/rules/no-await-in-loop#when-not-to-use-it */
-  /* eslint-disable no-await-in-loop */
-  for (let i = 0; i < concernedUsers.length; i += 1) {
-    const emailInfos = await BetaGouv.emailInfos(concernedUsers[i].id);
-    if (!emailInfos || !emailInfos.email) {
-      emailCreationTasks.push(
-        createEmailAndMarrainage(concernedUsers[i], 'Secretariat Cron'),
-      );
-    }
-  }
-
-  return Promise.all(emailCreationTasks);
+  // create email and marrainage
+  return Promise.all(
+    unregisteredUsers.map((x) => createEmailAndMarrainage(x, 'Secretariat Cron')),
+  );
 };
 
 module.exports.emailCreationJob = new CronJob(
