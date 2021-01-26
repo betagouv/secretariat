@@ -1,4 +1,5 @@
 require('dotenv').config();
+const _ = require('lodash/array');
 const { CronJob } = require('cron');
 const config = require('../config');
 const knex = require('../db');
@@ -24,12 +25,16 @@ const createEmailAndMarrainage = async (user, creator) => {
   }
 };
 
+const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
+  return user.id === ovhAccountName;
+};
+
 // get the difference between github users and ovh users
 const getUnregisteredOVHUsers = async (githubUsers) => {
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
 
   if (allOvhEmails !== null) {
-    return githubUsers.filter((x) => allOvhEmails.includes(x.id));
+    return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
   }
 
   return githubUsers;
@@ -51,10 +56,9 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   }, []);
 
   const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
-
   // create email and marrainage
   return Promise.all(
-    unregisteredUsers.map((x) => createEmailAndMarrainage(x, 'Secretariat Cron')),
+    unregisteredUsers.map((user) => createEmailAndMarrainage(user, 'Secretariat Cron')),
   );
 };
 
