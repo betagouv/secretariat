@@ -29,7 +29,7 @@ const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
 };
 
-// get the difference between github users and ovh users
+// get users that have github acount and no email registered on ovh (yet)
 const getUnregisteredOVHUsers = async (githubUsers) => {
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
 
