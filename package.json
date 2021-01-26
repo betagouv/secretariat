@@ -35,7 +35,7 @@
     "node": ">=8.3.0"
   },
   "dependencies": {
-    "@octokit/request": "^5.4.12",
+    "@octokit/request": "^5.4.13",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
@@ -70,7 +70,7 @@
     "husky": "^4.3.8",
     "lint-staged": "^10.5.3",
     "mocha": "^8.2.1",
-    "nock": "^13.0.5",
+    "nock": "^13.0.6",
     "nodemon": "^2.0.7",
     "pg-connection-string": "^2.4.0",
     "prettier": "^2.2.1",
