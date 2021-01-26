@@ -7,6 +7,7 @@ const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
+const testUsers = require('./users.json');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -800,20 +801,19 @@ describe('User', () => {
       utils.mockOvhRedirections();
 
       // We return an email for membre.nouveau to indicate he already has one
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+
       nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(200, {
-          accountName: 'membre.nouveau',
-          email: 'membre.nouveau@example.com',
-        });
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, [newMember]);
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
       knex('users').insert({
-        username: 'membre.nouveau',
-        secondary_email: 'membre.nouveau.perso@example.com',
+        username: newMember.id,
+        secondary_email: newMember.email,
       }).then(async () => {
         await createEmailAddresses();
         ovhEmailCreation.isDone().should.be.false;
