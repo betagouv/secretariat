@@ -1,78 +1,114 @@
 <%- include('partials/nav-header'); -%>
-<link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'>
-<script src="/static/sortable/sortable.js"></script>
-<style media="screen">
-  .panel { overflow: scroll; }
-</style>
+    <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'>
+    <script src="/static/sortable/sortable.js"></script>
+    <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+    <style media="screen">
+        .panel {
+            overflow: scroll;
+        }
+    </style>
 
-<div class="module">
-    <div class="panel panel-full-width" id="all">
-        <h3>
-            Liste des emails
-        </h3>
-        <a href="#expired">⬇️ Voir les comptes expirés</a>
-        <hr />
-        <table class="sortable">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Fiche sur Github</th>
-                    <th>Date de fin OK</th>
-                    <th>Compte Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% emails.forEach(function(email) { %>
-                <tr>
-                    <td>
-                        <a href="/community/<%= email.id %>"><%= email.email %></a>
-                        <div data-id="<%= email.id %>" class="redirection-list">
-                            <% email.redirections.forEach(function(redirection) { %>
-                            <%= redirection %><br />
-                            <% }) %>
-                        </div>
-                    </td>
-                    <td><% if (email.github) { %><a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md" target="_blank">✔ Oui</a><% } else { %>❌ Non !<% } %></td>
-                    <td><% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                    <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
-    </div>
+    <div class="module">
+        <div class="panel panel-full-width" id="all">
+            <h3>
+                Liste des emails
+            </h3>
+            <a href="#expired">⬇️ Voir les comptes expirés</a>
+            <hr />
+            <div id="example-table"></div>
+            <table class="sortable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Fiche sur Github</th>
+                        <th>Date de fin OK</th>
+                        <th>Compte Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% emails.forEach(function(email) { %>
+                        <tr>
+                            <td>
+                                <a href="/community/<%= email.id %>">
+                                    <%= email.email %>
+                                </a>
+                                <div data-id="<%= email.id %>" class="redirection-list">
+                                    <% email.redirections.forEach(function(redirection) { %>
+                                        <%= redirection %><br />
+                                            <% }) %>
+                                </div>
+                            </td>
+                            <td>
+                                <% if (email.github) { %><a
+                                        href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md"
+                                        target="_blank">✔ Oui</a>
+                                    <% } else { %>❌ Non !<% } %>
+                            </td>
+                            <td>
+                                <% if (!email.expired) { %>✔ Oui<% } else { %>❌ Non !<% } %>
+                            </td>
+                            <td>
+                                <% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="panel panel-full-width" id="expired">
-        <h3>
-            Comptes expirés
-        </h3>
-        <a href="#all">⬆️ Voir tous les comptes</a>
-        <hr />
-        <table class="sortable">
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Date de fin</th>
-                    <th>Compte Email</th>
-                    <th>Fiche sur Github</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% expiredEmails.forEach(function(email) { %>
-                <tr>
-                    <td><a href="/community/<%= email.id %>"><%= email.email %></a>
-                        <div data-id="<%= email.id %>" class="redirection-list">
-                            <% email.redirections.forEach(function(redirection) { %>
-                            <%= redirection %><br />
-                            <% }) %>
-                        </div>
-                    </td>
-                    <td><% if (email.endDate) { %><%= email.endDate %><% } else { %>❌ Non !<% } %></td>
-                    <td><% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %></td>
-                    <td><% if (email.github) { %><a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md" target="_blank">✔ Oui</a><% } else { %>❌ Non !<% } %></td>
-                </tr>
-                <% }) %>
-            </tbody>
-        </table>
+        <div class="panel panel-full-width" id="expired">
+            <h3>
+                Comptes expirés
+            </h3>
+            <a href="#all">⬆️ Voir tous les comptes</a>
+            <hr />
+            <table class="sortable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Date de fin</th>
+                        <th>Compte Email</th>
+                        <th>Fiche sur Github</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% expiredEmails.forEach(function(email) { %>
+                        <tr>
+                            <td><a href="/community/<%= email.id %>">
+                                    <%= email.email %>
+                                </a>
+                                <div data-id="<%= email.id %>" class="redirection-list">
+                                    <% email.redirections.forEach(function(redirection) { %>
+                                        <%= redirection %><br />
+                                            <% }) %>
+                                </div>
+                            </td>
+                            <td>
+                                <% if (email.endDate) { %>
+                                    <%= email.endDate %>
+                                        <% } else { %>❌ Non !<% } %>
+                            </td>
+                            <td>
+                                <% if (email.account) { %>✔ Oui<% } else { %>❌ Non !<% } %>
+                            </td>
+                            <td>
+                                <% if (email.github) { %><a
+                                        href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= email.id %>.md"
+                                        target="_blank">✔ Oui</a>
+                                    <% } else { %>❌ Non !<% } %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
-<%- include('partials/nav-footer'); -%>
+    <script type="text/javascript">
+        var data = JSON.parse('<%- JSON.stringify(emails) %>');
+        var table = new Tabulator("#example-table", {
+            data: data, //assign data to table
+            autoColumns: true, //create columns from data field names
+        });
+    </script>
+    <%- include('partials/nav-footer'); -%>
