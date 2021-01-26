@@ -39,7 +39,9 @@ const emailWithMetadataMemoized = PromiseMemoize(
           (acc, r) => (r.from === email ? [...acc, r.to] : acc),
           [],
         ),
+        ...(user ? user.missions[0] : {}), // get last mission
         account: accounts.includes(id),
+        start: user ? user.start : undefined,
         endDate: user ? user.end : undefined,
         expired:
           user
