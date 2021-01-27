@@ -33,11 +33,7 @@ const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
 const getUnregisteredOVHUsers = async (githubUsers) => {
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
 
-  if (allOvhEmails !== null) {
-    return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
-  }
-
-  return githubUsers;
+  return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
 };
 
 module.exports.createEmailAddresses = async function createEmailAddresses() {
@@ -56,6 +52,7 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   }, []);
 
   const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
+
   // create email and marrainage
   return Promise.all(
     unregisteredUsers.map((user) => createEmailAndMarrainage(user, 'Secretariat Cron')),

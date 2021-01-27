@@ -8,9 +8,12 @@ const _ = require('lodash/array');
 const emailCreationScheduler = rewire('../schedulers/emailCreationScheduler');
 
 describe('getUnregisteredOVHUsers', () => {
-  it('should return accounts not registered in OVH and registered in github ', async () => {
+  beforeEach(async () => {
     utils.cleanMocks();
     utils.mockOvhTime();
+  });
+
+  it('should return accounts not registered in OVH and registered in github ', async () => {
     const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
     const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
 
@@ -27,9 +30,6 @@ describe('getUnregisteredOVHUsers', () => {
   });
 
   it('should return no accounts if there is no new ones in github', async () => {
-    utils.cleanMocks();
-    utils.mockOvhTime();
-
     nock(/.*ovh.com/)
     .get(/^.*email\/domain\/.*\/account/)
     .reply(200, testUsers.map((user) => user.id));

@@ -675,22 +675,30 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
-      utils.mockOvhAllEmailInfos();
+
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
+
+      nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
+
       const ovhEmailCreation = nock(/.*ovh.com/)
       .post(/^.*email\/domain\/.*\/account/)
       .reply(200);
-      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+
+      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
-        username: 'membre.nouveau',
+        username: newMember.id,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(1);
-      marrainage[0].username.should.equal('membre.nouveau');
+      marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
     });
 
@@ -728,22 +736,28 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
-      utils.mockOvhAllEmailInfos();
+
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
+
+      nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
-        username: 'membre.nouveau',
+        username: newMember.id,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledOnce.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
     });
 
@@ -768,24 +782,30 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
-      utils.mockOvhAllEmailInfos();
+
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
+
+      nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
       const consoleSpy = sinon.spy(console, 'warn');
 
-      let marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
-        username: 'membre.nouveau',
+        username: newMember.id,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       this.sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
+      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       console.warn.restore();
     });
