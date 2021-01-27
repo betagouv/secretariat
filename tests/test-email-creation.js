@@ -1,9 +1,9 @@
 const chai = require('chai');
 const rewire = require('rewire');
 const nock = require('nock');
+const _ = require('lodash/array');
 const testUsers = require('./users.json');
 const utils = require('./utils.js');
-const _ = require('lodash/array');
 
 const emailCreationScheduler = rewire('../schedulers/emailCreationScheduler');
 
@@ -41,9 +41,6 @@ describe('getUnregisteredOVHUsers', () => {
   });
 
   it('should return all github accounts if there is nothing inside OVH ', async () => {
-    utils.cleanMocks();
-    utils.mockOvhTime();
-
     nock(/.*ovh.com/)
     .get(/^.*email\/domain\/.*\/account/)
     .reply(200, []);
