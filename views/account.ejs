@@ -184,16 +184,18 @@
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
-                    <p>
-                        Nouveau mot de passe POP/IMAP/SMTP :<br .>
-                        Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
-                        d'espace au début ou à la fin.
-                    </p>
                     <% if (canChangePassword) { %>
+                        <p>
+                            Nouveau mot de passe POP/IMAP/SMTP :<br .>
+                            Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
+                            d'espace au début ou à la fin.
+                        </p>
                         <form class="no-margin" action="/users/<%= userInfos.id %>/password" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                             <input name="new_password" type="password" minlength="9" required>
                             <button class="button margin-10-0" type="submit">Changer</button>
                         </form>
+                    <% } else { %>
+                        <p>Sans compte email, vous n'avez pas la possibilité de changer de mot de passe.</p>
                     <% } %>
                 </div>
             </div>
