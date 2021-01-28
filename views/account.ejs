@@ -175,9 +175,6 @@
                             <% } %>
                         </div>
                     <% }) %>
-                    <% if (redirections.length === 0) { %>
-                        <p><strong>Aucune redirections</strong></p>
-                    <% } %>
                     <% if (canCreateRedirection) { %>
                         <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                             <div class="form__group">
