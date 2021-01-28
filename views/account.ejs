@@ -102,12 +102,14 @@
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
-                        Configurer son client mail
+                        Configurer mon client mail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
-                    <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank">Documentation de configuration du webmail</a>
+                    <p>Configure ton client mail préféré (Mail, Thunderbird, Mailspring, Microsoft Courier, Gmail, etc) pour recevoir et envoyer des emails <%= emailInfos.email %> :</p>
+
+                    <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" class="button no-margin">Documentation de configuration du webmail</a>
                     <hr />
                 </div>
             </div>
@@ -116,7 +118,7 @@
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
-                        Changer le mot de passe
+                        Changer mon mot de passe
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
@@ -146,7 +148,7 @@
                     <p>
                         Tu peux consulter tes mails directement sur l'interface d'OVH. Elle n'est pas très
                         confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
-                        accès à ton client web habituel 
+                        accès à ton client web habituel.
                     </p>
                     <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
                     <hr />
@@ -161,7 +163,7 @@
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
-                    <b>Il n'est pas recommandé d'utiliser les redirections (des messages vont être perdus). Elle peut être utile si elle est cumulée avec une récupération pop ou une application type frontapp.</b>
+                    <p>🚨 Il n'est pas recommandé d'utiliser les redirections : <b>certains de vos messages seront perdus</b>. Elle peut être utile en complément d'une récupération <i>POP</i> ou d'une application type Frontapp.</p>
                     <% redirections.forEach(function(redirection) { %>
                         <div class="redirection-item">
                             <%= redirection.to %>
@@ -172,9 +174,6 @@
                             <% } %>
                         </div>
                     <% }) %>
-                    <% if (redirections.length === 0) { %>
-                        <p><strong>Aucune redirections</strong></p>
-                    <% } %>
                     <% if (canCreateRedirection) { %>
                         <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                             <div class="form__group">
