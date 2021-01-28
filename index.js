@@ -21,6 +21,7 @@ const accountController = require('./controllers/accountController');
 const communityController = require('./controllers/communityController');
 const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
+const passwordResetController = require('./controllers/passwordResetController');
 
 const app = express();
 
@@ -83,6 +84,9 @@ app.use(
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
+      '/passwordReset',
+      '/passwordReset/emailSent',
+      '/passwordReset/form',
     ],
   }),
 );
@@ -133,5 +137,11 @@ app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
+
+app.get('/passwordReset', passwordResetController.getPasswordReset);
+app.post('/passwordReset', passwordResetController.postPasswordReset);
+app.get('/passwordReset/emailSent', passwordResetController.getEmailSent);
+app.get('/passwordReset/form', passwordResetController.getForm);
+app.post('/passwordReset/form', passwordResetController.postForm);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

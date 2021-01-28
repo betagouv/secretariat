@@ -166,58 +166,58 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
   }
 };
 
+module.exports.updatePassword = async function (username, isCurrentUser, password, author) {
+  const user = await utils.userInfos(username, isCurrentUser);
+
+  if (!user.userInfos) {
+    throw new Error(
+      `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
+    );
+  }
+
+  if (user.isExpired) {
+    throw new Error(
+      `Le compte du membre ${username} est expiré.`,
+    );
+  }
+
+  if (!user.canChangePassword) {
+    throw new Error("Vous n'avez pas le droit de changer le mot de passe.");
+  }
+
+  if (
+    !password
+    || password.length < 9
+    || password.length > 30
+    || password !== password.trim()
+  ) {
+    throw new Error(
+      "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
+    );
+  }
+
+  const email = utils.buildBetaEmail(username);
+
+  console.log(`Changement de mot de passe by=${author}&email=${email}`);
+
+  const secretariatUrl = `${config.protocol}://${config.domain}`;
+  const message = `À la demande de ${author} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
+
+  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.changePassword(username, password);
+};
+
 module.exports.updatePasswordForUser = async function (req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
-
   try {
-    const user = await utils.userInfos(username, isCurrentUser);
-
-    if (!user.userInfos) {
-      throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
-      );
-    }
-
-    if (user.isExpired) {
-      throw new Error(
-        `Le compte du membre ${username} est expiré.`,
-      );
-    }
-
-    if (!user.canChangePassword) {
-      throw new Error("Vous n'avez pas le droit de changer le mot de passe.");
-    }
-
+    const isCurrentUser = req.user.id === username;
     const password = req.body.new_password;
 
-    if (
-      !password
-      || password.length < 9
-      || password.length > 30
-      || password !== password.trim()
-    ) {
-      throw new Error(
-        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
-      );
-    }
-
-    const email = utils.buildBetaEmail(username);
-
-    console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
-
-    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
-
-    await BetaGouv.sendInfoToSlack(message);
-    await BetaGouv.changePassword(username, password);
-
+    await module.exports.updatePassword(username, isCurrentUser, password, req.user.id);
     req.flash('message', 'Le mot de passe a bien été modifié.');
     res.redirect(`/community/${username}`);
   } catch (err) {
     console.error(err);
-
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
