@@ -52,6 +52,7 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   }, []);
 
   const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
+  console.log(`${unregisteredUsers.length} unregistered user(s) in OVH.`);
 
   // create email and marrainage
   return Promise.all(
