@@ -37,7 +37,7 @@ module.exports = {
   },
   mockOvhUserEmailInfos() {
     return nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account\/.*/)
+      .get(/^.*email\/domain\/.*\/account\/+.+/) // <-> /email/domain/betagouv.ovh/account/membre.actif
       .reply(404)
       .persist();
   },
