@@ -7,7 +7,7 @@ const utils = require('./utils.js');
 const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
-const sendInBlue = require('../lib/sendInBlue');
+const SendInBlue = require('../lib/sendInBlue');
 const testUsers = require('./users.json');
 
 describe('User', () => {
@@ -33,7 +33,7 @@ describe('User', () => {
 
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.sendInBlueAddContactToList = sinon.stub(sendInBlue, 'addContactToList').returns(true);
+      this.sendInBlueAddContactToList = sinon.stub(SendInBlue, 'addContactToList').returns(true);
       done();
     });
 
@@ -638,7 +638,7 @@ describe('User', () => {
 
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.sendInBlueAddContactToList = sinon.stub(sendInBlue, 'addContactToList').returns(true);
+      this.sendInBlueAddContactToList = sinon.stub(SendInBlue, 'addContactToList').returns(true);
       done();
     });
 
