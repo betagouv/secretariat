@@ -6,7 +6,7 @@ const utils = require('./utils');
 const { createRequestForUser } = require('./marrainageController');
 const SendInBlue = require('../lib/sendInBlue');
 
-module.exports.createEmail = async function (username, creator, toEmail, user) {
+module.exports.createEmail = async function (username, creator, toEmail, userInfo) {
   const email = utils.buildBetaEmail(username);
   const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
 
@@ -20,10 +20,7 @@ module.exports.createEmail = async function (username, creator, toEmail, user) {
 
   await BetaGouv.sendInfoToSlack(message);
   await BetaGouv.createEmail(username, password);
-  await SendInBlue.addContactToList(email, {
-    firstname: user.firstname,
-    lastname: user.lastname,
-  }, [process.env.SENDINBLUE_ONBOARD_USER_LIST_ID]);
+  await SendInBlue.addContactToList(email, userInfo, [process.env.SENDINBLUE_ONBOARD_USER_LIST_ID]);
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
   try {

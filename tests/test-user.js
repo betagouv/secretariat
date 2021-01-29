@@ -32,14 +32,14 @@ describe('User', () => {
 
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.sendInBlue = sinon.stub(sendinblue, 'addContactToList').returns(true);
+      this.sendInBlueAddContactToList = sinon.stub(sendinblue, 'addContactToList').returns(true);
       done();
     });
 
     afterEach(async () => {
       await knex('marrainage').truncate();
       this.sendEmailStub.restore();
-      this.sendInBlue.restore();
+      this.sendInBlueAddContactToList.restore();
     });
 
     it('should ask OVH to create an email and create marrainage', (done) => {
@@ -61,18 +61,14 @@ describe('User', () => {
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
             this.sendEmailStub.calledTwice.should.be.true;
-            this.sendInBlue.calledOnce.should.be.true;
+            this.sendInBlueAddContactToList.calledOnce.should.be.true;
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(1);
             marrainage[0].username.should.equal('membre.nouveau');
             marrainage[0].last_onboarder.should.not.be.null;
             done();
           })
-          .catch(done)
-          .finally(() => {
-            this.sendEmailStub.restore();
-            this.sendInBlue.restore();
-          });
+          .catch(done);
       });
     });
 
@@ -118,7 +114,10 @@ describe('User', () => {
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
             this.sendEmailStub.calledTwice.should.be.true;
-            this.sendInBlue.calledOnce.should.be.true;
+            this.sendInBlueAddContactToList.calledOnce.should.be.true;
+            this.sendInBlueAddContactToList.firstCall.args[0].should.equal(`membre.nouveau@${config.domain}`);
+            this.sendInBlueAddContactToList.firstCall.args[2][0].should
+              .equal(process.env.SENDINBLUE_ONBOARD_USER_LIST_ID);
             consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(0);
@@ -127,8 +126,6 @@ describe('User', () => {
           .catch(done)
           .finally(() => {
             consoleSpy.restore();
-            this.sendEmailStub.restore();
-            this.sendInBlue.restore();
           });
       });
     });
@@ -640,7 +637,7 @@ describe('User', () => {
 
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.sendInBlue = sinon.stub(sendinblue, 'addContactToList').returns(true);
+      this.sendInBlueAddContactToList = sinon.stub(sendinblue, 'addContactToList').returns(true);
       done();
     });
 
@@ -648,7 +645,7 @@ describe('User', () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
       this.sendEmailStub.restore();
-      this.sendInBlue.restore();
+      this.sendInBlueAddContactToList.restore();
     });
 
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
@@ -695,7 +692,7 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.sendInBlue.calledOnce.should.be.true;
+      this.sendInBlueAddContactToList.calledOnce.should.be.true;
       this.sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(1);
@@ -752,7 +749,7 @@ describe('User', () => {
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledOnce.should.be.true;
-      this.sendInBlue.calledOnce.should.be.true;
+      this.sendInBlueAddContactToList.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
     });
@@ -795,7 +792,7 @@ describe('User', () => {
       ovhEmailCreation.isDone().should.be.true;
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       this.sendEmailStub.calledTwice.should.be.true;
-      this.sendInBlue.calledOnce.should.be.true;
+      this.sendInBlueAddContactToList.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
       marrainage.length.should.equal(0);
       console.warn.restore();
@@ -830,7 +827,7 @@ describe('User', () => {
         await createEmailAddresses();
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
-        this.sendInBlue.calledOnce.should.be.false;
+        this.sendInBlueAddContactToList.calledOnce.should.be.false;
         done();
       });
     });
@@ -846,7 +843,7 @@ describe('User', () => {
         await createEmailAddresses();
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
-        this.sendInBlue.calledOnce.should.be.false;
+        this.sendInBlueAddContactToList.calledOnce.should.be.false;
         done();
       });
     });
