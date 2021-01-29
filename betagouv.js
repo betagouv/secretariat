@@ -53,6 +53,15 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
+    const url = `/email/domain/${config.domain}/account/`;
+
+    try {
+      return await ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
 
