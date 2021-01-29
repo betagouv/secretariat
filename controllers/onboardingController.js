@@ -208,6 +208,7 @@ module.exports.postForm = async function (req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       startups,
+      domain: config.domain,
       users,
       formData: req.body,
       useSelectList: isMobileFirefox,
