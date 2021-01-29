@@ -6,7 +6,8 @@ const utils = require('./utils');
 const { createRequestForUser } = require('./marrainageController');
 const SendInBlue = require('../lib/sendInBlue');
 
-module.exports.createEmail = async function (username, creator, toEmail, userInfo) {
+module.exports.createEmail = async function (userInfo, creator, toEmail) {
+  const username = userInfo.id;
   const email = utils.buildBetaEmail(username);
   const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
 
@@ -19,7 +20,7 @@ module.exports.createEmail = async function (username, creator, toEmail, userInf
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
 
   await BetaGouv.sendInfoToSlack(message);
-  await BetaGouv.createEmail(username, password);
+  await BetaGouv.createEmail(userInfo, password);
   await SendInBlue.addContactToList(email, userInfo, [process.env.SENDINBLUE_ONBOARD_USER_LIST_ID]);
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
@@ -59,8 +60,7 @@ module.exports.createEmailForUser = async function (req, res) {
         throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
       }
     }
-
-    await module.exports.createEmail(username, req.body.id, req.body.to_email, user);
+    await module.exports.createEmail(user.userInfos, req.body.id, req.body.to_email);
     try {
       // create marrainage request
       await createRequestForUser(username);

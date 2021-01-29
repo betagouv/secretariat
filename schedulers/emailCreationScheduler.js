@@ -9,7 +9,7 @@ const { createEmail } = require('../controllers/usersController');
 const { createRequestForUser } = require('../controllers/marrainageController');
 
 const createEmailAndMarrainage = async (user, creator) => {
-  await createEmail(user.id, creator, user.toEmail, user);
+  await createEmail(user, creator, user.toEmail);
   // once email is created we generate marrainage request
   const dateInTwoMonth = new Date();
   dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
