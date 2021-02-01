@@ -117,8 +117,6 @@ describe('User', () => {
             this.sendEmailStub.calledTwice.should.be.true;
             this.sendInBlueAddContactToList.calledOnce.should.be.true;
             this.sendInBlueAddContactToList.firstCall.args[0].should.equal(`membre.nouveau@${config.domain}`);
-            this.sendInBlueAddContactToList.firstCall.args[2][0].should
-              .equal(process.env.SENDINBLUE_ONBOARD_USER_LIST_ID);
             consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(0);
