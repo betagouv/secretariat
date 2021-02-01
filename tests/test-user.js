@@ -63,7 +63,6 @@ describe('User', () => {
             ovhEmailCreation.isDone().should.be.true;
             this.sendEmailStub.calledTwice.should.be.true;
             this.sendInBlueAddContactToList.calledOnce.should.be.true;
-            this.sendInBlueAddContactToList.firstCall.args[0];
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(1);
             marrainage[0].username.should.equal('membre.nouveau');
