@@ -20,7 +20,7 @@ module.exports.createEmail = async function (userInfo, creator, toEmail) {
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
 
   await BetaGouv.sendInfoToSlack(message);
-  await BetaGouv.createEmail(userInfo, password);
+  await BetaGouv.createEmail(username, password);
   await SendInBlue.addContactToList(email, userInfo, [process.env.SENDINBLUE_ONBOARD_USER_LIST_ID]);
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
 
