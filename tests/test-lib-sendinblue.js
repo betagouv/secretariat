@@ -28,7 +28,7 @@ describe('Test send in blue lib', () => {
     const formatUserInfo = sib.addContactToList(
       `${user.id}@${config.domain}`,
       user,
-      [1],
+      [1],  // listIds
     );
     sendInBlueCall.isDone();
   });
