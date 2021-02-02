@@ -16,7 +16,7 @@
     <h4>Me connecter</h4>
 
     <% if (messages.length) { %>
-      <div class="notification"><%- messages %></div>
+      <div class="notification"><%= messages %></div>
     <% } else { %>
       <form action="/login<%= nextParam %>" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <label for="username">Adresse email :</label>
