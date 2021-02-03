@@ -1,4 +1,5 @@
 require('dotenv').config();
+const _ = require('lodash/array');
 const { CronJob } = require('cron');
 const config = require('../config');
 const knex = require('../db');
@@ -24,10 +25,23 @@ const createEmailAndMarrainage = async (user, creator) => {
   }
 };
 
+const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
+  return user.id === ovhAccountName;
+};
+
+// get users that have github acount and no email registered on ovh (yet)
+const getUnregisteredOVHUsers = async (githubUsers) => {
+  const allOvhEmails = await BetaGouv.getAllEmailInfos();
+  console.log(`${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github.`);
+
+  return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
+};
+
 module.exports.createEmailAddresses = async function createEmailAddresses() {
   console.log('Demarrage du cron job pour la création des adresses email');
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
+
   const githubUsers = await BetaGouv.usersInfos();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
@@ -38,24 +52,17 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
     return acc;
   }, []);
 
-  const emailCreationTasks = [];
+  const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
+  console.log(`${unregisteredUsers.length} unregistered user(s) in OVH.`);
 
-  /* https://eslint.org/docs/rules/no-await-in-loop#when-not-to-use-it */
-  /* eslint-disable no-await-in-loop */
-  for (let i = 0; i < concernedUsers.length; i += 1) {
-    const emailInfos = await BetaGouv.emailInfos(concernedUsers[i].id);
-    if (!emailInfos || !emailInfos.email) {
-      emailCreationTasks.push(
-        createEmailAndMarrainage(concernedUsers[i], 'Secretariat Cron'),
-      );
-    }
-  }
-
-  return Promise.all(emailCreationTasks);
+  // create email and marrainage
+  return Promise.all(
+    unregisteredUsers.map((user) => createEmailAndMarrainage(user, 'Secretariat Cron')),
+  );
 };
 
 module.exports.emailCreationJob = new CronJob(
-  '0 * * * * *', // every minute at second 0
+  '0 */4 * * * *',
   module.exports.createEmailAddresses,
   null,
   true,
