@@ -59,7 +59,7 @@ module.exports.createEmailForUser = async function (req, res) {
       }
     }
 
-    await module.exports.createEmail(username, req.body.id, req.body.to_email);
+    await module.exports.createEmail(username, req.user.id, req.body.to_email);
     try {
       // create marrainage request
       await createRequestForUser(username);
