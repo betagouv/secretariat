@@ -8,6 +8,7 @@ const knex = require('../db');
 const controllerUtils = require('../controllers/utils');
 const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
 const testUsers = require('./users.json');
+const Betagouv = require('../betagouv');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -634,6 +635,7 @@ describe('User', () => {
 
     beforeEach((done) => {
       this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      this.betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
 
@@ -641,6 +643,7 @@ describe('User', () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
       this.sendEmailStub.restore();
+      this.betagouvCreateEmail.restore();
     });
 
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
@@ -695,6 +698,7 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
+      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       this.sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(1);
@@ -755,6 +759,7 @@ describe('User', () => {
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
+      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       ovhEmailCreation.isDone().should.be.true;
       this.sendEmailStub.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
@@ -803,6 +808,7 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
+      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       this.sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
@@ -836,6 +842,7 @@ describe('User', () => {
         secondary_email: newMember.email,
       }).then(async () => {
         await createEmailAddresses();
+        this.betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
         done();
@@ -851,6 +858,7 @@ describe('User', () => {
         username: 'membre.nouveau',
       }).then(async () => {
         await createEmailAddresses();
+        this.betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
         this.sendEmailStub.notCalled.should.be.true;
         done();
