@@ -1,0 +1,19 @@
+<h1>Bonjour,</h1>
+
+<p>
+  Nous accueillons des invité·e·s à Ségur demain à 10h pour la DINUM (bureau 5.511, les personnes invitées peuvent se rendre à la salle non accompagnées) :
+</p>
+
+<p>
+  <% visitsInfos.forEach(function(visit) { %>
+    <%= visit.fullname %> (référent: <%= visit.referent %>)<%= visit.number %>
+  <% }) %>
+</p>
+
+<p>
+  Pourriez-vous svp les laisser entrer ?
+  Merci beaucoup et bonne journée,
+</p>      
+
+<p>Bonne journée,</p>
+<p>🤖 Le secrétariat</p>

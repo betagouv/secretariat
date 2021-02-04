@@ -1,0 +1,106 @@
+<%- include('partials/header'); -%>
+    <div class="container container-small">
+        <% if (errors.length) { %>
+            <div class="notification error">
+                <% errors.forEach(function(error) { %>
+                    <li><strong>Erreur : </strong>
+                        <%= error %>
+                    </li>
+                    <% }) %>
+            </div>
+            <% } %>
+                <% if (messages.length) { %>
+                    <div class="notification">
+                        <%- messages %>
+                    </div>
+                    <% } %>
+                        <div class="panel margin-top-m">
+                            <h3>Prévoir une visite à Ségur</h3>
+                            <div class="beta-banner"></div>
+                            <form action="/visit" method="POST"
+                                onsubmit="event.submitter && (event.submitter.disabled = true);">
+                                <div class="form__group">
+                                    <h4>Date de la venue</h4>
+                                    <label for="date">
+                                        Jour de la venue au format JJ/MM/AAAA
+                                    </label>
+                                    <input type="date" name="date" pattern="^\d{4}-\d{2}-\d{2}$"
+                                        min="<%= userConfig.minStartDate %>" value="<%= formData.date %>"
+                                        title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                </div>
+                                <div class="form__group" id="visitor-list">
+                                    <h4>Visiteurs</h4>
+
+                                    <a class="button-outline primary" id="add-input">Ajouter une
+                                        autre
+                                        personne</a>
+                                </div>
+                                <div class="form__group" id="referent">
+                                    <h4>Référent</h4>
+                                    Indique la personne que l'accueil peut contacter concernant la venue de ces
+                                    personnes
+                                    <br>
+                                    <br>
+                                    <label for="numero" id="number">
+                                        Numéro de téléphone du référent
+                                    </label>
+                                    <input name="number" value="<%= formData.number %>" required>
+                                </div>
+                                <br>
+                                <br>
+                                <p>Un email sera envoyé à l'accueil pour prévenir de l'arrivée de ces personnes.
+                                    Elles pourront monter dans les locaux sans accompagnement.
+                                </p>
+                                <button class="button" type="submit">Prévenir Ségur</button>
+                            </form>
+                        </div>
+    </div>
+    <script>
+        const users = <%- JSON.stringify(users) %>;
+        const createNewInputInParentBeforeSibling = (parent, sibling, type) => {
+            const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom du référent'
+            const element = document.createElement('template');
+            const id = Date.now();
+            element.innerHTML = `
+            <label for="referentList">
+                ${label}
+            </label>
+            <% if (useSelectList) { %>
+                <select name="${type}" id="username_select">
+                    <% users.forEach(function(user) { %>
+                        <option value="<%= user.id %>">
+                            <%= user.fullname %>
+                        </option>
+                        <% }) %>
+                </select>
+                <% } else { %>
+                    <input name="${type}_tmp" list="${type}-${id}_user_names" id="${type}-${id}">
+                    <datalist id="${type}-${id}_user_names">
+                        <% users.forEach(function(user) { %>
+                            <option data-value="<%= user.id %>"
+                                value="<%= user.fullname %>">
+                                <% }) %>
+                    </datalist>
+                    <input type="hidden" name="${type}" id="${type}-${id}_hidden">
+    <% } %><br><br>`
+            parent.insertBefore(element.content, sibling);
+
+            document.getElementById(`${type}-${id}`).addEventListener('input', (e) => {
+                const input = e.target
+                const hiddenInput = document.getElementById(`${type}-${id}_hidden`)
+                const user = users.find(u => u.fullname === input.value.trim())
+                if (user) {
+                    hiddenInput.value = user.id
+                }
+            });
+        };
+        const visitorList = document.getElementById('visitor-list');
+        const button = document.getElementById('add-input');
+        const numberInput = document.getElementById('number');
+        const numberReferentGroup = document.getElementById('referent')
+        createNewInputInParentBeforeSibling(visitorList, button, 'visitorList');
+        createNewInputInParentBeforeSibling(numberReferentGroup, numberInput, 'referent');
+        button.addEventListener('click', (e) => {
+            createNewInputInParentBeforeSibling(visitorList, button, 'visitorList');
+        });
+    </script>
