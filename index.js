@@ -21,6 +21,7 @@ const accountController = require('./controllers/accountController');
 const communityController = require('./controllers/communityController');
 const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
+const visitController = require('./controllers/visitController');
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
+      '/visit',
       /onboardingSuccess\/*/,
     ],
   }),
@@ -125,6 +127,7 @@ app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
 app.post('/marrainage/cancel', marrainageController.cancelRequest);
 app.post('/marrainage/reload', marrainageController.reloadRequest);
+app.post('/visit', visitController.postForm);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
@@ -133,5 +136,6 @@ app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
+app.get('/visit', visitController.getForm);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
