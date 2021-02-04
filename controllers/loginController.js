@@ -27,13 +27,13 @@ async function sendLoginEmail(username, loginUrl, token) {
 
   if (!user) {
     throw new Error(
-      `Membre <strong>${username}</strong> inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
+      `Membre ${username} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`,
     );
   }
 
   if (utils.checkUserIsExpired(user)) {
     throw new Error(
-      `Membre <strong>${username}</strong> a une date de fin expiré sur Github.`,
+      `Membre ${username} a une date de fin expiré sur Github.`,
     );
   }
 
@@ -93,7 +93,7 @@ module.exports.postLogin = async function (req, res) {
     await saveToken(username, token);
 
     return renderLogin(req, res, {
-      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse <strong>${username}@${config.domain}</strong>. Il est valable une heure.`),
+      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse ${username}@${config.domain}. Il est valable une heure.`),
     });
   } catch (err) {
     console.error(err);
