@@ -95,7 +95,7 @@ module.exports.postLogin = async function (req, res) {
       const dbResponse = await knex('users').select('secondary_email').where({ username });
       if (dbResponse.length === 0 || !dbResponse[0].secondary_email) {
         throw new Error(
-          `Membre ${username} n'a pas renseigné d'adresse email secondaire. Si tu as perdu l'accès à ton compte email : demande de l'aide sur le Slack #incubateur-secretariat.`, // TODO: message
+          `Membre ${username} n'a pas renseigné d'adresse email secondaire. Si tu as perdu l'accès à ton compte email : demande de l'aide sur le Slack #incubateur-secretariat.`,
         );
       }
       email = dbResponse[0].secondary_email;
