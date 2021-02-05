@@ -18,15 +18,34 @@
     <% if (messages.length) { %>
       <div class="notification"><%= messages %></div>
     <% } else { %>
-      <form action="/login<%= nextParam %>" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+      <form action="/login<%= nextParam %>" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <label for="username">Adresse email :</label>
         <div class="input__group">
           <input name="username" class="width-50" placeholder="prenom.nom" pattern="[a-z0-9_-]+\.[a-z0-9_-]+" autocomplete="username">
           <span class="padding-10">@<%= domain %></span>
         </div>
-        <button class="button" type="submit">Recevoir le lien de connexion</button>
+        <input type="hidden" name="useSecondaryEmail" id="secondary_email_input" value="" />
+        <button class="button" id="primary_email_button">Recevoir le lien de connexion</button>
         <span>Ce lien sera valable 1h.</span>
+
+        <div class="margin-10-0">
+          <a id="secondary_email_button">
+            Recevoir le lien de connexion à mon adresse secondaire
+          </a>
+        </div>
       </form>
+      <script>
+        const secondaryEmailInput = document.getElementById('secondary_email_input');
+        const loginForm = document.getElementById('login_form');
+        document.getElementById('primary_email_button').addEventListener('click', () => {
+          secondaryEmailInput.value = '';
+          loginForm.submit();
+        })
+        document.getElementById('secondary_email_button').addEventListener('click', () => {
+          secondaryEmailInput.value = true;
+          loginForm.submit();
+        })
+      </script>
     <% } %>
   </div>
 
