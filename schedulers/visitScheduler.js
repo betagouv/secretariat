@@ -9,7 +9,7 @@ const utils = require('../controllers/utils');
 const sendVisitEmail = async function () {
   console.log('Demarrage du cron job pour l\'envoie du message à l\'accueil Ségur');
   const date = new Date(new Date().setDate(new Date().getDate() + 1));
-  date.setHours(0, 0, 0, 0); // end of day
+  date.setHours(0, 0, 0, 0);
   const visits = await knex('visits').select()
     .where('date', '=', date);
 
