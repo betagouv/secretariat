@@ -5,7 +5,9 @@
       "quantity": 1
     }
   },
-  "addons": ["heroku-postgresql"],
+  "addons": [
+    "postgresql:postgresql-sandbox"
+  ],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
