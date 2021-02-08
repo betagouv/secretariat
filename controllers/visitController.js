@@ -64,10 +64,12 @@ module.exports.postForm = async function (req, res) {
     const number = isValidNumber('numéro', req.body.number);
     let date = req.body.date || requiredError('date');
     date = isValidDate('date de visite', new Date(date));
+
     if (formValidationErrors.length) {
       req.flash('error', formValidationErrors);
       throw new Error();
     }
+
     await knex('visits')
       .insert(visitors.map((username) => ({
         username,

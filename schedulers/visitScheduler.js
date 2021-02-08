@@ -19,17 +19,17 @@ const sendVisitEmail = async function () {
   }
 
   const usersInfos = await BetaGouv.usersInfos();
-  const visitsInfos = visits.map((v) => ({
-    ...v,
-    fullname: usersInfos.find((userInfo) => userInfo.id === v.username),
-    referent: usersInfos.find((userInfo) => userInfo.id === v.username),
+  const visitsInfos = visits.map((visitInfo) => ({
+    ...visitInfo,
+    fullname: usersInfos.find((userInfo) => userInfo.id === visitInfo.username).id,
+    referent: usersInfos.find((userInfo) => userInfo.id === visitInfo.referent).id,
   }));
 
   const html = await ejs.renderFile('./views/emails/visitEmail.ejs', {
     visitsInfos,
   });
 
-  await utils.sendMail(config.senderEmail, 'Visit à Ségur', html);
+  await utils.sendMail(config.senderEmail, 'Visite à Ségur', html);
 
   console.info('L\' email de visite à Ségur a été envoyé');
 };

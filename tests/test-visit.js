@@ -1,12 +1,10 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const rewire = require('rewire');
 const app = require('../index');
 const utils = require('./utils.js');
 const controllerUtils = require('../controllers/utils');
-const config = require('../config');
 const knex = require('../db');
 
 const visitScheduler = rewire('../schedulers/visitScheduler');
@@ -44,7 +42,8 @@ describe('Visit', () => {
   describe('authenticated visit endpoint tests', () => {
     it('should add visit info in db when sollicited', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
-      date.setHours(0, 0, 0, 0); // end of day
+      date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
         .post('/visit')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -78,6 +77,7 @@ describe('Visit', () => {
     it('should send error if date is missing in the visit params data', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
@@ -87,7 +87,6 @@ describe('Visit', () => {
           .send('referent=membre.actif')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .end((err, res) => {
-            console.log('LCS TEST', res, err);
             res.text.should.include('date : le champ n&#39;est pas renseigné\n');
             done();
           });
@@ -96,6 +95,7 @@ describe('Visit', () => {
     it('should send error if number is missing in the visit params data', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
@@ -113,6 +113,7 @@ describe('Visit', () => {
     it('should send error if referent is missing in the visit params data', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
@@ -130,6 +131,7 @@ describe('Visit', () => {
     it('should send error if some visitorList is missing in the visit params data', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
@@ -164,6 +166,10 @@ describe('Visit', () => {
       const sendVisitEmail = visitScheduler.__get__('sendVisitEmail');
       await sendVisitEmail();
       this.sendEmailStub.calledOnce.should.be.true;
+      this.sendEmailStub.firstCall.args[1].should.be.equal('Visite à Ségur');
+      this.sendEmailStub.firstCall.args[2].should.contains('julien.dauphant');
+      this.sendEmailStub.firstCall.args[2].should.contains('membre.nouveau');
+      this.sendEmailStub.firstCall.args[2].should.contains('membre.actif');
     });
   });
 });
