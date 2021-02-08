@@ -48,6 +48,9 @@
     },
     "GITHUB_FORK": {
       "required": true
+    },
+    "DATABASE_URL": {
+      "required": true
     }
   },
   "formation": {
