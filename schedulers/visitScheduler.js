@@ -29,7 +29,8 @@ const sendVisitEmail = async function () {
     visitsInfos,
   });
 
-  await utils.sendMail(config.senderEmail, 'Visite à Ségur', html);
+  // @TODO change email accueil@segur.fr to send to
+  await utils.sendMail('accueil@segur.fr', 'Visite à Ségur', html);
 
   console.info('L\' email de visite à Ségur a été envoyé');
 };
