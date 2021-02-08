@@ -16,11 +16,13 @@ module.exports.getForm = async function (req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       users,
+      currentUserId: req.user.id,
       formData: {
         visitorList: [],
         referent: '',
         start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
       },
+      activeTab: 'visit',
       useSelectList: isMobileFirefox,
     });
   } catch (err) {
@@ -88,7 +90,9 @@ module.exports.postForm = async function (req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       domain: config.domain,
+      currentUserId: req.user.id,
       users,
+      activeTab: 'visit',
       formData: req.body,
       useSelectList: isMobileFirefox,
     });
