@@ -31,9 +31,6 @@
     "SECURE": {
       "required": true
     },
-    "HEROKU_APP_NAME": {
-      "required": true
-    },
     "SLACK_WEBHOOK_URL": {
       "required": true
     },
