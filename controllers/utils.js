@@ -44,7 +44,7 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-module.exports.sendMail = async function (to_email, subject, html) {
+module.exports.sendMail = async function (to_email, subject, html, extraParams = {}) {
   const mail = {
     to: to_email,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
@@ -52,6 +52,7 @@ module.exports.sendMail = async function (to_email, subject, html) {
     html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
     headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
+    ...extraParams,
   };
 
   return new Promise((resolve, reject) => {

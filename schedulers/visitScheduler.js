@@ -6,6 +6,12 @@ const BetaGouv = require('../betagouv');
 const knex = require('../db');
 const utils = require('../controllers/utils');
 
+const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
+
+const getReferentEmailList = (usersInfos, visits) => visits.map((visitInfo) => utils.buildBetaEmail(
+  getUserInfoForUsername(usersInfos, visitInfo.referent).id,
+));
+
 const sendVisitEmail = async function () {
   console.log('Demarrage du cron job pour l\'envoie du message à l\'accueil Ségur');
   const date = new Date(new Date().setDate(new Date().getDate() + 1));
@@ -21,8 +27,8 @@ const sendVisitEmail = async function () {
   const usersInfos = await BetaGouv.usersInfos();
   const visitsInfos = visits.map((visitInfo) => ({
     ...visitInfo,
-    fullname: usersInfos.find((userInfo) => userInfo.id === visitInfo.username).fullname,
-    referent: usersInfos.find((userInfo) => userInfo.id === visitInfo.referent).fullname,
+    fullname: getUserInfoForUsername(usersInfos, visitInfo.username).fullname,
+    referent: getUserInfoForUsername(usersInfos, visitInfo.referent).fullname,
   }));
 
   const html = await ejs.renderFile('./views/emails/visitEmail.ejs', {
@@ -30,7 +36,16 @@ const sendVisitEmail = async function () {
   });
 
   // @TODO change email accueil@segur.fr to send to
-  await utils.sendMail('accueil@segur.fr', 'Visite à Ségur', html);
+  await utils.sendMail(
+    'accueil@segur.fr',
+    'Visite à Ségur',
+    html,
+    {
+      cc: getReferentEmailList(usersInfos, visits).join(','),
+      from: 'Secrétariat BetaGouv <secretariat@beta.gouv.fr>',
+    },
+
+  );
 
   console.info('L\' email de visite à Ségur a été envoyé');
 };
