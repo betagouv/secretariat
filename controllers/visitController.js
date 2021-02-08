@@ -1,7 +1,6 @@
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
-const utils = require('./utils');
 
 module.exports.getForm = async function (req, res) {
   try {
@@ -79,6 +78,11 @@ module.exports.postForm = async function (req, res) {
         number,
         referent,
       })));
+
+    const secretariatUrl = `${config.protocol}://${config.host}`;
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>,
+    je prévoie une visite à Ségur pour ${visitors.join(', ')} le ${date.toISOString().slice(0, 10)}`;
+    await BetaGouv.sendInfoToSlack(message);
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
     res.render('/visit');
   } catch (err) {
