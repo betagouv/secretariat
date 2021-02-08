@@ -8,9 +8,13 @@ const utils = require('../controllers/utils');
 
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
-const getReferentEmailList = (usersInfos, visits) => visits.map((visitInfo) => utils.buildBetaEmail(
-  getUserInfoForUsername(usersInfos, visitInfo.referent).id,
-));
+const getReferentEmailList = (usersInfos, visits) => {
+  const emailList = visits.map((visitInfo) => utils.buildBetaEmail(
+    getUserInfoForUsername(usersInfos, visitInfo.referent).id,
+  ));
+  const uniqueEmailList = Array.from(new Set(emailList));
+  return uniqueEmailList;
+};
 
 const sendVisitEmail = async function () {
   console.log('Demarrage du cron job pour l\'envoie du message à l\'accueil Ségur');

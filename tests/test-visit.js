@@ -4,6 +4,7 @@ const _ = require('lodash');
 const rewire = require('rewire');
 const app = require('../index');
 const utils = require('./utils.js');
+const config = require('../config');
 const controllerUtils = require('../controllers/utils');
 const knex = require('../db');
 
@@ -170,6 +171,7 @@ describe('Visit', () => {
       this.sendEmailStub.firstCall.args[2].should.contains('Julien Dauphant');
       this.sendEmailStub.firstCall.args[2].should.contains('Membre Nouveau');
       this.sendEmailStub.firstCall.args[2].should.contains('Membre Actif');
+      this.sendEmailStub.firstCall.args[3].cc.should.be.equal(`membre.actif@${config.domain}`);
     });
   });
 });
