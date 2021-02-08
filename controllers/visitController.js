@@ -1,6 +1,7 @@
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
+const utils = require('./utils');
 
 module.exports.getForm = async function (req, res) {
   try {
@@ -16,7 +17,7 @@ module.exports.getForm = async function (req, res) {
       userConfig: config.user,
       users,
       formData: {
-        visitors: [],
+        visitorList: [],
         referent: '',
         start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
       },
@@ -58,17 +59,15 @@ module.exports.postForm = async function (req, res) {
       return null;
     }
 
-    const visitors = req.body.visitorList || requiredError('visitorList');
-    const referent = req.body.referent || requiredError('referent');
-    const number = isValidNumber('number', req.body.number);
+    const visitors = req.body.visitorList || requiredError('visiteurs');
+    const referent = req.body.referent || requiredError('référent');
+    const number = isValidNumber('numéro', req.body.number);
     let date = req.body.date || requiredError('date');
     date = isValidDate('date de visite', new Date(date));
-
     if (formValidationErrors.length) {
       req.flash('error', formValidationErrors);
       throw new Error();
     }
-
     await knex('visits')
       .insert(visitors.map((username) => ({
         username,
@@ -77,7 +76,7 @@ module.exports.postForm = async function (req, res) {
         referent,
       })));
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
-    res.redirect('/visit');
+    res.render('/visit');
   } catch (err) {
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
@@ -92,29 +91,4 @@ module.exports.postForm = async function (req, res) {
       useSelectList: isMobileFirefox,
     });
   }
-
-  // add visit to bdd
-  //   await knex('users')
-  //     .insert({
-  //       username,
-  //       secondary_number: number,
-  //     })
-  //     .onConflict('username')
-  //     .merge();
-
-  //   res.redirect(`/onboarding`);
-  // } catch (err) {
-  //   const users = await BetaGouv.usersInfos();
-  //   const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-  //   const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
-  //   res.render('onboarding', {
-  //     errors: req.flash('error'),
-  //     messages: req.flash('message'),
-  //     userConfig: config.user,
-  //     domain: config.domain,
-  //     users,
-  //     formData: req.body,
-  //     useSelectList: isMobileFirefox,
-  //   });
-  // }
 };
