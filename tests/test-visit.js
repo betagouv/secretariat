@@ -87,7 +87,7 @@ describe('Visit', () => {
           .send('referent=membre.actif')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .end((err, res) => {
-            res.text.should.include('date : le champ n&#39;est pas renseigné\n');
+            res.text.should.include('date : le champ n&#39;est pas renseigné');
             done();
           });
     });
@@ -167,9 +167,9 @@ describe('Visit', () => {
       await sendVisitEmail();
       this.sendEmailStub.calledOnce.should.be.true;
       this.sendEmailStub.firstCall.args[1].should.be.equal('Visite à Ségur');
-      this.sendEmailStub.firstCall.args[2].should.contains('julien.dauphant');
-      this.sendEmailStub.firstCall.args[2].should.contains('membre.nouveau');
-      this.sendEmailStub.firstCall.args[2].should.contains('membre.actif');
+      this.sendEmailStub.firstCall.args[2].should.contains('Julien Dauphant');
+      this.sendEmailStub.firstCall.args[2].should.contains('Membre Nouveau');
+      this.sendEmailStub.firstCall.args[2].should.contains('Membre Actif');
     });
   });
 });

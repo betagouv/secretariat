@@ -21,8 +21,8 @@ const sendVisitEmail = async function () {
   const usersInfos = await BetaGouv.usersInfos();
   const visitsInfos = visits.map((visitInfo) => ({
     ...visitInfo,
-    fullname: usersInfos.find((userInfo) => userInfo.id === visitInfo.username).id,
-    referent: usersInfos.find((userInfo) => userInfo.id === visitInfo.referent).id,
+    fullname: usersInfos.find((userInfo) => userInfo.id === visitInfo.username).fullname,
+    referent: usersInfos.find((userInfo) => userInfo.id === visitInfo.referent).fullname,
   }));
 
   const html = await ejs.renderFile('./views/emails/visitEmail.ejs', {
