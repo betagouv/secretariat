@@ -104,7 +104,8 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       && isCurrentUser;
     const canChangePassword = hasUserInfos
       && !isExpired
-      && isCurrentUser;
+      && isCurrentUser
+      && !emailInfos;
 
     return {
       emailInfos,
