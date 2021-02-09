@@ -73,8 +73,8 @@
                 <input type="hidden" name="${type}" id="${type}-${id}_hidden" value="${user ? user.id : ''}">
 <% } %><br><br>`
         parent.insertBefore(element.content, sibling);
-
-        document.getElementById(`${type}-${id}`).addEventListener('input', (e) => {
+        const memberInput = document.getElementById(`${type}-${id}`)
+        memberInput.addEventListener('input', (e) => {
             const input = e.target
             const hiddenInput = document.getElementById(`${type}-${id}_hidden`)
             const user = users.find(u => u.fullname === input.value.trim())
@@ -82,6 +82,13 @@
                 hiddenInput.value = user.id
             }
         });
+
+        memberInput.addEventListener('blur', (e) => {
+            const hiddenInput = document.getElementById(`${type}-${id}_hidden`)
+            if (!hiddenInput.value) {
+                alert('Seules les personnes ayant une fiche betagouv peuvent être ajoutées à une visite via cette interface.')
+            }
+        })
     };
     const visitorList = document.getElementById('visitor-list');
     const button = document.getElementById('add-input');
