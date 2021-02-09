@@ -1,8 +1,21 @@
 const chai = require('chai');
-
+const sinon = require('sinon');
+const controllerUtils = require('../controllers/utils');
 const app = require('../index');
+const knex = require('../db');
+const config = require('../config');
 
 describe('Login', () => {
+  beforeEach((done) => {
+    this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    done();
+  });
+
+  afterEach(async () => {
+    await knex('users').truncate();
+    this.sendEmailStub.restore();
+  });
+
   // describe("POST /login with user actif", () => {
   //   it("should render login with message", (done) => {
   //     utils.mockUsers();
@@ -27,7 +40,7 @@ describe('Login', () => {
         .post('/login?next=/users')
         .type('form')
         .send({
-          id: undefined,
+          username: undefined,
         })
         .redirects(0)
         .end((err, res) => {
@@ -44,7 +57,7 @@ describe('Login', () => {
         .post('/login')
         .type('form')
         .send({
-          id: undefined,
+          username: undefined,
         })
         .redirects(0)
         .end((err, res) => {
@@ -61,7 +74,7 @@ describe('Login', () => {
         .post('/login')
         .type('form')
         .send({
-          id: 'prénom.nom',
+          username: 'prénom.nom',
         })
         .redirects(0)
         .end((err, res) => {
@@ -78,7 +91,7 @@ describe('Login', () => {
         .post('/login')
         .type('form')
         .send({
-          id: 'membre.expire',
+          username: 'membre.expire',
         })
         .redirects(0)
         .end((err, res) => {
@@ -86,6 +99,88 @@ describe('Login', () => {
           res.headers.location.should.equal('/login');
           done();
         });
+    });
+  });
+
+  describe('POST /login without secondaryEmail parameter', () => {
+    it('should email to primary address', (done) => {
+      chai.request(app)
+        .post('/login')
+        .type('form')
+        .send({
+          username: 'membre.actif',
+        })
+        .then(() => {
+          this.sendEmailStub.calledOnce.should.be.true;
+          const destinationEmail = this.sendEmailStub.args[0][0];
+          destinationEmail.should.equal(`membre.actif@${config.domain}`);
+          done();
+        })
+        .catch(done);
+    });
+  });
+
+  describe('POST /login with useSecondaryEmail parameter', () => {
+    it('should email to primary address', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            username: 'membre.actif',
+            useSecondaryEmail: 'true',
+          })
+          .then(() => {
+            this.sendEmailStub.calledOnce.should.be.true;
+            const destinationEmail = this.sendEmailStub.args[0][0];
+            destinationEmail.should.equal('membre.actif.perso@example.com');
+            done();
+          })
+          .catch(done);
+      });
+    });
+
+    it('should show error if user is not in the database', (done) => {
+      chai.request(app)
+        .post('/login')
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          useSecondaryEmail: 'true',
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.headers.location.should.equal('/login');
+          this.sendEmailStub.notCalled.should.be.true;
+          done();
+        });
+    });
+
+    it('should show error if user does not have a secondary email', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            username: 'membre.actif',
+            useSecondaryEmail: 'true',
+          })
+          .redirects(0)
+          .end((err, res) => {
+            res.should.have.status(302);
+            res.headers.location.should.equal('/login');
+            this.sendEmailStub.notCalled.should.be.true;
+            done();
+          });
+      });
     });
   });
 });
