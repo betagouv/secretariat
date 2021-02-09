@@ -55,7 +55,7 @@ const sendVisitEmail = async function () {
 };
 
 module.exports.sendVisitEmailJob = new CronJob(
-  '0 0 18 * * 1-7', // monday through sunday at 18:00:00
+  '0 0 18 * * *', // monday through sunday at 18:00:00
   sendVisitEmail,
   null,
   true,
