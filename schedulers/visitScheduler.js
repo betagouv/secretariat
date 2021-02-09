@@ -39,7 +39,7 @@ const sendVisitEmail = async function () {
     visitsInfos,
   });
 
-  // @TODO change email accueil@segur.fr to send to
+  // @TODO change destination email to accueil segur
   await utils.sendMail(
     `${config.senderEmail}`,
     'Visite à Ségur',
