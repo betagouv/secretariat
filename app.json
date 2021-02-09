@@ -1,61 +1,13 @@
 {
   "name": "secretariat",
-  "env": {
-    "OVH_APP_KEY": {
-      "required": true
-    },
-    "OVH_APP_SECRET": {
-      "required": true
-    },
-    "OVH_CONSUMER_KEY": {
-      "required": true
-    },
-    "SESSION_SECRET": {
-      "required": true
-    },
-    "MAIL_HOST": {
-      "required": true
-    },
-    "MAIL_USER": {
-      "required": true
-    },
-    "MAIL_PASS": {
-      "required": true
-    },
-    "MAIL_IGNORE_TLS": {
-      "required": true
-    },
-    "MAIL_PORT": {
-      "required": true
-    },
-    "SECURE": {
-      "required": true
-    },
-    "HEROKU_APP_NAME": {
-      "required": true
-    },
-    "SLACK_WEBHOOK_URL": {
-      "required": true
-    },
-    "SECRETARIAT_DOMAIN": {
-      "required": true
-    },
-    "GITHUB_TOKEN": {
-      "required": true
-    },
-    "GITHUB_REPOSITORY": {
-      "required": true
-    },
-    "GITHUB_FORK": {
-      "required": true
-    }
-  },
   "formation": {
     "web": {
       "quantity": 1
     }
   },
-  "addons": ["heroku-postgresql"],
+  "addons": [
+    "postgresql:postgresql-sandbox"
+  ],
   "buildpacks": [
     {
       "url": "heroku/nodejs"
