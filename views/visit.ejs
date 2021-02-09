@@ -43,7 +43,9 @@
 </div>
 <script>
     const users = <%- JSON.stringify(users) %>;
-    const createNewInputInParentBeforeSibling = (parent, sibling, type) => {
+    const currentUserId = '<%= currentUserId %>';
+    const currentUser = users.find(user => user.id === currentUserId);
+    const createNewInputInParentBeforeSibling = (parent, sibling, type, user) => {
         const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom du référent'
         const element = document.createElement('template');
         const id = Date.now();
@@ -60,14 +62,14 @@
                     <% }) %>
             </select>
             <% } else { %>
-                <input name="${type}_tmp" list="${type}-${id}_user_names" id="${type}-${id}">
+                <input name="${type}_tmp" list="${type}-${id}_user_names" id="${type}-${id}" value="${user ? user.fullname : ''}">
                 <datalist id="${type}-${id}_user_names">
                     <% users.forEach(function(user) { %>
                         <option data-value="<%= user.id %>"
                             value="<%= user.fullname %>">
                             <% }) %>
                 </datalist>
-                <input type="hidden" name="${type}" id="${type}-${id}_hidden">
+                <input type="hidden" name="${type}" id="${type}-${id}_hidden" value="${user ? user.id : ''}">
 <% } %><br><br>`
         parent.insertBefore(element.content, sibling);
 
@@ -85,7 +87,7 @@
     const numberInput = document.getElementById('number');
     const numberReferentGroup = document.getElementById('referent')
     createNewInputInParentBeforeSibling(visitorList, button, 'visitorList');
-    createNewInputInParentBeforeSibling(numberReferentGroup, numberInput, 'referent');
+    createNewInputInParentBeforeSibling(numberReferentGroup, numberInput, 'referent', currentUser);
     button.addEventListener('click', (e) => {
         createNewInputInParentBeforeSibling(visitorList, button, 'visitorList');
     });
