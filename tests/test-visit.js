@@ -75,6 +75,33 @@ describe('Visit', () => {
         .catch(done);
     });
 
+    it('should add visit info in db when one element in visitorList', (done) => {
+      const date = new Date(new Date().setDate(new Date().getDate() + 1));
+      date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
+      chai.request(app)
+        .post('/visit')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send('visitorList=membre.nouveau')
+        .send('referent=membre.actif')
+        .send(`number=${encodeURIComponent('+33615415484')}`)
+        .send(`date=${date.toISOString()}`)
+        .redirects(0)
+        .then(() => knex('visits').select().where({ date }))
+        .then((dbRes) => {
+          dbRes.length.should.equal(1);
+          _.isEqual(dbRes[0], {
+            username: 'membre.nouveau',
+            referent: 'membre.actif',
+            number: '+33615415484',
+            date,
+          });
+        })
+        .then(done)
+        .catch(done);
+    });
+
     it('should send error if date is missing in the visit params data', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);

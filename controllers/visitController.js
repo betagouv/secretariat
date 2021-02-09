@@ -60,17 +60,18 @@ module.exports.postForm = async function (req, res) {
       return null;
     }
 
-    const visitors = req.body.visitorList || requiredError('visiteurs');
+    let visitors = req.body.visitorList || requiredError('visiteurs');
     const referent = req.body.referent || requiredError('référent');
     const number = isValidNumber('numéro', req.body.number);
     let date = req.body.date || requiredError('date');
     date = isValidDate('date de visite', new Date(date));
+    // when only one visitor is sent in the form, visitors is a string
+    visitors = Array.isArray(visitors) ? visitors : [visitors];
 
     if (formValidationErrors.length) {
       req.flash('error', formValidationErrors);
       throw new Error();
     }
-
     await knex('visits')
       .insert(visitors.map((username) => ({
         username,
@@ -84,7 +85,7 @@ module.exports.postForm = async function (req, res) {
     je prévoie une visite à Ségur pour ${visitors.join(', ')} le ${date.toISOString().slice(0, 10)}`;
     await BetaGouv.sendInfoToSlack(message);
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
-    res.render('/visit');
+    res.rdirect('/visit');
   } catch (err) {
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
