@@ -3,6 +3,7 @@
     <div class="row">
         <div class="panel panel-full-width">
             <h3>Prévoir une visite à Ségur</h3>
+            <h4>Pour des raisons de sécurité, dans les locaux Ségur, les visiteurs doivent prévenir de leur venue.</h4>
             <div class="beta-banner"></div>
             <form class="form-visit" action="/visit" method="POST"
                 onsubmit="event.submitter && (event.submitter.disabled = true);">
@@ -24,8 +25,7 @@
                 </div>
                 <div class="form__group" id="referent">
                     <h4>Responsable</h4>
-                    Indique la personne que l'accueil peut contacter concernant la venue de ces
-                    personnes
+                    <p>La personne responsable pourra être contactée par l'accueil à l'arrivée des visiteurs.</p>
                     <br>
                     <br>
                     <label for="numero" id="number">
@@ -35,8 +35,7 @@
                 </div>
                 <br>
                 <br>
-                <p>Un email sera envoyé à l'accueil pour prévenir de l'arrivée de ces personnes.
-                    Elles pourront monter dans les locaux sans accompagnement.
+                <p>L'accueil de Ségur sera prévenu la veille de la visite. Les personnes inscrites pourront monter dans les locaux sans accompagnement.
                 </p>
                 <button class="button" type="submit">Prévenir Ségur</button>
             </form>
@@ -48,7 +47,7 @@
     const currentUserId = '<%= currentUserId %>';
     const currentUser = users.find(user => user.id === currentUserId);
     const createNewInputInParentBeforeSibling = (parent, sibling, type, user) => {
-        const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom du référent'
+        const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom du responsable'
         const element = document.createElement('template');
         const id = Date.now();
         element.innerHTML = `
