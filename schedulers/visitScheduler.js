@@ -41,7 +41,7 @@ const sendVisitEmail = async function () {
 
   // @TODO change email accueil@segur.fr to send to
   await utils.sendMail(
-    'accueil@segur.fr',
+    `${config.senderEmail}`,
     'Visite à Ségur',
     html,
     {
