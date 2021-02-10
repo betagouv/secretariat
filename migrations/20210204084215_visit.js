@@ -5,6 +5,7 @@ exports.up = function (knex) {
         table.text('username').notNullable();
         table.text('referent').notNullable();
         table.text('number').notNullable();
+        table.text('requester').notNullable();
         table.datetime('created_at').notNullable().defaultTo(knex.fn.now());
         table.datetime('date').notNullable();
       });

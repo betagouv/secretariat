@@ -58,18 +58,34 @@ describe('Visit', () => {
         .then(() => knex('visits').select().where({ date }))
         .then((dbRes) => {
           dbRes.length.should.equal(2);
-          _.isEqual(dbRes[0], {
+          // compare all keys but createdAt, and id that we set to true
+          _.isEqual({
+            ...dbRes[0],
+            created_at: true,
+            id: true,
+          }, {
             username: 'membre.nouveau',
             referent: 'membre.actif',
             number: '+33615415484',
+            requester: 'membre.actif',
             date,
-          });
-          _.isEqual(dbRes[1], {
+            created_at: true,
+            id: true,
+          }).should.be.true;
+          _.isEqual({
+            ...dbRes[1],
+            created_at: true,
+            id: true,
+          }, {
+            ...dbRes[1],
             username: 'julien.dauphant',
             referent: 'membre.actif',
             number: '+33615415484',
+            requester: 'membre.actif',
             date,
-          });
+            created_at: true,
+            id: true,
+          }).should.be.true;
         })
         .then(done)
         .catch(done);
@@ -84,19 +100,27 @@ describe('Visit', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send('visitorList=membre.nouveau')
-        .send('referent=membre.actif')
+        .send('referent=julien.dauphant')
         .send(`number=${encodeURIComponent('+33615415484')}`)
         .send(`date=${date.toISOString()}`)
         .redirects(0)
         .then(() => knex('visits').select().where({ date }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          _.isEqual(dbRes[0], {
+          // compare all keys but createdAt and id that we set to true
+          _.isEqual({
+            ...dbRes[0],
+            created_at: true,
+            id: true,
+          }, {
             username: 'membre.nouveau',
-            referent: 'membre.actif',
+            referent: 'julien.dauphant',
             number: '+33615415484',
+            requester: 'membre.actif',
             date,
-          });
+            created_at: true,
+            id: true,
+          }).should.be.true;
         })
         .then(done)
         .catch(done);
@@ -183,12 +207,14 @@ describe('Visit', () => {
         referent: 'membre.actif',
         number: '+33615415484',
         date,
+        requester: 'membre.actif',
       };
       const inviteRequest2 = {
         username: 'julien.dauphant',
         referent: 'membre.actif',
         number: '+33615415484',
         date,
+        requester: 'membre.actif',
       };
       await knex('visits').insert([inviteRequest1, inviteRequest2]);
       const sendVisitEmail = visitScheduler.__get__('sendVisitEmail');

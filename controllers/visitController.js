@@ -53,6 +53,7 @@ module.exports.postForm = async function (req, res) {
         date,
         number,
         referent,
+        requester: req.user.id,
       })));
 
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
