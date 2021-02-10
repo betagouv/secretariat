@@ -56,7 +56,7 @@ module.exports.postForm = async function (req, res) {
       })));
 
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
-    res.rdirect('/visit');
+    res.redirect('/visit');
   } catch (err) {
     const users = await BetaGouv.usersInfos();
     res.render('visit', {
