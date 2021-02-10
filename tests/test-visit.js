@@ -49,8 +49,8 @@ describe('Visit', () => {
         .post('/visit')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
-        .send('visitorList=membre.nouveau')
-        .send('visitorList=julien.dauphant')
+        .send('visitorList=Membre Nouveau')
+        .send('visitorList=Julien Dauphant')
         .send('referent=membre.actif')
         .send(`number=${encodeURIComponent('+33615415484')}`)
         .send(`date=${date.toISOString()}`)
@@ -64,7 +64,7 @@ describe('Visit', () => {
             created_at: true,
             id: true,
           }, {
-            username: 'membre.nouveau',
+            fullname: 'Membre Nouveau',
             referent: 'membre.actif',
             number: '+33615415484',
             requester: 'membre.actif',
@@ -78,7 +78,7 @@ describe('Visit', () => {
             id: true,
           }, {
             ...dbRes[1],
-            username: 'julien.dauphant',
+            fullname: 'Julien Dauphant',
             referent: 'membre.actif',
             number: '+33615415484',
             requester: 'membre.actif',
@@ -99,7 +99,7 @@ describe('Visit', () => {
         .post('/visit')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
-        .send('visitorList=membre.nouveau')
+        .send('visitorList=Membre Nouveau')
         .send('referent=julien.dauphant')
         .send(`number=${encodeURIComponent('+33615415484')}`)
         .send(`date=${date.toISOString()}`)
@@ -113,7 +113,7 @@ describe('Visit', () => {
             created_at: true,
             id: true,
           }, {
-            username: 'membre.nouveau',
+            fullname: 'Membre Nouveau',
             referent: 'julien.dauphant',
             number: '+33615415484',
             requester: 'membre.actif',
@@ -134,8 +134,8 @@ describe('Visit', () => {
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
-          .send('visitorList=membre.nouveau')
-          .send('visitorList=julien.dauphant')
+          .send('visitorList=Membre Nouveau')
+          .send('visitorList=Julien Dauphant')
           .send('referent=membre.actif')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .end((err, res) => {
@@ -152,8 +152,8 @@ describe('Visit', () => {
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
-          .send('visitorList=membre.nouveau')
-          .send('visitorList=julien.dauphant')
+          .send('visitorList=Membre Nouveau')
+          .send('visitorList=Julien Dauphant')
           .send('referent=membre.actif')
           .send(`date=${date.toISOString()}`)
           .end((err, res) => {
@@ -170,8 +170,8 @@ describe('Visit', () => {
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
-          .send('visitorList=membre.nouveau')
-          .send('visitorList=julien.dauphant')
+          .send('visitorList=Membre Nouveau')
+          .send('visitorList=Julien Dauphant')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .send(`date=${date.toISOString()}`)
           .end((err, res) => {
@@ -203,14 +203,14 @@ describe('Visit', () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       const inviteRequest1 = {
-        username: 'membre.nouveau',
+        fullname: 'Membre Nouveau',
         referent: 'membre.actif',
         number: '+33615415484',
         date,
         requester: 'membre.actif',
       };
       const inviteRequest2 = {
-        username: 'julien.dauphant',
+        fullname: 'Julien Dauphant',
         referent: 'membre.actif',
         number: '+33615415484',
         date,

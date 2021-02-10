@@ -31,7 +31,7 @@ const sendVisitEmail = async function () {
   const usersInfos = await BetaGouv.usersInfos();
   const visitsInfos = visits.map((visitInfo) => ({
     ...visitInfo,
-    fullname: getUserInfoForUsername(usersInfos, visitInfo.username).fullname,
+    fullname: visitInfo.fullname,
     referent: getUserInfoForUsername(usersInfos, visitInfo.referent).fullname,
   }));
 

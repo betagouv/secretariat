@@ -48,15 +48,16 @@ module.exports.postForm = async function (req, res) {
       throw new Error();
     }
     await knex('visits')
-      .insert(visitors.map((username) => ({
-        username,
+      .insert(visitors.map((fullname) => ({
+        fullname,
         date,
         number,
         referent,
         requester: req.user.id,
       })));
-
-    req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
+    req.flash('message',
+      `La visite a été programmée pour ${visitors.join(', ')}.
+      Un email sera envoyé à l'accueil Ségur un jour avant le ${date.toISOString().split('T')[0]}.`);
     res.redirect('/visit');
   } catch (err) {
     const users = await BetaGouv.usersInfos();
