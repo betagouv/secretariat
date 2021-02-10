@@ -55,9 +55,15 @@ module.exports.postForm = async function (req, res) {
         referent,
         requester: req.user.id,
       })));
+
+    const lastVisitorInList = visitors.pop();
+    const dateToDisplay = utils.formatDateToReadableFormat(
+      new Date(new Date().setDate(date.getDate() - 1)),
+    );
     req.flash('message',
-      `La visite a été programmée pour ${visitors.join(', ')}.
-      Un email sera envoyé à l'accueil Ségur un jour avant le ${date.toISOString().split('T')[0]}.`);
+      `La visite a été programmée pour ${visitors.join(', ')} et ${lastVisitorInList}.
+      Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite)`);
+
     res.redirect('/visit');
   } catch (err) {
     const users = await BetaGouv.usersInfos();

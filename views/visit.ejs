@@ -9,7 +9,7 @@
             <form class="form-visit" action="/visit" method="POST"
                 onsubmit="event.submitter && (event.submitter.disabled = true);">
                 <div class="form__group">
-                    <h4>Date de la venue</h4>
+                    <h4>Date de la venue (obligatoire)</h4>
                     <label for="date">
                         au format JJ/MM/AAAA
                     </label>
@@ -18,18 +18,18 @@
                         title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                 </div>
                 <div class="form__group" id="visitor-list">
-                    <h4>Visiteurs</h4>
+                    <h4>Visiteurs (obligatoire)</h4>
 
                     <a class="button-outline primary" id="add-input">Ajouter une
                         autre
                         personne</a>
                 </div>
                 <div class="form__group" id="referent">
-                    <h4>Réferent</h4>
+                    <h4>Personne référente (obligatoire)</h4>
                     <p>La personne référente pourra être contactée par l'accueil à l'arrivée des visiteurs.</p>
                     <br>
                     <label for="numero" id="number">
-                        Numéro de téléphone du réferent
+                        Numéro de téléphone de la personne référente (obligatoire)
                     </label>
                     <input name="number" value="<%= formData.number %>" required>
                 </div>
@@ -47,7 +47,7 @@
     const currentUserId = '<%= currentUserId %>';
     const currentUser = users.find(user => user.id === currentUserId);
     const createNewInputInParentBeforeSibling = (parent, sibling, type, user) => {
-        const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom du responsable'
+        const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom de la personne référente (obligatoire)'
         const element = document.createElement('template');
         const id = Date.now();
         element.innerHTML = `
