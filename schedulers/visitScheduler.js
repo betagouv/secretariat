@@ -41,12 +41,12 @@ const sendVisitEmail = async function () {
 
   // @TODO change destination email to accueil segur
   await utils.sendMail(
-    `${config.senderEmail}`,
+    `${config.visitRecipientEmail}`,
     'Visite à Ségur',
     html,
     {
       cc: getReferentEmailList(usersInfos, visits).join(','),
-      from: 'Secrétariat BetaGouv <secretariat@beta.gouv.fr>',
+      from: `Secrétariat BetaGouv <${config.visitSenderEmail}>`,
     },
 
   );
