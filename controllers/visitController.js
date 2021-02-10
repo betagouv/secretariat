@@ -62,7 +62,7 @@ module.exports.postForm = async function (req, res) {
     );
     req.flash('message',
       `La visite a été programmée pour ${visitors.join(', ')} et ${lastVisitorInList}.
-      Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite)`);
+      Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite).`);
 
     res.redirect('/visit');
   } catch (err) {
