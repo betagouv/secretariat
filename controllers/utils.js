@@ -44,7 +44,7 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-module.exports.sendMail = async function (to_email, subject, html) {
+module.exports.sendMail = async function (to_email, subject, html, extraParams = {}) {
   const mail = {
     to: to_email,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
@@ -52,6 +52,7 @@ module.exports.sendMail = async function (to_email, subject, html) {
     html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
     headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
+    ...extraParams,
   };
 
   return new Promise((resolve, reject) => {
@@ -71,6 +72,44 @@ module.exports.checkUserIsExpired = function (user) {
   return user
     && user.end !== undefined
     && new Date(user.end).getTime() < new Date().getTime();
+};
+
+module.exports.isMobileFirefox = (req) => {
+  const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+  return userAgent && /Android.+Firefox\//.test(userAgent);
+};
+
+module.exports.requiredError = (formValidationErrors, field) => {
+  formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+};
+
+module.exports.isValidDate = (formValidationErrors, field, date) => {
+  if (date instanceof Date && !Number.isNaN(date.getTime())) {
+    return date;
+  }
+  formValidationErrors.push(`${field} : la date n'est pas valide`);
+  return null;
+};
+
+module.exports.isValidNumber = (formValidationErrors, field, number) => {
+  if (!number) {
+    module.exports.requiredError(formValidationErrors, field);
+    return null;
+  }
+  const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gmi;
+  if (numberRegex.test(number)) {
+    return number;
+  }
+  formValidationErrors.push(`${field} : le numéro n'est pas valide`);
+  return null;
+};
+
+module.exports.formatDateToReadableFormat = (date) => {
+  let day = date.getDate().toString();
+  day = day.length === 1 ? `0${day}` : day;
+  let month = (date.getMonth() + 1).toString();
+  month = month.length === 1 ? `0${month}` : month;
+  return `${day}/${month}/${date.getFullYear()}`;
 };
 
 module.exports.userInfos = async function (id, isCurrentUser) {

@@ -30,4 +30,6 @@ module.exports = {
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
   defaultLoggedInRedirectUrl: '/community',
+  visitRecipientEmail: process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
+  visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
 };

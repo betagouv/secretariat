@@ -263,6 +263,10 @@ button.redirection-remove {
   top: 2px;
 }
 
+.form-visit {
+  margin-left: 0;
+}
+
 /* Typography styles */
 
 .font-weight-bold {

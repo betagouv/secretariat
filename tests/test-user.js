@@ -689,7 +689,6 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
       .post(/^.*email\/domain\/.*\/account/)
       .reply(200);
-
       let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
