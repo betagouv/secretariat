@@ -80,10 +80,6 @@ module.exports.postForm = async function (req, res) {
         referent,
       })));
 
-    const secretariatUrl = `${config.protocol}://${config.host}`;
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>,
-    je prévoie une visite à Ségur pour ${visitors.join(', ')} le ${date.toISOString().slice(0, 10)}`;
-    await BetaGouv.sendInfoToSlack(message);
     req.flash('message', 'La visite a été programmée, un email sera envoyé à l\'accueil Ségur un jour avant la date définie.');
     res.rdirect('/visit');
   } catch (err) {
