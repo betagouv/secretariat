@@ -74,6 +74,36 @@ module.exports.checkUserIsExpired = function (user) {
     && new Date(user.end).getTime() < new Date().getTime();
 };
 
+module.exports.isMobileFirefox = (req) => {
+  const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+  return userAgent && /Android.+Firefox\//.test(userAgent);
+};
+
+module.exports.requiredError = (formValidationErrors, field) => {
+  formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+};
+
+module.exports.isValidDate = (formValidationErrors, field, date) => {
+  if (date instanceof Date && !Number.isNaN(date.getTime())) {
+    return date;
+  }
+  formValidationErrors.push(`${field} : la date n'est pas valide`);
+  return null;
+};
+
+module.exports.isValidNumber = (formValidationErrors, field, number) => {
+  if (!number) {
+    module.exports.requiredError(formValidationErrors, field);
+    return null;
+  }
+  const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gmi;
+  if (numberRegex.test(number)) {
+    return number;
+  }
+  formValidationErrors.push(`${field} : le numéro n'est pas valide`);
+  return null;
+};
+
 module.exports.userInfos = async function (id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
