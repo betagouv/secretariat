@@ -56,12 +56,12 @@ module.exports.postForm = async function (req, res) {
         requester: req.user.id,
       })));
 
-    const lastVisitorInList = visitors.pop();
+    const lastVisitorInList = visitors.length > 1 ? visitors.pop() : undefined;
     const dateToDisplay = utils.formatDateToReadableFormat(
       new Date(new Date().setDate(date.getDate() - 1)),
     );
     req.flash('message',
-      `La visite a été programmée pour ${visitors.join(', ')} et ${lastVisitorInList}.
+      `La visite a été programmée pour ${visitors.join(', ')}${lastVisitorInList ? ` et ${lastVisitorInList}` : ''}.
       Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite).`);
 
     res.redirect('/visit');
