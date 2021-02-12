@@ -1,46 +1,45 @@
 <%- include('partials/nav-header'); -%>
-<style media="screen">
-    .panel { overflow-x: hidden; }
-</style>
 <div class="module">
-    <div class="panel panel-full-width">
-        <h3>Prévoir une visite au bureau de Ségur</h3>
-        <h5>20 avenue de Ségur, 75007 Paris</h5>
-        <p>Pour des raisons de sécurité, dans les locaux Ségur, les visiteurs doivent prévenir de leur venue.</p>
-        <div class="beta-banner"></div>
-        <form class="form-visit" action="/visit" method="POST"
-            onsubmit="event.submitter && (event.submitter.disabled = true);">
-            <div class="form__group">
-                <h4>Date de la venue (obligatoire)</h4>
-                <label for="date">
-                    au format JJ/MM/AAAA
-                </label>
-                <input type="date" name="date" pattern="^\d{4}-\d{2}-\d{2}$"
-                    min="<%= userConfig.minStartDate %>" value="<%= formData.date %>"
-                    title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-            </div>
-            <div class="form__group" id="visitor-list">
-                <h4>Visiteurs (obligatoire)</h4>
+    <div class="row">
+        <div class="panel panel-full-width">
+            <h3>Prévoir une visite au bureau de Ségur</h3>
+            <h5>20 avenue de Ségur, 75007 Paris</h5>
+            <p>Pour des raisons de sécurité, dans les locaux Ségur, les visiteurs doivent prévenir de leur venue.</p>
+            <div class="beta-banner"></div>
+            <form class="form-visit" action="/visit" method="POST"
+                onsubmit="event.submitter && (event.submitter.disabled = true);">
+                <div class="form__group">
+                    <h4>Date de la venue (obligatoire)</h4>
+                    <label for="date">
+                        au format JJ/MM/AAAA
+                    </label>
+                    <input type="date" name="date" pattern="^\d{4}-\d{2}-\d{2}$"
+                        min="<%= userConfig.minStartDate %>" value="<%= formData.date %>"
+                        title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                </div>
+                <div class="form__group" id="visitor-list">
+                    <h4>Visiteurs (obligatoire)</h4>
 
-                <a class="button-outline primary" id="add-input">Ajouter une
-                    autre
-                    personne</a>
-            </div>
-            <div class="form__group" id="referent">
-                <h4>Personne référente (obligatoire)</h4>
-                <p>La personne référente pourra être contactée par l'accueil à l'arrivée des visiteurs.</p>
+                    <a class="button-outline primary" id="add-input">Ajouter une
+                        autre
+                        personne</a>
+                </div>
+                <div class="form__group" id="referent">
+                    <h4>Personne référente (obligatoire)</h4>
+                    <p>La personne référente pourra être contactée par l'accueil à l'arrivée des visiteurs.</p>
+                    <br>
+                    <label for="numero" id="number">
+                        Numéro de téléphone de la personne référente (obligatoire)
+                    </label>
+                    <input name="number" value="<%= formData.number %>" required>
+                </div>
                 <br>
-                <label for="numero" id="number">
-                    Numéro de téléphone de la personne référente (obligatoire)
-                </label>
-                <input name="number" value="<%= formData.number %>" required>
-            </div>
-            <br>
-            <br>
-            <p>L'accueil de Ségur sera prévenu la veille de la visite. Les personnes inscrites pourront monter dans les locaux sans accompagnement.
-            </p>
-            <button class="button" type="submit">Prévenir Ségur</button>
-        </form>
+                <br>
+                <p>L'accueil de Ségur sera prévenu la veille de la visite. Les personnes inscrites pourront monter dans les locaux sans accompagnement.
+                </p>
+                <button class="button" type="submit">Prévenir Ségur</button>
+            </form>
+        </div>
     </div>
 </div>
 <script>
