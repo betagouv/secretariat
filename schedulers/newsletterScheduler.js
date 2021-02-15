@@ -1,13 +1,18 @@
 const { CronJob } = require('cron');
 
+const BetaGouv = require('../betagouv');
 const PAD = require('../lib/pad');
 
 const createNewNote = async () => {
   const pad = new PAD();
-  const NEWSLETTER_TEMPLATE_ID = 'K9_mewG9SmSvAFjSqHUdHw';
+  const NEWSLETTER_TEMPLATE_ID = 'f7jiuFa-Qd2BAd5Rb6XjSg';
   const newsletterTemplateContent = await pad.getNoteWithId(NEWSLETTER_TEMPLATE_ID);
   const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
-  return result;
+  const padUrl = result.request.res.responseUrl;
+  const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
+  await BetaGouv.sendInfoToSlack(message);
+
+  return padUrl;
 };
 
 module.exports.createNewNote = createNewNote;
