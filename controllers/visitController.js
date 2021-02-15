@@ -36,7 +36,7 @@ module.exports.postForm = async function (req, res) {
     const formValidationErrors = [];
 
     let visitors = req.body.visitorList || utils.requiredError(formValidationErrors, 'visiteurs');
-    const referent = req.body.referent || utils.requiredError(formValidationErrors, 'référent');
+    const referent = req.body.referentUsername || utils.requiredError(formValidationErrors, 'référent');
     const number = utils.isValidNumber(formValidationErrors, 'numéro', req.body.number);
     let date = req.body.date || utils.requiredError(formValidationErrors, 'date');
     date = utils.isValidDate(formValidationErrors, 'date de visite', new Date(date));

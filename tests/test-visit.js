@@ -51,7 +51,8 @@ describe('Visit', () => {
         .type('form')
         .send('visitorList=Membre Nouveau')
         .send('visitorList=Julien Dauphant')
-        .send('referent=membre.actif')
+        .send('referentUsername=membre.actif')
+        .send('referent=Membre Actif')
         .send(`number=${encodeURIComponent('+33615415484')}`)
         .send(`date=${date.toISOString()}`)
         .redirects(0)
@@ -100,7 +101,8 @@ describe('Visit', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send('visitorList=Membre Nouveau')
-        .send('referent=julien.dauphant')
+        .send('referentUsername=julien.dauphant')
+        .send('referent=Julien Dauphant')
         .send(`number=${encodeURIComponent('+33615415484')}`)
         .send(`date=${date.toISOString()}`)
         .redirects(0)
@@ -136,7 +138,8 @@ describe('Visit', () => {
           .type('form')
           .send('visitorList=Membre Nouveau')
           .send('visitorList=Julien Dauphant')
-          .send('referent=membre.actif')
+          .send('referent=Membre Actif')
+          .send('referentUsername=membre.actif')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .end((err, res) => {
             res.text.should.include('date : le champ n&#39;est pas renseigné');
@@ -154,7 +157,8 @@ describe('Visit', () => {
           .type('form')
           .send('visitorList=Membre Nouveau')
           .send('visitorList=Julien Dauphant')
-          .send('referent=membre.actif')
+          .send('referentUsername=membre.actif')
+          .send('referent=Membre Actif')
           .send(`date=${date.toISOString()}`)
           .end((err, res) => {
             res.text.should.include('numéro : le champ n&#39;est pas renseigné');
@@ -188,7 +192,8 @@ describe('Visit', () => {
           .post('/visit')
           .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
-          .send('referent=membre.actif')
+          .send('referentUsername=membre.actif')
+          .send('referent=Membre Actif')
           .send(`number=${encodeURIComponent('+33615415484')}`)
           .send(`date=${date.toISOString()}`)
           .end((err, res) => {
