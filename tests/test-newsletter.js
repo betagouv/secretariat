@@ -32,8 +32,6 @@ describe('Newsletter', () => {
       incubateurGet.isDone().should.be.true;
       incubateurPost1.isDone().should.be.true;
       incubateurPost2.isDone().should.be.true;
-
-      console.log(res);
     });
   });
 });
