@@ -1,3 +1,5 @@
+const { CronJob } = require('cron');
+
 const PAD = require('../lib/pad');
 
 const createNewNote = async () => {
@@ -9,3 +11,11 @@ const createNewNote = async () => {
 };
 
 module.exports.createNewNote = createNewNote;
+
+// module.exports.createNewsletter = new CronJob(
+//   '0 10 * * * sun',
+//   module.exports.createNewNote,
+//   null,
+//   true,
+//   'Europe/Paris',
+// );
