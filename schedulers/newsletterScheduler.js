@@ -4,6 +4,14 @@ const BetaGouv = require('../betagouv');
 const knex = require('../db');
 const PAD = require('../lib/pad');
 
+function getWeekNumber(d) {
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  return weekNo;
+}
+
 const createNewsletter = async () => {
   const pad = new PAD();
   const NEWSLETTER_TEMPLATE_ID = 'f7jiuFa-Qd2BAd5Rb6XjSg';
@@ -13,7 +21,7 @@ const createNewsletter = async () => {
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
   const date = new Date();
   await knex('newsletters').insert({
-    week_year: `${date.getWeekYear()}-${date.getWeek()}`,
+    year_week: `${date.getFullYear()}-${getWeekNumber(date)}`,
     url: padUrl,
   });
   await BetaGouv.sendInfoToSlack(message);

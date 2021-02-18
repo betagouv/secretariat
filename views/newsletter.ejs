@@ -1,14 +1,16 @@
 <%- include('partials/nav-header'); -%>
 <div class="module">
-    <div class="panel panel-full-width">
-        <h3>Newsletter du <%= currentNewsletter.title %></h3>
-        <p>Lien de la newsletter</p>
-        <input value="<%= currentNewsletter.url %>" readonly="readonly" style="max-width: 450px;"/>
-        <button class="button" type="submit" id="copy">Copier l'URL</button>
-        <br>
-        <br>
-        <p>La newsletter est lue et partagée pendand le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
-    </div>
+    <% if (currentNewsletter) { %>
+        <div class="panel panel-full-width">
+            <h3>Newsletter du <%= currentNewsletter.title %></h3>
+            <p>Lien de la newsletter</p>
+            <input value="<%= currentNewsletter.url %>" readonly="readonly" style="max-width: 450px;"/>
+            <button class="button" type="submit" id="copy">Copier l'URL</button>
+            <br>
+            <br>
+            <p>La newsletter est lue et partagée pendand le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
+        </div>
+    <% } %>
     <div class="panel panel-full-width">
         <h3>
             Historique des newsletters
@@ -27,17 +29,10 @@
         </table>
     </div>
 </div>
+<% if (currentNewsletter) { %>
 <script>
     document.getElementById('copy').onclick = () => {
         copyToClipboard("<%= currentNewsletter.url %>");
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            timer: 2000,
-            title: 'Le lien a été copié dans le presse papier',
-            showConfirmButton: false,
-            toast: true,
-        })
     }
     function copyToClipboard(text) {
         var dummy = document.createElement("textarea");
@@ -52,3 +47,5 @@
         document.body.removeChild(dummy);
     }
 </script>
+<% } %>
+
