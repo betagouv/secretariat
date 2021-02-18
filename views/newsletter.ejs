@@ -1,0 +1,29 @@
+<%- include('partials/nav-header'); -%>
+<div class="module">
+    <div class="panel panel-full-width">
+        <h3>Newsletter du <%= currentNewsletter.title %></h3>
+        <p>Lien de la newsletter</p>
+        <span style="padding: 8px; border: 1px solid black;"><%= currentNewsletter.url %></span>
+        <button class="button" type="submit">Copier l'URL</button>
+        <br>
+        <br>
+        <p>La newsletter est lue et partagée pendand le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
+    </div>
+    <div class="panel panel-full-width">
+        <h3>
+            Historique des newsletters
+        </h3>
+        <hr />
+        <table class="sortable">
+            <tbody>
+                <%  newsletters.forEach(function(newsletter) { %>
+                <tr>
+                    <td><b><%= newsletter.title %></b></td>
+                    <td>Envoyé le <%= newsletter.sent_at %> par <%= newsletter.validator %></td>
+                    <td><a href="<%= newsletter.url %>" target="_blank">Lire</a></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
