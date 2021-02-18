@@ -112,6 +112,40 @@ module.exports.formatDateToReadableFormat = (date) => {
   return `${day}/${month}/${date.getFullYear()}`;
 };
 
+module.exports.formatDateToReadableDateAndTimeFormat = (date) => {
+  let day = date.getDate().toString();
+  day = day.length === 1 ? `0${day}` : day;
+
+  let month = (date.getMonth() + 1).toString();
+  month = month.length === 1 ? `0${month}` : month;
+
+  let minutes = date.getMinutes().toString();
+  minutes = minutes.length === 1 ? `0${minutes}` : minutes;
+
+  const hour = date.getHours();
+  return `${day}/${month} à ${hour}:${minutes}`;
+};
+
+module.exports.formatDateToFrenchTextReadableFormat = (date) => {
+  const frenchMonth = [
+    'janvier',
+    'février',
+    'mars',
+    'avril',
+    'mai',
+    'juin',
+    'juillet',
+    'aout',
+    'septembre',
+    'octobre',
+    'novembre',
+    'décembre',
+  ];
+  const day = date.getDate().toString();
+  const month = frenchMonth[date.getMonth()];
+  return `${day} ${month} ${date.getFullYear()}`;
+};
+
 module.exports.userInfos = async function (id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([

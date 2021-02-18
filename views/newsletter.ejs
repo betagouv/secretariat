@@ -3,8 +3,8 @@
     <div class="panel panel-full-width">
         <h3>Newsletter du <%= currentNewsletter.title %></h3>
         <p>Lien de la newsletter</p>
-        <span style="padding: 8px; border: 1px solid black;"><%= currentNewsletter.url %></span>
-        <button class="button" type="submit">Copier l'URL</button>
+        <input value="<%= currentNewsletter.url %>" readonly="readonly" style="max-width: 450px;"/>
+        <button class="button" type="submit" id="copy">Copier l'URL</button>
         <br>
         <br>
         <p>La newsletter est lue et partagée pendand le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
@@ -27,3 +27,28 @@
         </table>
     </div>
 </div>
+<script>
+    document.getElementById('copy').onclick = () => {
+        copyToClipboard("<%= currentNewsletter.url %>");
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            timer: 2000,
+            title: 'Le lien a été copié dans le presse papier',
+            showConfirmButton: false,
+            toast: true,
+        })
+    }
+    function copyToClipboard(text) {
+        var dummy = document.createElement("textarea");
+        // to avoid breaking orgain page when copying more words
+        // cant copy when adding below this code
+        // dummy.style.display = 'none'
+        document.body.appendChild(dummy);
+        //Be careful if you use texarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
+        dummy.value = text;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+    }
+</script>
