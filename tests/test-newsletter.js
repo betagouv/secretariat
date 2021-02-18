@@ -87,6 +87,10 @@ describe('Newsletter', () => {
 
       const incubateurPost2 = nock('https://pad.incubateur.net')
       .post(/^.*new/)
+      .reply(301, undefined, {
+        Location: 'https://pad.incubateur.net/i3472ndasda4545',
+      })
+      .get('/i3472ndasda4545')
       .reply(200, '# TITLE ### TEXT CONTENT');
 
       const res = await createNewsletter();
@@ -94,6 +98,10 @@ describe('Newsletter', () => {
       incubateurGet.isDone().should.be.true;
       incubateurPost1.isDone().should.be.true;
       incubateurPost2.isDone().should.be.true;
+      const newsletter = await knex('newsletters').select();
+      newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
+      const date = new Date();
+      newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
     });
   });
 });

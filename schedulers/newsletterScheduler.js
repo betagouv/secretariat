@@ -3,14 +3,7 @@ const { CronJob } = require('cron');
 const BetaGouv = require('../betagouv');
 const knex = require('../db');
 const PAD = require('../lib/pad');
-
-function getWeekNumber(d) {
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  return weekNo;
-}
+const utils = require('../controllers/utils');
 
 const createNewsletter = async () => {
   const pad = new PAD();
@@ -21,7 +14,7 @@ const createNewsletter = async () => {
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
   const date = new Date();
   await knex('newsletters').insert({
-    year_week: `${date.getFullYear()}-${getWeekNumber(date)}`,
+    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
   await BetaGouv.sendInfoToSlack(message);
