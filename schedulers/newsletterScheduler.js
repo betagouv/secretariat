@@ -1,6 +1,7 @@
 const { CronJob } = require('cron');
 
 const BetaGouv = require('../betagouv');
+const knex = require('../db');
 const PAD = require('../lib/pad');
 
 const createNewsletter = async () => {
@@ -10,6 +11,11 @@ const createNewsletter = async () => {
   const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
+  const date = new Date();
+  await knex('newsletters').insert({
+    week_year: `${date.getWeekYear()}-${date.getWeek()}`,
+    url: padUrl,
+  });
   await BetaGouv.sendInfoToSlack(message);
 
   return padUrl;
