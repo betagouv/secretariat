@@ -31,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use('/static', express.static('static'));
 app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/swal', express.static(path.join(__dirname, 'node_modules/sweetalert2/dist'))); // to import sweetalert in front
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes

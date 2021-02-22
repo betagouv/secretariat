@@ -45,6 +45,14 @@
         dummy.select();
         document.execCommand("copy");
         document.body.removeChild(dummy);
+        const Toast = Swal.fire({
+            toast: true,
+            position: 'top-end',
+            title: 'Le lien de la newsletter a été copié dans le presse-papier.',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 2000,
+        })
     }
 </script>
 <% } %>
