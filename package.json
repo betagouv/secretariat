@@ -49,7 +49,7 @@
     "jsonwebtoken": "^8.2.2",
     "knex": "^0.21.17",
     "lodash": "^4.17.21",
-    "nodemailer": "^6.4.17",
+    "nodemailer": "^6.4.18",
     "ovh": "^2.0.1",
     "pg": "^8.5.1",
     "promise-memoize": "^1.2.1",
