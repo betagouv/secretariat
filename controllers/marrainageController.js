@@ -114,7 +114,7 @@ module.exports.createRequestForUser = async function (userId) {
     utils.sendMail(recipientEmailList, `La demande de marrainage pour ${userId} n'a pas fonctionné`, emailContent);
     throw new Error(errorMessage);
   }
-
+  const toto = 0;
   await knex('marrainage').insert({
     username: newcomer.id,
     last_onboarder: onboarder.id,
