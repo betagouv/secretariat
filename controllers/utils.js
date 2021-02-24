@@ -175,6 +175,11 @@ module.exports.createGithubBranch = function (sha, branch) {
   return requestWithAuth(`POST ${url}`, { sha, ref });
 };
 
+module.exports.deleteGithubBranch = function (branch) {
+  const url = `https://api.github.com/repos/${config.githubFork}/git/refs/heads/${branch}`;
+  return requestWithAuth(`DELETE ${url}`);
+};
+
 module.exports.createGithubFile = function (path, branch, content) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
   const message = `Création de fichier ${path} sur la branche ${branch}`;
