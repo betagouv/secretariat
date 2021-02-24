@@ -46,6 +46,7 @@
     const users = <%- JSON.stringify(users) %>;
     const currentUserId = '<%= currentUserId %>';
     const currentUser = users.find(user => user.id === currentUserId);
+    const useSelectList = '<%= useSelectList %>';
     const createNewInputInParentBeforeSibling = (parent, sibling, type, user) => {
         const label = type === 'visitorList' ? 'Nom du visiteur' : 'Nom de la personne référente (obligatoire)'
         const element = document.createElement('template');
@@ -55,23 +56,34 @@
             ${label}
         </label>
         <% if (useSelectList) { %>
-            <select name="${type}" id="username_select">
+            <select name="${type}" id="${type}-${id}">
                 <% users.forEach(function(user) { %>
-                    <option value="<%= user.id %>">
+                    <option value="<%= user.fullname %>">
                         <%= user.fullname %>
                     </option>
                     <% }) %>
             </select>
             <% } else { %>
-                <input name="${type}" list="${type}-${id}_user_names" id="${type}-${id}" value="${user ? user.fullname : ''}">
-                <datalist id="${type}-${id}_user_names">
+                <input name="${type}" list="${type}-${id}-user-names" id="${type}-${id}" value="${user ? user.fullname : ''}">
+                <datalist id="${type}-${id}-user-names">
                     <% users.forEach(function(user) { %>
                         <option data-value="<%= user.id %>"
                             value="<%= user.fullname %>">
                             <% }) %>
                 </datalist>
-<% } %><br><br>`
+            <% } %>
+            <input type="hidden" name="${type}Username" id="${type}-${id}-hidden">
+        <br><br>`
         parent.insertBefore(element.content, sibling);
+        document.getElementById(`${type}-${id}`).addEventListener('input', (e) => {
+            const input = e.target
+            const hiddenInput = document.getElementById(`${type}-${id}-hidden`)
+            users.forEach(user => {
+                if (user.fullname === input.value.trim()) {
+                    hiddenInput.value = user.id
+                }
+            })
+        })
     };
     const visitorList = document.getElementById('visitor-list');
     const button = document.getElementById('add-input');
