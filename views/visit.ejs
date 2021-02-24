@@ -72,7 +72,7 @@
                             <% }) %>
                 </datalist>
             <% } %>
-            <input type="hidden" name="${type}Username" id="${type}-${id}-hidden">
+            <input type="hidden" name="${type}Username" id="${type}-${id}-hidden" value="${user ? user.id : ''}">
         <br><br>`
         parent.insertBefore(element.content, sibling);
         document.getElementById(`${type}-${id}`).addEventListener('input', (e) => {
