@@ -25,7 +25,7 @@ const createNewsletter = async () => {
 module.exports.createNewsletter = createNewsletter;
 
 module.exports.createNewsletterJob = new CronJob(
-  '0 4 * * * 1', // every week a 4:00 on monday
+  '0 4 * * 1', // every week a 4:00 on monday
   module.exports.createNewsletter,
   null,
   true,
