@@ -22,7 +22,7 @@ module.exports.getNewsletter = async function (req, res) {
       userConfig: config.user,
       domain: config.domain,
       currentUserId: req.user.id,
-      currentNewsletter: newsletters.pop(0),
+      currentNewsletter: newsletters.pop(),
       newsletters,
       activeTab: 'newsletter',
     });
