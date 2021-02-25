@@ -25,11 +25,7 @@ async function createNewcomerGithubFile(username, content, referent) {
     .then(() => {
       console.log(`Branche ${branch} créée`);
       const path = `content/_authors/${username}.md`;
-      return utils.createGithubFile(path, branch, content)
-        .catch((err) => {
-          if (err.status === 422) throw new Error(`Une fiche pour ${username} existe déjà`);
-          throw err;
-        });
+      return utils.createGithubFile(path, branch, content);
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
@@ -40,7 +36,13 @@ async function createNewcomerGithubFile(username, content, referent) {
       return response;
     })
     .catch((err) => {
-      throw new Error(`Erreur Github lors de la création de la fiche de ${username}`);
+      utils.deleteGithubBranch(branch);
+      console.log(`Branche ${branch} supprimée`);
+      if (err.status === 422) {
+        throw new Error(`Une fiche pour ${username} existe déjà`);
+      } else {
+        throw new Error(`Erreur Github lors de la création de la fiche de ${username}`);
+      }
     });
   return prInfo;
 }
@@ -199,6 +201,10 @@ module.exports.postForm = async function (req, res) {
 
     res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
   } catch (err) {
+    if (err.message) {
+      const errors = req.flash('error');
+      req.flash('error', [...errors, err.message]);
+    }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
