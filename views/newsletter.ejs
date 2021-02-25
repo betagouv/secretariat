@@ -16,6 +16,9 @@
             Historique des newsletters
         </h3>
         <hr />
+        <% if (!newsletters.length) { %>
+            <p>Il n'y a pas de newsletter dans l'historique</p>
+        <% } %>
         <table class="sortable">
             <tbody>
                 <%  newsletters.forEach(function(newsletter) { %>
