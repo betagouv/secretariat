@@ -6,7 +6,7 @@ const { toPlainObject } = require('lodash');
 
 module.exports.getNewsletter = async function (req, res) {
   try {
-    let newsletters = await knex('newsletters').select().orderBy('year_week', 'asc');
+    let newsletters = await knex('newsletters').select().orderBy('year_week', 'desc');
     const usersInfos = await BetaGouv.usersInfos();
     newsletters = newsletters.map((newsletter) => ({
       ...newsletter,
