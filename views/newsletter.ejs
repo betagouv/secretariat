@@ -24,7 +24,7 @@
                 <%  newsletters.forEach(function(newsletter) { %>
                 <tr>
                     <td><b><%= newsletter.title %></b></td>
-                    <td><% if (currentNewsletter) { %>Envoyée le <%= newsletter.sent_at %> par <%= newsletter.validator %><% } else { %>non envoyée<% } %></td>
+                    <td><% if (newsletter.sent_at) { %>Envoyée le <%= newsletter.sent_at %> par <%= newsletter.validator %><% } else { %>non envoyée<% } %></td>
                     <td><a href="<%= newsletter.url %>" target="_blank">Lire</a></td>
                 </tr>
                 <% }) %>
