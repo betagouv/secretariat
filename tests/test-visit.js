@@ -203,6 +203,55 @@ describe('Visit', () => {
     });
   });
 
+  describe('authenticated visit endpoint get futur visits lists', () => {
+    it('should show any visits if no visits in the future', async() => {
+      const date = new Date(new Date().setDate(new Date().getDate() - 1 ));
+      date.setHours(0, 0, 0, 0);
+      const inviteRequest1 = {
+        fullname: 'John Doe',
+        referent: 'membre.actif',
+        number: '+33615415484',
+        date,
+        requester: 'membre.actif',
+      };
+      await knex('visits').insert([inviteRequest1]);
+      // use `send` function multiple times instead of json to be able to send visitorList array
+      const res = await chai.request(app)
+        .get('/visit')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+      res.text.should.not.include('<td>John Doe</td>');
+    });
+    
+    it('should show visits if visits in the future', async () => {
+      const date = new Date(new Date().setDate(new Date().getDate() + 1));
+      date.setHours(0, 0, 0, 0);
+      const inviteRequest1 = {
+        fullname: 'John Doe',
+        referent: 'membre.actif',
+        number: '+33615415484',
+        date,
+        requester: 'membre.actif',
+      };
+      const inviteRequest2 = {
+        fullname: 'Jean Dupont',
+        referent: 'membre.actif',
+        number: '+33615415484',
+        date,
+        requester: 'membre.actif',
+      };
+      await knex('visits').insert([inviteRequest1, inviteRequest2]);
+      date.setHours(0, 0, 0, 0);
+      // use `send` function multiple times instead of json to be able to send visitorList array
+      const res = await chai.request(app)
+        .get('/visit')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+      res.text.should.include('<td>John Doe</td>');
+      res.text.should.include('<td>Membre Actif</td>');
+      res.text.should.include('<td>Jean Dupont</td>');
+      res.text.should.include(`<td>${controllerUtils.formatDateToReadableFormat(date)}</td>`);
+    });
+  });
+
   describe('Visit cronjob tests', () => {
     it('should send email if visit', async () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
