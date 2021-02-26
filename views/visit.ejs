@@ -45,7 +45,7 @@
             <h3>Prochaines visites programmées</h3>
             <% if (!visitsInfo.length) { %>
                 <p>Il n'y a pas de futures visites programmées</p>
-            <% } %>
+            <% } else { %>
             <table class="sortable sortable-white">
                 <thead>
                     <tr>
@@ -68,6 +68,7 @@
                     <% }) %>
                 </tbody>
             </table>
+            <% } %>
         </div>
     <% } %>
 </div>
