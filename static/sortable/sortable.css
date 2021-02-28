@@ -49,6 +49,10 @@
     background: #e4e4e4;
 }
 
+.sortable.sortable-white tbody tr:nth-child(odd) {
+    background: initial;
+}
+
 .sortable td,
 .sortable th {
     padding: 10px;
@@ -57,6 +61,10 @@
 .sortable td:first-child,
 .sortable th:first-child {
     border-top-left-radius: 4px;
+}
+
+.sortable .sortable-line-break {
+    border-top:1px solid black;
 }
 
 .sortable td:last-child,
