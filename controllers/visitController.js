@@ -3,6 +3,22 @@ const config = require('../config');
 const knex = require('../db');
 const utils = require('./utils');
 
+const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
+
+const getFuturVisitsList = async function (usersInfos) {
+    const date = new Date(new Date().setDate(new Date().getDate()));
+    date.setHours(0, 0, 0, 0);
+    const visits = await knex('visits').select()
+      .where('date', '>=', date);
+    const visitsInfos = visits.map((visitInfo) => ({
+      ...visitInfo,
+      fullname: visitInfo.fullname,
+      date: utils.formatDateToReadableFormat(visitInfo.date),
+      referent: (getUserInfoForUsername(usersInfos, visitInfo.referent) || {}).fullname || 'référent supprimé',
+    }));
+    return visitsInfos
+}
+
 module.exports.getForm = async function (req, res) {
   try {
     const users = await BetaGouv.usersInfos();
@@ -21,6 +37,7 @@ module.exports.getForm = async function (req, res) {
         referent: '',
         start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
       },
+      visitsInfo: await getFuturVisitsList(users),
       activeTab: 'visit',
       useSelectList: utils.isMobileFirefox(req),
     });
@@ -73,6 +90,7 @@ module.exports.postForm = async function (req, res) {
       userConfig: config.user,
       domain: config.domain,
       currentUserId: req.user.id,
+      visitsInfo: await getFuturVisitsList(users),
       users,
       activeTab: 'visit',
       formData: req.body,
