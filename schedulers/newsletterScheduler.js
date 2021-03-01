@@ -22,11 +22,66 @@ const createNewsletter = async () => {
   return padUrl;
 };
 
+const computeMessageReminder = (reminder, newsletter) => {
+  let message;
+  if (reminder === 'FIRST_REMINDER') {
+    message = `*standup du jeudi* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
+      Remplissez le pad avec vos news/annonces/événements qui seront présentées au standup.
+      Le pad sera envoyé à la communauté vendredi.`;
+  } else if (reminder === 'SECOND_REMINDER') {
+    message = `*:wave: Retrouvez nous le standup à midi sur http://invites.standup.incubateur.net/*
+      Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
+      Le pad sera envoyé à la communauté vendredi.`;
+  } else {
+    message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
+      Vérifie que le contenu du pad ${newsletter.url} de la newsletter est prêt à être envoyé à la communauté.
+    `;
+  }
+  return message;
+};
+
+const newsletterReminder = async (reminder) => {
+  const date = new Date();
+  const lastNewsletter = await knex('newsletters').where({
+    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
+    sent_at: null,
+  }).first();
+
+  if (lastNewsletter) {
+    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter));
+  }
+};
+
+
 module.exports.createNewsletter = createNewsletter;
 
-module.exports.createNewsletterJob = new CronJob(
-  '0 4 * * 1', // every week a 4:00 on monday
-  module.exports.createNewsletter,
+module.exports.newsletterMondayReminderJob = new CronJob(
+  '0 8 * * 1', // every week a 4:00 on monday
+  () => newsletterReminder('FIRST_REMINDER'),
+  null,
+  true,
+  'Europe/Paris',
+);
+
+module.exports.newsletterThursdayMorningReminderJob = new CronJob(
+  '0 0 8 * * 4', // every week a 8:00 on thursday
+  () => newsletterReminder('SECOND_TIMER'),
+  null,
+  true,
+  'Europe/Paris',
+);
+
+module.exports.newsletterThursdayEveningReminderJob = new CronJob(
+  '0 18 * * 4', // every week a 18:00 on thursday
+  (type) => newsletterReminder('WILL_SEND_REMINDER'),
+  null,
+  true,
+  'Europe/Paris',
+);
+
+module.exports.newsletterFridayReminderJob = new CronJob(
+  '0 10 * * 5', // every week a 10:00 on friday
+  (type) => newsletterReminder('WILL_SEND_REMINDER'),
   null,
   true,
   'Europe/Paris',

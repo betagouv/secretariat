@@ -1,15 +1,24 @@
 const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
+const sinon = require('sinon');
 const knex = require('../db');
+const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+// const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const {
+  newsletterMondayReminderJob,
+  newsletterThursdayEveningReminderJob,
+  newsletterThursdayMorningReminderJob,
+  newsletterFridayReminderJob,
+  createNewsletter
+} = require('../schedulers/newsletterScheduler');
 
-const newsletterController = rewire('../controllers/newsletterController.js');
-
-const { createNewsletter } = require('../schedulers/newsletterScheduler');
-
+const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
+const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
 const mockNewsletters = [
   {
     year_week: '2020-52',
@@ -36,6 +45,11 @@ const mockNewsletters = [
     sent_at: new Date(),
   },
 ];
+
+const mockNewsletter = {
+  year_week: '2021-9',
+  url: 'https://pad.incubateur.net/rewir34984292342sad'
+}
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
 describe('Newsletter', () => {
   describe('should get newsletter data for newsletter page', () => {
@@ -65,7 +79,18 @@ describe('Newsletter', () => {
     });
   });
 
-  describe('cronjob', () => {
+  describe('cronjob newsletter', () => {
+
+    beforeEach((done) => {
+      this.slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
+      done();
+    });
+  
+    afterEach((done) => {
+      this.slack.restore();
+      done()
+    });
+  
     it('should create new note', async () => {
       const incubateurHead = nock('https://pad.incubateur.net').persist()
       .head(/.*/)
@@ -93,7 +118,7 @@ describe('Newsletter', () => {
       .get('/i3472ndasda4545')
       .reply(200, '# TITLE ### TEXT CONTENT');
 
-      const res = await createNewsletter();
+      const res = await createNewsletter() // await newsletterScheduler.__get__('createNewsletter')();
       incubateurHead.isDone().should.be.true;
       incubateurGet.isDone().should.be.true;
       incubateurPost1.isDone().should.be.true;
@@ -102,6 +127,45 @@ describe('Newsletter', () => {
       newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
       const date = new Date();
       newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
+      await knex('newsletters').truncate();
+    });
+
+    it('should send remind on monday at 8am', async () => {
+      await knex('newsletters').insert([mockNewsletter]);
+      this.clock = sinon.useFakeTimers(new Date('2021-03-01T07:59:59+01:00'));
+      await newsletterReminder('FIRST_REMINDER');
+      this.slack.firstCall.args[0].should.equal(computeMessageReminder('FIRST_REMINDER', mockNewsletter));
+      this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+
+    it('should send remind on thursday at 8am', async() => {
+      await knex('newsletters').insert([mockNewsletter])
+      this.clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
+      await newsletterReminder('SECOND_REMINDER');
+      this.slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
+      this.clock.restore();
+      this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+
+    it('should send remind on thursday at 6pm', async () => {
+      await knex('newsletters').insert([mockNewsletter]);
+      this.clock = sinon.useFakeTimers(new Date('2021-03-04T17:59:59+01:00'));
+      await newsletterReminder('THIRD_REMINDER');
+      this.slack.firstCall.args[0].should.equal(computeMessageReminder('THIRD_REMINDER', mockNewsletter));
+      this.clock.restore();
+      this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+
+
+    it('should send remind on friday at 8am', async () => {
+      this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
+      await newsletterReminder('THIRD_REMINDER');
+      this.slack.notCalled.should.be.true;
+      this.clock.restore();
+      this.slack.restore();
     });
   });
 });
