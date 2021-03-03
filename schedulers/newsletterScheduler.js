@@ -9,7 +9,6 @@ const utils = require('../controllers/utils');
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
   const contentWithReplacement = Object.keys(replaceConfig).reduce(
     (previousValue, key) => {
-      console.log('LCS PRE', previousValue, key, replaceConfig[key]);
       return previousValue.replace(key, replaceConfig[key]);
     },
     newsletterTemplateContent,
@@ -20,20 +19,30 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
 
 const createNewsletter = async () => {
   const date = new Date();
-  const newsletter = await knex('newsletters')
-    .orderBy('year_week')
-    .whereNotNull('sent_at').first();
   const pad = new PAD();
-  let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
+
+  const newsletterName = `infolettre-${utils.formatDateToReadableFormat(date)}`;
   const replaceConfig = {
     DATE: utils.formatDateToFrenchTextReadableFormat(date),
+    NEWSLETTER_URL: `https://pad.incubateur.net/${newsletterName}`,
   };
+
+  // get previous sent newsletter
+  const newsletter = await knex('newsletters')
+  .orderBy('year_week')
+  .whereNotNull('sent_at').first();
   if (newsletter) {
-    replaceConfig.NEWSLETTER_URL = newsletter.url;
     replaceConfig.PREVIOUS_NEWSLETTER_URL = newsletter.url;
   }
+
+  // change content in template
+  let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
   newsletterTemplateContent = replaceMacroInContent(newsletterTemplateContent, replaceConfig);
-  const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
+
+  const result = await pad.createNewNoteWithContentAndAlias(
+    newsletterTemplateContent,
+    newsletterName,
+  );
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
   await knex('newsletters').insert({

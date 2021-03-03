@@ -105,7 +105,7 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
-      const createNewNoteWithContentSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContent');
+      const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
       await knex('newsletters')
       .where({ year_week: '2021-9'})
       .insert({
@@ -137,9 +137,9 @@ describe('Newsletter', () => {
       const padPostNewCall = nock('https://pad.incubateur.net')
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location: 'https://pad.incubateur.net/i3472ndasda4545',
+        Location: 'https://pad.incubateur.net/infolettre-08/03/2021',
       })
-      .get('/i3472ndasda4545')
+      .get('/infolettre-08/03/2021')
       .reply(200, '');
 
       const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
@@ -147,17 +147,17 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
-      createNewNoteWithContentSpy.firstCall.args[0].should.equal(
+      createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
         replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
-          NEWSLETTER_URL: 'https://pad.incubateur.net/i3472ndasda4545',
+          NEWSLETTER_URL: 'https://pad.incubateur.net/infolettre-08/03/2021',
           PREVIOUS_NEWSLETTER_URL: mockNewsletter.url,
           DATE: controllerUtils.formatDateToFrenchTextReadableFormat(date),
         }),
       );
-      const newsletter = await knex('newsletters').select();
-      newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
+      const newsletter = await knex('newsletters').orderBy('year_week').first();
+      newsletter.url.should.equal('https://pad.incubateur.net/infolettre-08/03/2021');
       this.clock.restore();
-      newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
+      newsletter.year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
       await knex('newsletters').truncate();
     });
 
