@@ -2,18 +2,14 @@ const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
+
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
-// const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const {
-  newsletterMondayReminderJob,
-  newsletterThursdayEveningReminderJob,
-  newsletterThursdayMorningReminderJob,
-  newsletterFridayReminderJob,
-  createNewsletter
+  createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
