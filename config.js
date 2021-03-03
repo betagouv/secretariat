@@ -17,6 +17,7 @@ module.exports = {
   host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
+  newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: '2013-07-01',

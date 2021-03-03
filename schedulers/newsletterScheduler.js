@@ -1,14 +1,14 @@
 const { CronJob } = require('cron');
 
 const BetaGouv = require('../betagouv');
+const config = require('../config');
 const knex = require('../db');
 const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
 
 const createNewsletter = async () => {
   const pad = new PAD();
-  const NEWSLETTER_TEMPLATE_ID = 'f7jiuFa-Qd2BAd5Rb6XjSg';
-  const newsletterTemplateContent = await pad.getNoteWithId(NEWSLETTER_TEMPLATE_ID);
+  const newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
   const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
