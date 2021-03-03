@@ -44,8 +44,8 @@ const mockNewsletters = [
 
 const mockNewsletter = {
   year_week: '2021-9',
-  url: 'https://pad.incubateur.net/rewir34984292342sad'
-}
+  url: 'https://pad.incubateur.net/rewir34984292342sad',
+};
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
 describe('Newsletter', () => {
   describe('should get newsletter data for newsletter page', () => {
@@ -66,7 +66,8 @@ describe('Newsletter', () => {
             (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
           );
           allNewsletterButMostRecentOne.forEach((newsletter) => {
-            res.text.should.include(controllerUtils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
+            res.text.should.include(controllerUtils
+              .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
           const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
           res.text.should.include(`<h3>Newsletter du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
@@ -76,19 +77,18 @@ describe('Newsletter', () => {
   });
 
   describe('cronjob newsletter', () => {
-
     beforeEach((done) => {
       this.slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
       done();
     });
-  
+
     afterEach((done) => {
       this.slack.restore();
       done();
     });
-  
+
     it('should create new note', async () => {
-      const incubateurHead = nock('https://pad.incubateur.net').persist()
+      const padHeadCall = nock('https://pad.incubateur.net').persist()
       .head(/.*/)
       .reply(200, {
         status: 'OK',
@@ -96,17 +96,17 @@ describe('Newsletter', () => {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const incubateurPost1 = nock('https://pad.incubateur.net').persist()
+      const padPostLoginCall = nock('https://pad.incubateur.net').persist()
       .post(/^.*login.*/)
       .reply(200, {}, {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const incubateurGet = nock('https://pad.incubateur.net')
+      const padGetDownloadCall = nock('https://pad.incubateur.net')
       .get(/^.*\/download/)
       .reply(200, '# TITLE ### TEXT CONTENT');
 
-      const incubateurPost2 = nock('https://pad.incubateur.net')
+      const padPostNewCall = nock('https://pad.incubateur.net')
       .post(/^.*new/)
       .reply(301, undefined, {
         Location: 'https://pad.incubateur.net/i3472ndasda4545',
@@ -114,11 +114,11 @@ describe('Newsletter', () => {
       .get('/i3472ndasda4545')
       .reply(200, '# TITLE ### TEXT CONTENT');
 
-      const res = await createNewsletter() // await newsletterScheduler.__get__('createNewsletter')();
-      incubateurHead.isDone().should.be.true;
-      incubateurGet.isDone().should.be.true;
-      incubateurPost1.isDone().should.be.true;
-      incubateurPost2.isDone().should.be.true;
+      const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
+      padHeadCall.isDone().should.be.true;
+      padGetDownloadCall.isDone().should.be.true;
+      padPostLoginCall.isDone().should.be.true;
+      padPostNewCall.isDone().should.be.true;
       const newsletter = await knex('newsletters').select();
       newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
       const date = new Date();
@@ -135,8 +135,8 @@ describe('Newsletter', () => {
       await knex('newsletters').truncate();
     });
 
-    it('should send remind on thursday at 8am', async() => {
-      await knex('newsletters').insert([mockNewsletter])
+    it('should send remind on thursday at 8am', async () => {
+      await knex('newsletters').insert([mockNewsletter]);
       this.clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
       await newsletterReminder('SECOND_REMINDER');
       this.slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
@@ -154,7 +154,6 @@ describe('Newsletter', () => {
       this.slack.restore();
       await knex('newsletters').truncate();
     });
-
 
     it('should send remind on friday at 8am', async () => {
       this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
