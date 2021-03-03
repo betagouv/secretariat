@@ -47,7 +47,7 @@
     "front-matter": "^4.0.2",
     "full-icu": "^1.3.1",
     "jsonwebtoken": "^8.2.2",
-    "knex": "^0.21.18",
+    "knex": "^0.21.19",
     "lodash": "^4.17.21",
     "nodemailer": "^6.4.18",
     "ovh": "^2.0.1",
