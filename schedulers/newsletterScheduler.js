@@ -53,6 +53,43 @@ const newsletterReminder = async (reminder) => {
 };
 
 
+const sendLastNewsletterToSlack = async () => {
+  const lastNewsletter = await knex('newsletters').orderBy('createdAt').first();
+  await BetaGouv.sendInfoToSlack({
+    text: '*La newsletter va bientôt partir !*',
+    attachments: [
+      {
+        text: 'Vérifie que le contenu du <pad.incubateur.com/89573945whaekjada|pad.incubateur.com> est prêt à être envoyé à la communauté.',
+        fallback: 'You are unable to choose a game',
+        callback_id: 'wopr_game',
+        color: '#3AA3E3',
+        attachment_type: 'default',
+        actions: [
+          {
+            name: 'game',
+            text: 'Envoyer la newsletter',
+            style: 'success',
+            type: 'button',
+            value: 'maze',
+          },
+          {
+            name: 'game',
+            text: 'Pas cette semaine',
+            type: 'button',
+            value: 'war',
+            confirm: {
+              title: 'Are you sure?',
+              text: "Wouldn't you prefer a good game of chess?",
+              ok_text: 'Yes',
+              dismiss_text: 'No',
+            },
+          },
+        ],
+      },
+    ],
+  });
+};
+
 module.exports.createNewsletter = createNewsletter;
 
 module.exports.newsletterMondayReminderJob = new CronJob(
@@ -86,3 +123,11 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   true,
   'Europe/Paris',
 );
+
+module.exports.sendLastNewsletterToSlack = new CronJob(
+    '0 1/2 * * 4', // every week a 4:00 on thursday
+    module.exports.sendLastNewsletterToSlack,
+    null,
+    true,
+    'Europe/Paris',
+  );

@@ -2,7 +2,6 @@ const BetaGouv = require('../betagouv');
 const config = require('../config');
 const utils = require('./utils');
 const knex = require('../db');
-const { toPlainObject } = require('lodash');
 
 module.exports.getNewsletter = async function (req, res) {
   try {
@@ -39,5 +38,18 @@ module.exports.getNewsletter = async function (req, res) {
       newsletters: [],
       activeTab: 'newsletter',
     });
+  }
+};
+
+module.exports.slackButtonClicked = async function (req, res) {
+  if (!req.body || !req.body.text) {
+    return help(res);
+  }
+
+  console.log("Received command: " + req.body.text);
+  let value = req.body.text;
+
+  if (value === 'envoyer') {
+    console.log('LCS DO SOMETHING');
   }
 };
