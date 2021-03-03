@@ -73,7 +73,7 @@ module.exports.newsletterThursdayMorningReminderJob = new CronJob(
 
 module.exports.newsletterThursdayEveningReminderJob = new CronJob(
   '0 18 * * 4', // every week a 18:00 on thursday
-  (type) => newsletterReminder('WILL_SEND_REMINDER'),
+  (type) => newsletterReminder('THIRD_REMINDER'),
   null,
   true,
   'Europe/Paris',
@@ -81,7 +81,7 @@ module.exports.newsletterThursdayEveningReminderJob = new CronJob(
 
 module.exports.newsletterFridayReminderJob = new CronJob(
   '0 10 * * 5', // every week a 10:00 on friday
-  (type) => newsletterReminder('WILL_SEND_REMINDER'),
+  (type) => newsletterReminder('THIRD_REMINDER'),
   null,
   true,
   'Europe/Paris',
