@@ -9,12 +9,7 @@ const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
 const PAD = require('../lib/pad');
-// const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const {
-  newsletterMondayReminderJob,
-  newsletterThursdayEveningReminderJob,
-  newsletterThursdayMorningReminderJob,
-  newsletterFridayReminderJob,
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
@@ -88,7 +83,8 @@ describe('Newsletter', () => {
             (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
           );
           allNewsletterButMostRecentOne.forEach((newsletter) => {
-            res.text.should.include(controllerUtils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
+            res.text.should.include(controllerUtils
+              .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
           const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
           res.text.should.include(`<h3>Newsletter du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
@@ -120,7 +116,7 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-08T07:59:59+01:00');
       this.clock = sinon.useFakeTimers(date);
 
-      const incubateurHead = nock('https://pad.incubateur.net').persist()
+      const padHeadCall = nock('https://pad.incubateur.net').persist()
       .head(/.*/)
       .reply(200, {
         status: 'OK',
@@ -128,17 +124,17 @@ describe('Newsletter', () => {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const incubateurPost1 = nock('https://pad.incubateur.net').persist()
+      const padPostLoginCall = nock('https://pad.incubateur.net').persist()
       .post(/^.*login.*/)
       .reply(200, {}, {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const incubateurGet = nock('https://pad.incubateur.net')
+      const padGetDownloadCall = nock('https://pad.incubateur.net')
       .get(/^.*\/download/)
       .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
-      const incubateurPost2 = nock('https://pad.incubateur.net')
+      const padPostNewCall = nock('https://pad.incubateur.net')
       .post(/^.*new/)
       .reply(301, undefined, {
         Location: 'https://pad.incubateur.net/i3472ndasda4545',
@@ -147,10 +143,10 @@ describe('Newsletter', () => {
       .reply(200, '');
 
       const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
-      incubateurHead.isDone().should.be.true;
-      incubateurGet.isDone().should.be.true;
-      incubateurPost1.isDone().should.be.true;
-      incubateurPost2.isDone().should.be.true;
+      padHeadCall.isDone().should.be.true;
+      padGetDownloadCall.isDone().should.be.true;
+      padPostLoginCall.isDone().should.be.true;
+      padPostNewCall.isDone().should.be.true;
       createNewNoteWithContentSpy.firstCall.args[0].should.equal(
         replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
           NEWSLETTER_URL: 'https://pad.incubateur.net/i3472ndasda4545',
