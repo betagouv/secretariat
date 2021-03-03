@@ -29,7 +29,7 @@ const computeMessageReminder = (reminder, newsletter) => {
       Remplissez le pad avec vos news/annonces/événements qui seront présentées au standup.
       Le pad sera envoyé à la communauté vendredi.`;
   } else if (reminder === 'SECOND_REMINDER') {
-    message = `*:wave: Retrouvez nous le standup à midi sur http://invites.standup.incubateur.net/*
+    message = `*:wave: Retrouvez nous pour le standup à midi sur http://invites.standup.incubateur.net/*
       Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
       Le pad sera envoyé à la communauté vendredi.`;
   } else {

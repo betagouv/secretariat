@@ -88,7 +88,7 @@ describe('Newsletter', () => {
   
     afterEach((done) => {
       this.slack.restore();
-      done()
+      done();
     });
   
     it('should create new note', async () => {
