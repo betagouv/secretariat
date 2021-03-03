@@ -2,21 +2,39 @@ const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
+
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+const PAD = require('../lib/pad');
 // const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const {
   newsletterMondayReminderJob,
   newsletterThursdayEveningReminderJob,
   newsletterThursdayMorningReminderJob,
   newsletterFridayReminderJob,
-  createNewsletter
+  createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
+const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du DATE
+  Vous pouvez consulter cette infolettre [en ligne](NEWSLETTER_URL).
+  [TOC]
+  ## Nouvelles des startups
+  ## Nouveautés transverses
+  *Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
+  ## Annonces de recrutements
+  ## :calendar: Evénements à venir
+  *Par ordre chronologique*
+  ## Qui a écrit cette infolettre ? 
+  Cette infolettre est collaborative. Elle a été écrite par les membres de la communauté dont vous faites partie.
+  La prochaine sera envoyée jeudi prochain. Vous avez connaissance de news ou d'événements ? C'est à vous de jouer, vous pouvez commencer à l’écrire ici : [prochaine infolettre](NEXT_NEWSLETTER_URL)
+  Vous avez raté l'infolettre précédente ? [Lire l'infolettre précédente](PREVIOUS_NEWSLETTER_URL)
+`;
+
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
 const mockNewsletters = [
@@ -48,8 +66,8 @@ const mockNewsletters = [
 
 const mockNewsletter = {
   year_week: '2021-9',
-  url: 'https://pad.incubateur.net/rewir34984292342sad'
-}
+  url: 'https://pad.incubateur.net/rewir34984292342sad',
+};
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
 describe('Newsletter', () => {
   describe('should get newsletter data for newsletter page', () => {
@@ -80,18 +98,28 @@ describe('Newsletter', () => {
   });
 
   describe('cronjob newsletter', () => {
-
     beforeEach((done) => {
       this.slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
       done();
     });
-  
+
     afterEach((done) => {
       this.slack.restore();
       done();
     });
-  
+
     it('should create new note', async () => {
+      const createNewNoteWithContentSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContent');
+      await knex('newsletters')
+      .where({ year_week: '2021-9'})
+      .insert({
+        ...mockNewsletter,
+        sent_at: new Date('2021-03-01T07:59:59+01:00'),
+        validator: 'julien.dauphant'
+      });
+      const date = new Date('2021-03-08T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
+
       const incubateurHead = nock('https://pad.incubateur.net').persist()
       .head(/.*/)
       .reply(200, {
@@ -108,7 +136,7 @@ describe('Newsletter', () => {
 
       const incubateurGet = nock('https://pad.incubateur.net')
       .get(/^.*\/download/)
-      .reply(200, '# TITLE ### TEXT CONTENT');
+      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
       const incubateurPost2 = nock('https://pad.incubateur.net')
       .post(/^.*new/)
@@ -116,16 +144,23 @@ describe('Newsletter', () => {
         Location: 'https://pad.incubateur.net/i3472ndasda4545',
       })
       .get('/i3472ndasda4545')
-      .reply(200, '# TITLE ### TEXT CONTENT');
+      .reply(200, '');
 
-      const res = await createNewsletter() // await newsletterScheduler.__get__('createNewsletter')();
+      const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
       incubateurHead.isDone().should.be.true;
       incubateurGet.isDone().should.be.true;
       incubateurPost1.isDone().should.be.true;
       incubateurPost2.isDone().should.be.true;
+      createNewNoteWithContentSpy.firstCall.args[0].should.equal(
+        replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
+          NEWSLETTER_URL: 'https://pad.incubateur.net/i3472ndasda4545',
+          PREVIOUS_NEWSLETTER_URL: mockNewsletter.url,
+          DATE: controllerUtils.formatDateToFrenchTextReadableFormat(date),
+        }),
+      );
       const newsletter = await knex('newsletters').select();
       newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
-      const date = new Date();
+      this.clock.restore();
       newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
       await knex('newsletters').truncate();
     });
@@ -139,8 +174,8 @@ describe('Newsletter', () => {
       await knex('newsletters').truncate();
     });
 
-    it('should send remind on thursday at 8am', async() => {
-      await knex('newsletters').insert([mockNewsletter])
+    it('should send remind on thursday at 8am', async () => {
+      await knex('newsletters').insert([mockNewsletter]);
       this.clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
       await newsletterReminder('SECOND_REMINDER');
       this.slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
@@ -158,7 +193,6 @@ describe('Newsletter', () => {
       this.slack.restore();
       await knex('newsletters').truncate();
     });
-
 
     it('should send remind on friday at 8am', async () => {
       this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));

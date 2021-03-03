@@ -6,13 +6,36 @@ const knex = require('../db');
 const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
 
+const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
+  const contentWithReplacement = Object.keys(replaceConfig).reduce(
+    (previousValue, key) => {
+      console.log('LCS PRE', previousValue, key, replaceConfig[key]);
+      return previousValue.replace(key, replaceConfig[key]);
+    },
+    newsletterTemplateContent,
+  );
+  console.log(contentWithReplacement);
+  return contentWithReplacement;
+};
+
 const createNewsletter = async () => {
+  const date = new Date();
+  const newsletter = await knex('newsletters')
+    .orderBy('year_week')
+    .whereNotNull('sent_at').first();
   const pad = new PAD();
-  const newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
+  let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
+  const replaceConfig = {
+    DATE: utils.formatDateToFrenchTextReadableFormat(date),
+  };
+  if (newsletter) {
+    replaceConfig.NEWSLETTER_URL = newsletter.url;
+    replaceConfig.PREVIOUS_NEWSLETTER_URL = newsletter.url;
+  }
+  newsletterTemplateContent = replaceMacroInContent(newsletterTemplateContent, replaceConfig);
   const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
-  const date = new Date();
   await knex('newsletters').insert({
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
@@ -51,7 +74,6 @@ const newsletterReminder = async (reminder) => {
     await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter));
   }
 };
-
 
 const sendLastNewsletterToSlack = async () => {
   const lastNewsletter = await knex('newsletters').orderBy('createdAt').first();
@@ -125,9 +147,9 @@ module.exports.newsletterFridayReminderJob = new CronJob(
 );
 
 module.exports.sendLastNewsletterToSlack = new CronJob(
-    '0 1/2 * * 4', // every week a 4:00 on thursday
-    module.exports.sendLastNewsletterToSlack,
-    null,
-    true,
-    'Europe/Paris',
-  );
+  '0 1/2 * * 4', // every week a 4:00 on thursday
+  module.exports.sendLastNewsletterToSlack,
+  null,
+  true,
+  'Europe/Paris',
+);

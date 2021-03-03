@@ -50,6 +50,10 @@ module.exports.slackButtonClicked = async function (req, res) {
   let value = req.body.text;
 
   if (value === 'envoyer') {
-    console.log('LCS DO SOMETHING');
+    const emails = [
+      'incubateur@beta.gouv.fr',
+      'newsletter@beta.gouv.fr',
+      'partenaires@beta.gouv.fr',
+      'etalab@data.gouv.fr'];
   }
 };
