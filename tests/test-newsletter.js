@@ -3,24 +3,17 @@ const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
 
-<<<<<<< HEAD
-=======
 const config = require('../config');
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
-<<<<<<< HEAD
 const PAD = require('../lib/pad');
-=======
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
-<<<<<<< HEAD
 const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du DATE
   Vous pouvez consulter cette infolettre [en ligne](NEWSLETTER_URL).
   [TOC]
@@ -38,30 +31,19 @@ const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
-=======
-const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
 const mockNewsletters = [
   {
     year_week: '2020-52',
     validator: 'julien.dauphant',
-<<<<<<< HEAD
-    url: 'https://pad.incubateur.com/45a5dsdsqsdada',
-=======
     url: `${config.padURL}/45a5dsdsqsdada`,
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
     sent_at: new Date(),
   },
   {
     year_week: '2021-02',
     validator: 'julien.dauphant',
-<<<<<<< HEAD
-    url: 'https://pad.incubateur.com/54564q5484saw',
-=======
     url: `${config.padURL}/54564q5484saw`,
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
     sent_at: new Date(),
   },
   {
@@ -124,7 +106,6 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
-<<<<<<< HEAD
       const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
       await knex('newsletters')
       .where({ year_week: '2021-9'})
@@ -136,10 +117,7 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-08T07:59:59+01:00');
       this.clock = sinon.useFakeTimers(date);
 
-      const padHeadCall = nock('https://pad.incubateur.net').persist()
-=======
       const padHeadCall = nock(`${config.padURL}`).persist()
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
       .head(/.*/)
       .reply(200, {
         status: 'OK',

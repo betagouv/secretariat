@@ -162,7 +162,6 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   true,
   'Europe/Paris',
 );
-<<<<<<< HEAD
 
 module.exports.sendLastNewsletterToSlack = new CronJob(
   '0 1/2 * * 4', // every week a 4:00 on thursday
@@ -171,5 +170,3 @@ module.exports.sendLastNewsletterToSlack = new CronJob(
   true,
   'Europe/Paris',
 );
-=======
->>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
