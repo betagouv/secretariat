@@ -24,7 +24,7 @@ const createNewsletter = async () => {
   const newsletterName = `infolettre-${utils.formatDateToReadableFormat(date)}`;
   const replaceConfig = {
     DATE: utils.formatDateToFrenchTextReadableFormat(date),
-    NEWSLETTER_URL: `https://pad.incubateur.net/${newsletterName}`,
+    NEWSLETTER_URL: `${config.padURL}/${newsletterName}`,
   };
 
   // get previous sent newsletter
@@ -123,8 +123,16 @@ const sendLastNewsletterToSlack = async () => {
 
 module.exports.createNewsletter = createNewsletter;
 
+module.exports.createNewsletterJob = new CronJob(
+  '0 4 * * 1', // every week a 4:00 on monday
+  createNewsletter,
+  null,
+  true,
+  'Europe/Paris',
+);
+
 module.exports.newsletterMondayReminderJob = new CronJob(
-  '0 8 * * 1', // every week a 4:00 on monday
+  '0 8 * * 1', // every week a 8:00 on monday
   () => newsletterReminder('FIRST_REMINDER'),
   null,
   true,
@@ -154,6 +162,7 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   true,
   'Europe/Paris',
 );
+<<<<<<< HEAD
 
 module.exports.sendLastNewsletterToSlack = new CronJob(
   '0 1/2 * * 4', // every week a 4:00 on thursday
@@ -162,3 +171,5 @@ module.exports.sendLastNewsletterToSlack = new CronJob(
   true,
   'Europe/Paris',
 );
+=======
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99

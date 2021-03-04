@@ -3,16 +3,24 @@ const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
 
+<<<<<<< HEAD
+=======
+const config = require('../config');
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+<<<<<<< HEAD
 const PAD = require('../lib/pad');
+=======
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
+<<<<<<< HEAD
 const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du DATE
   Vous pouvez consulter cette infolettre [en ligne](NEWSLETTER_URL).
   [TOC]
@@ -30,38 +38,49 @@ const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
+=======
+const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
 const mockNewsletters = [
   {
     year_week: '2020-52',
     validator: 'julien.dauphant',
+<<<<<<< HEAD
     url: 'https://pad.incubateur.com/45a5dsdsqsdada',
+=======
+    url: `${config.padURL}/45a5dsdsqsdada`,
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
     sent_at: new Date(),
   },
   {
     year_week: '2021-02',
     validator: 'julien.dauphant',
+<<<<<<< HEAD
     url: 'https://pad.incubateur.com/54564q5484saw',
+=======
+    url: `${config.padURL}/54564q5484saw`,
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
     sent_at: new Date(),
   },
   {
     year_week: '2021-03',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/5456dsadsahjww',
+    url: `${config.padURL}/5456dsadsahjww`,
     sent_at: new Date(),
   },
   {
     year_week: '2020-51',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/54564qwsajsghd4rhjww',
+    url: `${config.padURL}/54564qwsajsghd4rhjww`,
     sent_at: new Date(),
   },
 ];
 
 const mockNewsletter = {
   year_week: '2021-9',
-  url: 'https://pad.incubateur.net/rewir34984292342sad',
+  url: `${config.padURL}/rewir34984292342sad`,
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
 describe('Newsletter', () => {
@@ -78,7 +97,7 @@ describe('Newsletter', () => {
         .get('/newsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('https://pad.incubateur.com/5456dsadsahjww');
+          res.text.should.include(`${config.padURL}/5456dsadsahjww`);
           const allNewsletterButMostRecentOne = mockNewsletters.filter(
             (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
           );
@@ -105,6 +124,7 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
+<<<<<<< HEAD
       const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
       await knex('newsletters')
       .where({ year_week: '2021-9'})
@@ -117,6 +137,9 @@ describe('Newsletter', () => {
       this.clock = sinon.useFakeTimers(date);
 
       const padHeadCall = nock('https://pad.incubateur.net').persist()
+=======
+      const padHeadCall = nock(`${config.padURL}`).persist()
+>>>>>>> 25aaa34009f41413e9ef081aeba129cba7271d99
       .head(/.*/)
       .reply(200, {
         status: 'OK',
@@ -124,20 +147,20 @@ describe('Newsletter', () => {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const padPostLoginCall = nock('https://pad.incubateur.net').persist()
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
       .post(/^.*login.*/)
       .reply(200, {}, {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const padGetDownloadCall = nock('https://pad.incubateur.net')
+      const padGetDownloadCall = nock(`${config.padURL}`)
       .get(/^.*\/download/)
       .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
-      const padPostNewCall = nock('https://pad.incubateur.net')
+      const padPostNewCall = nock(`${config.padURL}`)
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location: 'https://pad.incubateur.net/infolettre-08/03/2021',
+        Location: `${config.padURL}/infolettre-08/03/2021`,
       })
       .get('/infolettre-08/03/2021')
       .reply(200, '');
@@ -149,13 +172,13 @@ describe('Newsletter', () => {
       padPostNewCall.isDone().should.be.true;
       createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
         replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
-          NEWSLETTER_URL: 'https://pad.incubateur.net/infolettre-08/03/2021',
+          NEWSLETTER_URL: `${config.padURL}/infolettre-08/03/2021`,
           PREVIOUS_NEWSLETTER_URL: mockNewsletter.url,
           DATE: controllerUtils.formatDateToFrenchTextReadableFormat(date),
         }),
       );
       const newsletter = await knex('newsletters').orderBy('year_week').first();
-      newsletter.url.should.equal('https://pad.incubateur.net/infolettre-08/03/2021');
+      newsletter.url.should.equal(`${config.padURL}/infolettre-08/03/2021`);
       this.clock.restore();
       newsletter.year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
       await knex('newsletters').truncate();
