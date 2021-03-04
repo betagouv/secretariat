@@ -90,7 +90,7 @@ const newsletterReminder = async (reminder) => {
 module.exports.createNewsletter = createNewsletter;
 
 module.exports.createNewsletterJob = new CronJob(
-  '0 4 * * 1', // every week a 4:00 on monday
+  `${config.newsletterCronTime || '0 4 * * 1'}`, // every week a 4:00 on monday
   createNewsletter,
   null,
   true,
