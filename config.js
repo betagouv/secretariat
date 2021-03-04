@@ -17,6 +17,10 @@ module.exports = {
   host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
+  newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
+  padURL: process.env.PAD_URL || 'https://pad.incubateur.net',
+  padEmail: process.env.PAD_USERNAME,
+  padPassword: process.env.PAD_PASSWORD,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: '2013-07-01',

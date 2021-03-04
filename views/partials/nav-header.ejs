@@ -12,6 +12,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
     <link rel="manifest" href="/static/favicon/site.webmanifest">
+    <script src="/swal/sweetalert2.all.min.js"></script>
 
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
@@ -44,6 +45,12 @@
                     <a href="/visit" id="visit" 
                         class="nav-item <% if(activeTab === 'visit') { %> active <% } %>">
                         Bureau Ségur
+                    </a>
+                </li>
+                <li>
+                    <a href="/newsletters" id="newsletter" 
+                        class="nav-item <% if(activeTab === 'newsletter') { %> active <% } %>">
+                        Infolettres interne
                     </a>
                 </li>
                 <li class="nav-end">
