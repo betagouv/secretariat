@@ -135,9 +135,9 @@ describe('Newsletter', () => {
       const padPostNewCall = nock(`${config.padURL}`)
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location: `${config.padURL}/infolettre-08/03/2021`,
+        Location: `${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`,
       })
-      .get('/infolettre-08/03/2021')
+      .get(`/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`)
       .reply(200, '');
 
       const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();

@@ -7,7 +7,10 @@ const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
 
 const {
-  NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, addDays, getMonday,
+  NUMBER_OF_DAY_IN_A_WEEK,
+  NUMBER_OF_DAY_FROM_MONDAY,
+  addDays,
+  getMonday,
 } = utils;
 
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
@@ -19,19 +22,20 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
 };
 
 const createNewsletter = async () => {
-  let date = new Date();
+  let date = getMonday(new Date()); // get first day of the current week
   const pad = new PAD();
-  if (config.createNextNewsletterDay === 'thursday') {
-    // if this newsletter is created on thursday, it is the newsletter for the week after
-    date = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
+  if (config.createNewsletterTheWeekBefore) {
+    // newsletter is for the next week
+    date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
   }
   const newsletterName = `infolettre-${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
-    // next stand up is next week on thursday
-    __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(getMonday(date),
+    // next stand up is a week the newsletter date on thursday
+    __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
       NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
-    __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(date),
+    __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
+      NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])),
   };
 
   // change content in template
