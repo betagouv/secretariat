@@ -1,5 +1,5 @@
 const { CronJob } = require('cron');
-
+const crypto = require('crypto');
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
@@ -21,6 +21,13 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
   return contentWithReplacement;
 };
 
+const computeId = (yearWeek) => {
+  const id = crypto.createHmac('sha256', config.newsletterHashSecret)
+  .update(yearWeek)
+  .digest('hex').slice(0, 8);
+  return id;
+};
+
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
   const pad = new PAD();
@@ -28,7 +35,8 @@ const createNewsletter = async () => {
     // newsletter is for the next week
     date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
   }
-  const newsletterName = `infolettre-${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+  const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+  const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
     // next stand up is a week after the newsletter date on thursday

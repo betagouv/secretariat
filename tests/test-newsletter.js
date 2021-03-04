@@ -36,6 +36,8 @@ const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
+const computeId = newsletterScheduler.__get__('computeId');
+
 const mockNewsletters = [
   {
     year_week: '2020-52',
@@ -113,7 +115,8 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-04T07:59:59+01:00');
       const newsletterDate = addDays(date, 7);
       this.clock = sinon.useFakeTimers(date);
-
+      const yearWeek = `${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`;
+      const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -135,28 +138,28 @@ describe('Newsletter', () => {
       const padPostNewCall = nock(`${config.padURL}`)
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location: `${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`,
+        Location: `${config.padURL}/${newsletterName}`,
       })
-      .get(`/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`)
+      .get(`/${newsletterName}`)
       .reply(200, '');
 
-      const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
+      const res = await createNewsletter();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
       createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
         replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
-          __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`,
+          __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
           __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(addDays(getMonday(newsletterDate),
             NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
           __REMPLACER_PAR_DATE__: controllerUtils.formatDateToFrenchTextReadableFormat(addDays(date, NUMBER_OF_DAY_IN_A_WEEK)),
         }),
       );
       const newsletter = await knex('newsletters').orderBy('year_week').first();
-      newsletter.url.should.equal(`${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`);
+      newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
       this.clock.restore();
-      newsletter.year_week.should.equal(`${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`);
+      newsletter.year_week.should.equal(yearWeek);
       await knex('newsletters').truncate();
     });
 
