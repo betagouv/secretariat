@@ -40,20 +40,3 @@ module.exports.getNewsletter = async function (req, res) {
     });
   }
 };
-
-module.exports.slackButtonClicked = async function (req, res) {
-  if (!req.body || !req.body.text) {
-    return help(res);
-  }
-
-  console.log("Received command: " + req.body.text);
-  let value = req.body.text;
-
-  if (value === 'envoyer') {
-    const emails = [
-      'incubateur@beta.gouv.fr',
-      'newsletter@beta.gouv.fr',
-      'partenaires@beta.gouv.fr',
-      'etalab@data.gouv.fr'];
-  }
-};
