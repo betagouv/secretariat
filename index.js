@@ -22,6 +22,7 @@ const communityController = require('./controllers/communityController');
 const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 const visitController = require('./controllers/visitController');
+const newsletterController = require('./controllers/newsletterController');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use('/static', express.static('static'));
 app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/swal', express.static(path.join(__dirname, 'node_modules/sweetalert2/dist'))); // to import sweetalert in front
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
@@ -136,5 +138,6 @@ app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.get('/visit', visitController.getForm);
+app.get('/newsletter', newsletterController.getNewsletter);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
