@@ -31,7 +31,7 @@ const createNewsletter = async () => {
   const newsletterName = `infolettre-${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
-    // next stand up is a week the newsletter date on thursday
+    // next stand up is a week after the newsletter date on thursday
     __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
       NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
     __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
