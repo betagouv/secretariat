@@ -6,34 +6,33 @@ const knex = require('../db');
 const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
 
+const {
+  NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, addDays, getMonday,
+} = utils;
+
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
   const contentWithReplacement = Object.keys(replaceConfig).reduce(
-    (previousValue, key) => {
-      return previousValue.replace(key, replaceConfig[key]);
-    },
+    (previousValue, key) => previousValue.replace(key, replaceConfig[key]),
     newsletterTemplateContent,
   );
-  console.log(contentWithReplacement);
   return contentWithReplacement;
 };
 
 const createNewsletter = async () => {
-  const date = new Date();
+  let date = new Date();
   const pad = new PAD();
-
-  const newsletterName = `infolettre-${utils.formatDateToReadableFormat(date)}`;
-  const replaceConfig = {
-    DATE: utils.formatDateToFrenchTextReadableFormat(date),
-    NEWSLETTER_URL: `${config.padURL}/${newsletterName}`,
-  };
-
-  // get previous sent newsletter
-  const newsletter = await knex('newsletters')
-  .orderBy('year_week')
-  .whereNotNull('sent_at').first();
-  if (newsletter) {
-    replaceConfig.PREVIOUS_NEWSLETTER_URL = newsletter.url;
+  if (config.createNextNewsletterDay === 'thursday') {
+    // if this newsletter is created on thursday, it is the newsletter for the week after
+    date = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
   }
+  const newsletterName = `infolettre-${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+  const replaceConfig = {
+    __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
+    // next stand up is next week on thursday
+    __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(getMonday(date),
+      NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
+    __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(date),
+  };
 
   // change content in template
   let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);

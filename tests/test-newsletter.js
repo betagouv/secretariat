@@ -9,24 +9,27 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+const {
+  NUMBER_OF_DAY_IN_A_WEEK,
+  NUMBER_OF_DAY_FROM_MONDAY,
+  addDays,
+  getMonday,
+  formatDateToFrenchTextReadableFormat,
+} = controllerUtils;
 const PAD = require('../lib/pad');
 const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
-const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du DATE
-  Vous pouvez consulter cette infolettre [en ligne](NEWSLETTER_URL).
-  [TOC]
-  ## Nouvelles des startups
+const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__
+  Les nouvelles pourront être lu au point hebdomadaire (stand-up) le jeudi à 12h (pour rappel l'adresse du point hebdomadaire standup http://invites.standup.incubateur.net/ )
+  Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
+  ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
   ## Nouveautés transverses
   *Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
-  ## Annonces de recrutements
+  ## Annonces des recrutements
   ## :calendar: Evénements à venir
-  *Par ordre chronologique*
-  ## Qui a écrit cette infolettre ? 
-  Cette infolettre est collaborative. Elle a été écrite par les membres de la communauté dont vous faites partie.
-  La prochaine sera envoyée jeudi prochain. Vous avez connaissance de news ou d'événements ? C'est à vous de jouer, vous pouvez commencer à l’écrire ici : [prochaine infolettre](NEXT_NEWSLETTER_URL)
-  Vous avez raté l'infolettre précédente ? [Lire l'infolettre précédente](PREVIOUS_NEWSLETTER_URL)
+  ### 👋 Prochain point hebdomadaire (stand-up), jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
 `;
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
@@ -107,14 +110,8 @@ describe('Newsletter', () => {
 
     it('should create new note', async () => {
       const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
-      await knex('newsletters')
-      .where({ year_week: '2021-9'})
-      .insert({
-        ...mockNewsletter,
-        sent_at: new Date('2021-03-01T07:59:59+01:00'),
-        validator: 'julien.dauphant'
-      });
-      const date = new Date('2021-03-08T07:59:59+01:00');
+      const date = new Date('2021-03-04T07:59:59+01:00');
+      const newsletterDate = addDays(date, 7);
       this.clock = sinon.useFakeTimers(date);
 
       const padHeadCall = nock(`${config.padURL}`).persist()
@@ -150,15 +147,16 @@ describe('Newsletter', () => {
       padPostNewCall.isDone().should.be.true;
       createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
         replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
-          NEWSLETTER_URL: `${config.padURL}/infolettre-08/03/2021`,
-          PREVIOUS_NEWSLETTER_URL: mockNewsletter.url,
-          DATE: controllerUtils.formatDateToFrenchTextReadableFormat(date),
+          __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`,
+          __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(addDays(getMonday(newsletterDate),
+            NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
+          __REMPLACER_PAR_DATE__: controllerUtils.formatDateToFrenchTextReadableFormat(addDays(date, NUMBER_OF_DAY_IN_A_WEEK)),
         }),
       );
       const newsletter = await knex('newsletters').orderBy('year_week').first();
-      newsletter.url.should.equal(`${config.padURL}/infolettre-08/03/2021`);
+      newsletter.url.should.equal(`${config.padURL}/infolettre-${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`);
       this.clock.restore();
-      newsletter.year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
+      newsletter.year_week.should.equal(`${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`);
       await knex('newsletters').truncate();
     });
 

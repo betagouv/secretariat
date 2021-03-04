@@ -26,6 +26,7 @@ module.exports = {
     minStartDate: '2013-07-01',
     badgeOptions: userBadgeOptions,
   },
+  createNextNewsletterDay: process.env.CREATE_NEXT_NEWSLETTER_DAY || 'thursday',
   senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
   usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',
