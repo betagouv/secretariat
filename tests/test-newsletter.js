@@ -76,7 +76,7 @@ describe('Newsletter', () => {
 
     it('should get previous newsletter and last newsletter', (done) => {
       chai.request(app)
-        .get('/newsletter')
+        .get('/newsletters')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include(`${config.padURL}/5456dsadsahjww`);
