@@ -170,7 +170,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', { newcomer, onboarder });
     try {
-      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id), config.senderEmail], 'Mise en contact 👋', html);
+      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], 'Mise en contact 👋', html);
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
