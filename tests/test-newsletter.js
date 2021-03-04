@@ -3,6 +3,7 @@ const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
 
+const config = require('../config');
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const app = require('../index');
@@ -19,32 +20,32 @@ const mockNewsletters = [
   {
     year_week: '2020-52',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/45a5dsdsqsdada',
+    url: `${config.padURL}/45a5dsdsqsdada`,
     sent_at: new Date(),
   },
   {
     year_week: '2021-02',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/54564q5484saw',
+    url: `${config.padURL}/54564q5484saw`,
     sent_at: new Date(),
   },
   {
     year_week: '2021-03',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/5456dsadsahjww',
+    url: `${config.padURL}/5456dsadsahjww`,
     sent_at: new Date(),
   },
   {
     year_week: '2020-51',
     validator: 'julien.dauphant',
-    url: 'https://pad.incubateur.com/54564qwsajsghd4rhjww',
+    url: `${config.padURL}/54564qwsajsghd4rhjww`,
     sent_at: new Date(),
   },
 ];
 
 const mockNewsletter = {
   year_week: '2021-9',
-  url: 'https://pad.incubateur.net/rewir34984292342sad',
+  url: `${config.padURL}/rewir34984292342sad`,
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
 describe('Newsletter', () => {
@@ -61,7 +62,7 @@ describe('Newsletter', () => {
         .get('/newsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
-          res.text.should.include('https://pad.incubateur.com/5456dsadsahjww');
+          res.text.should.include(`${config.padURL}/5456dsadsahjww`);
           const allNewsletterButMostRecentOne = mockNewsletters.filter(
             (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
           );
@@ -88,7 +89,7 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
-      const padHeadCall = nock('https://pad.incubateur.net').persist()
+      const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
         status: 'OK',
@@ -96,20 +97,20 @@ describe('Newsletter', () => {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const padPostLoginCall = nock('https://pad.incubateur.net').persist()
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
       .post(/^.*login.*/)
       .reply(200, {}, {
         'set-cookie': '73dajkhs8934892jdshakldsja',
       });
 
-      const padGetDownloadCall = nock('https://pad.incubateur.net')
+      const padGetDownloadCall = nock(`${config.padURL}`)
       .get(/^.*\/download/)
       .reply(200, '# TITLE ### TEXT CONTENT');
 
-      const padPostNewCall = nock('https://pad.incubateur.net')
+      const padPostNewCall = nock(`${config.padURL}`)
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location: 'https://pad.incubateur.net/i3472ndasda4545',
+        Location:`${config.padURL}/i3472ndasda4545`,
       })
       .get('/i3472ndasda4545')
       .reply(200, '# TITLE ### TEXT CONTENT');
@@ -120,7 +121,7 @@ describe('Newsletter', () => {
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
       const newsletter = await knex('newsletters').select();
-      newsletter[0].url.should.equal('https://pad.incubateur.net/i3472ndasda4545');
+      newsletter[0].url.should.equal(`${config.padURL}/i3472ndasda4545`);
       const date = new Date();
       newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
       await knex('newsletters').truncate();

@@ -52,11 +52,18 @@ const newsletterReminder = async (reminder) => {
   }
 };
 
-
 module.exports.createNewsletter = createNewsletter;
 
+module.exports.createNewsletterJob = new CronJob(
+  '0 4 * * 1', // every week a 4:00 on monday
+  createNewsletter,
+  null,
+  true,
+  'Europe/Paris',
+);
+
 module.exports.newsletterMondayReminderJob = new CronJob(
-  '0 8 * * 1', // every week a 4:00 on monday
+  '0 8 * * 1', // every week a 8:00 on monday
   () => newsletterReminder('FIRST_REMINDER'),
   null,
   true,
