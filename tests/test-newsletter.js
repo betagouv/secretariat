@@ -93,7 +93,7 @@ describe('Newsletter', () => {
               .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
           const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
-          res.text.should.include(`<h3>Newsletter du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
           done();
         });
     });
