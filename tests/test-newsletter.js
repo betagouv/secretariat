@@ -66,7 +66,7 @@ const mockNewsletters = [
 ];
 
 const mockNewsletter = {
-  year_week: '2021-9',
+  year_week: '2021-09',
   url: `${config.padURL}/rewir34984292342sad`,
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
