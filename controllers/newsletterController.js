@@ -42,13 +42,13 @@ module.exports.getNewsletter = async function (req, res) {
   }
 };
 
-module.exports.validateNewsletter = async() => {
+module.exports.validateNewsletter = async (req, res) => {
   if (req.body.text === 'validate') {
     let newsletter = await knex('newsletters').orderBy('year_week').first();
-    let newsletter = await knex('newsletters')
+    newsletter = await knex('newsletters')
       .where({ year_week: newsletter.year_week })
       .update({ validator: req.body.REMPLACER_PAR_USER_SLACK_NAME });
   } else {
     // send error message
   }
-}
+};

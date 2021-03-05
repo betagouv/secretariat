@@ -87,6 +87,7 @@ app.use(
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
+      '/validateNewsletter',
     ],
   }),
 );

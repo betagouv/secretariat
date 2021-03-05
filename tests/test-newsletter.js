@@ -10,12 +10,13 @@ const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
 const {
-  createNewsletter, sendNewsletter,
+  createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
+const sendNewsletter = newsletterScheduler.__get__('sendNewsletter');
 const mockNewsletters = [
   {
     year_week: '2020-52',
@@ -165,30 +166,105 @@ describe('Newsletter', () => {
     });
 
     it('should sendNewsletter if validated', async () => {
-      this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
-      await sendNewsletter('THIRD_REMINDER');
+      const newsletterContent = '' // TODO : change with other values
+      const padHeadCall = nock(`${config.padURL}`).persist()
+      .head(/.*/)
+      .reply(200, {
+        status: 'OK',
+      }, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
+      .post(/^.*login.*/)
+      .reply(200, {}, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padGetDownloadCall = nock(`${config.padURL}`)
+      .get(/^.*\/download/)
+      .reply(200, newsletterContent);
+
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+        validator: 'julien.dauphant',
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      this.clock = sinon.useFakeTimers(date);
+      await sendNewsletter();
+      padHeadCall.isDone().should.be.true;
+      padGetDownloadCall.isDone().should.be.true;
+      padPostLoginCall.isDone().should.be.true;
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.firstCall.args[1].should.equal(`Infolettre du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
+      sendEmailStub.firstCall.args[2].shoud.equal(newsletterContent);
       this.slack.notCalled.should.be.true;
       this.clock.restore();
+      sendEmailStub.restore();
       this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+
+    it('should not sendNewsletter if not validated', async () => {
+      const newsletterContent = ''; // TODO : change with other values
+      const padHeadCall = nock(`${config.padURL}`).persist()
+      .head(/.*/)
+      .reply(200, {
+        status: 'OK',
+      }, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
+      .post(/^.*login.*/)
+      .reply(200, {}, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padGetDownloadCall = nock(`${config.padURL}`)
+      .get(/^.*\/download/)
+      .reply(200, newsletterContent);
+
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      this.clock = sinon.useFakeTimers(date);
+      await sendNewsletter();
+      padHeadCall.isDone().should.be.false;
+      padGetDownloadCall.isDone().should.be.false;
+      padPostLoginCall.isDone().should.be.false;
+      sendEmailStub.calledOnce.should.be.false;
+      sendEmailStub.firstCall.args[1].should.equal(`Infolettre du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
+      sendEmailStub.firstCall.args[2].shoud.equal(newsletterContent);
+      this.slack.notCalled.should.be.false;
+      this.clock.restore();
+      sendEmailStub.restore();
+      this.slack.restore();
+      await knex('newsletters').truncate();
     });
   });
 
   describe('slack url newsletter', () => {
-    it('should validate newsletter', (done) => {
+    it('should validate newsletter', async (done) => {
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
       chai.request(app)
-        .get('/validateNewsletter')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .end((err, res) => {
-          res.text.should.include(`${config.padURL}/5456dsadsahjww`);
-          const allNewsletterButMostRecentOne = mockNewsletters.filter(
-            (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
-          );
-          allNewsletterButMostRecentOne.forEach((newsletter) => {
-            res.text.should.include(controllerUtils
-              .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
-          });
-          const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
-          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+        .post('/validateNewsletter', {
+          text: 'validate',
+          validator: 'paul',
+        })
+        .end(async (err, res) => {
+          const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+          newsletter.validator.shoud.be('paul');
+          await knex('newsletters').truncate();
+          this.clock.restore();
+          this.slack.restore();
           done();
         });
     });
