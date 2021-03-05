@@ -10,12 +10,34 @@ const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
 const {
+  NUMBER_OF_DAY_IN_A_WEEK,
+  NUMBER_OF_DAY_FROM_MONDAY,
+  addDays,
+  getMonday,
+  formatDateToFrenchTextReadableFormat,
+} = controllerUtils;
+const PAD = require('../lib/pad');
+const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
+const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__
+  Les nouvelles pourront être lu au point hebdomadaire (stand-up) le jeudi à 12h (pour rappel l'adresse du point hebdomadaire standup http://invites.standup.incubateur.net/ )
+  Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
+  ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
+  ## Nouveautés transverses
+  *Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
+  ## Annonces des recrutements
+  ## :calendar: Evénements à venir
+  ### 👋 Prochain point hebdomadaire (stand-up), jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
+`;
+
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
+const computeId = newsletterScheduler.__get__('computeId');
+
 const mockNewsletters = [
   {
     year_week: '2020-52',
@@ -89,6 +111,12 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
+      const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
+      const date = new Date('2021-03-04T07:59:59+01:00');
+      const newsletterDate = addDays(date, 7);
+      this.clock = sinon.useFakeTimers(date);
+      const yearWeek = `${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`;
+      const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -105,25 +133,33 @@ describe('Newsletter', () => {
 
       const padGetDownloadCall = nock(`${config.padURL}`)
       .get(/^.*\/download/)
-      .reply(200, '# TITLE ### TEXT CONTENT');
+      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
       const padPostNewCall = nock(`${config.padURL}`)
       .post(/^.*new/)
       .reply(301, undefined, {
-        Location:`${config.padURL}/i3472ndasda4545`,
+        Location: `${config.padURL}/${newsletterName}`,
       })
-      .get('/i3472ndasda4545')
-      .reply(200, '# TITLE ### TEXT CONTENT');
+      .get(`/${newsletterName}`)
+      .reply(200, '');
 
-      const res = await createNewsletter(); // await newsletterScheduler.__get__('createNewsletter')();
+      const res = await createNewsletter();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
-      const newsletter = await knex('newsletters').select();
-      newsletter[0].url.should.equal(`${config.padURL}/i3472ndasda4545`);
-      const date = new Date();
-      newsletter[0].year_week.should.equal(`${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`);
+      createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
+        replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
+          __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
+          __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(addDays(getMonday(newsletterDate),
+            NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
+          __REMPLACER_PAR_DATE__: controllerUtils.formatDateToFrenchTextReadableFormat(addDays(date, NUMBER_OF_DAY_IN_A_WEEK)),
+        }),
+      );
+      const newsletter = await knex('newsletters').orderBy('year_week').first();
+      newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
+      this.clock.restore();
+      newsletter.year_week.should.equal(yearWeek);
       await knex('newsletters').truncate();
     });
 

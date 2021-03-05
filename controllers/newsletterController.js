@@ -2,7 +2,6 @@ const BetaGouv = require('../betagouv');
 const config = require('../config');
 const utils = require('./utils');
 const knex = require('../db');
-const { toPlainObject } = require('lodash');
 
 module.exports.getNewsletter = async function (req, res) {
   try {

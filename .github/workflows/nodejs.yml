@@ -28,6 +28,7 @@ jobs:
     - run: npm run test
       env:
         CI: true
+        NEWSLETTER_HASH_SECRET: fakenewslettersecret
         OVH_APP_KEY: fakeovhkey
         OVH_APP_SECRET: fakeovhsecret
         OVH_CONSUMER_KEY: fakeconsumerkey

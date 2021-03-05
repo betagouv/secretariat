@@ -1,18 +1,61 @@
 const { CronJob } = require('cron');
-
+const crypto = require('crypto');
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
 const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
 
+const {
+  NUMBER_OF_DAY_IN_A_WEEK,
+  NUMBER_OF_DAY_FROM_MONDAY,
+  addDays,
+  getMonday,
+} = utils;
+
+const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
+  const contentWithReplacement = Object.keys(replaceConfig).reduce(
+    (previousValue, key) => previousValue.replace(key, replaceConfig[key]),
+    newsletterTemplateContent,
+  );
+  return contentWithReplacement;
+};
+
+const computeId = (yearWeek) => {
+  const id = crypto.createHmac('sha256', config.newsletterHashSecret)
+  .update(yearWeek)
+  .digest('hex').slice(0, 8);
+  return id;
+};
+
 const createNewsletter = async () => {
+  let date = getMonday(new Date()); // get first day of the current week
   const pad = new PAD();
-  const newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
-  const result = await pad.createNewNoteWithContent(newsletterTemplateContent);
+  if (config.createNewsletterTheWeekBefore) {
+    // newsletter is for the next week
+    date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
+  }
+  const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+  const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+  const replaceConfig = {
+    __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
+    // next stand up is a week after the newsletter date on thursday
+    __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
+      NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
+    __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
+      NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])),
+  };
+
+  // change content in template
+  let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
+  newsletterTemplateContent = replaceMacroInContent(newsletterTemplateContent, replaceConfig);
+
+  const result = await pad.createNewNoteWithContentAndAlias(
+    newsletterTemplateContent,
+    newsletterName,
+  );
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
-  const date = new Date();
   await knex('newsletters').insert({
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
@@ -55,7 +98,7 @@ const newsletterReminder = async (reminder) => {
 module.exports.createNewsletter = createNewsletter;
 
 module.exports.createNewsletterJob = new CronJob(
-  '0 4 * * 1', // every week a 4:00 on monday
+  `${config.newsletterCronTime || '0 4 * * 5'}`, // create every week a 4:00 on friday
   createNewsletter,
   null,
   true,

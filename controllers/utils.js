@@ -163,6 +163,29 @@ module.exports.formatDateToFrenchTextReadableFormat = (date) => {
   return `${day} ${month} ${date.getFullYear()}`;
 };
 
+module.exports.NUMBER_OF_DAY_IN_A_WEEK = 7;
+
+module.exports.NUMBER_OF_DAY_FROM_MONDAY = {
+  MONDAY: 0,
+  TUESDAY: 1,
+  WEDNESDAY: 2,
+  THURSDAY: 3,
+  FRIDAY: 4,
+};
+
+module.exports.getMonday = (d) => {
+  d = new Date(d);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+  return new Date(d.setDate(diff));
+};
+
+module.exports.addDays = (date, days, week) => {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+};
+
 module.exports.userInfos = async function (id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
