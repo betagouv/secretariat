@@ -2,22 +2,21 @@
 <div class="module">
     <% if (currentNewsletter) { %>
         <div class="panel panel-full-width">
-            <h3>Newsletter du <%= currentNewsletter.title %></h3>
-            <p>Lien de la newsletter</p>
-            <input value="<%= currentNewsletter.url %>" readonly="readonly" style="max-width: 450px;"/>
-            <button class="button" type="submit" id="copy">Copier l'URL</button>
+            <h3>Infolettre de la semaine du <%= currentNewsletter.title %></h3>
+            <p>Lien de l'infolettre</p>
+            <a href="<%= currentNewsletter.url %>" target="_blank"><%= currentNewsletter.url %></a>
             <br>
             <br>
-            <p>La newsletter est lue et partagée pendant le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
+            <p>L'infolettre est lue et partagée pendant le standup (chaque jeudi a 12h) puis envoyée après validation à partir de jeudi 18h</p>
         </div>
     <% } %>
     <div class="panel panel-full-width">
         <h3>
-            Historique des newsletters
+            Historique des infolettres
         </h3>
         <hr />
         <% if (!newsletters.length) { %>
-            <p>Il n'y a pas de newsletter dans l'historique</p>
+            <p>Il n'y a pas d'infolettres dans l'historique</p>
         <% } %>
         <table class="sortable">
             <tbody>
@@ -32,31 +31,3 @@
         </table>
     </div>
 </div>
-<% if (currentNewsletter) { %>
-<script>
-    document.getElementById('copy').onclick = () => {
-        copyToClipboard("<%= currentNewsletter.url %>");
-    }
-    function copyToClipboard(text) {
-        var dummy = document.createElement("textarea");
-        // to avoid breaking orgain page when copying more words
-        // cant copy when adding below this code
-        // dummy.style.display = 'none'
-        document.body.appendChild(dummy);
-        //Be careful if you use texarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
-        dummy.value = text;
-        dummy.select();
-        document.execCommand("copy");
-        document.body.removeChild(dummy);
-        const Toast = Swal.fire({
-            toast: true,
-            position: 'top-end',
-            title: 'Le lien de la newsletter a été copié dans le presse-papier.',
-            icon: 'success',
-            showConfirmButton: false,
-            timer: 2500,
-        })
-    }
-</script>
-<% } %>
-
