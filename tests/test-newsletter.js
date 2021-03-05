@@ -10,7 +10,7 @@ const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
 const {
-  createNewsletter,
+  createNewsletter, sendNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
@@ -162,6 +162,35 @@ describe('Newsletter', () => {
       this.slack.notCalled.should.be.true;
       this.clock.restore();
       this.slack.restore();
+    });
+
+    it('should sendNewsletter if validated', async () => {
+      this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
+      await sendNewsletter('THIRD_REMINDER');
+      this.slack.notCalled.should.be.true;
+      this.clock.restore();
+      this.slack.restore();
+    });
+  });
+
+  describe('slack url newsletter', () => {
+    it('should validate newsletter', (done) => {
+      chai.request(app)
+        .get('/validateNewsletter')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          res.text.should.include(`${config.padURL}/5456dsadsahjww`);
+          const allNewsletterButMostRecentOne = mockNewsletters.filter(
+            (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
+          );
+          allNewsletterButMostRecentOne.forEach((newsletter) => {
+            res.text.should.include(controllerUtils
+              .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
+          });
+          const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
+          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          done();
+        });
     });
   });
 });

@@ -5,6 +5,7 @@ const config = require('../config');
 const knex = require('../db');
 const PAD = require('../lib/pad');
 const utils = require('../controllers/utils');
+const { sendMail } = require('./utils');
 
 const createNewsletter = async () => {
   const pad = new PAD();
@@ -89,6 +90,40 @@ module.exports.newsletterThursdayEveningReminderJob = new CronJob(
 module.exports.newsletterFridayReminderJob = new CronJob(
   '0 10 * * 5', // every week a 10:00 on friday
   (type) => newsletterReminder('THIRD_REMINDER'),
+  null,
+  true,
+  'Europe/Paris',
+);
+
+// SEND NEWSLETTER IS VALIDATED
+
+const sendNewsletter = async () => {
+  const date = new Date();
+  const lastNewsletter = await knex('newsletters').where({
+    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
+    sent_at: null,
+  }).whereNotNull('validator').first();
+
+  if (lastNewsletter) {
+    const pad = new PAD();
+    const newsletterTemplateContent = await pad.getNoteWithId(lastNewsletter.url.replace(config.padURL, ''));
+    await sendMail(config.newsletterBroadcastList,
+      `Infolettre du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
+      newsletterTemplateContent);
+  }
+};
+
+module.exports.sendNewsletter = new CronJob(
+  config.sendNewsletterDate || '0 20 * * 4', // run on thursday et 8pm,
+  sendNewsletter,
+  null,
+  true,
+  'Europe/Paris',
+);
+
+module.exports.sendNewsletter = new CronJob(
+  config.sendNewsletterDate || '0 10 * * 5', // run on friday et 5pm,
+  sendNewsletter,
   null,
   true,
   'Europe/Paris',
