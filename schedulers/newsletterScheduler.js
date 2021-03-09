@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
-const PAD = require('../lib/pad');
+const PAD = require('pad');
 const utils = require('../controllers/utils');
 
 const {
