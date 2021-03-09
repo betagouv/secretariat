@@ -1,6 +1,6 @@
 const { CronJob } = require('cron');
 const crypto = require('crypto');
-const PAD = require('hedgedoc-api');
+const HedgedocApi = require('hedgedoc-api');
 
 const BetaGouv = require('../betagouv');
 const config = require('../config');
@@ -31,7 +31,7 @@ const computeId = (yearWeek) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
-  const pad = new PAD(config.padEmail, config.padPassword, config.padURL);
+  const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
   if (config.createNewsletterTheWeekBefore) {
     // newsletter is for the next week
     date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
