@@ -1,6 +1,6 @@
 const chai = require('chai');
+const nock = require('nock');
 const utils = require('./utils.js');
-
 const app = require('../index');
 const config = require('../config');
 const knex = require('../db');
@@ -78,7 +78,26 @@ describe('Account', () => {
         });
     });
 
-    it('should include a password modification form', (done) => {
+    it('should not include a password modification if the email does not exist', (done) => {
+      chai.request(app)
+        .get('/account')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          res.text.should.not.include('action="/users/membre.actif/password" method="POST"');
+          res.text.should.not.include('Nouveau mot de passe POP/IMAP/SMTP');
+          done();
+        });
+    });
+
+    it('should include a password modification form id the email exists', (done) => {
+      nock.cleanAll();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, { description: '' });
+
+      utils.mockUsers();
+      utils.mockOvhRedirections();
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
