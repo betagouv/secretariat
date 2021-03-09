@@ -2,7 +2,7 @@ const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
-const PAD = require('pad');
+const PAD = require('hedgedoc-api');
 
 const config = require('../config');
 const knex = require('../db');

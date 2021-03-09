@@ -1,6 +1,6 @@
 const { CronJob } = require('cron');
 const crypto = require('crypto');
-const PAD = require('pad');
+const PAD = require('hedgedoc-api');
 
 const BetaGouv = require('../betagouv');
 const config = require('../config');
