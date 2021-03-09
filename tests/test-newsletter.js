@@ -2,7 +2,7 @@ const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
-const PAD = require('hedgedoc-api');
+const HedgedocApi = require('hedgedoc-api');
 
 const config = require('../config');
 const knex = require('../db');
@@ -10,6 +10,7 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
   NUMBER_OF_DAY_FROM_MONDAY,
@@ -111,7 +112,7 @@ describe('Newsletter', () => {
     });
 
     it('should create new note', async () => {
-      const createNewNoteWithContentAndAliasSpy = sinon.spy(PAD.prototype, 'createNewNoteWithContentAndAlias');
+      const createNewNoteWithContentAndAliasSpy = sinon.spy(HedgedocApi.prototype, 'createNewNoteWithContentAndAlias');
       const date = new Date('2021-03-04T07:59:59+01:00');
       const newsletterDate = addDays(date, 7);
       this.clock = sinon.useFakeTimers(date);
