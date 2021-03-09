@@ -2,6 +2,7 @@ const nock = require('nock');
 const rewire = require('rewire');
 const chai = require('chai');
 const sinon = require('sinon');
+const PAD = require('pad');
 
 const config = require('../config');
 const knex = require('../db');
@@ -16,7 +17,6 @@ const {
   getMonday,
   formatDateToFrenchTextReadableFormat,
 } = controllerUtils;
-const PAD = require('../lib/pad');
 const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');

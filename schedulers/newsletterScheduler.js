@@ -1,9 +1,10 @@
 const { CronJob } = require('cron');
 const crypto = require('crypto');
+const PAD = require('pad');
+
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
-const PAD = require('pad');
 const utils = require('../controllers/utils');
 
 const {
