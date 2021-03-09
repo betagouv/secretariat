@@ -30,7 +30,7 @@ const computeId = (yearWeek) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
-  const pad = new PAD();
+  const pad = new PAD(config.padEmail, config.padPassword, config.padURL);
   if (config.createNewsletterTheWeekBefore) {
     // newsletter is for the next week
     date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
