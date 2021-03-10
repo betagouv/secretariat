@@ -89,7 +89,7 @@ describe('Account', () => {
         });
     });
 
-    it('should include a password modification form id the email exists', (done) => {
+    it('should include a password modification form if the email exists', (done) => {
       nock.cleanAll();
 
       nock(/.*ovh.com/)
