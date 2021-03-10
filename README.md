@@ -29,6 +29,7 @@ Le secrétariat de l’incubateur
    - `MAIL_HOST` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le hostname ou adresse IP à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
    - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
    - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
+   - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
 
 ### Lancer en mode développement
 
