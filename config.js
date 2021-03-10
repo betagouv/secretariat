@@ -40,6 +40,4 @@ module.exports = {
   defaultLoggedInRedirectUrl: '/community',
   visitRecipientEmail: process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
-  token: process.env.SLACK_TOKEN,
-  slackChannel: process.env.SLACK_CHANNEL || 'incubateur-secretaria',
 };

@@ -44,11 +44,9 @@ module.exports.getNewsletter = async function (req, res) {
 module.exports.validateNewsletter = async (req, res) => {
   try {
     const date = new Date();
-    console.log('LCS CURRENT NEWSLETTER 0');
     const currentNewsletter = await knex('newsletters').where({
       year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     }).first();
-    console.log('LCS CURRENT NEWSLETTER', currentNewsletter);
     if (!currentNewsletter) {
       throw new Error('Il n\'y a pas d\'infolettre pour cette semaine');
     }
@@ -57,11 +55,9 @@ module.exports.validateNewsletter = async (req, res) => {
     }).update({
       validator: req.user.id,
     });
-    console.log(req.user.id);
     let newsletters = await knex('newsletters').select()
       .whereNot({ year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}` })
       .orderBy('year_week', 'desc');
-    console.log(newsletters);
     const usersInfos = await BetaGouv.usersInfos();
     newsletters = newsletters.map((newsletter) => ({
       ...newsletter,
@@ -82,7 +78,6 @@ module.exports.validateNewsletter = async (req, res) => {
       activeTab: 'newsletter',
     });
   } catch (err) {
-    console.log('LCS CURRENT NEWSLETTER ERROR');
     console.error(err);
     req.flash('error', 'Impossible de récupérer les infolettres.');
     res.render('newsletter', {

@@ -293,7 +293,6 @@ describe('Newsletter', () => {
         .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
-      console.log(newsletter);
       newsletter.validator.should.equal('membre.actif');
       await knex('newsletters').truncate();
       this.clock.restore();
