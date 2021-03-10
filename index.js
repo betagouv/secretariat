@@ -10,7 +10,7 @@ const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
 const config = require('./config');
 const knex = require('./db');
-const verification = require("./middlewares/slack");
+const verification = require('./middlewares/slack');
 
 const indexController = require('./controllers/indexController');
 const loginController = require('./controllers/loginController');
@@ -87,7 +87,6 @@ app.use(
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
-      '/validateNewsletter',
     ],
   }),
 );
@@ -141,6 +140,7 @@ app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.get('/visit', visitController.getForm);
 app.get('/newsletters', newsletterController.getNewsletter);
-app.post('/validateNewsletter', verification, newsletterController.validateNewsletter);
+app.post('/validateNewsletter', newsletterController.validateNewsletter);
+// app.post('/validateNewsletter', verification, newsletterController.validateNewsletter);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
