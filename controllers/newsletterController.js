@@ -12,7 +12,7 @@ module.exports.getNewsletter = async function (req, res) {
       sent_at: newsletter.sent_at
         ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
       title: utils.formatDateToFrenchTextReadableFormat(utils.getDateOfISOWeek(newsletter.year_week.split('-')[1], newsletter.year_week.split('-')[0])),
-      validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname || 'membre supprimé',
+      validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
     }));
 
     res.render('newsletter', {

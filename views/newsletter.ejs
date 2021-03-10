@@ -8,7 +8,12 @@
             <br>
             <br>
             <p>L'infolettre est lue et partagée pendant le standup (chaque jeudi à 12h) puis envoyée après validation à partir de jeudi 18h</p>
-            <a href="/validateNewsletter">Valider la newsletter</a>
+            <% if (currentNewsletter.validator) { %>
+                <p><%= currentNewsletter.validator %> a validé cette infolettre.</p>
+                <a href="/validateNewsletter">Annuler la validation</a>
+            <% } else { %>
+                <a href="/validateNewsletter">Valider la newsletter</a>
+            <% } %>
         </div>
     <% } %>
     <div class="panel panel-full-width">
@@ -24,7 +29,7 @@
                 <%  newsletters.forEach(function(newsletter) { %>
                 <tr>
                     <td><b><%= newsletter.title %></b></td>
-                    <td><% if (newsletter.sent_at) { %>Envoyée le <%= newsletter.sent_at %> par <%= newsletter.validator %><% } else { %>non envoyée<% } %></td>
+                    <td><% if (newsletter.sent_at) { %>Envoyée le <%= newsletter.sent_at %>, validé par <%= newsletter.validator || 'membre non renseigné' %><% } else { %>non envoyée<% } %></td>
                     <td><a href="<%= newsletter.url %>" target="_blank">Lire</a></td>
                 </tr>
                 <% }) %>

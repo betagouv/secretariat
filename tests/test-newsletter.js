@@ -290,7 +290,7 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-05T07:59:59+01:00');
       this.clock = sinon.useFakeTimers(date);
       const res = await chai.request(app)
-        .post('/validateNewsletter')
+        .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
       console.log(newsletter);

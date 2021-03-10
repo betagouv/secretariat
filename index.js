@@ -140,7 +140,7 @@ app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.get('/visit', visitController.getForm);
 app.get('/newsletters', newsletterController.getNewsletter);
-app.post('/validateNewsletter', newsletterController.validateNewsletter);
+app.get('/validateNewsletter', newsletterController.validateNewsletter);
 // app.post('/validateNewsletter', verification, newsletterController.validateNewsletter);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
