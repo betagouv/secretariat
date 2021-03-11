@@ -28,6 +28,10 @@ const getPreviousNewsletters = async () => {
   const usersInfos = await BetaGouv.usersInfos();
   newsletters = newsletters.map((newsletter) => ({
     ...newsletter,
+    title: utils.formatDateToFrenchTextReadableFormat(
+      utils.getDateOfISOWeek(newsletter.year_week.split('-')[1],
+        newsletter.year_week.split('-')[0]),
+    ),
     sent_at: newsletter.sent_at
       ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
     validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
