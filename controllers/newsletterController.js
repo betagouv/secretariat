@@ -77,11 +77,11 @@ module.exports.validateNewsletter = async (req, res) => {
     const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'infolettre a été validée et sera envoyée ce soir.');
-    res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
+    res.redirect('/newsletter');
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
-    res.render('newsletter', formatNewsletterPageData(req, []));
+    res.redirect('/newsletter');
   }
 };
 
@@ -94,10 +94,10 @@ module.exports.cancelNewsletter = async (req, res) => {
     const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'envoie automatique de l\'infolettre a été annulé.');
-    res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
+    res.redirect('/newsletter');
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
-    res.render('newsletter', formatNewsletterPageData(req, []));
+    res.redirect('/newsletter');
   }
 };
