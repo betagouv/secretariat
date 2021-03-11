@@ -137,8 +137,6 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   'Europe/Paris',
 );
 
-// SEND NEWSLETTER IS VALIDATED
-
 const sendNewsletter = async () => {
   const date = new Date();
   const lastNewsletter = await knex('newsletters').where({

@@ -10,6 +10,8 @@ const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
 
+const should = chai.should();
+
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
   NUMBER_OF_DAY_FROM_MONDAY,
@@ -282,7 +284,7 @@ describe('Newsletter', () => {
     });
   });
 
-  describe('slack url newsletter', () => {
+  describe('newsletter interface', () => {
     it('should validate newsletter', async () => {
       await knex('newsletters').insert([{
         ...mockNewsletter,
@@ -294,6 +296,22 @@ describe('Newsletter', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
       newsletter.validator.should.equal('membre.actif');
+      await knex('newsletters').truncate();
+      this.clock.restore();
+    });
+
+    it('should cancel newsletter', async () => {
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+        validator: 'membre.actif',
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
+      const res = await chai.request(app)
+        .get('/cancelNewsletter')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
+      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      should.equal(newsletter.validator, null);
       await knex('newsletters').truncate();
       this.clock.restore();
     });

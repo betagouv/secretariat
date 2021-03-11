@@ -28,6 +28,7 @@ module.exports = {
     badgeOptions: userBadgeOptions,
   },
   createNewsletterTheWeekBefore: process.env.CREATE_NEWSLETTER_THE_WEEK_BEFORE || true,
+  newsletterBroadcastList: process.env.NEWSLETTER_BROADCAST_LIST || 'secretariat@beta.gouv.fr',
   newsletterCronTime: process.env.NEWSLETTER_CRON_TIME || '0 4 * * 5',
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
   senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
