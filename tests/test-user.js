@@ -391,7 +391,17 @@ describe('User', () => {
           done();
         });
     });
-    it('should perform a password change', (done) => {
+    it('should perform a password change if the email exists', (done) => {
+      nock.cleanAll();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, { description: '' });
+
+      utils.mockUsers();
+      utils.mockOvhRedirections();
+      utils.mockSlack();
+
       this.ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
