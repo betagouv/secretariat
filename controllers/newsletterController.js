@@ -43,7 +43,6 @@ const updateCurrentNewsletterValidator = async (validator) => {
   }).returning('*');
   return currentNewsletter;
 };
-// const [firstRow] = await knex('mytable').insert({field: 1}).returning('*');
 
 module.exports.getNewsletter = async function (req, res) {
   try {
