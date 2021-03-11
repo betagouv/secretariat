@@ -116,7 +116,7 @@ module.exports.newsletterMondayReminderJob = new CronJob(
 
 module.exports.newsletterThursdayMorningReminderJob = new CronJob(
   '0 0 8 * * 4', // every week a 8:00 on thursday
-  () => newsletterReminder('SECOND_TIMER'),
+  () => newsletterReminder('SECOND_REMINDER'),
   null,
   true,
   'Europe/Paris',
