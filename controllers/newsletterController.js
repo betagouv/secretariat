@@ -77,7 +77,7 @@ module.exports.validateNewsletter = async (req, res) => {
     const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'infolettre a été validée et sera envoyée ce soir.');
-    res.redirect('/newsletter');
+    res.redirect('/newsletters');
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
@@ -94,7 +94,7 @@ module.exports.cancelNewsletter = async (req, res) => {
     const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'envoie automatique de l\'infolettre a été annulé.');
-    res.redirect('/newsletter');
+    res.redirect('/newsletters');
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
