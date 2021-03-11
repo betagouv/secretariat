@@ -147,10 +147,10 @@ const sendNewsletter = async () => {
 
   if (currentNewsletter) {
     const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-    const newsletterTemplateContent = await pad.getNoteWithId(currentNewsletter.url.replace(config.padURL, ''));
+    const newsletterContent = await pad.getNoteWithId(currentNewsletter.url.replace(config.padURL, ''));
     await utils.sendMail(config.newsletterBroadcastList,
       `Infolettre du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
-      newsletterTemplateContent);
+      newsletterContent);
   }
 };
 
