@@ -85,13 +85,13 @@ const computeMessageReminder = (reminder, newsletter) => {
 
 const newsletterReminder = async (reminder) => {
   const date = new Date();
-  const lastNewsletter = await knex('newsletters').where({
+  const currentNewsletter = await knex('newsletters').where({
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     sent_at: null,
   }).first();
 
-  if (lastNewsletter) {
-    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter));
+  if (currentNewsletter) {
+    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, currentNewsletter));
   }
 };
 
@@ -139,14 +139,14 @@ module.exports.newsletterFridayReminderJob = new CronJob(
 
 const sendNewsletter = async () => {
   const date = new Date();
-  const lastNewsletter = await knex('newsletters').where({
+  const currentNewsletter = await knex('newsletters').where({
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     sent_at: null,
   }).whereNotNull('validator').first();
 
-  if (lastNewsletter) {
+  if (currentNewsletter) {
     const pad = new PAD();
-    const newsletterTemplateContent = await pad.getNoteWithId(lastNewsletter.url.replace(config.padURL, ''));
+    const newsletterTemplateContent = await pad.getNoteWithId(currentNewsletter.url.replace(config.padURL, ''));
     await utils.sendMail(config.newsletterBroadcastList,
       `Infolettre du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
       newsletterTemplateContent);
