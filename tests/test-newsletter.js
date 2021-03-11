@@ -239,7 +239,7 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
-      sendEmailStub.firstCall.args[1].should.equal(`Infolettre du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
+      sendEmailStub.firstCall.args[1].should.equal(`Infolettre interne de la communauté beta.gouv.fr du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
       sendEmailStub.firstCall.args[2].should.equal(newsletterContent);
       this.slack.notCalled.should.be.true;
       this.clock.restore();
