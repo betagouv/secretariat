@@ -29,7 +29,7 @@
                 <%  newsletters.forEach(function(newsletter) { %>
                 <tr>
                     <td><b><%= newsletter.title %></b></td>
-                    <td><% if (newsletter.sent_at) { %>Envoyée le <%= newsletter.sent_at %>, validé par <%= newsletter.validator || 'membre non renseigné' %><% } else { %>non envoyée<% } %></td>
+                    <td><% if (newsletter.sent_at) { %>Envoyée le <%= newsletter.sent_at %>, validée par <%= newsletter.validator || 'membre non renseigné' %><% } else { %>non envoyée<% } %></td>
                     <td><a href="<%= newsletter.url %>" target="_blank">Lire</a></td>
                 </tr>
                 <% }) %>
