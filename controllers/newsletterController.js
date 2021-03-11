@@ -3,6 +3,8 @@ const config = require('../config');
 const utils = require('./utils');
 const knex = require('../db');
 
+const errorMessage = 'Impossible de récupérer les infolettres.';
+
 const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
   errors: req.flash('error'),
   messages: req.flash('message'),
@@ -54,7 +56,7 @@ module.exports.getNewsletter = async function (req, res) {
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
     console.error(err);
-    req.flash('error', 'Impossible de récupérer les newsletters.');
+    req.flash('error', errorMessage);
     res.render('newsletter', formatNewsletterPageData(req, []));
   }
 };
@@ -67,11 +69,11 @@ module.exports.validateNewsletter = async (req, res) => {
     }
     const newsletters = await getPreviousNewsletters();
 
-    req.flash('message', 'La newsletter a été validée et sera envoyée ce soir.');
+    req.flash('message', 'L\'infolettre a été validée et sera envoyée ce soir.');
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
     console.error(err);
-    req.flash('error', 'Impossible de récupérer les infolettres.');
+    req.flash('error', errorMessage);
     res.render('newsletter', formatNewsletterPageData(req, []));
   }
 };
@@ -84,11 +86,11 @@ module.exports.cancelNewsletter = async (req, res) => {
     }
     const newsletters = await getPreviousNewsletters();
 
-    req.flash('message', 'L\'envoie automatique de la newsletter a été annulé.');
+    req.flash('message', 'L\'envoie automatique de l\'infolettre a été annulé.');
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
     console.error(err);
-    req.flash('error', 'Impossible de récupérer les infolettres.');
+    req.flash('error', errorMessage);
     res.render('newsletter', formatNewsletterPageData(req, []));
   }
 };
