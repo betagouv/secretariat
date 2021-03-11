@@ -83,7 +83,9 @@ describe('Newsletter', () => {
       await knex('newsletters').truncate();
     });
 
-    it('should get previous newsletter and last newsletter', (done) => {
+    it('should get previous newsletters and current newsletter', (done) => {
+      const date = new Date('2021-01-20T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
       chai.request(app)
         .get('/newsletters')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -98,6 +100,7 @@ describe('Newsletter', () => {
           });
           const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
           res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          this.clock.restore();
           done();
         });
     });

@@ -30,7 +30,6 @@ const getPreviousNewsletters = async () => {
     ...newsletter,
     sent_at: newsletter.sent_at
       ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
-    title: utils.formatDateToFrenchTextReadableFormat(utils.getDateOfISOWeek(newsletter.year_week.split('-')[1], newsletter.year_week.split('-')[0])),
     validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
   }));
   return newsletters;
@@ -48,9 +47,18 @@ const updateCurrentNewsletterValidator = async (validator) => {
 
 module.exports.getNewsletter = async function (req, res) {
   try {
-    const currentNewsletter = await knex('newsletters').where({
+    let currentNewsletter = await knex('newsletters').where({
       year_week: getCurrentNewsletterId(),
     }).first();
+    if (currentNewsletter) {
+      currentNewsletter = {
+        ...currentNewsletter,
+        title: utils.formatDateToFrenchTextReadableFormat(
+          utils.getDateOfISOWeek(currentNewsletter.year_week.split('-')[1],
+            currentNewsletter.year_week.split('-')[0]),
+        ),
+      };
+    }
     const newsletters = await getPreviousNewsletters();
 
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
