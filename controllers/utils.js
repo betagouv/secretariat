@@ -213,13 +213,13 @@ module.exports.userInfos = async function (id, isCurrentUser) {
     // - la page fiche Github existe
     // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
     // - et que l'on est le membre connecté·e pour créer ces propres redirections.
-    const canCreateRedirection = hasUserInfos
+    const canCreateRedirection = !!(hasUserInfos
       && !isExpired
-      && isCurrentUser;
-    const canChangePassword = hasUserInfos
+      && isCurrentUser);
+    const canChangePassword = !!(hasUserInfos
       && !isExpired
       && isCurrentUser
-      && !emailInfos;
+      && emailInfos);
 
     return {
       emailInfos,
