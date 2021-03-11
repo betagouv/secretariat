@@ -81,7 +81,7 @@ module.exports.validateNewsletter = async (req, res) => {
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
-    res.redirect('/newsletter');
+    res.redirect('/newsletters');
   }
 };
 
@@ -98,6 +98,6 @@ module.exports.cancelNewsletter = async (req, res) => {
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
-    res.redirect('/newsletter');
+    res.redirect('/newsletters');
   }
 };
