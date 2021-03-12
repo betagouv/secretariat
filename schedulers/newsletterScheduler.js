@@ -151,9 +151,9 @@ const sendNewsletter = async () => {
     console.log('Will send newsletter Id', newsletterCurrentId);
     const newsletterContent = await pad.getNotePublishedVersionWithId();
     console.log('Will send newsletter', newsletterContent);
-    await utils.sendMail(config.newsletterBroadcastList,
-      `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
-      newsletterContent);
+    // await utils.sendMail(config.newsletterBroadcastList,
+    //   `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
+    //   newsletterContent);
   }
 };
 
