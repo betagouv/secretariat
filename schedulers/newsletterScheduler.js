@@ -147,8 +147,7 @@ const sendNewsletter = async () => {
 
   if (currentNewsletter) {
     const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-    const newsletterContent = await pad.getNotePublishedVersionWithId(currentNewsletter.url.replace(config.padURL, ''));
-    console.log('Will send newsletter content', newsletterContent);
+    const newsletterContent = await pad.getNotePublishedVersionWithId(currentNewsletter.url.replace(`${config.padURL}/`, ''));
     await utils.sendMail(config.newsletterBroadcastList,
       `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
       newsletterContent);
