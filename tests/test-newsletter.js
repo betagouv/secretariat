@@ -207,8 +207,7 @@ describe('Newsletter', () => {
       this.slack.restore();
     });
 
-    it('should sendNewsletter if validated', async () => {
-      const newsletterContent = ''; // TODO : change with other values
+    it('should send newsletter if validated', async () => {
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -224,8 +223,8 @@ describe('Newsletter', () => {
       });
 
       const padGetDownloadCall = nock(`${config.padURL}`)
-      .get(/^.*\/download/)
-      .reply(200, newsletterContent);
+      .get(/^.*\/publish/)
+      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
       await knex('newsletters').insert([{
         ...mockNewsletter,
@@ -240,7 +239,7 @@ describe('Newsletter', () => {
       padPostLoginCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
       sendEmailStub.firstCall.args[1].should.equal(`Infolettre interne de la communauté beta.gouv.fr du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
-      sendEmailStub.firstCall.args[2].should.equal(newsletterContent);
+      sendEmailStub.firstCall.args[2].should.equal(NEWSLETTER_TEMPLATE_CONTENT);
       this.slack.notCalled.should.be.true;
       this.clock.restore();
       sendEmailStub.restore();
@@ -248,8 +247,7 @@ describe('Newsletter', () => {
       await knex('newsletters').truncate();
     });
 
-    it('should not sendNewsletter if not validated', async () => {
-      const newsletterContent = ''; // TODO : change with other values
+    it('should not send newsletter if not validated', async () => {
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -265,8 +263,8 @@ describe('Newsletter', () => {
       });
 
       const padGetDownloadCall = nock(`${config.padURL}`)
-      .get(/^.*\/download/)
-      .reply(200, newsletterContent);
+      .get(/^.*\/publish/)
+      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
 
       await knex('newsletters').insert([{
         ...mockNewsletter,
