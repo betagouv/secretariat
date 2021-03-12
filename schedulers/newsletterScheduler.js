@@ -1,11 +1,11 @@
 const { CronJob } = require('cron');
 const crypto = require('crypto');
 const HedgedocApi = require('hedgedoc-api');
-
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
 const utils = require('../controllers/utils');
+const { renderHtmlFromMd } = require('../lib/mdtohtml');
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -149,11 +149,12 @@ const sendNewsletter = async () => {
     const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
     const newsletterCurrentId = currentNewsletter.url.replace(`${config.padURL}/`, '');
     console.log('Will send newsletter Id', newsletterCurrentId);
-    const newsletterContent = await pad.getNotePublishedVersionWithId();
-    console.log('Will send newsletter', newsletterContent);
-    // await utils.sendMail(config.newsletterBroadcastList,
-    //   `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
-    //   newsletterContent);
+    const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
+    const html = renderHtmlFromMd(newsletterContent);
+    console.log('Will send newsletter Id', html);
+    await utils.sendMail(config.newsletterBroadcastList,
+      `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
+      html);
   }
 };
 
