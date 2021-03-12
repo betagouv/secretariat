@@ -31,6 +31,7 @@ module.exports = {
   newsletterBroadcastList: process.env.NEWSLETTER_BROADCAST_LIST || 'secretariat@beta.gouv.fr',
   newsletterCronTime: process.env.NEWSLETTER_CRON_TIME || '0 4 * * 5',
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
+  newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
   senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
   slackWebhookURL: process.env.SLACK_WEBHOOK_URL,
   usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',

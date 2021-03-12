@@ -155,7 +155,7 @@ const sendNewsletter = async () => {
 };
 
 module.exports.sendNewsletter = new CronJob(
-  config.sendNewsletterDate || '0 20 * * 4', // run on thursday et 8pm,
+  config.newsletterSendTime || '0 20 * * 4', // run on thursday et 8pm,
   sendNewsletter,
   null,
   true,
@@ -163,7 +163,7 @@ module.exports.sendNewsletter = new CronJob(
 );
 
 module.exports.sendNewsletter = new CronJob(
-  config.sendNewsletterDate || '0 10 * * 5', // run on friday at 10am,
+  config.newsletterSendTime || '0 10 * * 5', // run on friday at 10am,
   sendNewsletter,
   null,
   true,
