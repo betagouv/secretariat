@@ -163,7 +163,7 @@ module.exports.sendNewsletter = new CronJob(
 );
 
 module.exports.sendNewsletter = new CronJob(
-  config.sendNewsletterDate || '0 10 * * 5', // run on friday et 5pm,
+  config.sendNewsletterDate || '0 10 * * 5', // run on friday at 10am,
   sendNewsletter,
   null,
   true,
