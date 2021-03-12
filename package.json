@@ -51,7 +51,7 @@
     "lodash": "^4.17.21",
     "nodemailer": "^6.4.18",
     "ovh": "^2.0.1",
-    "hedgedoc-api": "git+https://github.com/betagouv/hedgedoc-api-lib-js.git#main",
+    "hedgedoc-api": "git+https://github.com/betagouv/hedgedoc-api-lib-js.git#v1.0",
     "pg": "^8.5.1",
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.4.1",
