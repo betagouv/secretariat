@@ -242,6 +242,10 @@ describe('Newsletter', () => {
       sendEmailStub.firstCall.args[1].should.equal(`Infolettre interne de la communauté beta.gouv.fr du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(NEWSLETTER_TEMPLATE_CONTENT));
       this.slack.notCalled.should.be.true;
+      const newsletter = await knex('newsletters').where({
+        year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,
+      }).whereNotNull('sent_at').first();
+      newsletter.sent_at.should.not.be.null;
       this.clock.restore();
       sendEmailStub.restore();
       this.slack.restore();
