@@ -140,8 +140,9 @@ module.exports.newsletterFridayReminderJob = new CronJob(
 
 const sendNewsletter = async () => {
   const date = new Date();
+  const newsletterYearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const currentNewsletter = await knex('newsletters').where({
-    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
+    year_week: newsletterYearWeek,
     sent_at: null,
   }).whereNotNull('validator').first();
 
@@ -153,8 +154,13 @@ const sendNewsletter = async () => {
     const html = renderHtmlFromMd(newsletterContent);
     console.log('Will send newsletter Id', html);
     await utils.sendMail(config.newsletterBroadcastList,
-      `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(new Date())}`,
+      `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(date)}`,
       html);
+    await knex('newsletters').where({
+      year_week: newsletterYearWeek,
+    }).update({
+      sent_at: date,
+    });
   }
 };
 
