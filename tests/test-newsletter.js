@@ -230,6 +230,7 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([{
         ...mockNewsletter,
         validator: 'julien.dauphant',
+        sent_at: null,
       }]);
       const date = new Date('2021-03-05T07:59:59+01:00');
       const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
