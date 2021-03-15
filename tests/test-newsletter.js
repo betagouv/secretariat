@@ -10,7 +10,7 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
-const { renderHtmlFromMd } = require('../lib/mdtohtml');
+const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
 
 const should = chai.should();
 
@@ -240,7 +240,7 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
-      sendEmailStub.firstCall.args[1].should.equal(`Infolettre interne de la communauté beta.gouv.fr du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
+      sendEmailStub.firstCall.args[1].should.equal('📰 Infolettre interne de la communauté beta.gouv.fr du REMPLACER_PAR_DATE');
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(NEWSLETTER_TEMPLATE_CONTENT));
       this.slack.notCalled.should.be.true;
       const newsletter = await knex('newsletters').where({
