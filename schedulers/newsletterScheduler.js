@@ -1,11 +1,11 @@
 const { CronJob } = require('cron');
 const crypto = require('crypto');
 const HedgedocApi = require('hedgedoc-api');
-
 const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
 const utils = require('../controllers/utils');
+const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -69,7 +69,7 @@ const createNewsletter = async () => {
 const computeMessageReminder = (reminder, newsletter) => {
   let message;
   if (reminder === 'FIRST_REMINDER') {
-    message = `*standup du jeudi* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
+    message = `*Newsletter interne* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
       Remplissez le pad avec vos news/annonces/événements qui seront présentées au standup.
       Le pad sera envoyé à la communauté vendredi.`;
   } else if (reminder === 'SECOND_REMINDER') {
@@ -86,13 +86,13 @@ const computeMessageReminder = (reminder, newsletter) => {
 
 const newsletterReminder = async (reminder) => {
   const date = new Date();
-  const lastNewsletter = await knex('newsletters').where({
+  const currentNewsletter = await knex('newsletters').where({
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     sent_at: null,
   }).first();
 
-  if (lastNewsletter) {
-    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter), 'general');
+  if (currentNewsletter) {
+    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, currentNewsletter), 'general');
   }
 };
 
@@ -133,6 +133,38 @@ module.exports.newsletterThursdayEveningReminderJob = new CronJob(
 module.exports.newsletterFridayReminderJob = new CronJob(
   '0 10 * * 5', // every week a 10:00 on friday
   (type) => newsletterReminder('THIRD_REMINDER'),
+  null,
+  true,
+  'Europe/Paris',
+);
+
+const sendNewsletter = async () => {
+  const date = new Date();
+  const newsletterYearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+  const currentNewsletter = await knex('newsletters').where({
+    year_week: newsletterYearWeek,
+    sent_at: null,
+  }).whereNotNull('validator').first();
+
+  if (currentNewsletter) {
+    const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
+    const newsletterCurrentId = currentNewsletter.url.replace(`${config.padURL}/`, '');
+    const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
+    const html = renderHtmlFromMd(newsletterContent);
+    await utils.sendMail(config.newsletterBroadcastList,
+      `${getTitle(newsletterContent)}`,
+      html);
+    await knex('newsletters').where({
+      year_week: newsletterYearWeek,
+    }).update({
+      sent_at: date,
+    });
+  }
+};
+
+module.exports.sendNewsletter = new CronJob(
+  config.newsletterSendTime || '0 20 * * 4', // run on thursday et 8pm,
+  sendNewsletter,
   null,
   true,
   'Europe/Paris',
