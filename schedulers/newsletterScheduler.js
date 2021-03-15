@@ -69,7 +69,7 @@ const createNewsletter = async () => {
 const computeMessageReminder = (reminder, newsletter) => {
   let message;
   if (reminder === 'FIRST_REMINDER') {
-    message = `*standup du jeudi* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
+    message = `*Newsletter interne* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
       Remplissez le pad avec vos news/annonces/événements qui seront présentées au standup.
       Le pad sera envoyé à la communauté vendredi.`;
   } else if (reminder === 'SECOND_REMINDER') {
