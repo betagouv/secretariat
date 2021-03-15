@@ -13,7 +13,8 @@ beforeEach(() => {
   nock.enableNetConnect('127.0.0.1');
   utils.mockUsers();
   utils.mockStartups();
-  utils.mockSlack();
+  utils.mockSlackGeneral();
+  utils.mockSlackSecretariat();
   utils.mockOvhTime();
   utils.mockOvhUserEmailInfos();
   utils.mockOvhAllEmailInfos();
