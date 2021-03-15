@@ -10,7 +10,7 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
-const { renderHtmlFromMd } = require('../lib/mdtohtml');
+const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
 
 const should = chai.should();
 
@@ -25,7 +25,8 @@ const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
-const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__
+const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
+const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
   Les nouvelles pourront être lu au point hebdomadaire (stand-up) le jeudi à 12h (pour rappel l'adresse du point hebdomadaire standup http://invites.standup.incubateur.net/ )
   Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
   ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
@@ -209,6 +210,18 @@ describe('Newsletter', () => {
     });
 
     it('should send newsletter if validated', async () => {
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      const dateAsString = controllerUtils.formatDateToFrenchTextReadableFormat(
+        addDays(date, NUMBER_OF_DAY_IN_A_WEEK),
+      );
+      const contentWithMacro = replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
+        __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/jfkdsfljkslfsfs`,
+        __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(
+          addDays(getMonday(date),
+            NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY),
+        ),
+        __REMPLACER_PAR_DATE__: dateAsString,
+      });
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -225,14 +238,13 @@ describe('Newsletter', () => {
 
       const padGetDownloadCall = nock(`${config.padURL}`)
       .get(/^.*\/download/)
-      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
+      .reply(200, contentWithMacro);
 
       await knex('newsletters').insert([{
         ...mockNewsletter,
         validator: 'julien.dauphant',
         sent_at: null,
       }]);
-      const date = new Date('2021-03-05T07:59:59+01:00');
       const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       this.clock = sinon.useFakeTimers(date);
       await sendNewsletter();
@@ -240,8 +252,12 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
-      sendEmailStub.firstCall.args[1].should.equal(`Infolettre interne de la communauté beta.gouv.fr du ${controllerUtils.formatDateToFrenchTextReadableFormat(date)}`);
-      sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(NEWSLETTER_TEMPLATE_CONTENT));
+      sendEmailStub.firstCall.args[1].should.equal(replaceMacroInContent(
+        NEWSLETTER_TITLE, {
+          __REMPLACER_PAR_DATE__: dateAsString,
+        },
+      ));
+      sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
       this.slack.notCalled.should.be.true;
       const newsletter = await knex('newsletters').where({
         year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,

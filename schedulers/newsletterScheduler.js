@@ -5,7 +5,7 @@ const BetaGouv = require('../betagouv');
 const config = require('../config');
 const knex = require('../db');
 const utils = require('../controllers/utils');
-const { renderHtmlFromMd } = require('../lib/mdtohtml');
+const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -152,7 +152,7 @@ const sendNewsletter = async () => {
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
     await utils.sendMail(config.newsletterBroadcastList,
-      `Infolettre interne de la communauté beta.gouv.fr du ${utils.formatDateToFrenchTextReadableFormat(date)}`,
+      `${getTitle(newsletterContent)}`,
       html);
     await knex('newsletters').where({
       year_week: newsletterYearWeek,
