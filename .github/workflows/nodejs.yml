@@ -33,7 +33,8 @@ jobs:
         OVH_APP_SECRET: fakeovhsecret
         OVH_CONSUMER_KEY: fakeconsumerkey
         SESSION_SECRET: fakesessionsecret
-        SLACK_WEBHOOK_URL: https://example.com
+        SLACK_WEBHOOK_URL_SECRETARIAT: https://example.com
+        SLACK_WEBHOOK_URL_GENERAL: https://example.com
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser

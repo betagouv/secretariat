@@ -26,14 +26,23 @@ module.exports = {
       .reply(200, testStartups)
       .persist();
   },
-  mockSlack() {
-    if (config.slackWebhookURL) {
-      return nock(config.slackWebhookURL)
+  mockSlackSecretariat() {
+    if (config.slackWebhookURLSecretariat) {
+      return nock(config.slackWebhookURLSecretariat)
         .post(/.*/)
         .reply(200)
         .persist();
     }
-    throw new Error('config.slackWebhookURL not defined');
+    throw new Error('config.slackWebhookURLSecretariat not defined');
+  },
+  mockSlackGeneral() {
+    if (config.slackWebhookURLGeneral) {
+      return nock(config.slackWebhookURLGeneral)
+        .post(/.*/)
+        .reply(200)
+        .persist();
+    }
+    throw new Error('config.slackWebhookURLGeneral not defined');
   },
   mockOvhUserEmailInfos() {
     return nock(/.*ovh.com/)
