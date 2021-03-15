@@ -10,9 +10,13 @@ const ovh = require('ovh')({
 const config = require('./config');
 
 const betaGouv = {
-  sendInfoToSlack: async (text) => {
+  sendInfoToSlack: async (text, channel) => {
+    let hookURL = config.slackWebhookURLSecretariat;
+    if (channel === 'general') {
+      hookURL = config.slackWebhookURLGeneral;
+    }
     try {
-      return await axios.post(config.slackWebhookURL, { text });
+      return await axios.post(hookURL, { text });
     } catch (err) {
       throw new Error(`Error to notify slack: ${err}`);
     }

@@ -90,7 +90,8 @@ describe('User', () => {
           },
         ])
         .persist();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
@@ -134,7 +135,8 @@ describe('User', () => {
       // existing email already created.
       utils.cleanMocks();
       utils.mockUsers();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
 
@@ -391,7 +393,18 @@ describe('User', () => {
           done();
         });
     });
-    it('should perform a password change', (done) => {
+    it('should perform a password change if the email exists', (done) => {
+      nock.cleanAll();
+
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, { description: '' });
+
+      utils.mockUsers();
+      utils.mockOvhRedirections();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+
       this.ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
@@ -525,7 +538,8 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
 
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)
@@ -575,7 +589,8 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
 
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)
@@ -611,7 +626,8 @@ describe('User', () => {
       utils.mockOvhTime();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
 
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)
@@ -674,7 +690,8 @@ describe('User', () => {
           },
         ])
         .persist();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
@@ -735,7 +752,8 @@ describe('User', () => {
           },
         ])
         .persist();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
@@ -782,7 +800,8 @@ describe('User', () => {
           },
         ])
         .persist();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
       utils.mockOvhUserEmailInfos();
@@ -821,7 +840,8 @@ describe('User', () => {
       // email address
       utils.cleanMocks();
       utils.mockUsers();
-      utils.mockSlack();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
 

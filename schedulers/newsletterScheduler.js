@@ -61,7 +61,7 @@ const createNewsletter = async () => {
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
-  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.sendInfoToSlack(message, 'general');
 
   return padUrl;
 };
@@ -92,7 +92,7 @@ const newsletterReminder = async (reminder) => {
   }).first();
 
   if (lastNewsletter) {
-    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter));
+    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, lastNewsletter), 'general');
   }
 };
 
@@ -116,7 +116,7 @@ module.exports.newsletterMondayReminderJob = new CronJob(
 
 module.exports.newsletterThursdayMorningReminderJob = new CronJob(
   '0 0 8 * * 4', // every week a 8:00 on thursday
-  () => newsletterReminder('SECOND_TIMER'),
+  () => newsletterReminder('SECOND_REMINDER'),
   null,
   true,
   'Europe/Paris',
