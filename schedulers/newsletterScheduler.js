@@ -61,7 +61,7 @@ const createNewsletter = async () => {
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
-  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.sendInfoToSlack(message, 'general');
 
   return padUrl;
 };
@@ -92,7 +92,7 @@ const newsletterReminder = async (reminder) => {
   }).first();
 
   if (currentNewsletter) {
-    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, currentNewsletter));
+    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, currentNewsletter), 'general');
   }
 };
 

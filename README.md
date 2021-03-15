@@ -16,7 +16,8 @@ Le secrétariat de l’incubateur
    - `MAIL_PASS`
    - `SECURE` - _true_ si https sinon _false_
    - `HOSTNAME` - Par exemple _localhost_ pour le développement en local
-   - `SLACK_WEBHOOK_URL` - Adresse d'envoi des notifications Slack - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
+   - `SLACK_WEBHOOK_URL_SECRETARIAT` - Adresse d'envoi des notifications Slack pour le canal "#secretariat" - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
+   - `SLACK_WEBHOOK_URL_GENERAL` - Adresse d'envoi des notifications Slack pour le canal "#general" - par ex. : _https://hooks.slack.com/services/..._ ([Débugger sans Slack](#Debug-sans-notifications-Slack))
    - `DATABASE_URL` - Le [string de connexion](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) pour se connecter à Postgres (pensez à échapper les caractères spéciaux s'il s'agit d'une URI). Le string de connexion doit contenir le *user*, *password*, *host*, *port* et le nom de la base de données.
    - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues
    - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`)
