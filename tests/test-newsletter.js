@@ -10,6 +10,9 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
+
+const should = chai.should();
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -22,7 +25,8 @@ const {
   createNewsletter,
 } = require('../schedulers/newsletterScheduler');
 
-const NEWSLETTER_TEMPLATE_CONTENT = `# 📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__
+const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
+const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
   Les nouvelles pourront être lu au point hebdomadaire (stand-up) le jeudi à 12h (pour rappel l'adresse du point hebdomadaire standup http://invites.standup.incubateur.net/ )
   Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
   ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
@@ -37,6 +41,7 @@ const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
+const sendNewsletter = newsletterScheduler.__get__('sendNewsletter');
 const computeId = newsletterScheduler.__get__('computeId');
 
 const mockNewsletters = [
@@ -80,7 +85,9 @@ describe('Newsletter', () => {
       await knex('newsletters').truncate();
     });
 
-    it('should get previous newsletter and last newsletter', (done) => {
+    it('should get previous newsletters and current newsletter', (done) => {
+      const date = new Date('2021-01-20T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
       chai.request(app)
         .get('/newsletters')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -95,6 +102,7 @@ describe('Newsletter', () => {
           });
           const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
           res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          this.clock.restore();
           done();
         });
     });
@@ -199,6 +207,136 @@ describe('Newsletter', () => {
       this.slack.notCalled.should.be.true;
       this.clock.restore();
       this.slack.restore();
+    });
+
+    it('should send newsletter if validated', async () => {
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      const dateAsString = controllerUtils.formatDateToFrenchTextReadableFormat(
+        addDays(date, NUMBER_OF_DAY_IN_A_WEEK),
+      );
+      const contentWithMacro = replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
+        __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/jfkdsfljkslfsfs`,
+        __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(
+          addDays(getMonday(date),
+            NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY),
+        ),
+        __REMPLACER_PAR_DATE__: dateAsString,
+      });
+      const padHeadCall = nock(`${config.padURL}`).persist()
+      .head(/.*/)
+      .reply(200, {
+        status: 'OK',
+      }, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
+      .post(/^.*login.*/)
+      .reply(200, {}, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padGetDownloadCall = nock(`${config.padURL}`)
+      .get(/^.*\/download/)
+      .reply(200, contentWithMacro);
+
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+        validator: 'julien.dauphant',
+        sent_at: null,
+      }]);
+      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      this.clock = sinon.useFakeTimers(date);
+      await sendNewsletter();
+      padHeadCall.isDone().should.be.true;
+      padGetDownloadCall.isDone().should.be.true;
+      padPostLoginCall.isDone().should.be.true;
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.firstCall.args[1].should.equal(replaceMacroInContent(
+        NEWSLETTER_TITLE, {
+          __REMPLACER_PAR_DATE__: dateAsString,
+        },
+      ));
+      sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
+      this.slack.notCalled.should.be.true;
+      const newsletter = await knex('newsletters').where({
+        year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,
+      }).whereNotNull('sent_at').first();
+      newsletter.sent_at.should.not.be.null;
+      this.clock.restore();
+      sendEmailStub.restore();
+      this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+
+    it('should not send newsletter if not validated', async () => {
+      const padHeadCall = nock(`${config.padURL}`).persist()
+      .head(/.*/)
+      .reply(200, {
+        status: 'OK',
+      }, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padPostLoginCall = nock(`${config.padURL}`).persist()
+      .post(/^.*login.*/)
+      .reply(200, {}, {
+        'set-cookie': '73dajkhs8934892jdshakldsja',
+      });
+
+      const padGetDownloadCall = nock(`${config.padURL}`)
+      .get(/^.*\/download/)
+      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
+
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      this.clock = sinon.useFakeTimers(date);
+      await sendNewsletter();
+      padHeadCall.isDone().should.be.false;
+      padGetDownloadCall.isDone().should.be.false;
+      padPostLoginCall.isDone().should.be.false;
+      sendEmailStub.calledOnce.should.be.false;
+      this.slack.notCalled.should.be.true;
+      this.clock.restore();
+      sendEmailStub.restore();
+      this.slack.restore();
+      await knex('newsletters').truncate();
+    });
+  });
+
+  describe('newsletter interface', () => {
+    it('should validate newsletter', async () => {
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
+      const res = await chai.request(app)
+        .get('/validateNewsletter')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
+      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      newsletter.validator.should.equal('membre.actif');
+      await knex('newsletters').truncate();
+      this.clock.restore();
+    });
+
+    it('should cancel newsletter', async () => {
+      await knex('newsletters').insert([{
+        ...mockNewsletter,
+        validator: 'membre.actif',
+      }]);
+      const date = new Date('2021-03-05T07:59:59+01:00');
+      this.clock = sinon.useFakeTimers(date);
+      const res = await chai.request(app)
+        .get('/cancelNewsletter')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
+      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      should.equal(newsletter.validator, null);
+      await knex('newsletters').truncate();
+      this.clock.restore();
     });
   });
 });
