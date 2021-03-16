@@ -31,11 +31,8 @@ const computeId = (yearWeek) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
+  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
   const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-  if (config.createNewsletterTheWeekBefore) {
-    // newsletter is for the next week
-    date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
-  }
   const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
   const replaceConfig = {
