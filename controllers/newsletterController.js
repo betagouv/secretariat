@@ -16,54 +16,35 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
   activeTab: 'newsletter',
 });
 
-const getCurrentNewsletterId = () => {
-  const date = new Date();
-  return `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
-};
-
-const getPreviousNewsletters = async () => {
-  let newsletters = await knex('newsletters').whereNot({
-    year_week: getCurrentNewsletterId(),
-  }).select().orderBy('year_week', 'desc');
-  const usersInfos = await BetaGouv.usersInfos();
-  newsletters = newsletters.map((newsletter) => ({
-    ...newsletter,
-    title: utils.formatDateToFrenchTextReadableFormat(
-      utils.getDateOfISOWeek(newsletter.year_week.split('-')[1],
-        newsletter.year_week.split('-')[0]),
-    ),
-    sent_at: newsletter.sent_at
-      ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
-    validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
-  }));
-  return newsletters;
-};
-
 const updateCurrentNewsletterValidator = async (validator) => {
-  const [currentNewsletter] = await knex('newsletters').where({
-    year_week: getCurrentNewsletterId(),
-  }).update({
-    validator,
-  }).returning('*');
-  return currentNewsletter;
+  let lastNewsletter = await knex('newsletters').orderBy('year_week', 'desc').first();
+  if (lastNewsletter) {
+    lastNewsletter = await knex('newsletters').where({
+      year_week: lastNewsletter.year_week,
+    }).update({
+      validator,
+    }).returning('*');
+  }
+  return lastNewsletter;
 };
+
+const formatNewsletter = (newsletter, usersInfos) => ({
+  ...newsletter,
+  title: utils.formatDateToFrenchTextReadableFormat(
+    utils.getDateOfISOWeek(newsletter.year_week.split('-')[1],
+      newsletter.year_week.split('-')[0]),
+  ),
+  sent_at: newsletter.sent_at
+    ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
+  validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
+});
 
 module.exports.getNewsletter = async function (req, res) {
   try {
-    let currentNewsletter = await knex('newsletters').where({
-      year_week: getCurrentNewsletterId(),
-    }).first();
-    if (currentNewsletter) {
-      currentNewsletter = {
-        ...currentNewsletter,
-        title: utils.formatDateToFrenchTextReadableFormat(
-          utils.getDateOfISOWeek(currentNewsletter.year_week.split('-')[1],
-            currentNewsletter.year_week.split('-')[0]),
-        ),
-      };
-    }
-    const newsletters = await getPreviousNewsletters();
-
+    let newsletters = await knex('newsletters').select().orderBy('year_week', 'desc');
+    const usersInfos = await BetaGouv.usersInfos();
+    newsletters = newsletters.map((n) => formatNewsletter(n, usersInfos));
+    const currentNewsletter = newsletters.shift();
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
     console.error(err);
@@ -78,7 +59,6 @@ module.exports.validateNewsletter = async (req, res) => {
     if (!currentNewsletter) {
       throw new Error('Il n\'y a pas d\'infolettre pour cette semaine');
     }
-    const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'infolettre a été validée et sera envoyée ce soir.');
     res.redirect('/newsletters');
@@ -95,7 +75,6 @@ module.exports.cancelNewsletter = async (req, res) => {
     if (!currentNewsletter) {
       throw new Error('Il n\'y a pas d\'infolettre pour cette semaine');
     }
-    const newsletters = await getPreviousNewsletters();
 
     req.flash('message', 'L\'envoie automatique de l\'infolettre a été annulé.');
     res.redirect('/newsletters');
