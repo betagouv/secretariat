@@ -18,7 +18,7 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
 
 const updateCurrentNewsletterValidator = async (validator) => {
   let lastNewsletter = await knex('newsletters').orderBy('year_week', 'desc').first();
-  if (lastNewsletter) {
+  if (lastNewsletter && !lastNewsletter.sent_at) {
     lastNewsletter = await knex('newsletters').where({
       year_week: lastNewsletter.year_week,
     }).update({
@@ -43,7 +43,7 @@ module.exports.getNewsletter = async function (req, res) {
   try {
     let newsletters = await knex('newsletters').select().orderBy('year_week', 'desc');
     const usersInfos = await BetaGouv.usersInfos();
-    newsletters = newsletters.map((n) => formatNewsletter(n, usersInfos));
+    newsletters = newsletters.map((newsletter) => formatNewsletter(newsletter, usersInfos));
     const currentNewsletter = newsletters.shift();
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
