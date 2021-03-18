@@ -41,7 +41,7 @@ const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
-const sendNewsletter = newsletterScheduler.__get__('sendNewsletter');
+const sendNewsletterAndCreateNewOne = newsletterScheduler.__get__('sendNewsletterAndCreateNewOne');
 const computeId = newsletterScheduler.__get__('computeId');
 
 const mockNewsletters = [
@@ -238,7 +238,11 @@ describe('Newsletter', () => {
 
       const padGetDownloadCall = nock(`${config.padURL}`)
       .get(/^.*\/download/)
-      .reply(200, contentWithMacro);
+      .reply(200, contentWithMacro).persist();
+
+      const padPostNewCall = nock(`${config.padURL}`)
+      .post(/^.*new/)
+      .reply(200, '');
 
       await knex('newsletters').insert([{
         ...mockNewsletter,
@@ -247,10 +251,11 @@ describe('Newsletter', () => {
       }]);
       const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       this.clock = sinon.useFakeTimers(date);
-      await sendNewsletter();
+      await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
+      padPostNewCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
       sendEmailStub.firstCall.args[1].should.equal(replaceMacroInContent(
         NEWSLETTER_TITLE, {
@@ -258,7 +263,7 @@ describe('Newsletter', () => {
         },
       ));
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
-      this.slack.notCalled.should.be.true;
+      this.slack.called.should.be.true;
       const newsletter = await knex('newsletters').where({
         year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,
       }).whereNotNull('sent_at').first();
@@ -294,7 +299,7 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-05T07:59:59+01:00');
       const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       this.clock = sinon.useFakeTimers(date);
-      await sendNewsletter();
+      await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.false;
       padGetDownloadCall.isDone().should.be.false;
       padPostLoginCall.isDone().should.be.false;
