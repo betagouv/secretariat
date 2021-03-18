@@ -28,7 +28,7 @@ const updateCurrentNewsletterValidator = async (validator) => {
   return lastNewsletter;
 };
 
-const formatNewsletter = (newsletter, usersInfos) => ({
+const formatNewsletter = (newsletter) => ({
   ...newsletter,
   title: utils.formatDateToFrenchTextReadableFormat(
     utils.getDateOfISOWeek(newsletter.year_week.split('-')[1],
@@ -36,14 +36,12 @@ const formatNewsletter = (newsletter, usersInfos) => ({
   ),
   sent_at: newsletter.sent_at
     ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
-  validator: (usersInfos.find((u) => u.id === newsletter.validator) || {}).fullname,
 });
 
 module.exports.getNewsletter = async function (req, res) {
   try {
     let newsletters = await knex('newsletters').select().orderBy('year_week', 'desc');
-    const usersInfos = await BetaGouv.usersInfos();
-    newsletters = newsletters.map((newsletter) => formatNewsletter(newsletter, usersInfos));
+    newsletters = newsletters.map((newsletter) => formatNewsletter(newsletter));
     const currentNewsletter = newsletters.shift();
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));
   } catch (err) {
