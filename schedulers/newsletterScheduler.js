@@ -76,6 +76,7 @@ const computeMessageReminder = (reminder, newsletter) => {
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
       Vérifie que le contenu du pad ${newsletter.url} de la newsletter est prêt à être envoyé à la communauté.
+      Puis tu peux la valider sur https://secretariat.incubateur.net/newsletters.
     `;
   }
   return message;
