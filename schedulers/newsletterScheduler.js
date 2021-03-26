@@ -58,7 +58,7 @@ const createNewsletter = async () => {
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
-  await BetaGouv.sendInfoToSlack(message, 'general');
+  await BetaGouv.sendInfoToSlack(message);
 
   return padUrl;
 };
