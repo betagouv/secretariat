@@ -17,7 +17,7 @@ services:
       - "1025:25"
   web:
     build: .
-    command: nodemon --inspect=0.0.0.0:9229 ./index.js
+    command: npm run dev
     links:
       - db
       - maildev
