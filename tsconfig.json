@@ -21,6 +21,7 @@
         "static",
         "**/*.d.ts",
         "knexfile.js",
+        "migrations",
         "dist",
         "tests",
     ]
