@@ -20,6 +20,7 @@
         "node_modules",
         "static",
         "**/*.d.ts",
+        "knexfile.js",
         "dist",
         "tests",
     ]
