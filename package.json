@@ -7,13 +7,9 @@
     "start": "node dist/index.js",
     "migrate": "knex migrate:latest",
     "makeMigration": "knex migrate:make",
-<<<<<<< HEAD
     "seed": "knex seed:run",
     "rolldown": "knex migrate:down",
     "dev": "ts-node-dev dist/index.ts",
-=======
-    "dev": "ts-node-dev index.ts",
->>>>>>> Fixed imports
     "lint": "eslint . --fix",
     "test": "./node_modules/.bin/jasmine --config=jasmine.json",
     "postinstall": "husky install",
