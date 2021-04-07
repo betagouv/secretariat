@@ -31,11 +31,8 @@ const computeId = (yearWeek) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
+  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
   const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-  if (config.createNewsletterTheWeekBefore) {
-    // newsletter is for the next week
-    date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK);
-  }
   const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
   const replaceConfig = {
@@ -61,7 +58,7 @@ const createNewsletter = async () => {
     year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
-  await BetaGouv.sendInfoToSlack(message, 'general');
+  await BetaGouv.sendInfoToSlack(message);
 
   return padUrl;
 };
@@ -79,6 +76,7 @@ const computeMessageReminder = (reminder, newsletter) => {
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
       Vérifie que le contenu du pad ${newsletter.url} de la newsletter est prêt à être envoyé à la communauté.
+      Puis tu peux la valider sur https://secretariat.incubateur.net/newsletters.
     `;
   }
   return message;
@@ -97,14 +95,6 @@ const newsletterReminder = async (reminder) => {
 };
 
 module.exports.createNewsletter = createNewsletter;
-
-module.exports.createNewsletterJob = new CronJob(
-  `${config.newsletterCronTime || '0 4 * * 5'}`, // create every week a 4:00 on friday
-  createNewsletter,
-  null,
-  true,
-  'Europe/Paris',
-);
 
 module.exports.newsletterMondayReminderJob = new CronJob(
   '0 8 * * 1', // every week a 8:00 on monday
@@ -138,7 +128,7 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   'Europe/Paris',
 );
 
-const sendNewsletter = async () => {
+const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
   const newsletterYearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const currentNewsletter = await knex('newsletters').where({
@@ -159,12 +149,13 @@ const sendNewsletter = async () => {
     }).update({
       sent_at: date,
     });
+    await createNewsletter();
   }
 };
 
-module.exports.sendNewsletter = new CronJob(
+module.exports.sendNewsletterAndCreateNewOne = new CronJob(
   config.newsletterSendTime || '0 20 * * 4', // run on thursday et 8pm,
-  sendNewsletter,
+  sendNewsletterAndCreateNewOne,
   null,
   true,
   'Europe/Paris',
