@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "target": "es6",
+        "module": "commonjs",
+        "removeComments": true,
+        "noUnusedLocals": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
+    },
+    "include": [
+        "*.ts",
+        "*.js",
+        "views/**/*",
+        "api/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.d.ts",
+        "dist"
+    ]
+}
