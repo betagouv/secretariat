@@ -75,6 +75,11 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
   }
 }
 
+function redirectOutdatedMarrainage(req, res) {
+  req.flash('message', "Merci de ta réponse. Après 48 h, nous demandons automatiquement à quelqu'un d'autre. Ce sera pour une prochaine fois 🙂");
+  return res.redirect('/');
+}
+
 module.exports.reloadMarrainage = async function (newcomerId) {
   const newcomer = await BetaGouv.userInfosById(newcomerId);
 
@@ -160,8 +165,7 @@ module.exports.acceptRequest = async function (req, res) {
 
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage accepté non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${onboarder.id}`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (vous avez peut-être déjà accepté ou refusé cette demande).");
-      return res.redirect('/');
+      return redirectOutdatedMarrainage(req, res);
     }
 
     await knex('marrainage')
@@ -180,6 +184,9 @@ module.exports.acceptRequest = async function (req, res) {
     return res.render('marrainage', { errors: undefined, accepted: true });
   } catch (err) {
     console.error(err);
+    if (err.name === 'TokenExpiredError') {
+      return redirectOutdatedMarrainage(req, res);
+    }
     return res.render('marrainage', { errors: err.message });
   }
 };
@@ -195,8 +202,7 @@ module.exports.declineRequest = async function (req, res) {
 
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage refusé non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${declinedOnboarder.id}`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne (vous avez peut-être déjà accepté ou refusé cette demande).");
-      return res.redirect('/');
+      return redirectOutdatedMarrainage(req, res);
     }
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
@@ -219,6 +225,9 @@ module.exports.declineRequest = async function (req, res) {
     return res.render('marrainage', { errors: undefined, accepted: false });
   } catch (err) {
     console.error(err);
+    if (err.name === 'TokenExpiredError') {
+      return redirectOutdatedMarrainage(req, res);
+    }
     return res.render('marrainage', { errors: err.message });
   }
 };
