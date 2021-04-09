@@ -279,7 +279,7 @@ describe('Onboarding', () => {
         .type('form')
         .send({
           firstName: 'Raphaël Férnàndáô',
-          lastName: 'Úñíbe',
+          lastName: 'Úñíïbe',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -288,7 +288,7 @@ describe('Onboarding', () => {
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
-          branch.should.contain('author-raphael-fernandao-unibe-');
+          branch.should.contain('author-raphael-fernandao-uniibe-');
           done();
         });
     });
