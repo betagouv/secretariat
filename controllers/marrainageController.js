@@ -76,7 +76,7 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
 }
 
 function redirectOutdatedMarrainage(req, res) {
-  req.flash('message', "Merci de ta réponse. Après 48 h, nous demandons automatiquement à quelqu'un d'autre. Ce sera pour une prochaine fois 🙂");
+  req.flash('message', "Merci de ta réponse. Cette demande n'est plus d'actualité. Ce sera pour une prochaine fois 🙂");
   return res.redirect('/');
 }
 
