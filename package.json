@@ -54,7 +54,7 @@
     "marked": "^2.0.1",
     "nodemailer": "^6.5.0",
     "ovh": "^2.0.1",
-    "pg": "^8.5.1",
+    "pg": "^8.6.0",
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.4.1",
     "request": "^2.88.2",
