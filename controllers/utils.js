@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const { request } = require('@octokit/request');
-
+const _ = require('lodash');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 
@@ -21,20 +21,6 @@ const requestWithAuth = request.defaults({
     authorization: `token ${config.githubToken}`,
   },
 });
-
-function removeAccents(str) {
-  const map = {
-    a: 'á|à|ã|â|À|Á|Ã|Â',
-    e: 'é|è|ê|ë|É|È|Ê|Ë',
-    i: 'í|ì|î|ï|ĩ|Í|Ì|Î|Ï|Ĩ',
-    o: 'ó|ò|ô|õ|ö|Ó|Ò|Ô|Õ|Ö',
-    u: 'ú|ù|û|ũ|ü|Ú|Ù|Û|Ũ|Ü',
-    c: 'ç|Ç',
-    n: 'ñ|Ñ',
-  };
-  for (const pattern in map) str = str.replace(new RegExp(map[pattern], 'g'), pattern);
-  return str;
-}
 
 function hyphenateWhitespace(str) {
   return str.trim().replace(/\s+/g, '-');
@@ -276,7 +262,7 @@ module.exports.makeGithubPullRequest = function (branch, title) {
 
 module.exports.createUsername = function (firstName, lastName) {
   const prepareName = function (str) {
-    return hyphenateWhitespace(replaceSpecialCharacters(removeAccents(str)));
+    return hyphenateWhitespace(replaceSpecialCharacters(_.deburr(str)));
   };
   return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 };
