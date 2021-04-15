@@ -425,6 +425,26 @@ describe('Onboarding', () => {
         });
     });
 
+    it('only a-z chars should be kept in the filename', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'René 123 *ł',
+          lastName: 'D\'A552',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          email: 'test@example.com',
+        })
+        .end((err, res) => {
+          const path = this.createGithubFile.args[0][0];
+          path.should.contain('rene-l.d-a.md');
+          done();
+        });
+    });
+
     it('should redirect to onboarding success page', (done) => {
       chai.request(app)
         .post('/onboarding')

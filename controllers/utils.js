@@ -262,7 +262,12 @@ module.exports.makeGithubPullRequest = function (branch, title) {
 
 module.exports.createUsername = function (firstName, lastName) {
   const prepareName = function (str) {
-    return hyphenateWhitespace(replaceSpecialCharacters(_.deburr(str)));
+    const normalizedStr = replaceSpecialCharacters(str)
+      .split(' ')
+      .map((x) => _.deburr(x.toLowerCase()).replace(/[^a-z]/g, ''))
+      .join(' ')
+      .trim();
+    return hyphenateWhitespace(normalizedStr);
   };
   return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 };
