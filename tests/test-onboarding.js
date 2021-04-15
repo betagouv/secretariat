@@ -279,7 +279,7 @@ describe('Onboarding', () => {
         .type('form')
         .send({
           firstName: 'Raphaël Férnàndáô',
-          lastName: 'Úñíbe',
+          lastName: 'Úñíïbe',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -288,7 +288,7 @@ describe('Onboarding', () => {
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
-          branch.should.contain('author-raphael-fernandao-unibe-');
+          branch.should.contain('author-raphael-fernandao-uniibe-');
           done();
         });
     });
@@ -421,6 +421,26 @@ describe('Onboarding', () => {
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
           path.should.contain('rene-d-herblay.d-aramitz.md');
+          done();
+        });
+    });
+
+    it('only a-z chars should be kept in the filename', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'René 123 *ł',
+          lastName: 'D\'A552',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          email: 'test@example.com',
+        })
+        .end((err, res) => {
+          const path = this.createGithubFile.args[0][0];
+          path.should.contain('rene-l.d-a.md');
           done();
         });
     });
