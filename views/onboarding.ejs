@@ -109,9 +109,9 @@
 
             <div class="form__group">
                 <label for="referentList">
-                    Référent<br />
-                    Renseigne le nom d’une personne de la communauté avec qui tu es en contact.
-                    (Nous le notifierons par email de la création de ta fiche et il pourra la merger)
+                    <b>Référent</b><br />
+                    Personne de la communauté avec qui tu es en contact.<br />
+                    <i>Renseigne le nom d'une personne pour que ta fiche soit validée rapidement.</i>
                 </label>
                 <% if(useSelectList) { %>
                     <select name="referent" id="username_select">
@@ -128,7 +128,6 @@
                     </datalist>
                     <input type="hidden" name="referent" id="referentInput_hidden">
                 <% } %> 
-            </div>
 
             <% if(!useSelectList) { %>
             <script>
@@ -146,6 +145,7 @@
             })
             </script>
             <% } %>
+            </div>
 
             <div class="form__group">
                 <label for="startup">
