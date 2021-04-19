@@ -160,3 +160,64 @@ module.exports.sendNewsletterAndCreateNewOne = new CronJob(
   true,
   'Europe/Paris',
 );
+
+const sendNewsletterAndCreateNewOneScript = async () => {
+  let date = new Date();
+  const currentNewsletter = await knex('newsletters').where({
+    sent_at: null,
+  }).whereNotNull('validator').first();
+
+  if (currentNewsletter) {
+    let pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
+    const newsletterCurrentId = currentNewsletter.url.replace(`${config.padURL}/`, '');
+    const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
+    const html = renderHtmlFromMd(newsletterContent);
+    await utils.sendMail(config.newsletterBroadcastList,
+      `${getTitle(newsletterContent)}`,
+      html);
+    await knex('newsletters').where({
+      year_week: currentNewsletter.year_week,
+    }).update({
+      sent_at: date,
+    });
+    date = getMonday(new Date()); // get first day of the current week
+    pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
+    const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
+    const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+    const replaceConfig = {
+      __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
+      // next stand up is a week after the newsletter date on thursday
+      __REMPLACER_PAR_DATE_STAND_UP__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
+        NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY)),
+      __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(addDays(date,
+        NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])),
+    };
+
+    // change content in template
+    let newsletterTemplateContent = await pad.getNoteWithId(config.newsletterTemplateId);
+    newsletterTemplateContent = replaceMacroInContent(newsletterTemplateContent, replaceConfig);
+
+    const result = await pad.createNewNoteWithContentAndAlias(
+      newsletterTemplateContent,
+      newsletterName,
+    );
+    const padUrl = result.request.res.responseUrl;
+    const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
+    await knex('newsletters').insert({
+      year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
+      url: padUrl,
+    });
+    await BetaGouv.sendInfoToSlack(message);
+
+    return padUrl;
+  }
+  return false;
+};
+
+module.exports.sendNewsletterAndCreateNewOneScript = new CronJob(
+  '0 10 * * 1', // run on thursday et 8pm,
+  sendNewsletterAndCreateNewOneScript,
+  null,
+  true,
+  'Europe/Paris',
+);
