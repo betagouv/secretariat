@@ -1,14 +1,14 @@
 const chai = require('chai');
 const nock = require('nock');
 const sinon = require('sinon');
-const config = require('../config');
-const app = require('../index');
+const config = require('../src/config');
+const app = require('../src/index');
 const utils = require('./utils.js');
-const knex = require('../db');
-const controllerUtils = require('../controllers/utils');
-const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
+const knex = require('../src/db');
+const controllerUtils = require('../src/controllers/utils');
+const { createEmailAddresses } = require('../src/schedulers/emailCreationScheduler');
 const testUsers = require('./users.json');
-const Betagouv = require('../betagouv');
+const Betagouv = require('../src/betagouv');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {

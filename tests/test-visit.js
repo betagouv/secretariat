@@ -2,13 +2,13 @@ const chai = require('chai');
 const sinon = require('sinon');
 const _ = require('lodash');
 const rewire = require('rewire');
-const app = require('../index');
+const app = require('../src/index');
 const utils = require('./utils.js');
-const config = require('../config');
-const controllerUtils = require('../controllers/utils');
-const knex = require('../db');
+const config = require('../src/config');
+const controllerUtils = require('../src/controllers/utils');
+const knex = require('../src/db');
 
-const visitScheduler = rewire('../schedulers/visitScheduler');
+const visitScheduler = rewire('../src/schedulers/visitScheduler');
 
 describe.skip('Visit', () => {
   beforeEach((done) => {

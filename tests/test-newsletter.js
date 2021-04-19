@@ -4,14 +4,14 @@ const chai = require('chai');
 const sinon = require('sinon');
 const HedgedocApi = require('hedgedoc-api');
 
-const config = require('../config');
-const knex = require('../db');
-const BetaGouv = require('../betagouv');
-const app = require('../index');
-const controllerUtils = require('../controllers/utils');
+const config = require('../src/config');
+const knex = require('../src/db');
+const BetaGouv = require('../src/betagouv');
+const app = require('../src/index.ts');
+const controllerUtils = require('../src/controllers/utils');
 const utils = require('./utils');
 const testUsers = require('./users');
-const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
+const { renderHtmlFromMd, getTitle } = require('../src/lib/mdtohtml');
 
 const should = chai.should();
 
@@ -24,7 +24,7 @@ const {
 } = controllerUtils;
 const {
   createNewsletter,
-} = require('../schedulers/newsletterScheduler');
+} = require('../src/schedulers/newsletterScheduler');
 
 const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
@@ -38,7 +38,7 @@ const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
   ### 👋 Prochain point hebdo beta.gouv, jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
 `;
 
-const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const newsletterScheduler = rewire('../src/schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');

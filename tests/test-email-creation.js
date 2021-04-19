@@ -5,7 +5,7 @@ const _ = require('lodash/array');
 const testUsers = require('./users.json');
 const utils = require('./utils.js');
 
-const emailCreationScheduler = rewire('../schedulers/emailCreationScheduler');
+const emailCreationScheduler = rewire('../src/schedulers/emailCreationScheduler');
 
 describe('getUnregisteredOVHUsers', () => {
   beforeEach(async () => {

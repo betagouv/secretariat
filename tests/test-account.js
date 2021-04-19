@@ -1,9 +1,9 @@
 const chai = require('chai');
 const nock = require('nock');
 const utils = require('./utils.js');
-const app = require('../index');
-const config = require('../config');
-const knex = require('../db');
+const app = require('../src/index');
+const config = require('../src/config');
+const knex = require('../src/db');
 
 describe('Account', () => {
   afterEach((done) => {

@@ -2,10 +2,10 @@ const chai = require('chai');
 const sinon = require('sinon');
 const nock = require('nock');
 
-const app = require('../index');
+const app = require('../src/index');
 const utils = require('./utils.js');
-const controllerUtils = require('../controllers/utils');
-const knex = require('../db');
+const controllerUtils = require('../src/controllers/utils');
+const knex = require('../src/db');
 
 describe('Onboarding', () => {
   describe('GET /onboarding', () => {
