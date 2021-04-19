@@ -2,10 +2,10 @@ const sinon = require('sinon');
 const chai = require('chai');
 const crypto = require('crypto');
 
-const app = require('../index');
-const knex = require('../db');
-const controllerUtils = require('../controllers/utils');
-const config = require('../config');
+const app = require('../src/index');
+const knex = require('../src/db');
+const controllerUtils = require('../src/controllers/utils');
+const config = require('../src/config');
 
 describe('Login token', () => {
   beforeEach((done) => {

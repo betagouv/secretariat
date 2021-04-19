@@ -1,9 +1,9 @@
 const chai = require('chai');
 const nock = require('nock');
 
-const app = require('../index');
+const app = require('../src/index');
 const utils = require('./utils.js');
-const knex = require('../db');
+const knex = require('../src/db');
 
 describe('Community', () => {
   describe('GET /community unauthenticated', () => {

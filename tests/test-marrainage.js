@@ -2,11 +2,11 @@ const chai = require('chai');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
 
-const app = require('../index');
+const app = require('../src/index');
 const utils = require('./utils.js');
-const controllerUtils = require('../controllers/utils');
-const config = require('../config');
-const knex = require('../db');
+const controllerUtils = require('../src/controllers/utils');
+const config = require('../src/config');
+const knex = require('../src/db');
 
 describe('Marrainage', () => {
   beforeEach((done) => {
@@ -360,7 +360,7 @@ describe('Marrainage', () => {
         // Disabels global require since requiring the cron job
         // will immediatly start it.
         /* eslint-disable global-require */
-        const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
+        const { reloadMarrainageJob } = require('../src/schedulers/marrainageScheduler');
         this.clock.tick(1001);
         this.listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
@@ -413,7 +413,7 @@ describe('Marrainage', () => {
         // Disabels global require since requiring the cron job
         // will immediatly start it.
         /* eslint-disable global-require */
-        const { reloadMarrainageJob } = require('../schedulers/marrainageScheduler');
+        const { reloadMarrainageJob } = require('../src/schedulers/marrainageScheduler');
         // we start it manually as it may have been stopped in previous tests
         reloadMarrainageJob.start();
 

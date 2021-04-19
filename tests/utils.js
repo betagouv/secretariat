@@ -4,10 +4,10 @@ const { Client } = require('pg');
 const { parse } = require('pg-connection-string');
 const { v4: uuidv4 } = require('uuid');
 
-const config = require('../config');
+const config = require('../src/config');
 const testUsers = require('./users.json');
 const testStartups = require('./startups.json');
-const knex = require('../db/index');
+const knex = require('../src/db/index');
 
 module.exports = {
   getJWT(id) {

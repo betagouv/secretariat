@@ -1,9 +1,9 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const controllerUtils = require('../controllers/utils');
-const app = require('../index');
-const knex = require('../db');
-const config = require('../config');
+const controllerUtils = require('../src/controllers/utils');
+const app = require('../src/index');
+const knex = require('../src/db');
+const config = require('../src/config');
 
 describe('Login', () => {
   beforeEach((done) => {
