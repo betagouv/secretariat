@@ -215,7 +215,7 @@ const sendNewsletterAndCreateNewOneScript = async () => {
 };
 
 module.exports.sendNewsletterAndCreateNewOneScript = new CronJob(
-  '0 10 * * 1', // run on thursday et 8pm,
+  '30 10 * * 1', // run on thursday et 8pm,
   sendNewsletterAndCreateNewOneScript,
   null,
   true,
