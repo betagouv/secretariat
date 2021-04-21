@@ -33,8 +33,7 @@ const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
   date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
   const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-  const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
-  const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+  const newsletterName = `infolettre-${computeId(date)}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
     // next stand up is a week after the newsletter date on thursday

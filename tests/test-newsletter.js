@@ -123,8 +123,7 @@ describe('Newsletter', () => {
       const date = new Date('2021-03-04T07:59:59+01:00');
       const newsletterDate = addDays(date, 7);
       this.clock = sinon.useFakeTimers(date);
-      const yearWeek = `${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`;
-      const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+      const newsletterName = `infolettre-${computeId(newsletterDate)}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
