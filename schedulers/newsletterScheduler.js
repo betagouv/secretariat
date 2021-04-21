@@ -55,7 +55,6 @@ const createNewsletter = async () => {
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
   await knex('newsletters').insert({
-    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
   await BetaGouv.sendInfoToSlack(message);
@@ -85,7 +84,6 @@ const computeMessageReminder = (reminder, newsletter) => {
 const newsletterReminder = async (reminder) => {
   const date = new Date();
   const currentNewsletter = await knex('newsletters').where({
-    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     sent_at: null,
   }).first();
 
@@ -130,9 +128,7 @@ module.exports.newsletterFridayReminderJob = new CronJob(
 
 const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
-  const newsletterYearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const currentNewsletter = await knex('newsletters').where({
-    year_week: newsletterYearWeek,
     sent_at: null,
   }).whereNotNull('validator').first();
 
@@ -145,7 +141,7 @@ const sendNewsletterAndCreateNewOne = async () => {
       `${getTitle(newsletterContent)}`,
       html);
     await knex('newsletters').where({
-      year_week: newsletterYearWeek,
+      created_at: currentNewsletter.created_at,
     }).update({
       sent_at: date,
     });
