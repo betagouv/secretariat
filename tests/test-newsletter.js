@@ -46,33 +46,32 @@ const computeId = newsletterScheduler.__get__('computeId');
 
 const mockNewsletters = [
   {
-    year_week: '2020-52',
     validator: 'julien.dauphant',
     url: `${config.padURL}/45a5dsdsqsdada`,
     sent_at: new Date(),
+    created_at: new Date(),
   },
   {
-    year_week: '2021-02',
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564q5484saw`,
     sent_at: new Date(),
+    created_at: new Date(),
   },
   {
-    year_week: '2021-03',
     validator: 'julien.dauphant',
     url: `${config.padURL}/5456dsadsahjww`,
     sent_at: new Date(),
+    created_at: new Date(),
   },
   {
-    year_week: '2020-51',
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564qwsajsghd4rhjww`,
     sent_at: new Date(),
+    created_at: new Date(),
   },
 ];
 
 const mockNewsletter = {
-  year_week: '2021-09',
   url: `${config.padURL}/rewir34984292342sad`,
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 2;
@@ -94,14 +93,14 @@ describe('Newsletter', () => {
         .end((err, res) => {
           res.text.should.include(`${config.padURL}/5456dsadsahjww`);
           const allNewsletterButMostRecentOne = mockNewsletters.filter(
-            (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
+            (n) => !n.sent_at,
           );
           allNewsletterButMostRecentOne.forEach((newsletter) => {
             res.text.should.include(controllerUtils
               .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
-          const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
-          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          const currentNewsletter = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX];
+          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(currentNewsletter.send_at)}</h3>`);
           this.clock.restore();
           done();
         });
@@ -165,10 +164,9 @@ describe('Newsletter', () => {
           __REMPLACER_PAR_DATE__: controllerUtils.formatDateToFrenchTextReadableFormat(addDays(date, NUMBER_OF_DAY_IN_A_WEEK)),
         }),
       );
-      const newsletter = await knex('newsletters').orderBy('year_week').first();
+      const newsletter = await knex('newsletters').orderBy('created_at').first();
       newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
       this.clock.restore();
-      newsletter.year_week.should.equal(yearWeek);
       await knex('newsletters').truncate();
     });
 
@@ -264,9 +262,7 @@ describe('Newsletter', () => {
       ));
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
       this.slack.called.should.be.true;
-      const newsletter = await knex('newsletters').where({
-        year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,
-      }).whereNotNull('sent_at').first();
+      const newsletter = await knex('newsletters').orderBy('created_at').whereNotNull('sent_at').first();
       newsletter.sent_at.should.not.be.null;
       this.clock.restore();
       sendEmailStub.restore();
@@ -322,7 +318,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      const newsletter = await knex('newsletters').where({ created_at: mockNewsletter.created_at }).first();
       newsletter.validator.should.equal('membre.actif');
       await knex('newsletters').truncate();
       this.clock.restore();
@@ -338,7 +334,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/cancelNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      const newsletter = await knex('newsletters').where({ created_at: mockNewsletter.created_at }).first();
       should.equal(newsletter.validator, null);
       await knex('newsletters').truncate();
       this.clock.restore();
