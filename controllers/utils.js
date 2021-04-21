@@ -90,24 +90,6 @@ module.exports.isValidNumber = (formValidationErrors, field, number) => {
   return null;
 };
 
-module.exports.getWeekNumber = (d) => {
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  let weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  weekNo = weekNo.toString();
-  return weekNo.length === 1 ? `0${weekNo}` : weekNo;
-};
-
-module.exports.getDateOfISOWeek = (w, y) => {
-  const simple = new Date(y, 0, 1 + (w - 1) * 7);
-  const dow = simple.getDay();
-  const ISOweekStart = simple;
-  if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-  else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
-  return ISOweekStart;
-};
-
 module.exports.formatDateToReadableFormat = (date) => {
   let day = date.getDate().toString();
   day = day.length === 1 ? `0${day}` : day;
