@@ -22,9 +22,9 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
   return contentWithReplacement;
 };
 
-const computeId = (yearWeek) => {
+const computeId = (dateAsString) => {
   const id = crypto.createHmac('sha256', config.newsletterHashSecret)
-  .update(yearWeek)
+  .update(dateAsString)
   .digest('hex').slice(0, 8);
   return id;
 };
@@ -33,7 +33,7 @@ const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
   date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
   const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-  const newsletterName = `infolettre-${computeId(date)}`;
+  const newsletterName = `infolettre-${computeId(date.toISOString().split('T')[0])}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
     // next stand up is a week after the newsletter date on thursday

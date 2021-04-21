@@ -48,37 +48,38 @@ const mockNewsletters = [
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/45a5dsdsqsdada`,
-    sent_at: new Date(),
-    created_at: new Date(),
+    sent_at: new Date('2021-02-11 00:00:00+00'),
+    created_at: new Date('2021-02-11 00:00:00+00'),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564q5484saw`,
-    sent_at: new Date(),
-    created_at: new Date(),
+    sent_at: new Date('2021-02-18 00:00:00+00'),
+    created_at: new Date('2021-02-18 00:00:00+00'),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/5456dsadsahjww`,
-    sent_at: new Date(),
-    created_at: new Date(),
+    sent_at: new Date('2021-02-25 00:00:00+00'),
+    created_at: new Date('2021-02-25 00:00:00+00'),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564qwsajsghd4rhjww`,
-    sent_at: new Date(),
-    created_at: new Date(),
+    sent_at: new Date('2021-03-04 00:00:00+00'),
+    created_at: new Date('2021-03-04 00:00:00+00'),
   },
 ];
 
 const mockNewsletter = {
   url: `${config.padURL}/rewir34984292342sad`,
+  created_at: new Date('2021-04-04 00:00:00+00'),
 };
-const MOST_RECENT_NEWSLETTER_INDEX = 2;
+const MOST_RECENT_NEWSLETTER_INDEX = 3;
 describe('Newsletter', () => {
   describe('should get newsletter data for newsletter page', () => {
     beforeEach(async () => {
-      await knex('newsletters').insert(mockNewsletters);
+      await knex('newsletters').insert([...mockNewsletters, mockNewsletter]);
     });
     afterEach(async () => {
       await knex('newsletters').truncate();
@@ -99,8 +100,10 @@ describe('Newsletter', () => {
             res.text.should.include(controllerUtils
               .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
-          const currentNewsletter = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX];
-          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(currentNewsletter.send_at)}</h3>`);
+          const currentNewsletter = mockNewsletter;
+          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
+            addDays(getMonday(currentNewsletter.created_at), 7),
+          )}</h3>`);
           this.clock.restore();
           done();
         });
@@ -121,9 +124,9 @@ describe('Newsletter', () => {
     it('should create new note', async () => {
       const createNewNoteWithContentAndAliasSpy = sinon.spy(HedgedocApi.prototype, 'createNewNoteWithContentAndAlias');
       const date = new Date('2021-03-04T07:59:59+01:00');
-      const newsletterDate = addDays(date, 7);
+      const newsletterDate = addDays(getMonday(date), 7);
       this.clock = sinon.useFakeTimers(date);
-      const newsletterName = `infolettre-${computeId(newsletterDate)}`;
+      const newsletterName = `infolettre-${computeId(newsletterDate.toISOString().split('T')[0])}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
