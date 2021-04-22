@@ -148,6 +148,7 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 - Créer les tables : `docker-compose run web npm run migrate`
 - Lancer le service : `docker-compose up` - Y accèder par http://localhost:8100
 - Lancer les tests : `docker-compose run web npm test`
+- Lancer les migrates : `docker-compose run web npm seed`
 
 ### Dev docker sans docker-compose
 
