@@ -78,7 +78,7 @@ const mockNewsletters = [
 const mockNewsletter = {
   url: `${config.padURL}/rewir34984292342sad`,
   created_at: new Date('2021-04-04 00:00:00+00'),
-  id: 5,
+  id: utils.randomUuid(),
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 3;
 describe('Newsletter', () => {
