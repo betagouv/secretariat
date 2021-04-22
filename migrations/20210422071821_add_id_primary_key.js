@@ -1,6 +1,7 @@
 exports.up = function (knex) {
   return knex.schema
         .alterTable('newsletters', (table) => {
+          table.string('year_week').notNullable().alter();
           table.increments('id').primary().unsigned();
         });
 };
@@ -8,6 +9,7 @@ exports.up = function (knex) {
 exports.down = function (knex) {
   return knex.schema
   .alterTable('newsletters', (table) => {
+    table.string('year_week').nullable().alter();
     table.dropColumn('id');
   });
 };
