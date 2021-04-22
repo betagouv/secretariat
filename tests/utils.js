@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const nock = require('nock');
 const { Client } = require('pg');
 const { parse } = require('pg-connection-string');
-const { v5: uuidv5 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 const config = require('../config');
 const testUsers = require('./users.json');
@@ -118,7 +118,7 @@ module.exports = {
       .then(() => client.end())
       .then(() => console.log(`Test database ${testDbName} cleaned up successfully`));
   },
-  randomUuid: function randomUuid(random = Math.random().toString()) {
-    return uuidv5(random, 'd0dfe1f9-b765-442b-a5c5-276118e65f37');
+  randomUuid: function randomUuid() {
+    return uuidv4();
   },
 };
