@@ -60,7 +60,8 @@
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.4.1",
     "request": "^2.88.2",
-    "template.data.gouv.fr": "^1.3.2"
+    "template.data.gouv.fr": "^1.3.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "chai": "^4.3.4",

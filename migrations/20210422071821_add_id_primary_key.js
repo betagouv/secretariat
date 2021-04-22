@@ -2,7 +2,7 @@ exports.up = function (knex) {
   return knex.schema
         .alterTable('newsletters', (table) => {
           table.string('year_week').nullable().alter();
-          table.increments('id').primary().unsigned();
+          table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
         });
 };
 

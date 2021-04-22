@@ -50,28 +50,28 @@ const mockNewsletters = [
     url: `${config.padURL}/45a5dsdsqsdada`,
     sent_at: new Date('2021-02-11 00:00:00+00'),
     created_at: new Date('2021-02-11 00:00:00+00'),
-    id: 1,
+    id: utils.randomUuid(),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564q5484saw`,
     sent_at: new Date('2021-02-18 00:00:00+00'),
     created_at: new Date('2021-02-18 00:00:00+00'),
-    id: 2,
+    id: utils.randomUuid(),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/5456dsadsahjww`,
     sent_at: new Date('2021-02-25 00:00:00+00'),
     created_at: new Date('2021-02-25 00:00:00+00'),
-    id: 3,
+    id: utils.randomUuid(),
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564qwsajsghd4rhjww`,
     sent_at: new Date('2021-03-04 00:00:00+00'),
     created_at: new Date('2021-03-04 00:00:00+00'),
-    id: 4,
+    id: utils.randomUuid(),
   },
 ];
 
