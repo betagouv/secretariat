@@ -20,7 +20,7 @@ const updateCurrentNewsletterValidator = async (validator) => {
   let lastNewsletter = await knex('newsletters').orderBy('created_at', 'desc').first();
   if (lastNewsletter && !lastNewsletter.sent_at) {
     lastNewsletter = await knex('newsletters').where({
-      created_at: lastNewsletter.created_at,
+      id: lastNewsletter.id,
     }).update({
       validator,
     }).returning('*');

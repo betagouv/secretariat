@@ -140,7 +140,7 @@ const sendNewsletterAndCreateNewOne = async () => {
       `${getTitle(newsletterContent)}`,
       html);
     await knex('newsletters').where({
-      created_at: currentNewsletter.created_at,
+      id: currentNewsletter.id,
     }).update({
       sent_at: date,
     });

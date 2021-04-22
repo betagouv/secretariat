@@ -50,30 +50,35 @@ const mockNewsletters = [
     url: `${config.padURL}/45a5dsdsqsdada`,
     sent_at: new Date('2021-02-11 00:00:00+00'),
     created_at: new Date('2021-02-11 00:00:00+00'),
+    id: 1,
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564q5484saw`,
     sent_at: new Date('2021-02-18 00:00:00+00'),
     created_at: new Date('2021-02-18 00:00:00+00'),
+    id: 2,
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/5456dsadsahjww`,
     sent_at: new Date('2021-02-25 00:00:00+00'),
     created_at: new Date('2021-02-25 00:00:00+00'),
+    id: 3,
   },
   {
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564qwsajsghd4rhjww`,
     sent_at: new Date('2021-03-04 00:00:00+00'),
     created_at: new Date('2021-03-04 00:00:00+00'),
+    id: 4,
   },
 ];
 
 const mockNewsletter = {
   url: `${config.padURL}/rewir34984292342sad`,
   created_at: new Date('2021-04-04 00:00:00+00'),
+  id: 5,
 };
 const MOST_RECENT_NEWSLETTER_INDEX = 3;
 describe('Newsletter', () => {
@@ -320,7 +325,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ created_at: mockNewsletter.created_at }).first();
+      const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       newsletter.validator.should.equal('membre.actif');
       await knex('newsletters').truncate();
       this.clock.restore();
@@ -336,7 +341,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/cancelNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ created_at: mockNewsletter.created_at }).first();
+      const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       should.equal(newsletter.validator, null);
       await knex('newsletters').truncate();
       this.clock.restore();
