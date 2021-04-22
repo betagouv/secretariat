@@ -7,6 +7,8 @@
     "start": "node --icu-data-dir=./node_modules/full-icu index.js",
     "migrate": "knex migrate:latest",
     "makeMigration": "knex migrate:make",
+    "seed": "knex seed:run",
+    "rolldown": "knex migrate:down",
     "dev": "nodemon --icu-data-dir=./node_modules/full-icu index.js",
     "lint": "eslint . --fix",
     "test": "mocha --icu-data-dir=./node_modules/full-icu tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",

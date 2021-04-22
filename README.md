@@ -146,6 +146,7 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 - Créer le fichier de configuration : `cp .env.example .env` et le remplir avec les identifiants OVH obtenus plus haut.
 - Récupérer les dépendences : `docker-compose run web npm install`
 - Créer les tables : `docker-compose run web npm run migrate`
+- Lancer le seeding : `docker-compose run web npm run seed`
 - Lancer le service : `docker-compose up` - Y accèder par http://localhost:8100
 - Lancer les tests : `docker-compose run web npm test`
 

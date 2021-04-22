@@ -14,6 +14,7 @@
     }
   ],
   "scripts": {
-    "postdeploy": "npm run migrate"
+    "postdeploy": "npm run migrate",
+    "first-deploy": "bash scalingo-dev-seed.sh"
   }
 }
