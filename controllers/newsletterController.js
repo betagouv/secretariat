@@ -17,10 +17,10 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
 });
 
 const updateCurrentNewsletterValidator = async (validator) => {
-  let lastNewsletter = await knex('newsletters').orderBy('year_week', 'desc').first();
+  let lastNewsletter = await knex('newsletters').orderBy('created_at', 'desc').first();
   if (lastNewsletter && !lastNewsletter.sent_at) {
     lastNewsletter = await knex('newsletters').where({
-      year_week: lastNewsletter.year_week,
+      id: lastNewsletter.id,
     }).update({
       validator,
     }).returning('*');
@@ -30,17 +30,18 @@ const updateCurrentNewsletterValidator = async (validator) => {
 
 const formatNewsletter = (newsletter) => ({
   ...newsletter,
-  title: utils.formatDateToFrenchTextReadableFormat(
-    utils.getDateOfISOWeek(newsletter.year_week.split('-')[1],
-      newsletter.year_week.split('-')[0]),
-  ),
+  title: newsletter.sent_at ? utils.formatDateToFrenchTextReadableFormat(
+    newsletter.sent_at,
+  ) : utils.formatDateToFrenchTextReadableFormat(
+    utils.addDays(utils.getMonday(newsletter.created_at), 7),
+  ), // get next monday (date + 7 days),
   sent_at: newsletter.sent_at
     ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
 });
 
 module.exports.getNewsletter = async function (req, res) {
   try {
-    let newsletters = await knex('newsletters').select().orderBy('year_week', 'desc');
+    let newsletters = await knex('newsletters').select().orderBy('created_at', 'desc');
     newsletters = newsletters.map((newsletter) => formatNewsletter(newsletter));
     const currentNewsletter = newsletters.shift();
     res.render('newsletter', formatNewsletterPageData(req, newsletters, currentNewsletter));

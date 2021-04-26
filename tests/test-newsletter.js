@@ -47,40 +47,45 @@ const computeId = newsletterScheduler.__get__('computeId');
 
 const mockNewsletters = [
   {
-    year_week: '2020-52',
     validator: 'julien.dauphant',
     url: `${config.padURL}/45a5dsdsqsdada`,
-    sent_at: new Date(),
+    sent_at: new Date('2021-02-11 00:00:00+00'),
+    created_at: new Date('2021-02-11 00:00:00+00'),
+    id: utils.randomUuid(),
   },
   {
-    year_week: '2021-02',
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564q5484saw`,
-    sent_at: new Date(),
+    sent_at: new Date('2021-02-18 00:00:00+00'),
+    created_at: new Date('2021-02-18 00:00:00+00'),
+    id: utils.randomUuid(),
   },
   {
-    year_week: '2021-03',
     validator: 'julien.dauphant',
     url: `${config.padURL}/5456dsadsahjww`,
-    sent_at: new Date(),
+    sent_at: new Date('2021-02-25 00:00:00+00'),
+    created_at: new Date('2021-02-25 00:00:00+00'),
+    id: utils.randomUuid(),
   },
   {
-    year_week: '2020-51',
     validator: 'julien.dauphant',
     url: `${config.padURL}/54564qwsajsghd4rhjww`,
-    sent_at: new Date(),
+    sent_at: new Date('2021-03-04 00:00:00+00'),
+    created_at: new Date('2021-03-04 00:00:00+00'),
+    id: utils.randomUuid(),
   },
 ];
 
 const mockNewsletter = {
-  year_week: '2021-09',
   url: `${config.padURL}/rewir34984292342sad`,
+  created_at: new Date('2021-04-04 00:00:00+00'),
+  id: utils.randomUuid(),
 };
-const MOST_RECENT_NEWSLETTER_INDEX = 2;
+const MOST_RECENT_NEWSLETTER_INDEX = 3;
 describe('Newsletter', () => {
   describe('should get newsletter data for newsletter page', () => {
     beforeEach(async () => {
-      await knex('newsletters').insert(mockNewsletters);
+      await knex('newsletters').insert([...mockNewsletters, mockNewsletter]);
     });
     afterEach(async () => {
       await knex('newsletters').truncate();
@@ -95,14 +100,16 @@ describe('Newsletter', () => {
         .end((err, res) => {
           res.text.should.include(`${config.padURL}/5456dsadsahjww`);
           const allNewsletterButMostRecentOne = mockNewsletters.filter(
-            (n) => n.year_week !== mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week,
+            (n) => !n.sent_at,
           );
           allNewsletterButMostRecentOne.forEach((newsletter) => {
             res.text.should.include(controllerUtils
               .formatDateToReadableDateAndTimeFormat(newsletter.sent_at));
           });
-          const weekYear = mockNewsletters[MOST_RECENT_NEWSLETTER_INDEX].year_week.split('-');
-          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(controllerUtils.getDateOfISOWeek(weekYear[1], weekYear[0]))}</h3>`);
+          const currentNewsletter = mockNewsletter;
+          res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
+            addDays(getMonday(currentNewsletter.created_at), 7),
+          )}</h3>`);
           this.clock.restore();
           done();
         });
@@ -123,10 +130,9 @@ describe('Newsletter', () => {
     it('should create new note', async () => {
       const createNewNoteWithContentAndAliasSpy = sinon.spy(HedgedocApi.prototype, 'createNewNoteWithContentAndAlias');
       const date = new Date('2021-03-04T07:59:59+01:00');
-      const newsletterDate = addDays(date, 7);
+      const newsletterDate = addDays(getMonday(date), 7);
       this.clock = sinon.useFakeTimers(date);
-      const yearWeek = `${newsletterDate.getFullYear()}-${controllerUtils.getWeekNumber(newsletterDate)}`;
-      const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+      const newsletterName = `infolettre-${computeId(newsletterDate.toISOString().split('T')[0])}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -166,10 +172,9 @@ describe('Newsletter', () => {
           __REMPLACER_PAR_DATE__: controllerUtils.formatDateToFrenchTextReadableFormat(addDays(date, NUMBER_OF_DAY_IN_A_WEEK)),
         }),
       );
-      const newsletter = await knex('newsletters').orderBy('year_week').first();
+      const newsletter = await knex('newsletters').orderBy('created_at').first();
       newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
       this.clock.restore();
-      newsletter.year_week.should.equal(yearWeek);
       await knex('newsletters').truncate();
     });
 
@@ -278,9 +283,7 @@ describe('Newsletter', () => {
       sendEmailStub.firstCall.args[0].should.equal(`membre.actif@${config.domain}`);
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
       this.slack.called.should.be.true;
-      const newsletter = await knex('newsletters').where({
-        year_week: `${date.getFullYear()}-${controllerUtils.getWeekNumber(date)}`,
-      }).whereNotNull('sent_at').first();
+      const newsletter = await knex('newsletters').orderBy('created_at').whereNotNull('sent_at').first();
       newsletter.sent_at.should.not.be.null;
       this.clock.restore();
       sendEmailStub.restore();
@@ -336,7 +339,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       newsletter.validator.should.equal('membre.actif');
       await knex('newsletters').truncate();
       this.clock.restore();
@@ -352,7 +355,7 @@ describe('Newsletter', () => {
       const res = await chai.request(app)
         .get('/cancelNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
-      const newsletter = await knex('newsletters').where({ year_week: mockNewsletter.year_week }).first();
+      const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       should.equal(newsletter.validator, null);
       await knex('newsletters').truncate();
       this.clock.restore();
