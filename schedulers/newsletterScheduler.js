@@ -130,7 +130,7 @@ const getActiveRegisteredOVHUsers = async () => {
   const users = await BetaGouv.usersInfos();
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
   const activeUsers = users.filter(
-    (user) => allOvhEmails.includes(user.id),
+    (user) => !utils.checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
   );
   return activeUsers;
 };
