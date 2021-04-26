@@ -131,11 +131,13 @@ module.exports.newsletterFridayReminderJob = new CronJob(
 // get active users with email registered on ovh (yet)
 const getActiveRegisteredOVHUsers = async () => {
   const users = await BetaGouv.usersInfos();
-  const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
+  const activeUsers = users.filter(
+    (user) => !utils.checkUserIsExpired(user) && allOvhEmails.includes(user.id),
+  );
   console.log(`${allOvhEmails.length} accounts in OVH. ${activeUsers.length} accounts in Github.`);
 
-  return activeUsers.filter((user) => allOvhEmails.includes(user.id));
+  return activeUsers;
 };
 
 const sendNewsletterAndCreateNewOne = async () => {
@@ -151,7 +153,8 @@ const sendNewsletterAndCreateNewOne = async () => {
     const newsletterCurrentId = currentNewsletter.url.replace(`${config.padURL}/`, '');
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
-    await utils.sendMail(getActiveRegisteredOVHUsers().map(utils.buildBetaEmail).join(','),
+    const activeRegisteredOVHUsers = await getActiveRegisteredOVHUsers();
+    await utils.sendMail(activeRegisteredOVHUsers.map(utils.buildBetaEmail).join(','),
       `${getTitle(newsletterContent)}`,
       html, {
         headers: {
