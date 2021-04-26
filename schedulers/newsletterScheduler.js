@@ -22,9 +22,9 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
   return contentWithReplacement;
 };
 
-const computeId = (yearWeek) => {
+const computeId = (dateAsString) => {
   const id = crypto.createHmac('sha256', config.newsletterHashSecret)
-  .update(yearWeek)
+  .update(dateAsString)
   .digest('hex').slice(0, 8);
   return id;
 };
@@ -33,8 +33,7 @@ const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
   date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
   const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
-  const yearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
-  const newsletterName = `infolettre-${yearWeek}-${computeId(yearWeek)}`;
+  const newsletterName = `infolettre-${computeId(date.toISOString().split('T')[0])}`;
   const replaceConfig = {
     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
     // next stand up is a week after the newsletter date on thursday
@@ -55,7 +54,6 @@ const createNewsletter = async () => {
   const padUrl = result.request.res.responseUrl;
   const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
   await knex('newsletters').insert({
-    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     url: padUrl,
   });
   await BetaGouv.sendInfoToSlack(message);
@@ -85,7 +83,6 @@ const computeMessageReminder = (reminder, newsletter) => {
 const newsletterReminder = async (reminder) => {
   const date = new Date();
   const currentNewsletter = await knex('newsletters').where({
-    year_week: `${date.getFullYear()}-${utils.getWeekNumber(date)}`,
     sent_at: null,
   }).first();
 
@@ -142,9 +139,7 @@ const getActiveRegisteredOVHUsers = async () => {
 
 const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
-  const newsletterYearWeek = `${date.getFullYear()}-${utils.getWeekNumber(date)}`;
   const currentNewsletter = await knex('newsletters').where({
-    year_week: newsletterYearWeek,
     sent_at: null,
   }).whereNotNull('validator').first();
 
@@ -164,7 +159,7 @@ const sendNewsletterAndCreateNewOne = async () => {
         },
       });
     await knex('newsletters').where({
-      year_week: newsletterYearWeek,
+      id: currentNewsletter.id,
     }).update({
       sent_at: date,
     });
