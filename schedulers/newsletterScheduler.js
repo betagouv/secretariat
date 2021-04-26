@@ -133,10 +133,9 @@ const getActiveRegisteredOVHUsers = async () => {
   const users = await BetaGouv.usersInfos();
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
   const activeUsers = users.filter(
-    (user) => !utils.checkUserIsExpired(user) && allOvhEmails.includes(user.id),
+    (user) => allOvhEmails.includes(user.id),
   );
   console.log(`${allOvhEmails.length} accounts in OVH. ${activeUsers.length} accounts in Github.`);
-
   return activeUsers;
 };
 
@@ -154,7 +153,10 @@ const sendNewsletterAndCreateNewOne = async () => {
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
     const activeRegisteredOVHUsers = await getActiveRegisteredOVHUsers();
-    await utils.sendMail(activeRegisteredOVHUsers.map(utils.buildBetaEmail).join(','),
+    const usersEmails = activeRegisteredOVHUsers.map(
+      (user) => user.id,
+    ).map(utils.buildBetaEmail);
+    await utils.sendMail(usersEmails.join(','),
       `${getTitle(newsletterContent)}`,
       html, {
         headers: {

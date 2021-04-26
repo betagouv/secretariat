@@ -10,6 +10,7 @@ const BetaGouv = require('../betagouv');
 const app = require('../index');
 const controllerUtils = require('../controllers/utils');
 const utils = require('./utils');
+const testUsers = require('./users');
 const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
 
 const should = chai.should();
@@ -222,6 +223,13 @@ describe('Newsletter', () => {
         ),
         __REMPLACER_PAR_DATE__: dateAsString,
       });
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      utils.mockOvhUserEmailInfos();
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
       .reply(200, {
@@ -244,6 +252,10 @@ describe('Newsletter', () => {
       .post(/^.*new/)
       .reply(200, '');
 
+      const mockOvhAllEmailInfos = nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, testUsers.filter((user) => user.id === 'membre.actif').map((x) => x.id));
+
       await knex('newsletters').insert([{
         ...mockNewsletter,
         validator: 'julien.dauphant',
@@ -256,12 +268,14 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
+      mockOvhAllEmailInfos.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
       sendEmailStub.firstCall.args[1].should.equal(replaceMacroInContent(
         NEWSLETTER_TITLE, {
           __REMPLACER_PAR_DATE__: dateAsString,
         },
       ));
+      sendEmailStub.firstCall.args[0].should.equal(`membre.actif@${config.domain}`);
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
       this.slack.called.should.be.true;
       const newsletter = await knex('newsletters').where({
