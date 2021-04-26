@@ -125,14 +125,13 @@ module.exports.newsletterFridayReminderJob = new CronJob(
   'Europe/Paris',
 );
 
-// get active users with email registered on ovh (yet)
+// get active users with email registered on ovh
 const getActiveRegisteredOVHUsers = async () => {
   const users = await BetaGouv.usersInfos();
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
   const activeUsers = users.filter(
     (user) => allOvhEmails.includes(user.id),
   );
-  console.log(`${allOvhEmails.length} accounts in OVH. ${activeUsers.length} accounts in Github.`);
   return activeUsers;
 };
 
