@@ -150,7 +150,7 @@ const sendNewsletterAndCreateNewOne = async () => {
     const usersEmails = activeRegisteredOVHUsers.map(
       (user) => user.id,
     ).map(utils.buildBetaEmail);
-    await utils.sendMail(usersEmails.join(','),
+    await utils.sendMail([...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
       `${getTitle(newsletterContent)}`,
       html, {
         headers: {

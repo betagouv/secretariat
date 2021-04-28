@@ -280,7 +280,7 @@ describe('Newsletter', () => {
           __REMPLACER_PAR_DATE__: dateAsString,
         },
       ));
-      sendEmailStub.firstCall.args[0].should.equal(`membre.actif@${config.domain}`);
+      sendEmailStub.firstCall.args[0].should.equal(`secretariat@beta.gouv.fr,membre.actif@${config.domain}`);
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
       this.slack.called.should.be.true;
       const newsletter = await knex('newsletters').orderBy('created_at').whereNotNull('sent_at').first();
