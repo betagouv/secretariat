@@ -65,10 +65,10 @@ const computeMessageReminder = (reminder, newsletter) => {
   let message;
   if (reminder === 'FIRST_REMINDER') {
     message = `*Newsletter interne* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
-      Remplissez le pad avec vos news/annonces/événements qui seront présentées au standup.
+      Remplissez le pad avec vos news/annonces/événements qui seront présentées à l'hebdo beta.gouv.
       Le pad sera envoyé à la communauté vendredi.`;
   } else if (reminder === 'SECOND_REMINDER') {
-    message = `*:wave: Retrouvez nous pour le standup à midi sur http://invites.standup.incubateur.net/*
+    message = `*:wave: Retrouvez nous pour l'hebdo beta.gouv à midi sur http://invites.standup.incubateur.net/*
       Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
       Le pad sera envoyé à la communauté vendredi.`;
   } else {
