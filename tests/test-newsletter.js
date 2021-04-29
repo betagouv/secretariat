@@ -28,14 +28,14 @@ const {
 
 const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
-  Les nouvelles pourront être lu au point hebdomadaire (stand-up) le jeudi à 12h (pour rappel l'adresse du point hebdomadaire standup http://invites.standup.incubateur.net/ )
+  Les nouvelles pourront être lu à l'hebdo beta.gouv le jeudi à 12h (pour rappel l'adresse du point hebdomadaire http://invites.standup.incubateur.net/ )
   Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
   ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
   ## Nouveautés transverses
   *Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
   ## Annonces des recrutements
   ## :calendar: Evénements à venir
-  ### 👋 Prochain point hebdomadaire (stand-up), jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
+  ### 👋 Prochain point hebdo beta.gouv, jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
 `;
 
 const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
