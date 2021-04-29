@@ -1,0 +1,41 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: "@octokit/request"
+    versions:
+    - 5.4.15
+  - dependency-name: sweetalert2
+    versions:
+    - 10.15.6
+    - 10.15.7
+    - 10.16.0
+  - dependency-name: nodemailer
+    versions:
+    - 6.5.0
+  - dependency-name: knex
+    versions:
+    - 0.21.19
+    - 0.95.0
+    - 0.95.1
+    - 0.95.2
+    - 0.95.3
+  - dependency-name: husky
+    versions:
+    - 5.0.9
+    - 5.1.2
+    - 5.2.0
+  - dependency-name: mocha
+    versions:
+    - 8.3.1
+  - dependency-name: chai
+    versions:
+    - 4.3.1
+  - dependency-name: nock
+    versions:
+    - 13.0.9
