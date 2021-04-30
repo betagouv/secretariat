@@ -5,11 +5,25 @@ const knex = require('../db');
 
 const errorMessage = 'Impossible de récupérer les infolettres.';
 
+const shouldDisplayValidationButton = (currentNewsletter) => {
+  if (!currentNewsletter) {
+    return false;
+  }
+  const date = new Date();
+  const dayOfWeek = date.getDay();
+  const difference = date.getTime() - currentNewsletter.created_at.getTime();
+  const days = Math.abs(Math.ceil(difference / (1000 * 3600 * 24)));
+  // we display the button it is Thursday or Friday
+  // and newsletter has not just been created (created_date >= 2)
+  return ([4, 5].includes(dayOfWeek) && days >= 2) || config.newsletterForceValidationButtonDisplay;
+};
+
 const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
   errors: req.flash('error'),
   messages: req.flash('message'),
   userConfig: config.user,
   domain: config.domain,
+  shouldDisplayValidationButton: shouldDisplayValidationButton(currentNewsletter),
   currentUserId: req.user.id,
   currentNewsletter,
   newsletters,
