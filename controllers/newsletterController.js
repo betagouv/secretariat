@@ -13,7 +13,7 @@ const shouldDisplayValidationButton = (currentNewsletter) => {
   const dayOfWeek = date.getDay();
   const difference = date.getTime() - currentNewsletter.created_at.getTime();
   const days = Math.abs(Math.ceil(difference / (1000 * 3600 * 24)));
-  // we display the button it is Thursday or Friday
+  // we display the button if it is Thursday or Friday
   // and newsletter has not just been created (created_date >= 2)
   return ([4, 5].includes(dayOfWeek) && days >= 2) || config.newsletterForceValidationButtonDisplay;
 };
