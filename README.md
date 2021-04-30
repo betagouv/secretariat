@@ -31,7 +31,7 @@ Le secrétariat de l’incubateur
    - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
    - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
    - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
-   - `NEWSLETTER_BROADCAST_LIST` - Emails de diffusion auxquels envoyés la newsletter. Chaines de charactères séparées par une virgule
+   - `NEWSLETTER_BROADCAST_LIST` - Emails de diffusion auxquels envoyer la newsletter. Chaines de charactères séparées par une virgule
    - `NEWSLETTER_SEND_TIME` - Horaires auxquels tourne le cron chargé d'envoyer la newsletter, au format cron time standart ie : `0 4 * * *`
    - `NEWSLETTER_FORCE_VALIDATION_BUTTON_DISPLAY` - Force l'affichage du bouton newsletter (utile en cas d'oublie de validation)
 
