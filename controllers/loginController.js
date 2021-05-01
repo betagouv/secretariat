@@ -68,6 +68,19 @@ async function saveToken(username, token) {
   }
 }
 
+function censorEmail(email) {
+  const username = email.split('@')[0];
+  const domainSegments = email.split('@')[1].split('.');
+  const topLevelDomain = domainSegments[domainSegments.length - 1];
+  const emailHost = domainSegments.slice(0, -1).join('');
+
+  function censorWord(str) {
+    return str.length <= 5 ? str[0] + '*'.repeat(str.length - 1) : str[0] + '*'.repeat(str.length - 2) + str.slice(-1);
+  }
+
+  return `${censorWord(username)}@${censorWord(emailHost)}.${censorWord(topLevelDomain)}`;
+}
+
 module.exports.getLogin = async function (req, res) {
   renderLogin(req, res, {});
 };
@@ -106,8 +119,9 @@ module.exports.postLogin = async function (req, res) {
     await sendLoginEmail(email, username, loginUrl, token);
     await saveToken(username, token);
 
+    const displayEmail = useSecondaryEmail ? censorEmail(email) : email;
     return renderLogin(req, res, {
-      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse ${email}. Il est valable une heure.`),
+      messages: req.flash('message', `Un lien de connexion a été envoyé à l'adresse ${displayEmail}. Il est valable une heure.`),
     });
   } catch (err) {
     console.error(err);
