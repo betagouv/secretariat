@@ -10,7 +10,7 @@ module.exports.showPadUser = async function createEmailAddresses(req, res) {
     connection: process.env.DATABASE_URL_PAD,
   });
   try {
-    users = await db('Users').select(['id', 'profileid', 'profile', 'email']).whereNull('email');
+    users = await db('Users').select(['id', 'profileid', 'profile', 'email']);
     users = users.map((u) => ({
       ...u,
       profile: JSON.parse(u.profile),
