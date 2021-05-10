@@ -23,6 +23,7 @@ const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 const visitController = require('./controllers/visitController');
 const newsletterController = require('./controllers/newsletterController');
+const padController = require('./controllers/padController');
 
 const app = express();
 
@@ -140,5 +141,6 @@ app.get('/visit', visitController.getForm);
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
+app.get('/showPadUser', padController.showPadUser);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
