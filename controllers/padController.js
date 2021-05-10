@@ -40,19 +40,19 @@ module.exports.updatePadUser = async function createEmailAddresses(req, res) {
     connection: process.env.DATABASE_URL_PAD,
   });
   try {
-    users = await db('Users').select(['id', 'profileid', 'profile', 'email']).whereNull('email');
+    users = await db('Users').select(['id', 'profileid', 'profile', 'email']);
     users = users.map((u) => ({
       ...u,
       profile: JSON.parse(u.profile),
     }));
+    users.forEach(async (r) => {
+      if (r.profile.email && !r.email) {
+        await knex('Users').update({
+          email: r.profile.email,
+        }).where({ profileid: r.profileid });
+      }
+    });
   } catch (e) {
     console.log(e);
   }
-  users.forEach(async (r) => {
-    if (r.profile.email) {
-      await knex('Users').update({
-        email: r.profile.email,
-      }).where({ profileid: r.profileid });
-    }
-  });
 };
