@@ -40,18 +40,17 @@ module.exports.updatePadUser = async function createEmailAddresses(req, res) {
     connection: process.env.DATABASE_URL_PAD,
   });
   try {
-    users = await db('Users').select(['id', 'profileid', 'profile', 'email']);
+    users = await db('Users').select(['id', 'profileid', 'profile', 'email']).whereNull('email');
+    users = users.splice(0, 20);
     users = users.map((u) => ({
       ...u,
       profile: JSON.parse(u.profile),
     }));
-    users.forEach(async (r) => {
-      if (r.profile.email && !r.email) {
-        await db('Users').update({
-          email: r.profile.email,
-        }).where({ profileid: r.profileid });
-      }
-    });
+    const updatePromises = users.map((u) => db('Users').update({
+      email: u.profile.email,
+    }).where({ profileid: u.profileid }));
+    await Promise.all(updatePromises);
+    res.send(users);
   } catch (e) {
     console.log(e);
   }
