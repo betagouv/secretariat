@@ -1,13 +1,17 @@
 require('dotenv').config();
-const knex = require('knex')({
-  client: 'pg',
-  connection: process.env.DATABASE_URL_PAD,
-});
+const knex = require('knex');
 
 module.exports.showPadUser = async function createEmailAddresses(req, res) {
   let users;
+  if (!process.env.DATABASE_URL_PAD) {
+    res.send('No db found');
+  }
+  const db = knex({
+    client: 'pg',
+    connection: process.env.DATABASE_URL_PAD,
+  });
   try {
-    users = await knex('Users').select('id profileid profile');
+    users = await db('Users').select('id profileid profile');
   } catch (e) {
     console.log(e);
   }
