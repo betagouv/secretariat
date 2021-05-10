@@ -47,7 +47,7 @@ module.exports.updatePadUser = async function createEmailAddresses(req, res) {
     }));
     users.forEach(async (r) => {
       if (r.profile.email && !r.email) {
-        await knex('Users').update({
+        await db('Users').update({
           email: r.profile.email,
         }).where({ profileid: r.profileid });
       }
