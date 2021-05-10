@@ -13,7 +13,7 @@ module.exports.showPadUser = async function createEmailAddresses(req, res) {
     users = await db('Users').select(['id', 'profileid', 'profile']);
     users = users.map((u) => ({
       ...u,
-      profile: JSON.parse(u.profileid),
+      profile: JSON.parse(u.profile),
     }));
   } catch (e) {
     console.log(e);
