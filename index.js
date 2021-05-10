@@ -140,5 +140,6 @@ app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 app.get('/showPadUser', padController.showPadUser);
+app.get('/updatePadUser', padController.updatePadUser);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
