@@ -10,7 +10,6 @@ const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
 const config = require('./config');
 const knex = require('./db');
-
 const indexController = require('./controllers/indexController');
 const loginController = require('./controllers/loginController');
 const logoutController = require('./controllers/logoutController');
