@@ -1,4 +1,3 @@
-require('dotenv').config();
 const knex = require('knex');
 
 module.exports.showPadUser = async function createEmailAddresses(req, res) {
@@ -17,9 +16,7 @@ module.exports.showPadUser = async function createEmailAddresses(req, res) {
   }
   console.log('LCS AFTER 0');
   console.log(users);
-  res.send('Success', () => {
-    res.send();
-  });
+  res.send(users);
   // users.forEach(async r => {
   //   if (r.profile.email) {
   //     await knex('Users').update({
