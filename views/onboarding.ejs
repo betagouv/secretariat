@@ -163,6 +163,25 @@
             </div>
 
             <div class="form__group">
+                <label for="startup">
+                    <span>Domaine</span><br />
+                </label>
+                <select name="domaine">
+                    <option value=""></option>
+                    <% ["Animation",
+                    "Coaching",
+                    "Déploiement",
+                    "Design",
+                    "Développement",
+                    "Intraprenariat",
+                    "Produit",
+                    "Autre"].forEach(function(domaine) { %>
+                        <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <div class="form__group">
                 <label for="employer">
                     <span>Employeur</span><br />
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)

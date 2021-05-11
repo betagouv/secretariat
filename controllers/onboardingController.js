@@ -69,6 +69,7 @@ module.exports.getForm = async function (req, res) {
         website: '',
         github: '',
         role: '',
+        domaine: '',
         start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
         end: '',
         status: '',
@@ -127,7 +128,26 @@ module.exports.postForm = async function (req, res) {
       if (emailRegex.test(email)) {
         return email;
       }
-      formValidationErrors.push(`${field} : l'adesse email n'est pas valide`);
+      formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
+      return null;
+    }
+
+    function isValidDomain(field, domain) {
+      if (!domain) {
+        requiredError(field);
+        return null;
+      }
+      if (['Animation',
+        'Coaching',
+        'Déploiement',
+        'Design',
+        'Développement',
+        'Intraprenariat',
+        'Produit',
+        'Autre'].includes(domain)) {
+        return domain;
+      }
+      formValidationErrors.push(`${field} : le domaine n'est pas valide`);
       return null;
     }
 
@@ -143,6 +163,7 @@ module.exports.postForm = async function (req, res) {
     const badge = req.body.badge || null;
     const referent = req.body.referent || null;
     const email = isValidEmail('email pro/perso', req.body.email);
+    const domaine = req.body.domaine || isValidDomain('domaine');
 
     const website = isValidUrl('Site personnel', req.body.website);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
@@ -177,6 +198,7 @@ module.exports.postForm = async function (req, res) {
       startup,
       employer,
       badge,
+      domaine,
     });
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
