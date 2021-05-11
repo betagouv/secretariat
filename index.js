@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
-
 const config = require('./config');
 const knex = require('./db');
 const sentry = require('./lib/sentry');
@@ -25,7 +24,6 @@ const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 const visitController = require('./controllers/visitController');
 const newsletterController = require('./controllers/newsletterController');
-
 
 const app = express();
 
