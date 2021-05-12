@@ -64,14 +64,12 @@
 
             <div class="form__group">
                 <label for="github">
-                    <span>Nom d'utilisateur Github - sans l'@ et sans l'URL</span><br />
-                    Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
-                    <b>Si tu n'as pas de compte Github ou tu ne sais pas ce que c'est Github : ne mets rien rien dans ce champs !</b>
+                    <strong>Nom d'utilisateur Github (sans @)</strong>
                 </label>
+                <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
                 <input name="github" pattern="^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$"
                     value="<%= formData.github %>"
-                    title="Pas d'url, juste ton nom d'utilisateur Github sans l'@"
-                    placeholder="Pas d'url, juste ton nom d'utilisateur Github sans l'@">
+                    title="Nom d'utilisateur Github (sans @)">
             </div>
 
 
