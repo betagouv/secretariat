@@ -73,7 +73,25 @@
                     title="Pas d'url, juste ton nom d'utilisateur Github sans l'@"
                     placeholder="Pas d'url, juste ton nom d'utilisateur Github sans l'@">
             </div>
-
+            <div class="form__group">
+                <label for="startup">
+                    <strong>Domaine (obligatoire)</strong><br />
+                    Quel est le domaine de ta mission ?
+                </label>
+                <select name="domaine">
+                    <option value=""></option>
+                    <% ["Animation",
+                    "Coaching",
+                    "Déploiement",
+                    "Design",
+                    "Développement",
+                    "Intraprenariat",
+                    "Produit",
+                    "Autre"].forEach(function(domaine) { %>
+                        <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
+                    <% }) %>
+                </select>
+            </div>
 
             <h4>Ta mission</h4>
             <div class="form__group">
@@ -161,26 +179,6 @@
                     <% }) %>
                 </select>
             </div>
-
-            <div class="form__group">
-                <label for="startup">
-                    <span>Domaine</span><br />
-                </label>
-                <select name="domaine">
-                    <option value=""></option>
-                    <% ["Animation",
-                    "Coaching",
-                    "Déploiement",
-                    "Design",
-                    "Développement",
-                    "Intraprenariat",
-                    "Produit",
-                    "Autre"].forEach(function(domaine) { %>
-                        <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
-                    <% }) %>
-                </select>
-            </div>
-
             <div class="form__group">
                 <label for="employer">
                     <span>Employeur</span><br />
