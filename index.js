@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
 const config = require('./config');
 const knex = require('./db');
+const sentry = require('./lib/sentry');
 
 const indexController = require('./controllers/indexController');
 const loginController = require('./controllers/loginController');
@@ -139,5 +140,7 @@ app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
+
+sentry.initCaptureConsoleWithHandler(app);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
