@@ -70,6 +70,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -91,6 +92,7 @@ describe('Onboarding', () => {
           start: 'aaaa-bb-cc',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -112,6 +114,7 @@ describe('Onboarding', () => {
           start: '2020-42-42',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -133,6 +136,7 @@ describe('Onboarding', () => {
           start: '2021-12-31',
           end: '2020-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -154,6 +158,70 @@ describe('Onboarding', () => {
           start: '2000-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if the start date is too small', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2000-01-01',
+          end: '2021-01-01',
+          domaine: 'Coaching',
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if domaine missing', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2000-01-01',
+          end: '2021-01-01',
+          // domaine missing
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if domaine has wrong value', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2000-01-01',
+          end: '2021-01-01',
+          domaine: 'Wrongvalue',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -175,6 +243,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           website: 'example.com/me',
         })
         .end((err, res) => {
@@ -197,6 +266,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           github: 'https://github.com/betagouv',
         })
         .end((err, res) => {
@@ -219,6 +289,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           github: 'github.com/betagouv',
         })
         .end((err, res) => {
@@ -241,6 +312,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -263,6 +335,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           website: 'https://example.com/me',
           email: 'test@example.com',
         })
@@ -284,6 +357,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -304,6 +378,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -324,6 +399,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -345,6 +421,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -374,6 +451,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -396,6 +474,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -416,6 +495,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -436,6 +516,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -456,6 +537,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .redirects(0)
@@ -477,6 +559,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
+          domaine: 'Coaching',
           email: 'test@example.com',
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
@@ -504,6 +587,7 @@ describe('Onboarding', () => {
               start: '2020-01-01',
               end: '2021-01-01',
               status: 'Independant',
+              domaine: 'Coaching',
               email: 'updated@example.com',
             })
             .then(() => knex('users').where({ username: 'john.doe' }))
