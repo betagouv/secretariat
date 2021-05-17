@@ -1,6 +1,6 @@
 // betagouv.js
 // ======
-import { Member } from './models/member'
+import { Member, Mission } from './models/member'
 
 const axios = require('axios').default;
 const ovh = require('ovh')({
@@ -24,20 +24,28 @@ const betaGouv = {
     }
   },
   usersInfos: async (): Promise<Array<Member>> => {
+    let testFunc = (): Member => {
+      return {id:'qwe'}
+    }
     try {
       let response = await axios.get(config.usersAPI)
-      let users = response.data.map((author) => {
+      let users: Array<Member> = response.data.map((author) : Member => {
+        let member: Member = <any>{}; // We cannot use type Member yet because the fields are not present yet.
         if (author.missions && author.missions.length > 0) {
+          member.missions = author.missions
           const sortedStartDates = author.missions.map((x) => x.start).sort();
           const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
           const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
-
-          [author.start] = sortedStartDates;
-          author.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
-          author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+          [member.start] = sortedStartDates;
+          member.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
+          member.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
         }
-        return author;
+
+        // We should get an error because some fields are mission in member (id and fullname).
+        // Why do 
+        return member
       })
+      
       return users
     }
     catch (err) {
