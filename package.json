@@ -9,7 +9,7 @@
     "makeMigration": "knex migrate:make",
     "seed": "knex seed:run",
     "rolldown": "knex migrate:down",
-    "dev": "ts-node-dev dist/index.ts",
+    "dev": "ts-node-dev src/index.ts",
     "lint": "eslint . --fix",
     "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",
     "postinstall": "husky install",
