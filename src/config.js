@@ -27,7 +27,6 @@ module.exports = {
     minStartDate: '2013-07-01',
     badgeOptions: userBadgeOptions,
   },
-  useCSRF: (process.env.USE_CSRF || 'true') === 'true',
   newsletterBroadcastList: process.env.NEWSLETTER_BROADCAST_LIST || 'secretariat@beta.gouv.fr',
   newsletterCronTime: process.env.NEWSLETTER_CRON_TIME || '0 4 * * 5',
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
