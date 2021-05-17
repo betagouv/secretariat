@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
+const csrf = require('csurf');
+
 const config = require('./config');
 const knex = require('./db');
 const sentry = require('./lib/sentry');
@@ -38,6 +40,13 @@ app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used 
 app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+if (config.useCSRF) {
+  console.log('Using CSRF protection');
+  app.use(csrf({ cookie: true }));
+} else {
+  console.log('NOT using CSRF protection due to env variable USE_CSRF - should only be used for test');
+}
 
 const getJwtTokenForUser = (id) => jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
