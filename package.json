@@ -11,7 +11,7 @@
     "rolldown": "knex migrate:down",
     "dev": "ts-node-dev dist/index.ts",
     "lint": "eslint . --fix",
-    "test": "ts-mocha tests/*.ts tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",
+    "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",
     "postinstall": "husky install",
     "pre-commit": "lint-staged",
     "prestart": "./node_modules/.bin/tsc -p tsconfig.json"
