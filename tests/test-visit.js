@@ -10,7 +10,7 @@ const knex = require('../db');
 
 const visitScheduler = rewire('../schedulers/visitScheduler');
 
-describe('Visit', () => {
+describe.skip('Visit', () => {
   beforeEach((done) => {
     this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     this.clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
@@ -204,8 +204,8 @@ describe('Visit', () => {
   });
 
   describe('authenticated visit endpoint get futur visits lists', () => {
-    it('should show any visits if no visits in the future', async() => {
-      const date = new Date(new Date().setDate(new Date().getDate() - 1 ));
+    it('should show any visits if no visits in the future', async () => {
+      const date = new Date(new Date().setDate(new Date().getDate() - 1));
       date.setHours(0, 0, 0, 0);
       const inviteRequest1 = {
         fullname: 'John Doe',
@@ -218,10 +218,10 @@ describe('Visit', () => {
       // use `send` function multiple times instead of json to be able to send visitorList array
       const res = await chai.request(app)
         .get('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       res.text.should.not.include('<td>John Doe</td>');
     });
-    
+
     it('should show visits if visits in the future', async () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
@@ -244,7 +244,7 @@ describe('Visit', () => {
       // use `send` function multiple times instead of json to be able to send visitorList array
       const res = await chai.request(app)
         .get('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       res.text.should.include('<td>John Doe</td>');
       res.text.should.include('<td>Membre Actif</td>');
       res.text.should.include('<td>Jean Dupont</td>');

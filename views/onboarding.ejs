@@ -64,15 +64,32 @@
 
             <div class="form__group">
                 <label for="github">
-                    <span>Nom d'utilisateur Github - sans l'@ et sans l'URL</span><br />
-                    Si tu as un compte, tu peux être ajouté à l'organisation Github BetaGouv.
+                    <strong>Nom d'utilisateur Github (sans @)</strong>
                 </label>
+                <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
                 <input name="github" pattern="^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$"
                     value="<%= formData.github %>"
-                    title="Pas d'url, juste ton nom d'utilisateur Github sans l'@"
-                    placeholder="Pas d'url, juste ton nom d'utilisateur Github sans l'@">
+                    title="Nom d'utilisateur Github (sans @)">
             </div>
-
+            <div class="form__group">
+                <label for="startup">
+                    <strong>Domaine (obligatoire)</strong><br />
+                    Quel est le domaine de ta mission ?
+                </label>
+                <select name="domaine" required>
+                    <option value=""></option>
+                    <% ["Animation",
+                    "Coaching",
+                    "Déploiement",
+                    "Design",
+                    "Développement",
+                    "Intraprenariat",
+                    "Produit",
+                    "Autre"].forEach(function(domaine) { %>
+                        <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
+                    <% }) %>
+                </select>
+            </div>
 
             <h4>Ta mission</h4>
             <div class="form__group">
@@ -160,7 +177,6 @@
                     <% }) %>
                 </select>
             </div>
-
             <div class="form__group">
                 <label for="employer">
                     <span>Employeur</span><br />
