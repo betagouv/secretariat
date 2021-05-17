@@ -2,7 +2,7 @@ const sinon = require('sinon');
 const chai = require('chai');
 const crypto = require('crypto');
 
-const app = require('../src/index');
+const app = require('../src/index.ts');
 const knex = require('../src/db');
 const controllerUtils = require('../src/controllers/utils');
 const config = require('../src/config');

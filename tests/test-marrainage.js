@@ -2,7 +2,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const jwt = require('jsonwebtoken');
 
-const app = require('../src/index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
 const controllerUtils = require('../src/controllers/utils');
 const config = require('../src/config');

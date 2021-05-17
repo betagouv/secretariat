@@ -2,7 +2,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const nock = require('nock');
 
-const app = require('../src/index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
 const controllerUtils = require('../src/controllers/utils');
 const knex = require('../src/db');

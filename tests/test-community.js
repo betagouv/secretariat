@@ -1,7 +1,7 @@
 const chai = require('chai');
 const nock = require('nock');
 
-const app = require('../src/index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
 const knex = require('../src/db');
 

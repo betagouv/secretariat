@@ -1,5 +1,5 @@
 const chai = require('chai');
-const app = require('../src/index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
 
 describe('Admin', () => {
