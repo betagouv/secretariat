@@ -70,7 +70,7 @@
     "chai-http": "^4.3.0",
     "eslint": "^7.25.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.23.2",
     "eslint-plugin-node": "^11.1.0",
     "husky": "^6.0.0",
     "lint-staged": "^10.5.4",
