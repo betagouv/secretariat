@@ -15,7 +15,7 @@ const mattermostConfig = {
 
 const getUserNoInTeam = async (i = 0) => {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
-    not_in_team: config.MATTERMOST_TEAM,
+    not_in_team: config.mattermostTeamId,
     per_page: 200,
     page: i,
   }, mattermostConfig).then((response) => response.data);
