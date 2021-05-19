@@ -74,7 +74,7 @@ const addUserToTeam = async () => {
 };
 
 module.exports.sendNewsletterAndCreateNewOne = new CronJob(
-  '0 0 10 * * 1-5', // monday through friday at 10:00:00
+  '0 * * * 1-5', // every hours from Monday through Friday
   addUserToTeam,
   null,
   true,
