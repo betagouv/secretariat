@@ -26,19 +26,6 @@ const getUserNoInTeam = async (i = 0) => {
   return [...mattermostUsers, ...nextPageMattermostUsers];
 };
 
-const MEMBRE_ACTIF_USER_TEAM = '';
-const addUserToMembresActifs = async (user) => {
-  const res = await axios.post(
-    `https://mattermost.incubateur.net/api/v4/teams/${config.mattermostTeamId}/members`,
-    {
-      team_id: config.mattermostTeamId,
-      user_id: user.id,
-    },
-    mattermostConfig,
-  ).then((response) => response.data);
-  return res;
-};
-
 const addUsersToMembresActifs = async (users) => {
   const res = await axios.post(
     `https://mattermost.incubateur.net/api/v4/teams/${config.mattermostTeamId}/members/batch`,
