@@ -1,7 +1,4 @@
-const { CronJob } = require('cron');
-const crypto = require('crypto');
 const axios = require('axios').default;
-const _ = require('lodash/array');
 const config = require('../config');
 
 const BetaGouv = require('../betagouv');
@@ -59,10 +56,5 @@ const addUserToTeam = async () => {
   return results;
 };
 
-module.exports.sendNewsletterAndCreateNewOne = new CronJob(
-  '0 * * * 1-5', // every hours from Monday through Friday
-  addUserToTeam,
-  null,
-  true,
-  'Europe/Paris',
-);
+module.exports.addUserToTeam = addUserToTeam;
+
