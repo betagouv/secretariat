@@ -51,7 +51,7 @@ const addUsersToMembresActifs = async (users) => {
   return res;
 };
 
-// get users that have github acount and no email registered on ovh (yet)
+// get users that have github acount and matter most account that is not in team
 const getUnregisteredMemberActifs = async (mattermostUsersNotInMembreActif) => {
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((x) => {
