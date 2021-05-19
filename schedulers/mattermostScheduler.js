@@ -38,14 +38,9 @@ const addUsersToMembresActifs = async (users) => {
   return res;
 };
 
-// get users that have github acount and matter most account that is not in team
-const getUnregisteredMemberActifs = async (mattermostUsersNotInMembreActif) => {
-  const users = await BetaGouv.usersInfos();
-  const activeGithubUsers = users.filter((x) => {
-    const stillActive = !utils.checkUserIsExpired(x);
-    return stillActive;
-  });
-  const activeGithubUsersEmails = activeGithubUsers.map((user) => `${user.id}@${config.host}`);
+// get users that are member (got a github card) and mattermost account that is not in the team
+const getUnregisteredMemberActifs = async (activeGithubUsers, mattermostUsersNotInMembreActif) => {
+  const activeGithubUsersEmails = activeGithubUsers.map((user) => `${user.id}@${config.domain}`);
   const unregisteredMemberActifs = mattermostUsersNotInMembreActif.filter(
     (user) => activeGithubUsersEmails.includes(user.email),
   );
@@ -54,8 +49,12 @@ const getUnregisteredMemberActifs = async (mattermostUsersNotInMembreActif) => {
 
 const addUserToTeam = async () => {
   const mattermostUsersNotInMembreActif = await getUserNoInTeam();
-
-  const unregisteredMemberActifs = await getUnregisteredMemberActifs(mattermostUsersNotInMembreActif);
+  const users = await BetaGouv.usersInfos();
+  const activeGithubUsers = users.filter((x) => {
+    const stillActive = !utils.checkUserIsExpired(x);
+    return stillActive;
+  });
+  const unregisteredMemberActifs = await getUnregisteredMemberActifs(activeGithubUsers, mattermostUsersNotInMembreActif);
   const results = await addUsersToMembresActifs(unregisteredMemberActifs);
   return results;
 };

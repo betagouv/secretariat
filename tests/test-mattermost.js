@@ -9,19 +9,19 @@ const config = require('../config');
 const mattermostUsers = [
   {
     id: 'membre.actif',
-    email: `membre.actif@${config.host}`,
+    email: `membre.actif@${config.domain}`,
   },
   {
     id: 'julien.dauphant',
-    email: `julien.dauphant@${config.host}`,
+    email: `julien.dauphant@${config.domain}`,
   },
   {
     id: 'thomas.guillet',
-    email: `thomas.guillet@${config.host}`,
+    email: `thomas.guillet@${config.domain}`,
   },
   {
     id: 'countdoesnotexist',
-    email: `countdoesnotexist@${config.host}`,
+    email: `countdoesnotexist@${config.domain}`,
   },
 ];
 
