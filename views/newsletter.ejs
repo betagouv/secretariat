@@ -8,19 +8,21 @@
             <br>
             <br>
             <p>L'infolettre est lue et partagée pendant l'hebdo beta.gouv (chaque jeudi à 12h) puis envoyée après validation à partir de jeudi 18h</p>
-            <% if (currentNewsletter.validator) { %>
-                <p><%= currentNewsletter.validator %> a validé cette infolettre.</p>
-                <form class="no-margin" action="/cancelNewsletter">
-                    <div class="form__group">
-                        <button class="button no-margin" type="submit">Annuler la validation</button>
-                    </div>
-                </form>
-            <% } else { %>
-                <form class="no-margin" action="/validateNewsletter">
-                    <div class="form__group">
-                        <button class="button no-margin" type="submit">Valider la newsletter</button>
-                    </div>
-                </form>
+            <% if (shouldDisplayValidationButton) { %>
+                <% if (currentNewsletter.validator) { %>
+                    <p><%= currentNewsletter.validator %> a validé cette infolettre.</p>
+                    <form class="no-margin" action="/cancelNewsletter">
+                        <div class="form__group">
+                            <button class="button no-margin" type="submit">Annuler la validation</button>
+                        </div>
+                    </form>
+                <% } else { %>
+                    <form class="no-margin" action="/validateNewsletter">
+                        <div class="form__group">
+                            <button class="button no-margin" type="submit">Valider la newsletter</button>
+                        </div>
+                    </form>
+                <% } %>
             <% } %>
         </div>
     <% } %>
