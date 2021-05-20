@@ -10,7 +10,7 @@ const mattermostConfig = {
   },
 };
 
-const getUserNoInTeam = async (i = 0) => {
+const getUserNotInTeam = async (i = 0) => {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     not_in_team: config.mattermostTeamId,
     per_page: 200,
@@ -19,7 +19,7 @@ const getUserNoInTeam = async (i = 0) => {
   if (!mattermostUsers.length) {
     return [];
   }
-  const nextPageMattermostUsers = await getUserNoInTeam(i + 1);
+  const nextPageMattermostUsers = await getUserNotInTeam(i + 1);
   return [...mattermostUsers, ...nextPageMattermostUsers];
 };
 
@@ -44,8 +44,8 @@ const getUnregisteredMemberActifs = async (activeGithubUsers, mattermostUsersNot
   return unregisteredMemberActifs;
 };
 
-const addUserToTeam = async () => {
-  const mattermostUsersNotInMembreActif = await getUserNoInTeam();
+const addUsersToTeam = async () => {
+  const mattermostUsersNotInMembreActif = await getUserNotInTeam();
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((x) => {
     const stillActive = !utils.checkUserIsExpired(x);
@@ -56,5 +56,5 @@ const addUserToTeam = async () => {
   return results;
 };
 
-module.exports.addUserToTeam = addUserToTeam;
+module.exports.addUsersToTeam = addUsersToTeam;
 
