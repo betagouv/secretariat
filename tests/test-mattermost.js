@@ -56,8 +56,8 @@ describe('getMattermostUserNotInTeam', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, testUsers)
     .persist();
-    const addUserToTeam = mattermostScheduler.__get__('addUserToTeam');
-    const result = await addUserToTeam([...mattermostUsers]);
+    const addUsersToTeam = mattermostScheduler.__get__('addUsersToTeam');
+    const result = await addUsersToTeam([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
 });
