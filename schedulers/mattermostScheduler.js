@@ -12,8 +12,10 @@ const getUnregisteredMemberActifs = async (activeGithubUsers, mattermostUsersNot
   return unregisteredMemberActifs;
 };
 
-const addUsersToTeam = async () => {
-  const mattermostUsersNotInMembreActif = await mattermost.getUserNotInTeam(config.mattermostTeamId);
+module.exports.addUsersToTeam = async () => {
+  const mattermostUsersNotInMembreActif = await mattermost.getUserWithParams({
+    not_in_team: config.mattermostTeamId,
+  });
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((x) => {
     const stillActive = !utils.checkUserIsExpired(x);
@@ -24,4 +26,17 @@ const addUsersToTeam = async () => {
   return results;
 };
 
-module.exports.addUsersToTeam = addUsersToTeam;
+module.exports.removeUserFromTeam = async () => {
+  const mattermostUsersNotInMembreActif = await mattermost.getUserWithParams({
+    in_team: config.mattermostTeamId,
+  });
+  const users = await BetaGouv.usersInfos();
+  const unactiveGithubUsers = users.filter((x) => {
+    const stillActive = utils.checkUserIsExpired(x);
+    return stillActive;
+  });
+  const unregisteredMemberActifs = await getUnregisteredMemberActifs(unactiveGithubUsers, mattermostUsersNotInMembreActif);
+  const promiseArray = unregisteredMemberActifs.map((member) => mattermost.removeUserToTeam(unregisteredMemberActifs, config.mattermostTeamId));
+  const results = await Promise.all(promiseArray);
+  return results;
+};
