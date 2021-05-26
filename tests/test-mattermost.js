@@ -1,10 +1,9 @@
 const rewire = require('rewire');
 const nock = require('nock');
-const _ = require('lodash/array');
 const sinon = require('sinon');
 const utils = require('./utils.js');
 const testUsers = require('./users.json');
-const config = require('../config');
+const config = require('../src/config');
 
 const mattermostUsers = [
   {
