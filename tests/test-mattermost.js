@@ -24,7 +24,7 @@ const mattermostUsers = [
   },
 ];
 
-const mattermostScheduler = rewire('../schedulers/mattermostScheduler');
+const mattermostScheduler = rewire('../src/schedulers/mattermostScheduler');
 
 describe('getMattermostUserNotInTeam', () => {
   let clock;
