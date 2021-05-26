@@ -6,18 +6,18 @@ const utils = require('./utils');
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
 const getFuturVisitsList = async function (usersInfos) {
-    const date = new Date(new Date().setDate(new Date().getDate()));
-    date.setHours(0, 0, 0, 0);
-    const visits = await knex('visits').select()
+  const date = new Date(new Date().setDate(new Date().getDate()));
+  date.setHours(0, 0, 0, 0);
+  const visits = await knex('visits').select()
       .where('date', '>=', date);
-    const visitsInfos = visits.map((visitInfo) => ({
-      ...visitInfo,
-      fullname: visitInfo.fullname,
-      date: utils.formatDateToReadableFormat(visitInfo.date),
-      referent: (getUserInfoForUsername(usersInfos, visitInfo.referent) || {}).fullname || 'référent supprimé',
-    }));
-    return visitsInfos
-}
+  const visitsInfos = visits.map((visitInfo) => ({
+    ...visitInfo,
+    fullname: visitInfo.fullname,
+    date: utils.formatDateToReadableFormat(visitInfo.date),
+    referent: (getUserInfoForUsername(usersInfos, visitInfo.referent) || {}).fullname || 'référent supprimé',
+  }));
+  return visitsInfos;
+};
 
 module.exports.getForm = async function (req, res) {
   try {

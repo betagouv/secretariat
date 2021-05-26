@@ -1,19 +1,20 @@
 const chai = require('chai');
 const sinon = require('sinon');
-const controllerUtils = require('../controllers/utils');
-const app = require('../index');
-const knex = require('../db');
-const config = require('../config');
+const controllerUtils = require('../src/controllers/utils');
+const app = require('../src/index.ts');
+const knex = require('../src/db');
+const config = require('../src/config');
 
 describe('Login', () => {
+  let sendEmailStub;
   beforeEach((done) => {
-    this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     done();
   });
 
   afterEach(async () => {
     await knex('users').truncate();
-    this.sendEmailStub.restore();
+    sendEmailStub.restore();
   });
 
   // describe("POST /login with user actif", () => {
@@ -111,8 +112,8 @@ describe('Login', () => {
           username: 'membre.actif',
         })
         .then(() => {
-          this.sendEmailStub.calledOnce.should.be.true;
-          const destinationEmail = this.sendEmailStub.args[0][0];
+          sendEmailStub.calledOnce.should.be.true;
+          const destinationEmail = sendEmailStub.args[0][0];
           destinationEmail.should.equal(`membre.actif@${config.domain}`);
           done();
         })
@@ -135,8 +136,8 @@ describe('Login', () => {
             useSecondaryEmail: 'true',
           })
           .then(() => {
-            this.sendEmailStub.calledOnce.should.be.true;
-            const destinationEmail = this.sendEmailStub.args[0][0];
+            sendEmailStub.calledOnce.should.be.true;
+            const destinationEmail = sendEmailStub.args[0][0];
             destinationEmail.should.equal('membre.actif.perso@example.com');
             done();
           })
@@ -156,7 +157,7 @@ describe('Login', () => {
         .end((err, res) => {
           res.should.have.status(302);
           res.headers.location.should.equal('/login');
-          this.sendEmailStub.notCalled.should.be.true;
+          sendEmailStub.notCalled.should.be.true;
           done();
         });
     });
@@ -177,7 +178,7 @@ describe('Login', () => {
           .end((err, res) => {
             res.should.have.status(302);
             res.headers.location.should.equal('/login');
-            this.sendEmailStub.notCalled.should.be.true;
+            sendEmailStub.notCalled.should.be.true;
             done();
           });
       });

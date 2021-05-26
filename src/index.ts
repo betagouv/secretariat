@@ -28,10 +28,10 @@ const newsletterController = require('./controllers/newsletterController');
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
 
-app.use('/static', express.static('static'));
-app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/static', express.static(path.join(__dirname, '../static')));
+app.use('/datagouvfr', express.static(path.join(__dirname, '../node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
