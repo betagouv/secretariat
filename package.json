@@ -14,7 +14,7 @@
     "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",
     "postinstall": "husky install",
     "pre-commit": "lint-staged",
-    "prestart": "./node_modules/.bin/tsc -p tsconfig.json"
+    "build": "./node_modules/.bin/tsc"
   },
   "lint-staged": {
     "*.{js}": [
