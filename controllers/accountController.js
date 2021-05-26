@@ -22,6 +22,9 @@ module.exports.getCurrentAccount = async function (req, res) {
       redirections: currentUser.redirections,
       activeTab: 'account',
       marrainageState,
+      formData: {
+        newEnd: '',
+      },
       errors: req.flash('error'),
       messages: req.flash('message'),
     });
