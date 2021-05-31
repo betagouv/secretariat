@@ -67,7 +67,7 @@ const betaGouv = {
         return member
       })
       
-      return users
+      return members
     }
     catch (err) {
       throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
