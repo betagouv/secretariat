@@ -43,4 +43,6 @@ module.exports = {
   visitRecipientEmail: process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
   sentryDNS: process.env.SENTRY_DNS || false,
+  mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
+  mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
 };

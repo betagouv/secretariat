@@ -1,6 +1,7 @@
 // betagouv.js
 // ======
-import { Member, Mission } from './models/member'
+import { Member } from './models/member'
+import { Mission } from './models/mission'
 
 const axios = require('axios').default;
 const ovh = require('ovh')({
@@ -24,25 +25,46 @@ const betaGouv = {
     }
   },
   usersInfos: async (): Promise<Array<Member>> => {
-    let testFunc = (): Member => {
-      return {id:'qwe'}
-    }
     try {
       let response = await axios.get(config.usersAPI)
+      console.log("rresponsee", response);
+
       let users: Array<Member> = response.data.map((author) : Member => {
-        let member: Member = <any>{}; // We cannot use type Member yet because the fields are not present yet.
+        let start, end, employer
+        let missions : Array<Mission> = [] 
         if (author.missions && author.missions.length > 0) {
-          member.missions = author.missions
+          missions = author.missions.map((mission): Mission => {
+            const out : Mission = {
+              start: mission.start,
+              end: mission.end,
+              status: mission.status,
+              domaine: mission.domaine,
+              employer: mission.employer,
+            }
+            return out
+          })
           const sortedStartDates = author.missions.map((x) => x.start).sort();
           const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
           const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
-          [member.start] = sortedStartDates;
-          member.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
-          member.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+          start = sortedStartDates[0].start;
+          end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
+          employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+        } else {
+          const emptyMissions : Mission[] = []
+          missions = emptyMissions
         }
 
         // We should get an error because some fields are mission in member (id and fullname).
-        // Why do 
+        // Why do         
+        const member: Member = {
+          id: author.id,
+          fullname: author.fullname,
+          start: start,
+          end: end,
+          employer: employer,
+          missions: missions,
+        }
+
         return member
       })
       
@@ -130,7 +152,8 @@ const betaOVH = {
       throw new Error('paramètre \'from\' ou \'to\' manquant');
     }
 
-    const url = `/email/domain/${config.domain}/redirection`;
+    const url = `/email/domain/${config.domain}/re<<<<<<< HEAD
+    # CMD ["node", "index.js"]irection`;
 
     const options = {};
 
