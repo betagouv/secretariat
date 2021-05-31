@@ -154,7 +154,7 @@ const betaOVH = {
 
     const url = `/email/domain/${config.domain}/redirection`
 
-    const options = {};
+    const options = {} as any
 
     if (query.from) {
       options.from = `${query.from}@${config.domain}`;
