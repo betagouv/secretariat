@@ -28,7 +28,7 @@ const betaGouv = {
     try {
       let response = await axios.get(config.usersAPI)
 
-      let users: Array<Member> = response.data.map((author) : Member => {
+      let members: Array<Member> = response.data.map((author) : Member => {
         console.log("response author", author);
         let start, end, employer
         let missions : Array<Mission> = [] 
