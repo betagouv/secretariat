@@ -27,13 +27,41 @@ const betaGouv = {
   usersInfos: async (): Promise<Array<Member>> => {
     try {
       let response = await axios.get(config.usersAPI)
-      console.log("rresponsee", response);
+
+  //     data:
+  //  [ { id: 'membre.actif',
+  //      fullname: 'Membre Actif',
+  //      missions: [Array] },
+  //    { id: 'membre.expire',
+  //      fullname: 'Membre Expiré',
+  //      missions: [Array] },
+  //    { id: 'membre.parti',
+  //      fullname: 'Membre Parti',
+  //      github: 'test-github',
+  //      missions: [Array] },
+  //    { id: 'membre.nouveau',
+  //      fullname: 'Membre Nouveau',
+  //      missions: [Array] },
+  //    { id: 'membre.plusieurs
+
+  // [author.start] = sortedStartDates;
 
       let users: Array<Member> = response.data.map((author) : Member => {
+        console.log("response author", author);
         let start, end, employer
         let missions : Array<Mission> = [] 
         if (author.missions && author.missions.length > 0) {
           missions = author.missions.map((mission): Mission => {
+            /*
+            missions: [
+              {
+                start: '2017-05-10',
+                end: '2018-10-05',
+                status: 'independent',
+                employer: 'octo'
+              }
+            ]
+            */
             const out : Mission = {
               start: mission.start,
               end: mission.end,
@@ -46,7 +74,7 @@ const betaGouv = {
           const sortedStartDates = author.missions.map((x) => x.start).sort();
           const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
           const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
-          start = sortedStartDates[0].start;
+          start = sortedStartDates[0];
           end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
           employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
         } else {
@@ -59,6 +87,7 @@ const betaGouv = {
         const member: Member = {
           id: author.id,
           fullname: author.fullname,
+          github: author.github,
           start: start,
           end: end,
           employer: employer,
