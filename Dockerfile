@@ -13,5 +13,4 @@ RUN npm install -g
 USER node
 
 EXPOSE 8100
-
 RUN npm run start

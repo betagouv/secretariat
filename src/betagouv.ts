@@ -152,8 +152,7 @@ const betaOVH = {
       throw new Error('paramètre \'from\' ou \'to\' manquant');
     }
 
-    const url = `/email/domain/${config.domain}/re<<<<<<< HEAD
-    # CMD ["node", "index.js"]irection`;
+    const url = `/email/domain/${config.domain}/redirection`
 
     const options = {};
 
