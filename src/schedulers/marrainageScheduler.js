@@ -13,13 +13,17 @@ const reloadMarrainages = async function () {
 
   const reloadItems = [];
   for (let i = 0; i < marrainageDetailsResponse.length; i += 1) {
-    try {
-      reloadItems.push(reloadMarrainage(marrainageDetailsResponse[i].username));
-    } catch (err) {
-      console.error(err);
-    }
+    reloadItems.push(reloadMarrainage(marrainageDetailsResponse[i].username)
+    .then(() => {
+      console.log(`Cron de marranaige a relancé ${marrainageDetailsResponse[i].username}`);
+    })
+    .catch((error) => {
+      console.error(`Cron de marrainage n'a pas pu relancer ${marrainageDetailsResponse[i].username} : ${error.message}`);
+    }));
   }
-  return Promise.all(reloadItems);
+  return Promise.all(reloadItems)
+    .then(() => console.log('Cron de marranaige terminé'))
+    .catch(console.error);
 };
 
 module.exports.reloadMarrainageJob = new CronJob(
