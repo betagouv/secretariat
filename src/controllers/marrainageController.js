@@ -83,6 +83,10 @@ function redirectOutdatedMarrainage(req, res) {
 module.exports.reloadMarrainage = async function (newcomerId) {
   const newcomer = await BetaGouv.userInfosById(newcomerId);
 
+  if (!newcomer) {
+    throw new Error(`${newcomerId} ne fais pas partie de la communauté beta.gouv`);
+  }
+
   const marrainageDetailsReponse = await knex('marrainage').select()
     .where({ username: newcomer.id, completed: false });
 
