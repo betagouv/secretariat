@@ -179,6 +179,7 @@
                         </div>
                     <% }) %>
                     <% if (canCreateRedirection) { %>
+                        <!--
                         <form class="no-margin" action="/users/<%= userInfos.id %>/redirections" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                             <div class="form__group">
                                 <label for="to_email">Rediriger mes mails <%= domain %> vers :</label>
@@ -190,6 +191,7 @@
                             </div>
                             <button class="button no-margin" type="submit">Ajouter la redirection</button>
                         </form>
+                        -->
                     <% } else { %>
                         <% if (isExpired) { %>
                         <div class="notification error">
