@@ -42,7 +42,7 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
 
-  const githubUsers = await BetaGouv.usersInfos();
+  const githubUsers = await BetaGouv.usersInfos().filter(!utils.checkUserIsExpired);
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
