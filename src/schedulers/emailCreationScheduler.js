@@ -37,12 +37,17 @@ const getUnregisteredOVHUsers = async (githubUsers) => {
   return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
 };
 
+const getValidUsers = async () => {
+  const githubUsers = await BetaGouv.usersInfos();
+  return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
+};
+
 module.exports.createEmailAddresses = async function createEmailAddresses() {
   console.log('Demarrage du cron job pour la création des adresses email');
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
 
-  const githubUsers = await BetaGouv.usersInfos();
+  const githubUsers = await getValidUsers();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
