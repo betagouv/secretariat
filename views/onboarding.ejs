@@ -103,7 +103,7 @@
             <div class="form__group">
                 <label for="start">
                     <strong>Début de la mission (obligatoire)</strong><br />
-                    Au format JJ/MM/YYYY
+                    <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
@@ -111,7 +111,8 @@
             <div class="form__group">
                 <label for="end">
                     <strong>Fin de la mission (obligatoire)</strong><br />
-                    Au format JJ/MM/YYYY
+                    Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
+                    <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
