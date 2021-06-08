@@ -71,6 +71,8 @@
                     value="<%= formData.github %>"
                     title="Nom d'utilisateur Github (sans @)">
             </div>
+
+            <h4>Ta mission</h4>
             <div class="form__group">
                 <label for="startup">
                     <strong>Domaine (obligatoire)</strong><br />
@@ -90,12 +92,10 @@
                     <% }) %>
                 </select>
             </div>
-
-            <h4>Ta mission</h4>
             <div class="form__group">
                 <label for="role">
                     <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
-                    Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
+                    Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
                 <input name="role" value="<%= formData.role %>" required>
             </div>
