@@ -1,17 +1,16 @@
 <h1>Hello <%= referent %>,</h1>
 
 <p>
-    <%= name %> vient de créer sa fiche Github et t’a indiqué comme référent·e.
-    Pour l'approuver, c'est par ici : <a href="<%= prUrl %>"><%= prUrl %></a>
+    <b><%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr. Tu peux : 
 </p>
+
+<ul>
+	<li>Approuver <a href="<%= prUrl %>">sa fiche</a> sur Github (en cliquant sur "Squash and merge").</li>
+	<li>Répondre à cet email pour confirmer que tu connais cette personne. Un membre de la communauté approuvera la demande.</li>
+</ul>
 
 <p>Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
-    <a href="<%= userUrl %>"><%= userUrl %></a>
-</p>
-
-<p>
-    <b>Si ne sais pas comment approuver, répond à cet email en indiquant si la demande est bien légitime.<b/>
-    <b>Si tu ne prends pas d'action la personne sera bloqué dans son embarquement, c'est à toi de jouer !</b>
+    <a href="<%= userUrl %>"><%= userUrl %></a>.
 </p>
 
 <p>🤖 Le secrétariat</p>
