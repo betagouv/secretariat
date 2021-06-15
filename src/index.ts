@@ -143,4 +143,4 @@ app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 sentry.initCaptureConsoleWithHandler(app);
 
-module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
+module.exports = app.listen(config.port, () => console.log(`Running on port: http://localhost:${config.port}`));
