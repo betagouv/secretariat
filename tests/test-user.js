@@ -1,14 +1,14 @@
 const chai = require('chai');
 const nock = require('nock');
 const sinon = require('sinon');
-const config = require('../config');
-const app = require('../index');
+const config = require('../src/config');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
-const knex = require('../db');
-const controllerUtils = require('../controllers/utils');
-const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
+const knex = require('../src/db');
+const controllerUtils = require('../src/controllers/utils');
+const { createEmailAddresses } = require('../src/schedulers/emailCreationScheduler');
 const testUsers = require('./users.json');
-const Betagouv = require('../betagouv');
+const Betagouv = require('../src/betagouv');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -31,14 +31,15 @@ describe('User', () => {
       await knex('marrainage').truncate();
     });
 
+    let sendEmailStub;
     beforeEach((done) => {
-      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       done();
     });
 
     afterEach(async () => {
       await knex('marrainage').truncate();
-      this.sendEmailStub.restore();
+      sendEmailStub.restore();
     });
 
     it('should ask OVH to create an email and create marrainage', (done) => {
@@ -59,7 +60,7 @@ describe('User', () => {
           })
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
-            this.sendEmailStub.calledTwice.should.be.true;
+            sendEmailStub.calledTwice.should.be.true;
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(1);
             marrainage[0].username.should.equal('membre.nouveau');
@@ -68,7 +69,7 @@ describe('User', () => {
           })
           .catch(done)
           .finally(() => {
-            this.sendEmailStub.restore();
+            sendEmailStub.restore();
           });
       });
     });
@@ -115,7 +116,7 @@ describe('User', () => {
           })
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
-            this.sendEmailStub.calledTwice.should.be.true;
+            sendEmailStub.calledTwice.should.be.true;
             consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(0);
@@ -124,7 +125,7 @@ describe('User', () => {
           .catch(done)
           .finally(() => {
             consoleSpy.restore();
-            this.sendEmailStub.restore();
+            sendEmailStub.restore();
           });
       });
     });
@@ -648,18 +649,19 @@ describe('User', () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
     });
-
+    let sendEmailStub;
+    let betagouvCreateEmail;
     beforeEach((done) => {
-      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
 
     afterEach(async () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
-      this.sendEmailStub.restore();
-      this.betagouvCreateEmail.restore();
+      sendEmailStub.restore();
+      betagouvCreateEmail.restore();
     });
 
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
@@ -714,8 +716,8 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-      this.sendEmailStub.calledTwice.should.be.true;
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
@@ -776,9 +778,9 @@ describe('User', () => {
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       ovhEmailCreation.isDone().should.be.true;
-      this.sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
     });
@@ -826,9 +828,9 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
-      this.sendEmailStub.calledTwice.should.be.true;
+      sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       console.warn.restore();
@@ -861,9 +863,9 @@ describe('User', () => {
         secondary_email: newMember.email,
       }).then(async () => {
         await createEmailAddresses();
-        this.betagouvCreateEmail.notCalled.should.be.true;
+        betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
-        this.sendEmailStub.notCalled.should.be.true;
+        sendEmailStub.notCalled.should.be.true;
         done();
       });
     });
@@ -877,9 +879,9 @@ describe('User', () => {
         username: 'membre.nouveau',
       }).then(async () => {
         await createEmailAddresses();
-        this.betagouvCreateEmail.notCalled.should.be.true;
+        betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
-        this.sendEmailStub.notCalled.should.be.true;
+        sendEmailStub.notCalled.should.be.true;
         done();
       });
     });

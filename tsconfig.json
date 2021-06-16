@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "target": "es6",
+        "module": "commonjs",
+        "removeComments": true,
+        "noUnusedLocals": true,
+        "sourceMap": true,
+        "allowJs": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true
+    },
+    "exclude": [
+        "node_modules",
+        "static",
+        "**/*.d.ts",
+        "knexfile.js",
+        "migrations",
+        "dist",
+        "tests",
+    ]
+}

@@ -5,7 +5,7 @@ const _ = require('lodash/array');
 const testUsers = require('./users.json');
 const utils = require('./utils.js');
 
-const emailCreationScheduler = rewire('../schedulers/emailCreationScheduler');
+const emailCreationScheduler = rewire('../src/schedulers/emailCreationScheduler');
 
 describe('getUnregisteredOVHUsers', () => {
   beforeEach(async () => {
@@ -27,6 +27,15 @@ describe('getUnregisteredOVHUsers', () => {
     result.length.should.be.equal(1);
     result[0].id.should.be.equal(newMember.id);
     result[0].fullname.should.be.equal(newMember.fullname);
+  });
+
+  it('should not use expired accounts', async () => {
+    utils.mockUsers();
+    const expiredMember = testUsers.find((user) => user.id === 'membre.expire');
+    const getValidUsers = emailCreationScheduler.__get__('getValidUsers');
+    const result = await getValidUsers(testUsers);
+
+    chai.should().not.exist(result.find((x) => x.id === expiredMember.id));
   });
 
   it('should return no accounts if there is no new ones in github', async () => {

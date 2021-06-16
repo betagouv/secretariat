@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const expressSanitizer = require('express-sanitizer');
 const config = require('./config');
 const knex = require('./db');
+const sentry = require('./lib/sentry');
 
 const indexController = require('./controllers/indexController');
 const loginController = require('./controllers/loginController');
@@ -27,10 +28,10 @@ const newsletterController = require('./controllers/newsletterController');
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
 
-app.use('/static', express.static('static'));
-app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/static', express.static(path.join(__dirname, '../static')));
+app.use('/datagouvfr', express.static(path.join(__dirname, '../node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
@@ -127,7 +128,6 @@ app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
 app.post('/marrainage/cancel', marrainageController.cancelRequest);
 app.post('/marrainage/reload', marrainageController.reloadRequest);
-app.post('/visit', visitController.postForm);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
@@ -136,9 +136,11 @@ app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
-app.get('/visit', visitController.getForm);
+
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
+
+sentry.initCaptureConsoleWithHandler(app);
 
 module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));

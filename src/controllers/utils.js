@@ -57,6 +57,7 @@ module.exports.checkUserIsExpired = function (user) {
   // - son/sa date de fin est passée
   return user
     && user.end !== undefined
+    && new Date().toString() !== 'Invalid Date'
     && new Date(user.end).getTime() < new Date().getTime();
 };
 
