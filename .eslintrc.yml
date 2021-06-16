@@ -9,9 +9,19 @@ extends:
   - eslint:recommended
   - plugin:node/recommended
   - airbnb-base
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+
+parser: "@typescript-eslint/parser"
+
+plugins:
+  - "@typescript-eslint"
+  - mocha-no-only
 
 parserOptions:
   ecmaVersion: 12
+  "@typescript-eslint/no-empty-function": "off"
+  "@typescript-eslint/no-var-requires": "off"
 
 rules:
   no-underscore-dangle: "off"

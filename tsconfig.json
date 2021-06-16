@@ -11,6 +11,11 @@
         "forceConsistentCasingInFileNames": true,
         "skipLibCheck": true
     },
+    // "include": [
+    //     "*.ts",
+    //     "*.js",
+    //     "api/**/*.ts"
+    // ],
     "exclude": [
         "node_modules",
         "static",

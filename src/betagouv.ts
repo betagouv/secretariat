@@ -1,5 +1,8 @@
 // betagouv.js
 // ======
+import { Member } from './models/member'
+import { Mission } from './models/mission'
+
 const axios = require('axios').default;
 const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
@@ -21,20 +24,55 @@ const betaGouv = {
       throw new Error(`Error to notify slack: ${err}`);
     }
   },
-  usersInfos: async () => axios.get(config.usersAPI).then((response) => response.data.map((author) => {
-    if (author.missions && author.missions.length > 0) {
-      const sortedStartDates = author.missions.map((x) => x.start).sort();
-      const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
-      const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
+  usersInfos: async (): Promise<Array<Member>> => {
+    try {
+      let response = await axios.get(config.usersAPI)
 
-      [author.start] = sortedStartDates;
-      author.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
-      author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+      let members: Array<Member> = response.data.map((author) : Member => {
+        console.log("response author", author);
+        let start, end, employer
+        let missions : Array<Mission> = [] 
+        if (author.missions && author.missions.length > 0) {
+          missions = author.missions.map((mission): Mission => {
+            const out : Mission = {
+              start: mission.start,
+              end: mission.end,
+              status: mission.status,
+              domaine: mission.domaine,
+              employer: mission.employer,
+            }
+            return out
+          })
+          const sortedStartDates = author.missions.map((x) => x.start).sort();
+          const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
+          const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
+          start = sortedStartDates[0];
+          end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
+          employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+        } else {
+          const emptyMissions : Mission[] = []
+          missions = emptyMissions
+        }
+     
+        const member: Member = {
+          id: author.id,
+          fullname: author.fullname,
+          github: author.github,
+          start: start,
+          end: end,
+          employer: employer,
+          missions: missions,
+        }
+
+        return member
+      })
+      
+      return members
     }
-    return author;
-  })).catch((err) => {
-    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
-  }),
+    catch (err) {
+      throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+    }
+  },
   userInfosById: async (id) => {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
@@ -113,9 +151,9 @@ const betaOVH = {
       throw new Error('paramètre \'from\' ou \'to\' manquant');
     }
 
-    const url = `/email/domain/${config.domain}/redirection`;
+    const url = `/email/domain/${config.domain}/redirection`
 
-    const options = {};
+    const options = {} as any //@TODO refactor me
 
     if (query.from) {
       options.from = `${query.from}@${config.domain}`;
