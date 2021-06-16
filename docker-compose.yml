@@ -1,14 +1,14 @@
 version: '3'
 services:
   db:
-    image: postgres
+    image: postgres:12.5
     environment:
       POSTGRES_USER: secretariat
       POSTGRES_PASSWORD: secretariat
     ports:
       - "5432:5432"
   maildev:
-    image: maildev/maildev
+    image: maildev/maildev:1.1.0
     environment: 
       MAILDEV_INCOMING_USER: mailuser
       MAILDEV_INCOMING_PASS: mailpassword
