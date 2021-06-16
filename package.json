@@ -37,7 +37,7 @@
   "dependencies": {
     "@octokit/request": "^5.4.15",
     "@sentry/integrations": "^6.3.6",
-    "@sentry/node": "^6.3.6",
+    "@sentry/node": "^6.7.1",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
