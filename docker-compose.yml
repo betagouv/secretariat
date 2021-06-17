@@ -1,14 +1,14 @@
 version: '3'
 services:
   db:
-    image: postgres
+    image: postgres:12.5
     environment:
       POSTGRES_USER: secretariat
       POSTGRES_PASSWORD: secretariat
     ports:
       - "5432:5432"
   maildev:
-    image: maildev/maildev
+    image: maildev/maildev:1.1.0
     environment: 
       MAILDEV_INCOMING_USER: mailuser
       MAILDEV_INCOMING_PASS: mailpassword
@@ -17,8 +17,8 @@ services:
       - "1025:25"
   web:
     build: .
-    command: npm run dev
-    links:
+    command:  bash -c "echo 'first npm install can be a bit long'; npm install; npm run migrate; npm run dev"
+    depends_on:
       - db
       - maildev
     env_file: 
@@ -31,10 +31,11 @@ services:
       MAIL_PORT: 25
       MAIL_IGNORE_TLS: "true"
       SECURE: "false"
-      HOSTNAME: "localhost"
+      HOSTNAME: localhost
       SESSION_SECRET: "SecretThatShouldChangedInProduction"
     ports:
       - "8100:8100"
       - "9229:9229"
     volumes:
       - .:/app
+    restart: on-failure
