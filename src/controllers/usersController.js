@@ -290,13 +290,13 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
 module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-  const { secondaryEmail } = req.body;
+  const { newSecondaryEmail } = req.body;
 
   try {
     await knex('users')
     .where('username', username)
     .update({
-      secondary_email: secondaryEmail,
+      secondary_email: newSecondaryEmail,
     });
 
     if (isCurrentUser) {
