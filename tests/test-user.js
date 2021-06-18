@@ -527,9 +527,6 @@ describe('User', () => {
       knex('users').select()
         .where({ username: 'membre.actif' })
         .first()
-        .then((dbRes) => {
-          should.not.exist(dbRes);
-        })
         .then(() => {
           chai.request(app)
             .post(`/users/${username}/secondary_email`)
