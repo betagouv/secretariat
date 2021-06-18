@@ -503,6 +503,40 @@ describe('User', () => {
     });
   });
 
+  describe('POST /users/:username/secondary_email', () => {
+    it('should add secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+  });
+
+  describe('POST /users/:username/secondary_email/update', () => {
+    it('should update secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso2@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+  });
+
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     it('should ask OVH to delete the email account', (done) => {
       const ovhEmailDeletion = nock(/.*ovh.com/)
