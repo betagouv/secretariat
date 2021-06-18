@@ -265,12 +265,12 @@ module.exports.deleteEmailForUser = async function (req, res) {
 module.exports.createSecondaryEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-  const { secondary_email } = req.body;
+  const { secondaryEmail } = req.body;
 
   try {
     await knex('users').insert({
       username,
-      secondary_email,
+      secondary_email: secondaryEmail,
     });
 
     if (isCurrentUser) {
@@ -290,13 +290,13 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
 module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-  const { secondary_email } = req.body;
+  const { secondaryEmail } = req.body;
 
   try {
     await knex('users')
     .where('username', username)
     .update({
-      secondary_email,
+      secondary_email: secondaryEmail,
     });
 
     if (isCurrentUser) {

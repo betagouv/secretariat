@@ -223,12 +223,12 @@
                     </p>
                     <% if (!secondaryEmail) { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <input id="secondary_email" name="secondary_email" type="email">
+                        <input id="secondaryEmail" name="secondaryEmail" type="email">
                         <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
                     </form>
                     <% } else { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email/update" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <input id="secondary_email" name="secondary_email" type="email">
+                        <input id="secondaryEmail" name="secondaryEmail" type="email">
                         <button class="button margin-10-0" type="submit">Modifier l'email secondaire</button>
                     </form>
                     <% } %>
