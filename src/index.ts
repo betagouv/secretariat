@@ -123,6 +123,8 @@ app.post('/users/:username/email/delete', usersController.deleteEmailForUser);
 app.post('/users/:username/redirections', usersController.createRedirectionForUser);
 app.post('/users/:username/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:username/password', usersController.updatePasswordForUser);
+app.post('/users/:username/secondary_email', usersController.createSecondaryEmailForUser);
+app.post('/users/:username/secondary_email/update', usersController.updateSecondaryEmailForUser);
 app.post('/notifications/github', githubNotificationController.processNotification);
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);

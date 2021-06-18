@@ -28,6 +28,7 @@ module.exports.getCurrentAccount = async function (req, res) {
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
       redirections: currentUser.redirections,
+      secondaryEmail,
       activeTab: 'account',
       marrainageState,
       secondaryEmail,

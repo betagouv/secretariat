@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('./utils');
+const knex = require('../db/index');
 const { createRequestForUser } = require('./marrainageController');
 
 module.exports.createEmail = async function (username, creator, toEmail) {
@@ -252,6 +253,57 @@ module.exports.deleteEmailForUser = async function (req, res) {
       res.redirect('/login');
     } else {
       req.flash('message', `Le compte email de ${username} a bien été supprimé.`);
+      res.redirect(`/community/${username}`);
+    }
+  } catch (err) {
+    console.error(err);
+    req.flash('error', err.message);
+    res.redirect(`/community/${username}`);
+  }
+};
+
+module.exports.createSecondaryEmailForUser = async function (req, res) {
+  const { username } = req.params;
+  const isCurrentUser = req.user.id === username;
+  const { secondary_email } = req.body;
+
+  try {
+    await knex('users').insert({
+      username,
+      secondary_email,
+    });
+
+    if (isCurrentUser) {
+      req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
+      res.redirect(`/community/${username}`);
+    } else {
+      req.flash('message', `Le compte email secondaire de ${username} a bien été ajouté.`);
+      res.redirect(`/community/${username}`);
+    }
+  } catch (err) {
+    console.error(err);
+    req.flash('error', err.message);
+    res.redirect(`/community/${username}`);
+  }
+};
+
+module.exports.updateSecondaryEmailForUser = async function (req, res) {
+  const { username } = req.params;
+  const isCurrentUser = req.user.id === username;
+  const { secondary_email } = req.body;
+
+  try {
+    await knex('users')
+    .where('username', username)
+    .update({
+      secondary_email,
+    });
+
+    if (isCurrentUser) {
+      req.flash('message', 'Ton compte email secondaire a bien été modifié.');
+      res.redirect(`/community/${username}`);
+    } else {
+      req.flash('message', `Le compte email secondaire de ${username} a bien été modifié.`);
       res.redirect(`/community/${username}`);
     }
   } catch (err) {
