@@ -291,6 +291,7 @@ describe('Newsletter', () => {
       slack.restore();
       await knex('newsletters').truncate();
     });
+  });
 
   describe('newsletter interface', () => {
     it('should validate newsletter', async () => {
