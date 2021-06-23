@@ -7,7 +7,7 @@ const userStatusOptions = [
 ];
 
 const userBadgeOptions = [
-  { label: 'Ségur', value: 'segur' },
+  { label: 'Ségur (Paris)', value: 'segur' },
 ];
 
 module.exports = {
