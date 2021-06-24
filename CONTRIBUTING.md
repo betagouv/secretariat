@@ -39,5 +39,7 @@
     - On ne pas de configuration par défaut pour du développement
     - Faite en sorte qu'un configuration essentiel manquante fasse soit : un non lancement de l'application ou mieux désactive les fonctionnalités concernés
 
-
-
+### Github
+- Demander au moins une review, si vous avez un doute demander plus de review (parlez-en sur [Mattermost](https://mattermost.incubateur.net/betagouv/channels/betagouv-application-secretariat-incubateur-net)) 
+   - Mergé quand vous pensez quand vous pensez que c'est bon
+- Après le merge, la banche master est auto-deployé sur Scalingo
