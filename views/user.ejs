@@ -47,7 +47,11 @@
                                 Non renseigné
                             <% } %>
                         </p>
-                        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= username %>.md" target="_blank">Modifier sur Github</a> 
+                        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= username %>.md" target="_blank">Modifier sur Github</a>
+
+                        <p>
+                            <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
+                        </p>
                     </div>
                 <% } else { %>
                     <p>Il n'y a de fiche pour ce membre sur github</p>
