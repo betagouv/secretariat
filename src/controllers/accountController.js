@@ -27,11 +27,11 @@ module.exports.getCurrentAccount = async function (req, res) {
       canCreateEmail: currentUser.canCreateEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
+      canChangeSecondaryEmail: currentUser.canChangeSecondaryEmail,
       redirections: currentUser.redirections,
       secondaryEmail,
       activeTab: 'account',
       marrainageState,
-      secondaryEmail,
       errors: req.flash('error'),
       messages: req.flash('message'),
     });

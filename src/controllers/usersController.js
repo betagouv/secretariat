@@ -293,17 +293,17 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { newSecondaryEmail } = req.body;
 
   try {
-    await knex('users')
-    .where('username', username)
-    .update({
-      secondary_email: newSecondaryEmail,
-    });
-
     if (isCurrentUser) {
+      await knex('users')
+      .where('username', username)
+      .update({
+        secondary_email: newSecondaryEmail,
+      });
+
       req.flash('message', 'Ton compte email secondaire a bien été modifié.');
       res.redirect(`/community/${username}`);
     } else {
-      req.flash('message', `Le compte email secondaire de ${username} a bien été modifié.`);
+      req.flash('message', `Le compte email secondaire de ${username} ne peut pas être modifié par une autre personne.`);
       res.redirect(`/community/${username}`);
     }
   } catch (err) {
