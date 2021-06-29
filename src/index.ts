@@ -24,6 +24,7 @@ const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 const visitController = require('./controllers/visitController');
 const newsletterController = require('./controllers/newsletterController');
+const resourceController = require('./controllers/resourceController');
 
 const app = express();
 
@@ -140,6 +141,8 @@ app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
+
+app.get('/resources', resourceController.getResources);
 
 sentry.initCaptureConsoleWithHandler(app);
 
