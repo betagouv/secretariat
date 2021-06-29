@@ -228,9 +228,8 @@
                     </form>
                     <% } else { %>
                         <% if (canChangeSecondaryEmail) { %>
-                            <p>Ton email secondaire: <%= secondaryEmail %></p>
                             <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email/update" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                                <input id="newSecondaryEmail" name="newSecondaryEmail" type="email">
+                                <input id="newSecondaryEmail" name="newSecondaryEmail" value="<%= secondaryEmail %>" type="email">
                                 <button class="button margin-10-0" type="submit">Modifier l'email secondaire</button>
                             </form>
                         <% } %>

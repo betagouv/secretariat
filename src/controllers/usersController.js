@@ -266,18 +266,15 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { secondaryEmail } = req.body;
+  const user = await utils.userInfos(username, isCurrentUser);
 
   try {
-    await knex('users').insert({
-      username,
-      secondary_email: secondaryEmail,
-    });
-
-    if (isCurrentUser) {
+    if (user.canChangeSecondaryEmail) {
+      await knex('users').insert({
+        username,
+        secondary_email: secondaryEmail,
+      });
       req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
-      res.redirect(`/community/${username}`);
-    } else {
-      req.flash('message', `Le compte email secondaire de ${username} a bien été ajouté.`);
       res.redirect(`/community/${username}`);
     }
   } catch (err) {
@@ -291,9 +288,10 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { newSecondaryEmail } = req.body;
+  const user = await utils.userInfos(username, isCurrentUser);
 
   try {
-    if (isCurrentUser) {
+    if (user.canChangeSecondaryEmail) {
       await knex('users')
       .where('username', username)
       .update({
@@ -301,9 +299,6 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
       });
 
       req.flash('message', 'Ton compte email secondaire a bien été modifié.');
-      res.redirect(`/community/${username}`);
-    } else {
-      req.flash('message', `Le compte email secondaire de ${username} ne peut pas être modifié par une autre personne.`);
       res.redirect(`/community/${username}`);
     }
   } catch (err) {
