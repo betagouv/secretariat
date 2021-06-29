@@ -598,7 +598,8 @@ describe('User', () => {
               .catch(done);
           })
           .catch(done);
-      });
+      })
+      .catch(done);
     });
   });
 
