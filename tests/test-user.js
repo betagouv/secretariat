@@ -1,4 +1,5 @@
 const chai = require('chai');
+const should = require('chai').should();
 const nock = require('nock');
 const sinon = require('sinon');
 const config = require('../src/config');
@@ -500,6 +501,106 @@ describe('User', () => {
           res.should.have.status(401);
           done();
         });
+    });
+  });
+
+  describe('POST /users/:username/secondary_email', () => {
+    it('should return 200 to add secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+
+    it('should add secondary email', (done) => {
+      const username = 'membre.actif';
+      const secondaryEmail = 'membre.actif.perso@example.com';
+
+      knex('users').select()
+        .where({ username: 'membre.actif' })
+        .first()
+        .then(() => {
+          chai.request(app)
+            .post(`/users/${username}/secondary_email`)
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .type('form')
+            .send({
+              username,
+              secondaryEmail,
+            })
+            .then(() => knex('users').select().where({ username: 'membre.actif' }))
+            .then((dbNewRes) => {
+              dbNewRes.length.should.equal(1);
+              dbNewRes[0].secondary_email.should.equal(secondaryEmail);
+            })
+            .then(done)
+            .catch(done);
+        })
+        .catch(done);
+    });
+  });
+
+  describe('POST /users/:username/secondary_email/update', () => {
+    it('should return 200 to update secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso2@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+
+    it('should update secondary email', (done) => {
+      const username = 'membre.sansmail';
+      const secondaryEmail = 'membre.sansmail.perso@example.com';
+      const newSecondaryEmail = 'membre.sansmail.new@example.com';
+
+      knex('users').insert({
+        username,
+        secondary_email: secondaryEmail,
+      })
+      .then(() => {
+        knex('users').select()
+          .where({ username: 'membre.sansmail' })
+          .first()
+          .then((dbRes) => {
+            dbRes.secondary_email.should.equal(secondaryEmail);
+          })
+          .then(() => {
+            chai.request(app)
+              .post(`/users/${username}/secondary_email/update`)
+              .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
+              .type('form')
+              .send({
+                username,
+                newSecondaryEmail,
+              })
+              .then(() => knex('users').select().where({ username: 'membre.sansmail' }))
+              .then((dbNewRes) => {
+                dbNewRes.length.should.equal(1);
+                dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
+              })
+              .then(done)
+              .catch(done);
+          })
+          .catch(done);
+      })
+      .then(done)
+      .catch(done);
     });
   });
 
