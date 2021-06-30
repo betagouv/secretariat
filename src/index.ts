@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const compression = require('compression');
 const jwt = require('jsonwebtoken');
 const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
@@ -30,6 +31,8 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
+
+app.use(compression());
 
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use('/datagouvfr', express.static(path.join(__dirname, '../node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
