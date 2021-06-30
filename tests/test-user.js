@@ -565,9 +565,9 @@ describe('User', () => {
     });
 
     it('should update secondary email', (done) => {
-      const username = 'membre.actif';
-      const secondaryEmail = 'membre.actif.perso@example.com';
-      const newSecondaryEmail = 'membre.actif.new@example.com';
+      const username = 'membre.sansmail';
+      const secondaryEmail = 'membre.sansmail.perso@example.com';
+      const newSecondaryEmail = 'membre.sansmail.new@example.com';
 
       knex('users').insert({
         username,
@@ -575,7 +575,7 @@ describe('User', () => {
       })
       .then(() => {
         knex('users').select()
-          .where({ username: 'membre.actif' })
+          .where({ username: 'membre.sansmail' })
           .first()
           .then((dbRes) => {
             dbRes.secondary_email.should.equal(secondaryEmail);
@@ -583,13 +583,13 @@ describe('User', () => {
           .then(() => {
             chai.request(app)
               .post(`/users/${username}/secondary_email/update`)
-              .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+              .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
               .type('form')
               .send({
                 username,
                 newSecondaryEmail,
               })
-              .then(() => knex('users').select().where({ username: 'membre.actif' }))
+              .then(() => knex('users').select().where({ username: 'membre.sansmail' }))
               .then((dbNewRes) => {
                 dbNewRes.length.should.equal(1);
                 dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
@@ -599,6 +599,7 @@ describe('User', () => {
           })
           .catch(done);
       })
+      .then(done)
       .catch(done);
     });
   });
