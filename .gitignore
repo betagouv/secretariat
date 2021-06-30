@@ -60,5 +60,12 @@ typings/
 # dotenv environment variables file
 .env
 
-dist
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
 # End of https://www.gitignore.io/api/node
+
+dist
+static/scripts/app-dist.js
+static/scripts/app-dist.js.map
