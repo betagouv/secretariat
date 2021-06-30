@@ -66,16 +66,14 @@ const computeMessageReminder = (reminder, newsletter) => {
   if (reminder === 'FIRST_REMINDER') {
     message = `*Newsletter interne* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
       Remplissez le pad avec vos news/annonces/événements qui seront présentées à l'hebdo beta.gouv.
-      Le pad sera envoyé à la communauté vendredi.`;
+      Le contenu du pad sera envoyé jeudi, sous forme d'infolettre à la communauté.`;
   } else if (reminder === 'SECOND_REMINDER') {
-    message = `*:wave: Retrouvez nous pour l'hebdo beta.gouv à midi sur http://invites.standup.incubateur.net/*
+    message = `*:wave: Retrouvez nous pour l'hebdo beta.gouv à midi sur https://invites.standup.incubateur.net/*
       Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
-      Le pad sera envoyé à la communauté vendredi.`;
+      Le pad sera envoyé à 16 h, sous forme d'infolettre à la communauté.`;
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
-      Vérifie que le contenu du pad ${newsletter.url} de la newsletter est prêt à être envoyé à la communauté.
-      Puis tu peux la valider sur https://secretariat.incubateur.net/newsletters.
-    `;
+      Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il sera envoyé à la communauté.`;
   }
   return message;
 };
@@ -110,15 +108,7 @@ module.exports.newsletterThursdayMorningReminderJob = new CronJob(
 );
 
 module.exports.newsletterThursdayEveningReminderJob = new CronJob(
-  '0 18 * * 4', // every week a 18:00 on thursday
-  (type) => newsletterReminder('THIRD_REMINDER'),
-  null,
-  true,
-  'Europe/Paris',
-);
-
-module.exports.newsletterFridayReminderJob = new CronJob(
-  '0 10 * * 5', // every week a 10:00 on friday
+  '0 14 * * 4', // every week a 14:00 on thursday
   (type) => newsletterReminder('THIRD_REMINDER'),
   null,
   true,
@@ -139,7 +129,7 @@ const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
   const currentNewsletter = await knex('newsletters').where({
     sent_at: null,
-  }).whereNotNull('validator').first();
+  }).first();
 
   if (currentNewsletter) {
     const pad = new HedgedocApi(config.padEmail, config.padPassword, config.padURL);
@@ -169,7 +159,7 @@ const sendNewsletterAndCreateNewOne = async () => {
 };
 
 module.exports.sendNewsletterAndCreateNewOne = new CronJob(
-  config.newsletterSendTime || '0 20 * * 4', // run on thursday et 8pm,
+  config.newsletterSendTime || '0 16 * * 4', // run on thursday et 4pm,
   sendNewsletterAndCreateNewOne,
   null,
   true,
