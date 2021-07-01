@@ -245,6 +245,7 @@ module.exports.deleteEmailForUser = async function (req, res) {
     }
 
     await BetaGouv.deleteEmail(username);
+    await knex('users').where({ username }).del();
     console.log(`Supression de compte email de ${username} (à la demande de ${req.user.id})`);
 
     if (isCurrentUser) {
