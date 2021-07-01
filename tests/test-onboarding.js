@@ -71,6 +71,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -201,6 +202,28 @@ describe('Onboarding', () => {
           start: '2000-01-01',
           end: '2021-01-01',
           // domaine missing
+        })
+        .end((err, res) => {
+          this.getGithubMasterSha.called.should.be.false;
+          this.createGithubBranch.called.should.be.false;
+          this.createGithubFile.called.should.be.false;
+          this.makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if referent missing', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2000-01-01',
+          end: '2021-01-01',
+          domaine: 'Coaching',
+          // referent missing
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
