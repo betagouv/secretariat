@@ -291,43 +291,6 @@ describe('Newsletter', () => {
       slack.restore();
       await knex('newsletters').truncate();
     });
-
-    it('should not send newsletter if not validated', async () => {
-      const padHeadCall = nock(`${config.padURL}`).persist()
-      .head(/.*/)
-      .reply(200, {
-        status: 'OK',
-      }, {
-        'set-cookie': '73dajkhs8934892jdshakldsja',
-      });
-
-      const padPostLoginCall = nock(`${config.padURL}`).persist()
-      .post(/^.*login.*/)
-      .reply(200, {}, {
-        'set-cookie': '73dajkhs8934892jdshakldsja',
-      });
-
-      const padGetDownloadCall = nock(`${config.padURL}`)
-      .get(/^.*\/download/)
-      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
-
-      await knex('newsletters').insert([{
-        ...mockNewsletter,
-      }]);
-      const date = new Date('2021-03-05T07:59:59+01:00');
-      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.clock = sinon.useFakeTimers(date);
-      await sendNewsletterAndCreateNewOne();
-      padHeadCall.isDone().should.be.false;
-      padGetDownloadCall.isDone().should.be.false;
-      padPostLoginCall.isDone().should.be.false;
-      sendEmailStub.calledOnce.should.be.false;
-      slack.notCalled.should.be.true;
-      this.clock.restore();
-      sendEmailStub.restore();
-      slack.restore();
-      await knex('newsletters').truncate();
-    });
   });
 
   describe('newsletter interface', () => {

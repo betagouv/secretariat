@@ -190,6 +190,10 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       && isCurrentUser
       && emailInfos);
 
+    const canChangeSecondaryEmail = !!(hasUserInfos
+      && !isExpired
+      && isCurrentUser);
+
     return {
       emailInfos,
       redirections,
@@ -198,6 +202,7 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       canCreateEmail,
       canCreateRedirection,
       canChangePassword,
+      canChangeSecondaryEmail,
     };
   } catch (err) {
     console.error(err);

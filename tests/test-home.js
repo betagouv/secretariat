@@ -37,7 +37,7 @@ describe('Home', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community');
+          res.headers.location.should.equal('/account');
           done();
         });
     });

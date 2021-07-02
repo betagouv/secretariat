@@ -85,6 +85,32 @@ describe('Community', () => {
         });
     });
 
+    it('should show the secondary email if it exists', (done) => {
+      knex('users')
+        .insert({
+          username: 'membre.parti',
+          secondary_email: 'perso@example.com',
+        }).then(() => {
+          chai.request(app)
+            .get('/community/membre.parti')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .end((err, res) => {
+              res.text.should.include('Email secondaire : </span> perso@example.com');
+              done();
+            });
+        });
+    });
+
+    it('should not show the secondary email if it does not exist', (done) => {
+      chai.request(app)
+        .get('/community/membre.parti')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          res.text.should.include('Email secondaire : </span> Non renseigné');
+          done();
+        });
+    });
+
     it('should show the email creation form for email-less users', (done) => {
       chai.request(app)
         .get('/community/membre.parti')

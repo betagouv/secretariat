@@ -37,6 +37,9 @@
                         <% } %>
                     </p>
                     <% } %>
+                    <p>
+                        <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
+                    </p>
                 </div>
                 <div class="account-split-panel-shrink">
                     <img width="100%" src="/static/images/logo-betagouv.jpg" />
@@ -201,6 +204,34 @@
                         <div class="notification warning">
                             Seul <%= userInfos.id %> peut créer ou modifier les redirections.
                         </div>
+                        <% } %>
+                    <% } %>
+                    <hr />
+                </div>
+            </div>
+
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer mon email secondaire
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
+                    </p>
+                    <% if (!secondaryEmail) { %>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <input id="secondaryEmail" name="secondaryEmail" type="email">
+                        <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
+                    </form>
+                    <% } else { %>
+                        <% if (canChangeSecondaryEmail) { %>
+                            <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email/update" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                                <input id="newSecondaryEmail" name="newSecondaryEmail" value="<%= secondaryEmail %>" type="email">
+                                <button class="button margin-10-0" type="submit">Modifier l'email secondaire</button>
+                            </form>
                         <% } %>
                     <% } %>
                     <hr />

@@ -7,7 +7,7 @@ if (process.argv.length < 4) {
   const from = process.argv[2];
   const to = process.argv[3];
   console.log(`Delete ${from} to ${to}`);
-  BetaGouv.delete_redirection(from, to).then((result) => {
+  BetaGouv.deleteRedirection(from, to).then((result) => {
     console.log('Done');
   });
 }
