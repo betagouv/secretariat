@@ -161,7 +161,7 @@ module.exports.postForm = async function (req, res) {
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
     const badge = req.body.badge || null;
-    const referent = req.body.referent || null;
+    const referent = req.body.referent || requiredError('référent');
     const email = isValidEmail('email pro/perso', req.body.email);
     const domaine = req.body.domaine || isValidDomain('domaine');
 
