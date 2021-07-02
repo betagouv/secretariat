@@ -163,7 +163,7 @@ module.exports.postForm = async function (req, res) {
     const badge = req.body.badge || null;
     const referent = req.body.referent || requiredError('référent');
     const email = isValidEmail('email pro/perso', req.body.email);
-    const domaine = req.body.domaine || isValidDomain('domaine');
+    const domaine = isValidDomain('domaine', req.body.domaine);
 
     const website = isValidUrl('Site personnel', req.body.website);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
