@@ -504,6 +504,36 @@ describe('User', () => {
     });
   });
 
+  describe('POST /user/:username/email/delete', () => {
+    it('should delete user in database secretariat', (done) => {
+      knex('users')
+      .insert({ username: 'membre.actif', secondary_email: 'membre.actif@example.com' })
+      .then(() => knex('users').select().where({ username: 'membre.actif' }))
+      .then((dbRes) => {
+        console.log('Verif before', dbRes);
+        dbRes.length.should.equal(1);
+      })
+      .then(() => {
+        const ovhEmailDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200);
+
+        chai.request(app)
+        .post('/users/membre.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .then(() => knex('users').select().where({ username: 'membre.actif' }))
+        .then((dbNewRes) => {
+          ovhEmailDeletion.isDone().should.be.true;
+          console.log('VERIF: ', dbNewRes);
+          dbNewRes.length.should.equal(0);
+        })
+        .then(done)
+        .catch(done);
+      })
+      .catch(done);
+    });
+  });
+
   describe('POST /users/:username/secondary_email', () => {
     it('should return 200 to add secondary email', (done) => {
       chai.request(app)
