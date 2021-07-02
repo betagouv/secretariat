@@ -64,7 +64,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          // firstName missing
+          // firstName: 'missing',
           lastName: 'Úñíbe',
           role: 'Dev',
           start: '2020-01-01',
@@ -72,6 +72,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -94,6 +95,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -116,6 +119,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -138,6 +143,8 @@ describe('Onboarding', () => {
           end: '2020-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -160,6 +167,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -180,7 +189,10 @@ describe('Onboarding', () => {
           role: 'Dev',
           start: '2000-01-01',
           end: '2021-01-01',
+          status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -199,8 +211,11 @@ describe('Onboarding', () => {
           firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
-          start: '2000-01-01',
+          start: '2020-01-01',
           end: '2021-01-01',
+          status: 'Independant',
+          referent: 'membre actif',
+          email: 'test@example.com',
           // domaine missing
         })
         .end((err, res) => {
@@ -220,9 +235,11 @@ describe('Onboarding', () => {
           firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
-          start: '2000-01-01',
+          start: '2020-01-01',
           end: '2021-01-01',
+          status: 'Independant',
           domaine: 'Coaching',
+          email: 'test@example.com',
           // referent missing
         })
         .end((err, res) => {
@@ -242,9 +259,12 @@ describe('Onboarding', () => {
           firstName: 'Férnàndáô',
           lastName: 'Úñíbe',
           role: 'Dev',
-          start: '2000-01-01',
+          start: '2020-01-01',
           end: '2021-01-01',
+          status: 'Independant',
           domaine: 'Wrongvalue',
+          referent: 'membre actif',
+          email: 'test@example.com',
         })
         .end((err, res) => {
           this.getGithubMasterSha.called.should.be.false;
@@ -267,6 +287,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
           website: 'example.com/me',
         })
         .end((err, res) => {
@@ -290,6 +312,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
           github: 'https://github.com/betagouv',
         })
         .end((err, res) => {
@@ -313,6 +337,8 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
           github: 'github.com/betagouv',
         })
         .end((err, res) => {
@@ -336,6 +362,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
+          referent: 'membre actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -361,6 +388,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           website: 'https://example.com/me',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const sha = this.createGithubBranch.args[0][0];
@@ -382,6 +410,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
@@ -403,6 +432,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
@@ -424,6 +454,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const branch = this.createGithubBranch.args[0][1];
@@ -432,7 +463,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('PR title should contain the referent if specified', (done) => {
+    it('PR title should contain the referent', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -499,6 +530,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const prTitle = this.makeGithubPullRequest.args[0][1];
@@ -520,6 +552,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
@@ -541,6 +574,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .end((err, res) => {
           const path = this.createGithubFile.args[0][0];
@@ -562,6 +596,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .redirects(0)
         .end((err, res) => {
@@ -584,6 +619,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          referent: 'membre actif',
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
@@ -612,6 +648,7 @@ describe('Onboarding', () => {
               status: 'Independant',
               domaine: 'Coaching',
               email: 'updated@example.com',
+              referent: 'membre actif',
             })
             .then(() => knex('users').where({ username: 'john.doe' }))
             .then((dbRes) => {
