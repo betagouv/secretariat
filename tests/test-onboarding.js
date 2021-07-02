@@ -179,30 +179,6 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should not call Github API if the start date is too small', (done) => {
-      chai.request(app)
-        .post('/onboarding')
-        .type('form')
-        .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
-          role: 'Dev',
-          start: '2000-01-01',
-          end: '2021-01-01',
-          status: 'Independant',
-          domaine: 'Coaching',
-          referent: 'membre actif',
-          email: 'test@example.com',
-        })
-        .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
-          done();
-        });
-    });
-
     it('should not call Github API if domaine missing', (done) => {
       chai.request(app)
         .post('/onboarding')
@@ -513,28 +489,6 @@ describe('Onboarding', () => {
 
           const toEmail = this.sendEmailStub.args[0][0];
           toEmail.should.equal('membre.actif@example.com');
-          done();
-        });
-    });
-
-    it('PR title should specfiy if no referent was given', (done) => {
-      chai.request(app)
-        .post('/onboarding')
-        .type('form')
-        .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
-          role: 'Dev',
-          start: '2020-01-01',
-          end: '2021-01-01',
-          status: 'Independant',
-          domaine: 'Coaching',
-          email: 'test@example.com',
-          referent: 'membre actif',
-        })
-        .end((err, res) => {
-          const prTitle = this.makeGithubPullRequest.args[0][1];
-          prTitle.should.contain('Référent : pas renseigné.');
           done();
         });
     });
