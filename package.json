@@ -55,7 +55,7 @@
     "hedgedoc-api": "git+https://github.com/betagouv/hedgedoc-api-lib-js.git#v1.0",
     "jsonwebtoken": "^8.2.2",
     "juice": "^7.0.0",
-    "knex": "^0.21.18",
+    "knex": "^0.95.6",
     "lodash": "^4.17.21",
     "marked": "^2.1.1",
     "nodemailer": "^6.6.0",
