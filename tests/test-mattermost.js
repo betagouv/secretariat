@@ -1,7 +1,7 @@
 const rewire = require('rewire');
 const nock = require('nock');
 const sinon = require('sinon');
-const utils = require('./utils.js');
+const utils = require('./utils');
 const testUsers = require('./users.json');
 const config = require('../src/config');
 
@@ -47,7 +47,7 @@ describe('invite users to mattermost', () => {
     .reply(200, []);
 
     const postBatchMock = nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/teams\/testteam\/members\/batch.*/)
+    .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
     .reply(200, [{}, {}]).persist();
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
@@ -55,7 +55,7 @@ describe('invite users to mattermost', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, testUsers)
     .persist();
-    const inviteUsersToTeamByEmail = mattermostScheduler.__get__('inviteUsersToTeamByEmail');
+    const inviteUsersToTeamByEmail = mattermostScheduler.inviteUsersToTeamByEmail
     const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
