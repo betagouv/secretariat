@@ -36,6 +36,7 @@ app.use(compression());
 
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use('/datagouvfr', express.static(path.join(__dirname, '../node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/topbar.js', express.static(path.join(__dirname, '../node_modules/topbar/topbar.min.js')));
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
