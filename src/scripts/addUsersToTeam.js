@@ -1,3 +1,3 @@
-const { addUsersToTeam } = require('../schedulers/mattermostScheduler.js');
+const { inviteUsersToTeamByEmail } = require('../schedulers/mattermostScheduler');
 
-addUsersToTeam();
+inviteUsersToTeamByEmail();

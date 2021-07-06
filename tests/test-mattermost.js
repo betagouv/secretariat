@@ -26,7 +26,7 @@ const mattermostUsers = [
 
 const mattermostScheduler = rewire('../src/schedulers/mattermostScheduler');
 
-describe('getMattermostUserNotInTeam', () => {
+describe('invite users to mattermost', () => {
   let clock;
   beforeEach(async () => {
     const date = new Date('2021-01-20T07:59:59+01:00');
@@ -38,7 +38,7 @@ describe('getMattermostUserNotInTeam', () => {
     clock.restore();
   });
 
-  it('Add user to team', async () => {
+  it('invite users to team by emails', async () => {
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
@@ -55,8 +55,8 @@ describe('getMattermostUserNotInTeam', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, testUsers)
     .persist();
-    const addUsersToTeam = mattermostScheduler.__get__('addUsersToTeam');
-    const result = await addUsersToTeam([...mattermostUsers]);
+    const inviteUsersToTeamByEmail = mattermostScheduler.__get__('inviteUsersToTeamByEmail');
+    const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
 });
