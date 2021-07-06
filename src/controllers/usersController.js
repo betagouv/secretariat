@@ -133,7 +133,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
 };
 
 module.exports.deleteRedirectionForUser = async function (req, res) {
-  const { username, email: to_email } = req.params;
+  const { username, email: toEmail } = req.params;
   const isCurrentUser = req.user.id === username;
 
   try {
@@ -144,15 +144,15 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
       throw new Error("Vous n'avez pas le droit de supprimer cette redirection.");
     }
 
-    console.log(`Suppression de la redirection by=${username}&to_email=${to_email}`);
+    console.log(`Suppression de la redirection by=${username}&to_email=${toEmail}`);
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${to_email}`;
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
     try {
       await BetaGouv.sendInfoToSlack(message);
-      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), to_email);
+      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), toEmail);
     } catch (err) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
@@ -241,12 +241,12 @@ module.exports.deleteEmailForUser = async function (req, res) {
 
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map((x) => x.id));
-      console.log(`Supression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
+      console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
     }
 
     await BetaGouv.deleteEmail(username);
     await knex('users').where({ username }).del();
-    console.log(`Supression de compte email de ${username} (à la demande de ${req.user.id})`);
+    console.log(`Suppression de compte email de ${username} (à la demande de ${req.user.id})`);
 
     if (isCurrentUser) {
       res.clearCookie('token');
