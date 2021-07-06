@@ -14,9 +14,7 @@ const getUnregisteredMemberActifs = async (activeGithubUsers, allMattermostUsers
 };
 
 module.exports.inviteUsersToTeamByEmail = async () => {
-  const allMattermostUsers = await mattermost.getUserWithParams({
-    not_in_team: config.mattermostTeamId,
-  });
+  const allMattermostUsers = await mattermost.getUserWithParams();
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((x) => {
     const stillActive = !utils.checkUserIsExpired(x);
