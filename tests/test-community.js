@@ -1,9 +1,9 @@
 const chai = require('chai');
 const nock = require('nock');
 
-const app = require('../index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
-const knex = require('../db');
+const knex = require('../src/db');
 
 describe('Community', () => {
   describe('GET /community unauthenticated', () => {
@@ -81,6 +81,32 @@ describe('Community', () => {
           res.text.should.include('au 30/10/2050');
           res.text.should.include('independent/octo');
           res.text.should.include('test-github');
+          done();
+        });
+    });
+
+    it('should show the secondary email if it exists', (done) => {
+      knex('users')
+        .insert({
+          username: 'membre.parti',
+          secondary_email: 'perso@example.com',
+        }).then(() => {
+          chai.request(app)
+            .get('/community/membre.parti')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .end((err, res) => {
+              res.text.should.include('Email secondaire : </span> perso@example.com');
+              done();
+            });
+        });
+    });
+
+    it('should not show the secondary email if it does not exist', (done) => {
+      chai.request(app)
+        .get('/community/membre.parti')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          res.text.should.include('Email secondaire : </span> Non renseigné');
           done();
         });
     });

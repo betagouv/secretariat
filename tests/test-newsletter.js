@@ -4,14 +4,14 @@ const chai = require('chai');
 const sinon = require('sinon');
 const HedgedocApi = require('hedgedoc-api');
 
-const config = require('../config');
-const knex = require('../db');
-const BetaGouv = require('../betagouv');
-const app = require('../index');
-const controllerUtils = require('../controllers/utils');
+const config = require('../src/config');
+const knex = require('../src/db');
+const BetaGouv = require('../src/betagouv');
+const app = require('../src/index.ts');
+const controllerUtils = require('../src/controllers/utils');
 const utils = require('./utils');
 const testUsers = require('./users');
-const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
+const { renderHtmlFromMd, getTitle } = require('../src/lib/mdtohtml');
 
 const should = chai.should();
 
@@ -24,7 +24,7 @@ const {
 } = controllerUtils;
 const {
   createNewsletter,
-} = require('../schedulers/newsletterScheduler');
+} = require('../src/schedulers/newsletterScheduler');
 
 const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
@@ -38,7 +38,7 @@ const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
   ### 👋 Prochain point hebdo beta.gouv, jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
 `;
 
-const newsletterScheduler = rewire('../schedulers/newsletterScheduler');
+const newsletterScheduler = rewire('../src/schedulers/newsletterScheduler');
 const replaceMacroInContent = newsletterScheduler.__get__('replaceMacroInContent');
 const computeMessageReminder = newsletterScheduler.__get__('computeMessageReminder');
 const newsletterReminder = newsletterScheduler.__get__('newsletterReminder');
@@ -117,13 +117,14 @@ describe('Newsletter', () => {
   });
 
   describe('cronjob newsletter', () => {
+    let slack;
     beforeEach((done) => {
-      this.slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
+      slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
       done();
     });
 
     afterEach((done) => {
-      this.slack.restore();
+      slack.restore();
       done();
     });
 
@@ -182,8 +183,8 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       this.clock = sinon.useFakeTimers(new Date('2021-03-01T07:59:59+01:00'));
       await newsletterReminder('FIRST_REMINDER');
-      this.slack.firstCall.args[0].should.equal(computeMessageReminder('FIRST_REMINDER', mockNewsletter));
-      this.slack.restore();
+      slack.firstCall.args[0].should.equal(computeMessageReminder('FIRST_REMINDER', mockNewsletter));
+      slack.restore();
       await knex('newsletters').truncate();
     });
 
@@ -191,9 +192,9 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       this.clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
       await newsletterReminder('SECOND_REMINDER');
-      this.slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
+      slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
       this.clock.restore();
-      this.slack.restore();
+      slack.restore();
       await knex('newsletters').truncate();
     });
 
@@ -201,18 +202,18 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       this.clock = sinon.useFakeTimers(new Date('2021-03-04T17:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
-      this.slack.firstCall.args[0].should.equal(computeMessageReminder('THIRD_REMINDER', mockNewsletter));
+      slack.firstCall.args[0].should.equal(computeMessageReminder('THIRD_REMINDER', mockNewsletter));
       this.clock.restore();
-      this.slack.restore();
+      slack.restore();
       await knex('newsletters').truncate();
     });
 
     it('should send remind on friday at 8am', async () => {
       this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
-      this.slack.notCalled.should.be.true;
+      slack.notCalled.should.be.true;
       this.clock.restore();
-      this.slack.restore();
+      slack.restore();
     });
 
     it('should send newsletter if validated', async () => {
@@ -282,49 +283,12 @@ describe('Newsletter', () => {
       ));
       sendEmailStub.firstCall.args[0].should.equal(`secretariat@beta.gouv.fr,membre.actif@${config.domain}`);
       sendEmailStub.firstCall.args[2].should.equal(renderHtmlFromMd(contentWithMacro));
-      this.slack.called.should.be.true;
+      slack.called.should.be.true;
       const newsletter = await knex('newsletters').orderBy('created_at').whereNotNull('sent_at').first();
       newsletter.sent_at.should.not.be.null;
       this.clock.restore();
       sendEmailStub.restore();
-      this.slack.restore();
-      await knex('newsletters').truncate();
-    });
-
-    it('should not send newsletter if not validated', async () => {
-      const padHeadCall = nock(`${config.padURL}`).persist()
-      .head(/.*/)
-      .reply(200, {
-        status: 'OK',
-      }, {
-        'set-cookie': '73dajkhs8934892jdshakldsja',
-      });
-
-      const padPostLoginCall = nock(`${config.padURL}`).persist()
-      .post(/^.*login.*/)
-      .reply(200, {}, {
-        'set-cookie': '73dajkhs8934892jdshakldsja',
-      });
-
-      const padGetDownloadCall = nock(`${config.padURL}`)
-      .get(/^.*\/download/)
-      .reply(200, NEWSLETTER_TEMPLATE_CONTENT);
-
-      await knex('newsletters').insert([{
-        ...mockNewsletter,
-      }]);
-      const date = new Date('2021-03-05T07:59:59+01:00');
-      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.clock = sinon.useFakeTimers(date);
-      await sendNewsletterAndCreateNewOne();
-      padHeadCall.isDone().should.be.false;
-      padGetDownloadCall.isDone().should.be.false;
-      padPostLoginCall.isDone().should.be.false;
-      sendEmailStub.calledOnce.should.be.false;
-      this.slack.notCalled.should.be.true;
-      this.clock.restore();
-      sendEmailStub.restore();
-      this.slack.restore();
+      slack.restore();
       await knex('newsletters').truncate();
     });
   });

@@ -1,6 +1,6 @@
 const chai = require('chai');
 
-const { isValidGithubUserName } = require('../lib/github');
+const { isValidGithubUserName } = require('../src/lib/github');
 
 describe('Github lib', () => {
   describe('isValidGithubUserName', () => {

@@ -48,7 +48,7 @@
             <div class="form__group">
                 <label for="description">
                     <strong>Courte bio</strong><br />
-                    Cette phrase d'accroche sera affichée sur le trombinoscope.<br />
+                    Cette phrase d'accroche sera affichée sur <a href="https://beta.gouv.fr/communaute/annuaire">l'annuaire</a>.<br />
                     <i>Exemple : « Développeur le jour, musicien la nuit. »</i>
                     <textarea rows="2" name="description"><%= formData.description %></textarea>
                 </label>
@@ -56,7 +56,7 @@
 
             <div class="form__group">
                 <label for="website">
-                    <span>Site personnel</span><br />
+                    <strong>Site personnel</strong><br />
                     Commençant avec <em>http://</em> ou <em>https://</em>
                 </label>
                 <input name="website" pattern="^(http|https)://.+" value="<%= formData.website %>" title="Doit commencer par http:// ou https://">
@@ -71,6 +71,8 @@
                     value="<%= formData.github %>"
                     title="Nom d'utilisateur Github (sans @)">
             </div>
+
+            <h4>Ta mission</h4>
             <div class="form__group">
                 <label for="startup">
                     <strong>Domaine (obligatoire)</strong><br />
@@ -90,12 +92,10 @@
                     <% }) %>
                 </select>
             </div>
-
-            <h4>Ta mission</h4>
             <div class="form__group">
                 <label for="role">
                     <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
-                    Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
+                    Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
                 <input name="role" value="<%= formData.role %>" required>
             </div>
@@ -103,7 +103,7 @@
             <div class="form__group">
                 <label for="start">
                     <strong>Début de la mission (obligatoire)</strong><br />
-                    Au format JJ/MM/YYYY
+                    <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
@@ -111,7 +111,8 @@
             <div class="form__group">
                 <label for="end">
                     <strong>Fin de la mission (obligatoire)</strong><br />
-                    Au format JJ/MM/YYYY
+                    Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
+                    <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
             </div>
@@ -167,7 +168,7 @@
 
             <div class="form__group">
                 <label for="startup">
-                    <span>Startup d'État</span><br />
+                    <strong>Startup d'État</strong><br />
                     Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
                 </label>
                 <select name="startup">
@@ -179,7 +180,7 @@
             </div>
             <div class="form__group">
                 <label for="employer">
-                    <span>Employeur</span><br />
+                    <strong>Employeur</strong><br />
                     L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                 </label>
                 <input name="employer" value="<%= formData.employer %>">
@@ -187,7 +188,7 @@
 
             <div class="form__group">
                 <label for="badge">
-                    <span>Badge</span><br />
+                    <strong>Badge</strong><br />
                     Si tu souhaites accéder aux bureaux, il te faudra un badge. Il te faudra aussi en faire la demande séparément.
                     En cochant cette case, nous saurons que tu en fais la demande et le badge sera renouvellé automatiquement.
                 </label>
@@ -210,3 +211,4 @@
         </form>
     </div>
 </div>
+<%- include('partials/footer'); -%>

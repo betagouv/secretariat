@@ -1,14 +1,15 @@
 const chai = require('chai');
+const should = require('chai').should();
 const nock = require('nock');
 const sinon = require('sinon');
-const config = require('../config');
-const app = require('../index');
+const config = require('../src/config');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
-const knex = require('../db');
-const controllerUtils = require('../controllers/utils');
-const { createEmailAddresses } = require('../schedulers/emailCreationScheduler');
+const knex = require('../src/db');
+const controllerUtils = require('../src/controllers/utils');
+const { createEmailAddresses } = require('../src/schedulers/emailCreationScheduler');
 const testUsers = require('./users.json');
-const Betagouv = require('../betagouv');
+const Betagouv = require('../src/betagouv');
 
 describe('User', () => {
   describe('POST /users/:username/email unauthenticated', () => {
@@ -31,14 +32,15 @@ describe('User', () => {
       await knex('marrainage').truncate();
     });
 
+    let sendEmailStub;
     beforeEach((done) => {
-      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
       done();
     });
 
     afterEach(async () => {
       await knex('marrainage').truncate();
-      this.sendEmailStub.restore();
+      sendEmailStub.restore();
     });
 
     it('should ask OVH to create an email and create marrainage', (done) => {
@@ -59,7 +61,7 @@ describe('User', () => {
           })
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
-            this.sendEmailStub.calledTwice.should.be.true;
+            sendEmailStub.calledTwice.should.be.true;
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(1);
             marrainage[0].username.should.equal('membre.nouveau');
@@ -68,7 +70,7 @@ describe('User', () => {
           })
           .catch(done)
           .finally(() => {
-            this.sendEmailStub.restore();
+            sendEmailStub.restore();
           });
       });
     });
@@ -115,7 +117,7 @@ describe('User', () => {
           })
           .then(async (err, res) => {
             ovhEmailCreation.isDone().should.be.true;
-            this.sendEmailStub.calledTwice.should.be.true;
+            sendEmailStub.calledTwice.should.be.true;
             consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
             const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
             marrainage.length.should.equal(0);
@@ -124,7 +126,7 @@ describe('User', () => {
           .catch(done)
           .finally(() => {
             consoleSpy.restore();
-            this.sendEmailStub.restore();
+            sendEmailStub.restore();
           });
       });
     });
@@ -502,6 +504,136 @@ describe('User', () => {
     });
   });
 
+  describe('POST /user/:username/email/delete', () => {
+    it('should delete user in database secretariat', (done) => {
+      knex('users')
+      .insert({ username: 'membre.actif', secondary_email: 'membre.actif@example.com' })
+      .then(() => knex('users').select().where({ username: 'membre.actif' }))
+      .then((dbRes) => {
+        console.log('Verif before', dbRes);
+        dbRes.length.should.equal(1);
+      })
+      .then(() => {
+        const ovhEmailDeletion = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200);
+
+        chai.request(app)
+        .post('/users/membre.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .then(() => knex('users').select().where({ username: 'membre.actif' }))
+        .then((dbNewRes) => {
+          ovhEmailDeletion.isDone().should.be.true;
+          console.log('VERIF: ', dbNewRes);
+          dbNewRes.length.should.equal(0);
+        })
+        .then(done)
+        .catch(done);
+      })
+      .catch(done);
+    });
+  });
+
+  describe('POST /users/:username/secondary_email', () => {
+    it('should return 200 to add secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+
+    it('should add secondary email', (done) => {
+      const username = 'membre.actif';
+      const secondaryEmail = 'membre.actif.perso@example.com';
+
+      knex('users').select()
+        .where({ username: 'membre.actif' })
+        .first()
+        .then(() => {
+          chai.request(app)
+            .post(`/users/${username}/secondary_email`)
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .type('form')
+            .send({
+              username,
+              secondaryEmail,
+            })
+            .then(() => knex('users').select().where({ username: 'membre.actif' }))
+            .then((dbNewRes) => {
+              dbNewRes.length.should.equal(1);
+              dbNewRes[0].secondary_email.should.equal(secondaryEmail);
+            })
+            .then(done)
+            .catch(done);
+        })
+        .catch(done);
+    });
+  });
+
+  describe('POST /users/:username/secondary_email/update', () => {
+    it('should return 200 to update secondary email', (done) => {
+      chai.request(app)
+        .post('/users/membre.actif/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          username: 'membre.actif',
+          secondaryEmail: 'membre.actif.perso2@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+        });
+      done();
+    });
+
+    it('should update secondary email', (done) => {
+      const username = 'membre.sansmail';
+      const secondaryEmail = 'membre.sansmail.perso@example.com';
+      const newSecondaryEmail = 'membre.sansmail.new@example.com';
+
+      knex('users').insert({
+        username,
+        secondary_email: secondaryEmail,
+      })
+      .then(() => {
+        knex('users').select()
+          .where({ username: 'membre.sansmail' })
+          .first()
+          .then((dbRes) => {
+            dbRes.secondary_email.should.equal(secondaryEmail);
+          })
+          .then(() => {
+            chai.request(app)
+              .post(`/users/${username}/secondary_email/update`)
+              .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
+              .type('form')
+              .send({
+                username,
+                newSecondaryEmail,
+              })
+              .then(() => knex('users').select().where({ username: 'membre.sansmail' }))
+              .then((dbNewRes) => {
+                dbNewRes.length.should.equal(1);
+                dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
+              })
+              .then(done)
+              .catch(done);
+          })
+          .catch(done);
+      })
+      .then(done)
+      .catch(done);
+    });
+  });
+
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     it('should ask OVH to delete the email account', (done) => {
       const ovhEmailDeletion = nock(/.*ovh.com/)
@@ -648,18 +780,19 @@ describe('User', () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
     });
-
+    let sendEmailStub;
+    let betagouvCreateEmail;
     beforeEach((done) => {
-      this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
 
     afterEach(async () => {
       await knex('users').truncate();
       await knex('marrainage').truncate();
-      this.sendEmailStub.restore();
-      this.betagouvCreateEmail.restore();
+      sendEmailStub.restore();
+      betagouvCreateEmail.restore();
     });
 
     it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
@@ -714,8 +847,8 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-      this.sendEmailStub.calledTwice.should.be.true;
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
@@ -776,9 +909,9 @@ describe('User', () => {
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       ovhEmailCreation.isDone().should.be.true;
-      this.sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.calledOnce.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
     });
@@ -826,9 +959,9 @@ describe('User', () => {
       });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
-      this.betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
+      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
-      this.sendEmailStub.calledTwice.should.be.true;
+      sendEmailStub.calledTwice.should.be.true;
       marrainage = await knex('marrainage').where({ username: newMember.id }).select();
       marrainage.length.should.equal(0);
       console.warn.restore();
@@ -861,9 +994,9 @@ describe('User', () => {
         secondary_email: newMember.email,
       }).then(async () => {
         await createEmailAddresses();
-        this.betagouvCreateEmail.notCalled.should.be.true;
+        betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
-        this.sendEmailStub.notCalled.should.be.true;
+        sendEmailStub.notCalled.should.be.true;
         done();
       });
     });
@@ -877,9 +1010,9 @@ describe('User', () => {
         username: 'membre.nouveau',
       }).then(async () => {
         await createEmailAddresses();
-        this.betagouvCreateEmail.notCalled.should.be.true;
+        betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
-        this.sendEmailStub.notCalled.should.be.true;
+        sendEmailStub.notCalled.should.be.true;
         done();
       });
     });

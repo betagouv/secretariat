@@ -2,24 +2,25 @@ const chai = require('chai');
 const sinon = require('sinon');
 const _ = require('lodash');
 const rewire = require('rewire');
-const app = require('../index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
-const config = require('../config');
-const controllerUtils = require('../controllers/utils');
-const knex = require('../db');
+const config = require('../src/config');
+const controllerUtils = require('../src/controllers/utils');
+const knex = require('../src/db');
 
-const visitScheduler = rewire('../schedulers/visitScheduler');
+const visitScheduler = rewire('../src/schedulers/visitScheduler');
 
 describe.skip('Visit', () => {
+  let sendEmailStub;
   beforeEach((done) => {
-    this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     this.clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });
 
   afterEach((done) => {
     knex('visits').truncate()
-      .then(() => this.sendEmailStub.restore())
+      .then(() => sendEmailStub.restore())
       .then(() => this.clock.restore())
       .then(() => done())
       .catch(done);
@@ -273,12 +274,12 @@ describe.skip('Visit', () => {
       await knex('visits').insert([inviteRequest1, inviteRequest2]);
       const sendVisitEmail = visitScheduler.__get__('sendVisitEmail');
       await sendVisitEmail();
-      this.sendEmailStub.calledOnce.should.be.true;
-      this.sendEmailStub.firstCall.args[1].should.be.equal('Visite à Ségur');
-      this.sendEmailStub.firstCall.args[2].should.contains('Julien Dauphant');
-      this.sendEmailStub.firstCall.args[2].should.contains('Membre Nouveau');
-      this.sendEmailStub.firstCall.args[2].should.contains('Membre Actif');
-      this.sendEmailStub.firstCall.args[3].cc.should.be.equal(`membre.actif@${config.domain}`);
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.firstCall.args[1].should.be.equal('Visite à Ségur');
+      sendEmailStub.firstCall.args[2].should.contains('Julien Dauphant');
+      sendEmailStub.firstCall.args[2].should.contains('Membre Nouveau');
+      sendEmailStub.firstCall.args[2].should.contains('Membre Actif');
+      sendEmailStub.firstCall.args[3].cc.should.be.equal(`membre.actif@${config.domain}`);
     });
   });
 });

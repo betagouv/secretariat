@@ -3,18 +3,13 @@ updates:
 - package-ecosystem: npm
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
     time: "04:00"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 5
   ignore:
   - dependency-name: "@octokit/request"
     versions:
     - 5.4.15
-  - dependency-name: sweetalert2
-    versions:
-    - 10.15.6
-    - 10.15.7
-    - 10.16.0
   - dependency-name: nodemailer
     versions:
     - 6.5.0

@@ -57,6 +57,7 @@ module.exports.checkUserIsExpired = function (user) {
   // - son/sa date de fin est passée
   return user
     && user.end !== undefined
+    && new Date().toString() !== 'Invalid Date'
     && new Date(user.end).getTime() < new Date().getTime();
 };
 
@@ -189,6 +190,10 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       && isCurrentUser
       && emailInfos);
 
+    const canChangeSecondaryEmail = !!(hasUserInfos
+      && !isExpired
+      && isCurrentUser);
+
     return {
       emailInfos,
       redirections,
@@ -197,6 +202,7 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       canCreateEmail,
       canCreateRedirection,
       canChangePassword,
+      canChangeSecondaryEmail,
     };
   } catch (err) {
     console.error(err);

@@ -31,6 +31,7 @@ Le secrétariat de l’incubateur
    - `MAIL_PORT` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour spécifier le port à utiliser pour l'envoi d'emails avec [Nodemailer](https://nodemailer.com/smtp/).
    - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
    - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
+   - `INVESTIGATION_REPORTS_IFRAME_URL` - URL de l'iframe Airtable contenant les bilans d'investigations et qui est intégrée à la page ressources
 
 ### Lancer en mode développement
 
@@ -44,6 +45,17 @@ Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes
    Running on port: 8100
 ```
 L'application sera disponible sur `http://localhost:8100` (8100 est le port par défaut, vous pouvez le changer avec la variable d'env `PORT`)
+
+### Lancer avec docker-compose
+- Créer le fichier de configuration : `cp .env.example .env` et le remplir avec les identifiants OVH obtenus plus haut.
+- Lancer le service et initialiser la base de données : `docker-compose up` - disponible sur http://localhost:8100
+- Pour ajouter des données à la base de données (facultatif): `docker-compose run web npm run seed;`
+- Lancer les tests : `docker-compose run web npm test`
+
+### Lancer avec docker sans docker-compose
+
+- Exemple pour développer dans un container :
+	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev)
 
 ### Lancer en mode production
 
@@ -141,20 +153,6 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 
 - Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
 - Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
-
-### Dev docker-compose
-- Créer le fichier de configuration : `cp .env.example .env` et le remplir avec les identifiants OVH obtenus plus haut.
-- Récupérer les dépendences : `docker-compose run web npm install`
-- Créer les tables : `docker-compose run web npm run migrate`
-- Lancer le seeding : `docker-compose run web npm run seed`
-- Lancer le service : `docker-compose up` - Y accèder par http://localhost:8100
-- Lancer les tests : `docker-compose run web npm test`
-
-### Dev docker sans docker-compose
-
-- Exemple pour développer dans un container :
-	- `docker run --rm --env-file ../.env.secretariat.dev -v $(pwd):/app -w /app -ti -p 8100 node /bin/bash` (avec vos variables d'environnement dans ../.env.secretariat.dev)
-
 
 ## Explication du fonctionnement des pull requests Github
 

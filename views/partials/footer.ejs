@@ -1,7 +1,7 @@
       </section>
     </main>
     <footer id="footer">
-      <% if (currentUser) { %>
+      <% if (locals.currentUser) { %>
         <div class="margin-10-0">
           <a href="/community">Accueil</a> /
           Membre : <a href="/account"><%= currentUser.id %></a> /
@@ -17,3 +17,4 @@
     </footer>
   </body>
 </html>
+<%- include('loading-bar'); -%>

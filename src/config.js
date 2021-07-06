@@ -7,7 +7,7 @@ const userStatusOptions = [
 ];
 
 const userBadgeOptions = [
-  { label: 'Ségur', value: 'segur' },
+  { label: 'Ségur (Paris)', value: 'segur' },
 ];
 
 module.exports = {
@@ -39,10 +39,11 @@ module.exports = {
   githubToken: process.env.GITHUB_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
-  defaultLoggedInRedirectUrl: '/community',
+  defaultLoggedInRedirectUrl: '/account',
   visitRecipientEmail: process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
   sentryDNS: process.env.SENTRY_DNS || false,
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
+  investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
 };

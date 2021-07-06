@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../index');
+const app = require('../src/index.ts');
 const utils = require('./utils.js');
 
 chai.use(chaiHttp);
@@ -37,7 +37,7 @@ describe('Home', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community');
+          res.headers.location.should.equal('/account');
           done();
         });
     });

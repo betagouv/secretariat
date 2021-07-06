@@ -2,6 +2,7 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const compression = require('compression');
 const jwt = require('jsonwebtoken');
 const expressJWT = require('express-jwt');
 const cookieParser = require('cookie-parser');
@@ -24,14 +25,18 @@ const adminController = require('./controllers/adminController');
 const onboardingController = require('./controllers/onboardingController');
 const visitController = require('./controllers/visitController');
 const newsletterController = require('./controllers/newsletterController');
+const resourceController = require('./controllers/resourceController');
 
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
 
-app.use('/static', express.static('static'));
-app.use('/datagouvfr', express.static(path.join(__dirname, 'node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use(compression());
+
+app.use('/static', express.static(path.join(__dirname, '../static')));
+app.use('/datagouvfr', express.static(path.join(__dirname, '../node_modules/template.data.gouv.fr/dist'))); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
+app.use('/topbar.js', express.static(path.join(__dirname, '../node_modules/topbar/topbar.min.js')));
 
 app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
@@ -122,6 +127,8 @@ app.post('/users/:username/email/delete', usersController.deleteEmailForUser);
 app.post('/users/:username/redirections', usersController.createRedirectionForUser);
 app.post('/users/:username/redirections/:email/delete', usersController.deleteRedirectionForUser);
 app.post('/users/:username/password', usersController.updatePasswordForUser);
+app.post('/users/:username/secondary_email', usersController.createSecondaryEmailForUser);
+app.post('/users/:username/secondary_email/update', usersController.updateSecondaryEmailForUser);
 app.post('/notifications/github', githubNotificationController.processNotification);
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
@@ -141,6 +148,8 @@ app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
+app.get('/resources', resourceController.getResources);
+
 sentry.initCaptureConsoleWithHandler(app);
 
-module.exports = app.listen(config.port, () => console.log(`Running on port: ${config.port}`));
+module.exports = app.listen(config.port, () => console.log(`Running on port: http://${config.host}:${config.port}`));
