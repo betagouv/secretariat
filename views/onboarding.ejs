@@ -128,9 +128,8 @@
 
             <div class="form__group">
                 <label for="referentList">
-                    <b>Référent</b><br />
-                    Personne de la communauté avec qui tu es en contact.<br />
-                    <i>Renseigne le nom d'une personne pour que ta fiche soit validée rapidement.</i>
+                    <b>Référent (obligatoire)</b><br />
+                    Personne de la communauté avec qui tu es en contact.
                 </label>
                 <% if(useSelectList) { %>
                     <select name="referent" id="username_select">
@@ -139,13 +138,13 @@
                     <% }) %>
                     </select>
                 <% } else { %> 
-                    <input name="referentList" list="user_names" id="referentList">
+                    <input name="referentList" list="user_names" id="referentList" required>
                     <datalist id="user_names">
                     <% users.forEach(function(user) { %>
                         <option data-value="<%= user.id %>" value="<%= user.fullname %>">
                     <% }) %>
                     </datalist>
-                    <input type="hidden" name="referent" id="referentInput_hidden">
+                    <input type="hidden" name="referent" id="referentInput_hidden" required>
                 <% } %> 
 
             <% if(!useSelectList) { %>
