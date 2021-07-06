@@ -28,15 +28,3 @@ module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
   ).then((response) => response.data);
   return res;
 };
-
-module.exports.removeUserFromTeam = async (users, teamId) => {
-  const res = await axios.delete(
-    `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members`,
-    users.map((user) => ({
-      team_id: config.mattermostTeamId,
-      user_id: user.id,
-    })),
-    mattermostConfig,
-  ).then((response) => response.data);
-  return res;
-};

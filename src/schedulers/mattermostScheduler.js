@@ -27,18 +27,3 @@ module.exports.inviteUsersToTeamByEmail = async () => {
   );
   return results;
 };
-
-module.exports.removeUserFromTeam = async () => {
-  const mattermostUsersNotInMembreActif = await mattermost.getUserWithParams({
-    in_team: config.mattermostTeamId,
-  });
-  const users = await BetaGouv.usersInfos();
-  const unactiveGithubUsers = users.filter((x) => {
-    const stillActive = utils.checkUserIsExpired(x);
-    return stillActive;
-  });
-  const unregisteredMemberActifs = await getUnregisteredMemberActifs(unactiveGithubUsers, mattermostUsersNotInMembreActif);
-  const promiseArray = unregisteredMemberActifs.map((member) => mattermost.removeUserToTeam(unregisteredMemberActifs, config.mattermostTeamId));
-  const results = await Promise.all(promiseArray);
-  return results;
-};
