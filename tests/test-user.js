@@ -1,5 +1,7 @@
 const chai = require('chai');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
+const expect = require('chai').expect;
 const nock = require('nock');
 const sinon = require('sinon');
 const config = require('../src/config');
@@ -19,7 +21,7 @@ describe('User', () => {
         .type('form')
         .send({
           _method: 'POST',
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -29,17 +31,20 @@ describe('User', () => {
   });
   describe('POST /users/:username/email authenticated', () => {
     before(async () => {
-      await knex('marrainage').truncate();
+      await knex('marrainage')
+        .truncate();
     });
 
     let sendEmailStub;
     beforeEach((done) => {
-      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail')
+        .returns(true);
       done();
     });
 
     afterEach(async () => {
-      await knex('marrainage').truncate();
+      await knex('marrainage')
+        .truncate();
       sendEmailStub.restore();
     });
 
@@ -47,32 +52,36 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-      knex('marrainage').where({ username: 'membre.nouveau' }).select()
-      .then((marrainage) => {
-        marrainage.length.should.equal(0);
-      })
-      .then(() => {
-        chai.request(app)
-          .post('/users/membre.nouveau/email')
-          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-          .type('form')
-          .send({
-            to_email: 'test@example.com',
-          })
-          .then(async (err, res) => {
-            ovhEmailCreation.isDone().should.be.true;
-            sendEmailStub.calledTwice.should.be.true;
-            const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
-            marrainage.length.should.equal(1);
-            marrainage[0].username.should.equal('membre.nouveau');
-            marrainage[0].last_onboarder.should.not.be.null;
-            done();
-          })
-          .catch(done)
-          .finally(() => {
-            sendEmailStub.restore();
-          });
-      });
+      knex('marrainage')
+        .where({ username: 'membre.nouveau' })
+        .select()
+        .then((marrainage) => {
+          marrainage.length.should.equal(0);
+        })
+        .then(() => {
+          chai.request(app)
+            .post('/users/membre.nouveau/email')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .type('form')
+            .send({
+              to_email: 'test@example.com'
+            })
+            .then(async (err, res) => {
+              ovhEmailCreation.isDone().should.be.true;
+              sendEmailStub.calledTwice.should.be.true;
+              const marrainage = await knex('marrainage')
+                .where({ username: 'membre.nouveau' })
+                .select();
+              marrainage.length.should.equal(1);
+              marrainage[0].username.should.equal('membre.nouveau');
+              marrainage[0].last_onboarder.should.not.be.null;
+              done();
+            })
+            .catch(done)
+            .finally(() => {
+              sendEmailStub.restore();
+            });
+        });
     });
 
     it('should ask OVH to create an email and should send a console.warn if no marain.e available', (done) => {
@@ -86,10 +95,11 @@ describe('User', () => {
             fullname: 'membre Nouveau',
             missions: [
               {
-                start: new Date().toISOString().split('T')[0],
-              },
-            ],
-          },
+                start: new Date().toISOString()
+                  .split('T')[0]
+              }
+            ]
+          }
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -103,32 +113,36 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-      knex('marrainage').where({ username: 'membre.nouveau' }).select()
-      .then((marrainage) => {
-        marrainage.length.should.equal(0);
-      })
-      .then(() => {
-        chai.request(app)
-          .post('/users/membre.nouveau/email')
-          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-          .type('form')
-          .send({
-            to_email: 'test@example.com',
-          })
-          .then(async (err, res) => {
-            ovhEmailCreation.isDone().should.be.true;
-            sendEmailStub.calledTwice.should.be.true;
-            consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
-            const marrainage = await knex('marrainage').where({ username: 'membre.nouveau' }).select();
-            marrainage.length.should.equal(0);
-            done();
-          })
-          .catch(done)
-          .finally(() => {
-            consoleSpy.restore();
-            sendEmailStub.restore();
-          });
-      });
+      knex('marrainage')
+        .where({ username: 'membre.nouveau' })
+        .select()
+        .then((marrainage) => {
+          marrainage.length.should.equal(0);
+        })
+        .then(() => {
+          chai.request(app)
+            .post('/users/membre.nouveau/email')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .type('form')
+            .send({
+              to_email: 'test@example.com'
+            })
+            .then(async (err, res) => {
+              ovhEmailCreation.isDone().should.be.true;
+              sendEmailStub.calledTwice.should.be.true;
+              consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
+              const marrainage = await knex('marrainage')
+                .where({ username: 'membre.nouveau' })
+                .select();
+              marrainage.length.should.equal(0);
+              done();
+            })
+            .catch(done)
+            .finally(() => {
+              consoleSpy.restore();
+              sendEmailStub.restore();
+            });
+        });
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {
@@ -147,7 +161,7 @@ describe('User', () => {
         .get(/^.*email\/domain\/.*\/account\/.*/)
         .reply(200, {
           accountName: 'membre.nouveau',
-          email: 'membre.nouveau@example.com',
+          email: 'membre.nouveau@example.com'
         });
 
       const ovhEmailCreation = nock(/.*ovh.com/)
@@ -159,7 +173,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -167,7 +181,7 @@ describe('User', () => {
         });
     });
 
-    it("should not allow email creation from delegate if github file doesn't exist", (done) => {
+    it('should not allow email creation from delegate if github file doesn\'t exist', (done) => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
@@ -177,7 +191,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -195,7 +209,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -213,7 +227,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -228,7 +242,7 @@ describe('User', () => {
         .post('/users/membre.parti/redirections')
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -248,7 +262,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.true;
@@ -266,7 +280,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.false;
@@ -284,7 +298,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com',
+          to_email: 'test@example.com'
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.false;
@@ -354,7 +368,7 @@ describe('User', () => {
         .post('/users/membre.actif/password')
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -370,7 +384,7 @@ describe('User', () => {
         .post('/users/membre.actif/password')
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -386,7 +400,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .redirects(0)
         .end((err, res) => {
@@ -416,7 +430,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.true;
@@ -433,7 +447,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -450,7 +464,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234',
+          new_password: 'Test_Password_1234'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -467,7 +481,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: '12345678',
+          new_password: '12345678'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -484,7 +498,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: '1234567890123456789012345678901',
+          new_password: '1234567890123456789012345678901'
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -511,25 +525,32 @@ describe('User', () => {
         .reply(200);
 
       knex('users')
-      .insert({ username: 'membre.actif', secondary_email: 'membre.actif@example.com' })
-      .then(() => knex('users').select().where({ username: 'membre.actif' }))
-      .then((dbRes) => {
-        dbRes.length.should.equal(1);
-      })
-      .then(() => {
-        chai.request(app)
-        .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .then(() => knex('users').select().where({ username: 'membre.actif' }))
-        .then((dbNewRes) => {
-          dbNewRes.length.should.equal(1);
-          (dbNewRes[0].secondary_email === null).should.be.true;
-          addRedirection.isDone().should.be.true;
+        .insert({
+          username: 'membre.actif',
+          secondary_email: 'membre.actif@example.com'
         })
-        .then(done)
+        .then(() => knex('users')
+          .select()
+          .where({ username: 'membre.actif' }))
+        .then((dbRes) => {
+          dbRes.length.should.equal(1);
+        })
+        .then(() => {
+          chai.request(app)
+            .post('/users/membre.actif/email/delete')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .then(() => knex('users')
+              .select()
+              .where({ username: 'membre.actif' }))
+            .then((dbNewRes) => {
+              dbNewRes.length.should.equal(1);
+              (dbNewRes[0].secondary_email === null).should.be.true;
+              addRedirection.isDone().should.be.true;
+            })
+            .then(done)
+            .catch(done);
+        })
         .catch(done);
-      })
-      .catch(done);
     });
   });
 
@@ -541,7 +562,7 @@ describe('User', () => {
         .type('form')
         .send({
           username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso@example.com',
+          secondaryEmail: 'membre.actif.perso@example.com'
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -553,7 +574,8 @@ describe('User', () => {
       const username = 'membre.actif';
       const secondaryEmail = 'membre.actif.perso@example.com';
 
-      knex('users').select()
+      knex('users')
+        .select()
         .where({ username: 'membre.actif' })
         .first()
         .then(() => {
@@ -563,9 +585,11 @@ describe('User', () => {
             .type('form')
             .send({
               username,
-              secondaryEmail,
+              secondaryEmail
             })
-            .then(() => knex('users').select().where({ username: 'membre.actif' }))
+            .then(() => knex('users')
+              .select()
+              .where({ username: 'membre.actif' }))
             .then((dbNewRes) => {
               dbNewRes.length.should.equal(1);
               dbNewRes[0].secondary_email.should.equal(secondaryEmail);
@@ -585,7 +609,7 @@ describe('User', () => {
         .type('form')
         .send({
           username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso2@example.com',
+          secondaryEmail: 'membre.actif.perso2@example.com'
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -597,39 +621,42 @@ describe('User', () => {
       const username = 'membre.sansmail';
       const secondaryEmail = 'membre.sansmail.perso@example.com';
       const newSecondaryEmail = 'membre.sansmail.new@example.com';
-
-      knex('users').insert({
-        username,
-        secondary_email: secondaryEmail,
-      })
-      .then(() => {
-        knex('users').select()
-          .where({ username: 'membre.sansmail' })
-          .first()
-          .then((dbRes) => {
-            dbRes.secondary_email.should.equal(secondaryEmail);
-          })
-          .then(() => {
-            chai.request(app)
-              .post(`/users/${username}/secondary_email/update`)
-              .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
-              .type('form')
-              .send({
-                username,
-                newSecondaryEmail,
-              })
-              .then(() => knex('users').select().where({ username: 'membre.sansmail' }))
-              .then((dbNewRes) => {
-                dbNewRes.length.should.equal(1);
-                dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
-              })
-              .then(done)
-              .catch(done);
-          })
-          .catch(done);
-      })
-      .then(done)
-      .catch(done);
+      knex('users')
+        .insert({
+          username,
+          secondary_email: secondaryEmail,
+        })
+        .then(() => {
+          knex('users')
+            .select()
+            .where({ username: 'membre.sansmail' })
+            .first()
+            .then((dbRes) => {
+              dbRes.secondary_email.should.equal(secondaryEmail);
+            })
+            .then(() => {
+              chai.request(app)
+                .post(`/users/${username}/secondary_email/update`)
+                .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
+                .type('form')
+                .send({
+                  username,
+                  newSecondaryEmail,
+                })
+                .then(() => knex('users')
+                  .select()
+                  .where({ username: 'membre.sansmail' }))
+                .then((dbNewRes) => {
+                  dbNewRes.length.should.equal(1);
+                  dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
+                })
+                .then(done)
+                .catch(done);
+            })
+            .catch(done);
+        })
+        .then(done)
+        .catch(done);
     });
   });
 
@@ -662,8 +689,9 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.expire@${config.domain}`,
-          to: 'perso@example.ovh',
-        }).persist();
+          to: 'perso@example.ovh'
+        })
+        .persist();
 
       utils.mockUsers();
       utils.mockOvhTime();
@@ -713,8 +741,9 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.actif@${config.domain}`,
-          to: 'perso@example.ovh',
-        }).persist();
+          to: 'perso@example.ovh'
+        })
+        .persist();
 
       utils.mockUsers();
       utils.mockOvhTime();
@@ -750,8 +779,9 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.actif@${config.domain}`,
-          to: 'perso@example.ovh',
-        }).persist();
+          to: 'perso@example.ovh'
+        })
+        .persist();
 
       utils.mockUsers();
       utils.mockOvhTime();
@@ -776,20 +806,25 @@ describe('User', () => {
 
   describe('cronjob', () => {
     before(async () => {
-      await knex('users').truncate();
-      await knex('marrainage').truncate();
+      await knex('users')
+        .truncate();
+      await knex('marrainage')
+        .truncate();
     });
     let sendEmailStub;
     let betagouvCreateEmail;
     beforeEach((done) => {
-      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail')
+        .returns(true);
       betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
 
     afterEach(async () => {
-      await knex('users').truncate();
-      await knex('marrainage').truncate();
+      await knex('users')
+        .truncate();
+      await knex('marrainage')
+        .truncate();
       sendEmailStub.restore();
       betagouvCreateEmail.restore();
     });
@@ -807,19 +842,20 @@ describe('User', () => {
               {
                 start: '2016-11-03',
                 status: 'independent',
-                employer: 'octo',
-              },
-            ],
+                employer: 'octo'
+              }
+            ]
           },
           {
             id: 'membre.nouveau',
             fullname: 'membre Nouveau',
             missions: [
               {
-                start: new Date().toISOString().split('T')[0],
-              },
-            ],
-          },
+                start: new Date().toISOString()
+                  .split('T')[0]
+              }
+            ]
+          }
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -832,23 +868,28 @@ describe('User', () => {
       const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
 
       nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, allAccountsExceptANewMember.map((user) => user.id));
 
       const ovhEmailCreation = nock(/.*ovh.com/)
-      .post(/^.*email\/domain\/.*\/account/)
-      .reply(200);
-      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+      let marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
-        username: newMember.id,
-        secondary_email: 'membre.nouveau.perso@example.com',
-      });
+      await knex('users')
+        .insert({
+          username: newMember.id,
+          secondary_email: 'membre.nouveau.perso@example.com'
+        });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
@@ -869,19 +910,20 @@ describe('User', () => {
               {
                 start: '2016-11-03',
                 status: 'independent',
-                employer: 'octo',
-              },
-            ],
+                employer: 'octo'
+              }
+            ]
           },
           {
             id: 'membre.nouveau',
             fullname: 'membre Nouveau',
             missions: [
               {
-                start: startDate.toISOString().split('T')[0],
-              },
-            ],
-          },
+                start: startDate.toISOString()
+                  .split('T')[0]
+              }
+            ]
+          }
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -894,24 +936,29 @@ describe('User', () => {
       const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
 
       nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, allAccountsExceptANewMember.map((user) => user.id));
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      let marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
-        username: newMember.id,
-        secondary_email: 'membre.nouveau.perso@example.com',
-      });
+      await knex('users')
+        .insert({
+          username: newMember.id,
+          secondary_email: 'membre.nouveau.perso@example.com'
+        });
       await createEmailAddresses();
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       ovhEmailCreation.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
-      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
     });
 
@@ -926,10 +973,11 @@ describe('User', () => {
             fullname: 'membre Nouveau',
             missions: [
               {
-                start: new Date().toISOString().split('T')[0],
-              },
-            ],
-          },
+                start: new Date().toISOString()
+                  .split('T')[0]
+              }
+            ]
+          }
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -942,26 +990,31 @@ describe('User', () => {
       const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
 
       nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(200, allAccountsExceptANewMember.map((user) => user.id));
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, allAccountsExceptANewMember.map((user) => user.id));
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
       const consoleSpy = sinon.spy(console, 'warn');
 
-      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      let marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
-        username: newMember.id,
-        secondary_email: 'membre.nouveau.perso@example.com',
-      });
+      await knex('users')
+        .insert({
+          username: newMember.id,
+          secondary_email: 'membre.nouveau.perso@example.com'
+        });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
       console.warn.restore();
     });
@@ -981,23 +1034,25 @@ describe('User', () => {
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
 
       nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(200, [newMember]);
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
 
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      knex('users').insert({
-        username: newMember.id,
-        secondary_email: newMember.email,
-      }).then(async () => {
-        await createEmailAddresses();
-        betagouvCreateEmail.notCalled.should.be.true;
-        ovhEmailCreation.isDone().should.be.false;
-        sendEmailStub.notCalled.should.be.true;
-        done();
-      });
+      knex('users')
+        .insert({
+          username: newMember.id,
+          secondary_email: newMember.email
+        })
+        .then(async () => {
+          await createEmailAddresses();
+          betagouvCreateEmail.notCalled.should.be.true;
+          ovhEmailCreation.isDone().should.be.false;
+          sendEmailStub.notCalled.should.be.true;
+          done();
+        });
     });
 
     it('should not create email accounts if we dont have the secondary email', (done) => {
@@ -1005,15 +1060,17 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      knex('users').insert({
-        username: 'membre.nouveau',
-      }).then(async () => {
-        await createEmailAddresses();
-        betagouvCreateEmail.notCalled.should.be.true;
-        ovhEmailCreation.isDone().should.be.false;
-        sendEmailStub.notCalled.should.be.true;
-        done();
-      });
+      knex('users')
+        .insert({
+          username: 'membre.nouveau'
+        })
+        .then(async () => {
+          await createEmailAddresses();
+          betagouvCreateEmail.notCalled.should.be.true;
+          ovhEmailCreation.isDone().should.be.false;
+          sendEmailStub.notCalled.should.be.true;
+          done();
+        });
     });
   });
 });

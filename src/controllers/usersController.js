@@ -13,7 +13,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
     .slice(0, -2);
 
   console.log(
-    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`
+    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`,
   );
 
   const secretariatUrl = `${config.protocol}://${config.host}`;
@@ -26,7 +26,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
     password,
-    secretariatUrl
+    secretariatUrl,
   });
 
   try {
@@ -45,13 +45,13 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`
+        `Le compte du membre ${username} est expiré.`,
       );
     }
 
@@ -95,13 +95,13 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`
+        `Le compte du membre ${username} est expiré.`,
       );
     }
 
@@ -110,7 +110,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`,
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -122,7 +122,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(username),
         req.body.to_email,
-        req.body.keep_copy === 'true'
+        req.body.keep_copy === 'true',
       );
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
@@ -141,7 +141,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
 module.exports.deleteRedirectionForUser = async function (req, res) {
   const {
     username,
-    email: toEmail
+    email: toEmail,
   } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -185,13 +185,13 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`
+        `Le compte du membre ${username} est expiré.`,
       );
     }
 
@@ -208,7 +208,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
       || password !== password.trim()
     ) {
       throw new Error(
-        'Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d\'accents ni d\'espace au début ou à la fin.'
+        'Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d\'accents ni d\'espace au début ou à la fin.',
       );
     }
 
@@ -242,7 +242,7 @@ module.exports.deleteEmailForUser = async function (req, res) {
 
     if (!isCurrentUser && !user.isExpired) {
       throw new Error(
-        `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+        `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`,
       );
     }
 
@@ -303,14 +303,15 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { newSecondaryEmail } = req.body;
   const user = await utils.userInfos(username, isCurrentUser);
 
+  console.log('tttdscqq');
+  console.log(user.canChangeSecondaryEmail);
   try {
-    console.log(user.canChangeSecondaryEmail, username, newSecondaryEmail, user.emailInfos.email);
     if (user.canChangeSecondaryEmail) {
       await knex('users')
         .update({
           secondary_email: newSecondaryEmail,
         })
-        .where('username', username);
+        .where({ username });
 
       req.flash('message', 'Ton compte email secondaire a bien été modifié.');
       res.redirect(`/community/${username}`);
