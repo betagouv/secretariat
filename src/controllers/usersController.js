@@ -27,6 +27,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
     email,
     password,
     secretariatUrl,
+    mattermostInvitationLink: config.mattermostInvitationLink,
   });
 
   try {
