@@ -1,7 +1,7 @@
 const rewire = require('rewire');
 const nock = require('nock');
 const sinon = require('sinon');
-const utils = require('./utils.js');
+const utils = require('./utils');
 const testUsers = require('./users.json');
 const config = require('../src/config');
 
@@ -26,7 +26,7 @@ const mattermostUsers = [
 
 const mattermostScheduler = rewire('../src/schedulers/mattermostScheduler');
 
-describe('getMattermostUserNotInTeam', () => {
+describe('invite users to mattermost', () => {
   let clock;
   beforeEach(async () => {
     const date = new Date('2021-01-20T07:59:59+01:00');
@@ -38,7 +38,7 @@ describe('getMattermostUserNotInTeam', () => {
     clock.restore();
   });
 
-  it('Add user to team', async () => {
+  it('invite users to team by emails', async () => {
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
@@ -47,7 +47,7 @@ describe('getMattermostUserNotInTeam', () => {
     .reply(200, []);
 
     const postBatchMock = nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/teams\/testteam\/members\/batch.*/)
+    .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
     .reply(200, [{}, {}]).persist();
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
@@ -55,8 +55,8 @@ describe('getMattermostUserNotInTeam', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, testUsers)
     .persist();
-    const addUsersToTeam = mattermostScheduler.__get__('addUsersToTeam');
-    const result = await addUsersToTeam([...mattermostUsers]);
+    const inviteUsersToTeamByEmail = mattermostScheduler.inviteUsersToTeamByEmail
+    const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
 });
