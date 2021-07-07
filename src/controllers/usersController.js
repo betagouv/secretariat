@@ -21,7 +21,12 @@ module.exports.createEmail = async function (username, creator, toEmail) {
   await BetaGouv.sendInfoToSlack(message);
   await BetaGouv.createEmail(username, password);
 
-  const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
+  const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
+    email,
+    password,
+    secretariatUrl,
+    mattermostInvitationLink: config.mattermostInvitationLink,
+  });
 
   try {
     await utils.sendMail(toEmail, 'Bienvenue chez BetaGouv 🙂', html);
