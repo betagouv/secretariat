@@ -46,4 +46,5 @@ module.exports = {
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
 };

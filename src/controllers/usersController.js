@@ -8,10 +8,12 @@ const { createRequestForUser } = require('./marrainageController');
 
 module.exports.createEmail = async function (username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
-  const password = crypto.randomBytes(16).toString('base64').slice(0, -2);
+  const password = crypto.randomBytes(16)
+    .toString('base64')
+    .slice(0, -2);
 
   console.log(
-    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`,
+    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`
   );
 
   const secretariatUrl = `${config.protocol}://${config.host}`;
@@ -21,7 +23,11 @@ module.exports.createEmail = async function (username, creator, toEmail) {
   await BetaGouv.sendInfoToSlack(message);
   await BetaGouv.createEmail(username, password);
 
-  const html = await ejs.renderFile('./views/emails/createEmail.ejs', { email, password, secretariatUrl });
+  const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
+    email,
+    password,
+    secretariatUrl
+  });
 
   try {
     await utils.sendMail(toEmail, 'Bienvenue chez BetaGouv 🙂', html);
@@ -39,18 +45,18 @@ module.exports.createEmailForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`,
+        `Le compte du membre ${username} est expiré.`
       );
     }
 
     if (!user.canCreateEmail) {
-      throw new Error("Vous n'avez pas le droit de créer le compte email du membre.");
+      throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
     }
 
     if (!isCurrentUser) {
@@ -89,22 +95,22 @@ module.exports.createRedirectionForUser = async function (req, res) {
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`,
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`,
+        `Le compte du membre ${username} est expiré.`
       );
     }
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droit de créer de redirection.");
+      throw new Error('Vous n\'avez pas le droit de créer de redirection.');
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`,
+      `Création d'une redirection d'email id=${req.user.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -116,7 +122,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(username),
         req.body.to_email,
-        req.body.keep_copy === 'true',
+        req.body.keep_copy === 'true'
       );
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
@@ -133,7 +139,10 @@ module.exports.createRedirectionForUser = async function (req, res) {
 };
 
 module.exports.deleteRedirectionForUser = async function (req, res) {
-  const { username, email: toEmail } = req.params;
+  const {
+    username,
+    email: toEmail
+  } = req.params;
   const isCurrentUser = req.user.id === username;
 
   try {
@@ -141,7 +150,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     // TODO: vérifier si le membre existe sur Github ?
 
     if (!user.canCreateRedirection) {
-      throw new Error("Vous n'avez pas le droit de supprimer cette redirection.");
+      throw new Error('Vous n\'avez pas le droit de supprimer cette redirection.');
     }
 
     console.log(`Suppression de la redirection by=${username}&to_email=${toEmail}`);
@@ -176,18 +185,18 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     if (!user.userInfos) {
       throw new Error(
-        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`,
+        `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
       );
     }
 
     if (user.isExpired) {
       throw new Error(
-        `Le compte du membre ${username} est expiré.`,
+        `Le compte du membre ${username} est expiré.`
       );
     }
 
     if (!user.canChangePassword) {
-      throw new Error("Vous n'avez pas le droit de changer le mot de passe.");
+      throw new Error('Vous n\'avez pas le droit de changer le mot de passe.');
     }
 
     const password = req.body.new_password;
@@ -199,7 +208,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
       || password !== password.trim()
     ) {
       throw new Error(
-        "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
+        'Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d\'accents ni d\'espace au début ou à la fin.'
       );
     }
 
@@ -233,7 +242,7 @@ module.exports.deleteEmailForUser = async function (req, res) {
 
     if (!isCurrentUser && !user.isExpired) {
       throw new Error(
-        `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`,
+        `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
       );
     }
 
@@ -244,9 +253,11 @@ module.exports.deleteEmailForUser = async function (req, res) {
       console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
     }
 
-    await BetaGouv.deleteEmail(username);
-    await knex('users').where({ username }).del();
-    console.log(`Suppression de compte email de ${username} (à la demande de ${req.user.id})`);
+    await BetaGouv.createRedirection(username, config.leavesEmail, false);
+    await knex('users')
+      .update({ secondary_email: null })
+      .where({ username });
+    console.log(`Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.user.id})`);
 
     if (isCurrentUser) {
       res.clearCookie('token');
@@ -271,10 +282,11 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
 
   try {
     if (user.canChangeSecondaryEmail) {
-      await knex('users').insert({
-        username,
-        secondary_email: secondaryEmail,
-      });
+      await knex('users')
+        .update({
+          secondary_email: secondaryEmail,
+        })
+        .where({ username });
       req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
       res.redirect(`/community/${username}`);
     }
@@ -292,12 +304,13 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const user = await utils.userInfos(username, isCurrentUser);
 
   try {
+    console.log(user.canChangeSecondaryEmail, username, newSecondaryEmail, user.emailInfos.email);
     if (user.canChangeSecondaryEmail) {
       await knex('users')
-      .where('username', username)
-      .update({
-        secondary_email: newSecondaryEmail,
-      });
+        .update({
+          secondary_email: newSecondaryEmail,
+        })
+        .where('username', username);
 
       req.flash('message', 'Ton compte email secondaire a bien été modifié.');
       res.redirect(`/community/${username}`);

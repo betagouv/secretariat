@@ -60,10 +60,10 @@
                 <% if (marrainageState.completed) { %>
                     Tu peux peut parler à ton ou ta marrain·e qui est <strong><%= marrainageState.last_onboarder %></strong>.
                 <% } else { %>
-                    Nous avons demandé à <strong><%= marrainageState.last_onboarder %></strong> de devenir ton ou ta marrain·e, nous attendons sa réponse. 
+                    Nous avons demandé à <strong><%= marrainageState.last_onboarder %></strong> de devenir ton ou ta marrain·e, nous attendons sa réponse.
                 <% } %>
             <% } else { %>
-                    Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.            
+                    Tu peux inviter quelqu'un·e à devenir ton ou ta marrain·e.
             <% } %>
                 Son role est de t'accompagner dans tes démarches et t'aider
                     à t'orienter au sein de la communauté.
@@ -245,7 +245,6 @@
         <div class="panel">
             <h3>❗ Clôturer mon compte</h3>
             <p>Si tu as quitté la communauté, clôture ton compte :</p>
-
             <ul>
                 <li>
                     Clôturer ton compte email
@@ -253,10 +252,13 @@
                 <li>
                     Supprimer toutes tes redirections
                 </li>
+                <li>
+                    Rediriger des éventuels email vers depart@beta.gouv.fr
+                </li>
             </ul>
             <form onsubmit="const proceed = confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?'); event.submitter && (event.submitter.disabled = proceed); return proceed;" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
                 <div class="form__group">
-                    <button class="button margin-right-10" type="submit">Clotûrer mon compte</button>
+                    <button class="button margin-right-10" type="submit">Clôturer mon compte</button>
                 </div>
             </form>
         </div>
