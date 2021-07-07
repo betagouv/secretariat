@@ -1,7 +1,4 @@
 const chai = require('chai');
-const should = require('chai')
-  .should();
-const expect = require('chai').expect;
 const nock = require('nock');
 const sinon = require('sinon');
 const config = require('../src/config');
@@ -21,7 +18,7 @@ describe('User', () => {
         .type('form')
         .send({
           _method: 'POST',
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -64,7 +61,7 @@ describe('User', () => {
             .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .type('form')
             .send({
-              to_email: 'test@example.com'
+              to_email: 'test@example.com',
             })
             .then(async (err, res) => {
               ovhEmailCreation.isDone().should.be.true;
@@ -96,10 +93,10 @@ describe('User', () => {
             missions: [
               {
                 start: new Date().toISOString()
-                  .split('T')[0]
-              }
-            ]
-          }
+                  .split('T')[0],
+              },
+            ],
+          },
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -125,7 +122,7 @@ describe('User', () => {
             .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .type('form')
             .send({
-              to_email: 'test@example.com'
+              to_email: 'test@example.com',
             })
             .then(async (err, res) => {
               ovhEmailCreation.isDone().should.be.true;
@@ -161,7 +158,7 @@ describe('User', () => {
         .get(/^.*email\/domain\/.*\/account\/.*/)
         .reply(200, {
           accountName: 'membre.nouveau',
-          email: 'membre.nouveau@example.com'
+          email: 'membre.nouveau@example.com',
         });
 
       const ovhEmailCreation = nock(/.*ovh.com/)
@@ -173,7 +170,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -191,7 +188,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -209,7 +206,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -227,7 +224,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhEmailCreation.isDone().should.be.false;
@@ -242,7 +239,7 @@ describe('User', () => {
         .post('/users/membre.parti/redirections')
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -262,7 +259,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.true;
@@ -280,7 +277,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.false;
@@ -298,7 +295,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          to_email: 'test@example.com'
+          to_email: 'test@example.com',
         })
         .end((err, res) => {
           ovhRedirectionCreation.isDone().should.be.false;
@@ -368,7 +365,7 @@ describe('User', () => {
         .post('/users/membre.actif/password')
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -384,7 +381,7 @@ describe('User', () => {
         .post('/users/membre.actif/password')
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -400,7 +397,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .redirects(0)
         .end((err, res) => {
@@ -430,7 +427,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.true;
@@ -447,7 +444,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -464,7 +461,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
-          new_password: 'Test_Password_1234'
+          new_password: 'Test_Password_1234',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -481,7 +478,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: '12345678'
+          new_password: '12345678',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -498,7 +495,7 @@ describe('User', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          new_password: '1234567890123456789012345678901'
+          new_password: '1234567890123456789012345678901',
         })
         .end((err, res) => {
           this.ovhPasswordNock.isDone().should.be.false;
@@ -527,7 +524,7 @@ describe('User', () => {
       knex('users')
         .insert({
           username: 'membre.actif',
-          secondary_email: 'membre.actif@example.com'
+          secondary_email: 'membre.actif@example.com',
         })
         .then(() => knex('users')
           .select()
@@ -562,7 +559,7 @@ describe('User', () => {
         .type('form')
         .send({
           username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso@example.com'
+          secondaryEmail: 'membre.actif.perso@example.com',
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -570,6 +567,9 @@ describe('User', () => {
       done();
     });
 
+    // fixme: this test test nothing since it fail silently on chai.request
+    // because user.canChangeSecondaryEmail is false. It should be tested with
+    // a valid BetaGouvUser
     it('should add secondary email', (done) => {
       const username = 'membre.actif';
       const secondaryEmail = 'membre.actif.perso@example.com';
@@ -585,7 +585,7 @@ describe('User', () => {
             .type('form')
             .send({
               username,
-              secondaryEmail
+              secondaryEmail,
             })
             .then(() => knex('users')
               .select()
@@ -609,7 +609,7 @@ describe('User', () => {
         .type('form')
         .send({
           username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso2@example.com'
+          secondaryEmail: 'membre.actif.perso2@example.com',
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -621,14 +621,13 @@ describe('User', () => {
       const username = 'membre.sansmail';
       const secondaryEmail = 'membre.sansmail.perso@example.com';
       const newSecondaryEmail = 'membre.sansmail.new@example.com';
-      knex('users')
-        .insert({
-          username,
-          secondary_email: secondaryEmail,
-        })
+
+      knex('users').insert({
+        username,
+        secondary_email: secondaryEmail,
+      })
         .then(() => {
-          knex('users')
-            .select()
+          knex('users').select()
             .where({ username: 'membre.sansmail' })
             .first()
             .then((dbRes) => {
@@ -643,9 +642,7 @@ describe('User', () => {
                   username,
                   newSecondaryEmail,
                 })
-                .then(() => knex('users')
-                  .select()
-                  .where({ username: 'membre.sansmail' }))
+                .then(() => knex('users').select().where({ username: 'membre.sansmail' }))
                 .then((dbNewRes) => {
                   dbNewRes.length.should.equal(1);
                   dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
@@ -661,20 +658,6 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
-    // it('should ask OVH to delete the email account', (done) => {
-    //   const ovhEmailDeletion = nock(/.*ovh.com/)
-    //     .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
-    //     .reply(200);
-    //
-    //   chai.request(app)
-    //     .post('/users/membre.expire/email/delete')
-    //     .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-    //     .end((err, res) => {
-    //       ovhEmailDeletion.isDone().should.be.true;
-    //       done();
-    //     });
-    // });
-
     it('should ask OVH to delete all redirections', (done) => {
       nock.cleanAll();
 
@@ -689,7 +672,7 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.expire@${config.domain}`,
-          to: 'perso@example.ovh'
+          to: 'perso@example.ovh',
         })
         .persist();
 
@@ -741,7 +724,7 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.actif@${config.domain}`,
-          to: 'perso@example.ovh'
+          to: 'perso@example.ovh',
         })
         .persist();
 
@@ -779,7 +762,7 @@ describe('User', () => {
         .reply(200, {
           id: '123123',
           from: `membre.actif@${config.domain}`,
-          to: 'perso@example.ovh'
+          to: 'perso@example.ovh',
         })
         .persist();
 
@@ -842,9 +825,9 @@ describe('User', () => {
               {
                 start: '2016-11-03',
                 status: 'independent',
-                employer: 'octo'
-              }
-            ]
+                employer: 'octo',
+              },
+            ],
           },
           {
             id: 'membre.nouveau',
@@ -852,10 +835,10 @@ describe('User', () => {
             missions: [
               {
                 start: new Date().toISOString()
-                  .split('T')[0]
-              }
-            ]
-          }
+                  .split('T')[0],
+              },
+            ],
+          },
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -881,7 +864,7 @@ describe('User', () => {
       await knex('users')
         .insert({
           username: newMember.id,
-          secondary_email: 'membre.nouveau.perso@example.com'
+          secondary_email: 'membre.nouveau.perso@example.com',
         });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
@@ -910,9 +893,9 @@ describe('User', () => {
               {
                 start: '2016-11-03',
                 status: 'independent',
-                employer: 'octo'
-              }
-            ]
+                employer: 'octo',
+              },
+            ],
           },
           {
             id: 'membre.nouveau',
@@ -920,10 +903,10 @@ describe('User', () => {
             missions: [
               {
                 start: startDate.toISOString()
-                  .split('T')[0]
-              }
-            ]
-          }
+                  .split('T')[0],
+              },
+            ],
+          },
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -950,7 +933,7 @@ describe('User', () => {
       await knex('users')
         .insert({
           username: newMember.id,
-          secondary_email: 'membre.nouveau.perso@example.com'
+          secondary_email: 'membre.nouveau.perso@example.com',
         });
       await createEmailAddresses();
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
@@ -974,10 +957,10 @@ describe('User', () => {
             missions: [
               {
                 start: new Date().toISOString()
-                  .split('T')[0]
-              }
-            ]
-          }
+                  .split('T')[0],
+              },
+            ],
+          },
         ])
         .persist();
       utils.mockSlackGeneral();
@@ -1005,7 +988,7 @@ describe('User', () => {
       await knex('users')
         .insert({
           username: newMember.id,
-          secondary_email: 'membre.nouveau.perso@example.com'
+          secondary_email: 'membre.nouveau.perso@example.com',
         });
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
@@ -1044,7 +1027,7 @@ describe('User', () => {
       knex('users')
         .insert({
           username: newMember.id,
-          secondary_email: newMember.email
+          secondary_email: newMember.email,
         })
         .then(async () => {
           await createEmailAddresses();
@@ -1062,7 +1045,7 @@ describe('User', () => {
 
       knex('users')
         .insert({
-          username: 'membre.nouveau'
+          username: 'membre.nouveau',
         })
         .then(async () => {
           await createEmailAddresses();

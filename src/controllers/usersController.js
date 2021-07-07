@@ -303,8 +303,6 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
   const { newSecondaryEmail } = req.body;
   const user = await utils.userInfos(username, isCurrentUser);
 
-  console.log('tttdscqq');
-  console.log(user.canChangeSecondaryEmail);
   try {
     if (user.canChangeSecondaryEmail) {
       await knex('users')
