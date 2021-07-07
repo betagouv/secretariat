@@ -1,3 +1,6 @@
+import { Octokit } from '@octokit/core';
+import * as config from '../config';
+
 const fm = require('front-matter');
 const axios = require('axios').default;
 
@@ -98,3 +101,29 @@ function isValidGithubUserName(value) {
   return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
 }
 exports.isValidGithubUserName = isValidGithubUserName;
+
+const octokit = new Octokit({ auth: config.githubAccessToken });
+
+const getGithubMembers = (i) => octokit.request('GET /orgs/{org}/members', {
+  org: 'betagouv',
+  per_page: 100,
+  page: i,
+});
+
+exports.getGithubMembers = getGithubMembers
+
+exports.getAllOrganizationMembers = async (i = 0) => {
+    const githubUsers = getGithubMembers(i)
+    if (!githubUsers.length) {
+        return [];
+    }
+    const nextPageGithubUsers = await getGithubMembers(i + 1);
+    return [...githubUsers, ...nextPageGithubUsers];
+};
+
+exports.inviteUserByUsername = (member) => {
+  octokit.request('PUT /orgs/{org}/memberships/{username}', {
+    org: 'betagouv',
+    username: member.github,
+})
+}

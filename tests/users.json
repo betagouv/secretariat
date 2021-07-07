@@ -2,6 +2,7 @@
   {
     "id": "membre.actif",
     "fullname": "Membre Actif",
+    "github": "membre.actif",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -13,6 +14,7 @@
   {
     "id": "membre.expire",
     "fullname": "Membre Expiré",
+    "github": "membre.expire",
     "missions": [
       { 
         "start": "2016-11-03",
