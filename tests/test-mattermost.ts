@@ -57,7 +57,7 @@ describe('invite users to mattermost', () => {
     .reply(200, testUsers)
     .persist();
     const { inviteUsersToTeamByEmail } = mattermostScheduler;
-    const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
+    const result = await inviteUsersToTeamByEmail();
     result.length.should.be.equal(2);
   });
 
@@ -84,7 +84,7 @@ describe('invite users to mattermost', () => {
     result.length.should.be.equal(1);
     mattermostCreateUser.calledOnce.should.be.true;
     sendEmailStub.calledOnce.should.be.true;
-    sendEmailStub.restore()
+    sendEmailStub.restore();
     mattermostCreateUser.firstCall.args[0].email = `mattermost.newuser@${config.domain}`;
     mattermostCreateUser.firstCall.args[0].useranme = 'mattermost.newuser';
   });
