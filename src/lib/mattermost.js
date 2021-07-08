@@ -38,3 +38,23 @@ module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
   console.log('Ajout des utilisateurs à mattermost', userEmails);
   return res;
 };
+
+module.exports.createUser = async ({ email, username, password }, teamId) => {
+  let res;
+  try {
+    res = await axios.post(
+      `https://mattermost.incubateur.net/api/v4/users?iid=${config.mattermostInviteId}`,
+      {
+        email,
+        username,
+        password,
+      },
+      mattermostConfig,
+    ).then((response) => response.data);
+  } catch (err) {
+    console.error('Erreur d\'ajout des utilisateurs à mattermost', err, email, username);
+    return;
+  }
+  console.log('Ajout de l\'utilisateur', email, username);
+  return res;
+};
