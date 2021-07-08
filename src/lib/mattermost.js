@@ -9,10 +9,13 @@ const mattermostConfig = {
 
 module.exports.getUserWithParams = async (params, i = 0) => {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
-    ...params,
-    per_page: 200,
-    page: i,
-  }, mattermostConfig).then((response) => response.data);
+    params: {
+      ...params,
+      per_page: 200,
+      page: i,
+    },
+    ...mattermostConfig,
+  }).then((response) => response.data);
   if (!mattermostUsers.length) {
     return [];
   }
