@@ -1,7 +1,6 @@
 import { checkUserIsExpired } from '../controllers/utils';
 import * as BetaGouv from '../betagouv';
 import { inviteUserByUsername, getAllOrganizationMembers } from '../lib/github'
-import * as config from '../config';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getUnregisteredMemberActifs = async (activeGithubUsers, allGithubOrganizationMembers) => {
