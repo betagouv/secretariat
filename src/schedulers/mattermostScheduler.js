@@ -22,7 +22,6 @@ module.exports.inviteUsersToTeamByEmail = async () => {
     return stillActive;
   });
   const unregisteredMemberActifs = await getUnregisteredMemberActifs(activeGithubUsers, allMattermostUsers);
-  console.log(unregisteredMemberActifs);
   const results = await mattermost.inviteUsersToTeamByEmail(
     unregisteredMemberActifs.map((member) => member).slice(0, 19), config.mattermostTeamId,
   );
