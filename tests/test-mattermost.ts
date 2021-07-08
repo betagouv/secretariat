@@ -60,4 +60,32 @@ describe('invite users to mattermost', () => {
     const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
+
+  it('create users to team by emails', async () => {
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, [...mattermostUsers]);
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, []);
+    nock(/.*mattermost.incubateur.net/)
+    .post(/^.*api\/v4\/users\?iid=.*/)
+    .reply(200, []).persist();
+    const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    const mattermostCreateUser = sinon.spy(mattermost, 'createUser');
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, testUsers)
+    .persist();
+    const { createUsersByEmail } = mattermostScheduler;
+    const result = await createUsersByEmail();
+    result.length.should.be.equal(1);
+    mattermostCreateUser.calledOnce.should.be.true;
+    sendEmailStub.calledOnce.should.be.true;
+    sendEmailStub.restore()
+    mattermostCreateUser.firstCall.args[0].email = `mattermost.newuser@${config.domain}`;
+    mattermostCreateUser.firstCall.args[0].useranme = 'mattermost.newuser';
+  });
 });
