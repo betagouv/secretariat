@@ -8,7 +8,7 @@ const getUnregisteredMemberActifs = async (activeGithubUsers, allMattermostUsers
   const activeGithubUsersEmails = activeGithubUsers.map((user) => `${user.id}@${config.domain}`);
   const allMattermostUsersEmails = allMattermostUsers.map((mattermostUser) => mattermostUser.email);
   const unregisteredMemberActifs = activeGithubUsersEmails.filter(
-    (user) => !allMattermostUsersEmails.includes(user.email),
+    (email) => !allMattermostUsersEmails.includes(email),
   );
   return unregisteredMemberActifs;
 };
@@ -22,7 +22,7 @@ module.exports.inviteUsersToTeamByEmail = async () => {
   });
   const unregisteredMemberActifs = await getUnregisteredMemberActifs(activeGithubUsers, allMattermostUsers);
   const results = await mattermost.inviteUsersToTeamByEmail(
-    unregisteredMemberActifs.map((member) => member.email), config.mattermostTeamId,
+    unregisteredMemberActifs.map((member) => member), config.mattermostTeamId,
   );
   return results;
 };
