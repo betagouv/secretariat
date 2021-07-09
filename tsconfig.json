@@ -21,6 +21,5 @@
         "knexfile.js",
         "migrations",
         "dist",
-        "tests",
     ]
 }

@@ -1,15 +1,14 @@
-const jwt = require('jsonwebtoken');
-const nock = require('nock');
-const { Client } = require('pg');
-const { parse } = require('pg-connection-string');
-const { v4: uuidv4 } = require('uuid');
+import jwt from 'jsonwebtoken';
+import nock from 'nock';
+import { Client } from 'pg';
+import { parse } from 'pg-connection-string';
+import { v4 as uuidv4 } from 'uuid';
+import testUsers from './users.json';
+import testStartups from './startups.json';
+import knex from '../src/db/index';
+import config from '../src/config';
 
-const config = require('../src/config');
-const testUsers = require('./users.json');
-const testStartups = require('./startups.json');
-const knex = require('../src/db/index');
-
-module.exports = {
+export default {
   getJWT(id) {
     return jwt.sign({ id }, config.secret, { expiresIn: '1 hours' });
   },
@@ -60,7 +59,7 @@ module.exports = {
   mockOvhRedirectionWithQueries() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/redirection/)
-      .query((x) => x.from && x.to)
+      .query((x) => Boolean(x.from && x.to))
       .reply(200, ['398284990'])
       .persist();
   },
@@ -73,7 +72,7 @@ module.exports = {
   mockOvhTime() {
     return nock(/.*ovh.com/)
       .get(/^.*auth\/time/)
-      .reply(200, (new Date()).getTime() / 1000)
+      .reply(200, [Math.trunc(new Date().getTime() / 1000)])
       .persist();
   },
   cleanMocks() {

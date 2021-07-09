@@ -1,7 +1,7 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const nock = require('nock');
-const utils = require('./utils.js');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import nock from 'nock';
+import utils from './utils.js';
 
 chai.use(chaiHttp);
 chai.should();

@@ -11,10 +11,10 @@
     "rolldown": "knex migrate:down",
     "dev": "ts-node-dev src/index.ts",
     "lint": "eslint . --fix",
-    "test": "mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.ts --timeout 3000",
+    "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.ts --timeout 3000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "build": "./node_modules/.bin/tsc -p tsconfig.json"
+    "build": "./node_modules/.bin/tsc -p tsconfig-build.json"
   },
   "lint-staged": {
     "*.{js}": [

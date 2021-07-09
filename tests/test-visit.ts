@@ -1,27 +1,32 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const _ = require('lodash');
-const rewire = require('rewire');
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
-const config = require('../src/config');
-const controllerUtils = require('../src/controllers/utils');
-const knex = require('../src/db');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import sinon from 'sinon';
+import _ from 'lodash';
+import rewire from 'rewire';
+import app from '../src/index';
+import utils from './utils.js';
+import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+
+chai.use(chaiHttp);
 
 const visitScheduler = rewire('../src/schedulers/visitScheduler');
 
 describe.skip('Visit', () => {
+  let clock;
   let sendEmailStub;
+
   beforeEach((done) => {
     sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-    this.clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
+    clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });
 
   afterEach((done) => {
     knex('visits').truncate()
       .then(() => sendEmailStub.restore())
-      .then(() => this.clock.restore())
+      .then(() => clock.restore())
       .then(() => done())
       .catch(done);
   });

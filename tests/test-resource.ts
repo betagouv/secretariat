@@ -1,7 +1,9 @@
-const chai = require('chai');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import app from '../src/index';
+import utils from './utils';
 
-const app = require('../src/index.ts');
-const utils = require('./utils');
+chai.use(chaiHttp);
 
 describe('Resource', () => {
   describe('GET /resources unauthenticated', () => {
@@ -11,8 +13,8 @@ describe('Resource', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/resources');
+          res.header.location.should.include('/login');
+          res.header.location.should.equal('/login?next=/resources');
           done();
         });
     });
