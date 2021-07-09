@@ -10,7 +10,7 @@ const BetaGouv = require('../src/betagouv');
 const app = require('../src/index.ts');
 const controllerUtils = require('../src/controllers/utils');
 const utils = require('./utils');
-const testUsers = require('./users');
+const testUsers = require('./users.json');
 const { renderHtmlFromMd, getTitle } = require('../src/lib/mdtohtml');
 
 const should = chai.should();

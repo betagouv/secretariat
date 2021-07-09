@@ -1,31 +1,32 @@
-require('dotenv').config();
-const path = require('path');
-const express = require('express');
-const bodyParser = require('body-parser');
-const compression = require('compression');
-const jwt = require('jsonwebtoken');
-const expressJWT = require('express-jwt');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const flash = require('connect-flash');
-const expressSanitizer = require('express-sanitizer');
-const config = require('./config');
-const knex = require('./db');
-const sentry = require('./lib/sentry');
+import bodyParser from 'body-parser';
+import compression from 'compression';
+import flash from 'connect-flash';
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+import express from 'express';
+import expressJWT from 'express-jwt';
+import expressSanitizer from 'express-sanitizer';
+import session from 'express-session';
+import jwt from 'jsonwebtoken';
+import path from 'path';
+import config from './config';
+import accountController from './controllers/accountController';
+import adminController from './controllers/adminController';
+import communityController from './controllers/communityController';
+import githubNotificationController from './controllers/githubNotificationController';
+import indexController from './controllers/indexController';
+import loginController from './controllers/loginController';
+import logoutController from './controllers/logoutController';
+import marrainageController from './controllers/marrainageController';
+// const visitController = require('./controllers/visitController');
+import newsletterController from './controllers/newsletterController';
+import onboardingController from './controllers/onboardingController';
+import resourceController from './controllers/resourceController';
+import usersController from './controllers/usersController';
+import knex from './db';
+import sentry from './lib/sentry';
 
-const indexController = require('./controllers/indexController');
-const loginController = require('./controllers/loginController');
-const logoutController = require('./controllers/logoutController');
-const usersController = require('./controllers/usersController');
-const marrainageController = require('./controllers/marrainageController');
-const githubNotificationController = require('./controllers/githubNotificationController');
-const accountController = require('./controllers/accountController');
-const communityController = require('./controllers/communityController');
-const adminController = require('./controllers/adminController');
-const onboardingController = require('./controllers/onboardingController');
-const visitController = require('./controllers/visitController');
-const newsletterController = require('./controllers/newsletterController');
-const resourceController = require('./controllers/resourceController');
+dotenv.config();
 
 const app = express();
 
@@ -81,7 +82,7 @@ app.use(
   expressJWT({
     secret: config.secret,
     algorithms: ['HS256'],
-    getToken: (req) => req.cookies.token || null,
+    getToken: (req) => req.cookies.token || null
   }).unless({
     path: [
       '/',
@@ -90,9 +91,9 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
-      /onboardingSuccess\/*/,
-    ],
-  }),
+      /onboardingSuccess\/*/
+    ]
+  })
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
@@ -109,7 +110,7 @@ app.use((err, req, res, next) => {
     if (req.method === 'GET') {
       req.flash(
         'error',
-        "Vous n'êtes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)",
+        'Vous n\'êtes pas identifié pour accéder à cette page (ou votre accès n\'est plus valide)'
       );
       const nextParam = req.url ? `?next=${req.url}` : '';
       return res.redirect(`/login${nextParam}`);
@@ -152,4 +153,4 @@ app.get('/resources', resourceController.getResources);
 
 sentry.initCaptureConsoleWithHandler(app);
 
-module.exports = app.listen(config.port, () => console.log(`Running on port: http://${config.host}:${config.port}`));
+export default app.listen(config.port, () => console.log(`Running on port: http://${config.host}:${config.port}`));

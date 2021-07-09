@@ -4,6 +4,8 @@
         "outDir": "./dist",
         "target": "es6",
         "module": "commonjs",
+        "esModuleInterop": true,
+        "moduleResolution": "node",
         "removeComments": true,
         "noUnusedLocals": true,
         "sourceMap": true,

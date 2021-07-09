@@ -1,7 +1,9 @@
 // Use this file to override environment variables for test.
 
-require('dotenv').config();
-const { parse } = require('pg-connection-string');
+import dotenv from 'dotenv';
+import { parse } from 'pg-connection-string';
+
+dotenv.config();
 
 if (process.env.DATABASE_URL) {
   const config = parse(process.env.DATABASE_URL);

@@ -1,6 +1,9 @@
-const chai = require('chai');
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import utils from './utils.js';
+import app from '../src/index';
+
+chai.use(chaiHttp);
 
 describe('Admin', () => {
   describe('GET /admin unauthenticated', () => {
@@ -10,8 +13,8 @@ describe('Admin', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/admin');
+          res.header.location.should.include('/login');
+          res.header.location.should.equal('/login?next=/admin');
           done();
         });
     });

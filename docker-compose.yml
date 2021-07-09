@@ -9,7 +9,7 @@ services:
       - "5432:5432"
   maildev:
     image: maildev/maildev:1.1.0
-    environment: 
+    environment:
       MAILDEV_INCOMING_USER: mailuser
       MAILDEV_INCOMING_PASS: mailpassword
     ports:
@@ -21,7 +21,7 @@ services:
     depends_on:
       - db
       - maildev
-    env_file: 
+    env_file:
       - .env
     environment:
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
