@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
-import utils from './utils.js';
+import utils from './utils';
 
 chai.use(chaiHttp);
 chai.should();

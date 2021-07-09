@@ -1,12 +1,12 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import jwt from 'jsonwebtoken';
-import app from '../src/index';
-import utils from './utils.js';
-import controllerUtils from '../src/controllers/utils';
-import config from '../src/config';
-import knex from '../src/db';
 import sinon from 'sinon';
+import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
 chai.use(chaiHttp);
 

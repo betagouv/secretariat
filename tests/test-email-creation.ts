@@ -1,10 +1,10 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import nock from 'nock';
 import _ from 'lodash/array';
-import testUsers from './users.json';
+import nock from 'nock';
 import rewire from 'rewire';
-import utils from './utils.js';
+import testUsers from './users.json';
+import utils from './utils';
 
 chai.use(chaiHttp);
 

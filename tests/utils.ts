@@ -3,10 +3,10 @@ import nock from 'nock';
 import { Client } from 'pg';
 import { parse } from 'pg-connection-string';
 import { v4 as uuidv4 } from 'uuid';
-import testUsers from './users.json';
-import testStartups from './startups.json';
-import knex from '../src/db/index';
 import config from '../src/config';
+import knex from '../src/db/index';
+import testStartups from './startups.json';
+import testUsers from './users.json';
 
 export default {
   getJWT(id) {

@@ -1,9 +1,9 @@
-import rewire from 'rewire';
 import nock from 'nock';
+import rewire from 'rewire';
 import sinon from 'sinon';
-import utils from './utils';
-import testUsers from './users.json';
 import config from '../src/config';
+import testUsers from './users.json';
+import utils from './utils';
 
 const mattermostUsers = [
   {

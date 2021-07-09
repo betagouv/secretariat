@@ -1,11 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import { Response } from 'superagent';
 import nock from 'nock';
+import { Response } from 'superagent';
 import config from '../src/config';
 import knex from '../src/db';
 import app from '../src/index';
-import utils from './utils.js';
+import utils from './utils';
 
 chai.use(chaiHttp);
 

@@ -1,11 +1,11 @@
-import sinon from 'sinon';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import crypto from 'crypto';
-import app from '../src/index';
-import knex from '../src/db';
-import controllerUtils from '../src/controllers/utils';
+import sinon from 'sinon';
 import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
 
 chai.use(chaiHttp);
 

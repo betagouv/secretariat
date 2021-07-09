@@ -1,13 +1,13 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import sinon from 'sinon';
 import _ from 'lodash';
 import rewire from 'rewire';
-import app from '../src/index';
-import utils from './utils.js';
+import sinon from 'sinon';
 import config from '../src/config';
 import controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
 chai.use(chaiHttp);
 

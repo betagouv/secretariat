@@ -1,9 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
-import app from '../src/index';
-import utils from './utils.js';
 import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
 chai.use(chaiHttp);
 describe('Community', () => {
