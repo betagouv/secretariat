@@ -11,10 +11,11 @@
             <ul>
                 <li>Clôturer son compte email</li>
                 <li>Supprimer toutes ses redirections</li>
+                <li>Rediriger des éventuels email vers depart@beta.gouv.fr</li>
             </ul>
             <form onsubmit="const proceed = confirm('Es-tu sûr de vouloir supprimer son compte email et ses redirections pour <%= userInfos.fullname %> ?'); event.submitter && (event.submitter.disabled = proceed); return proceed;" class="no-margin" action="/users/<%= username %>/email/delete" method="POST">
                 <div class="form__group">
-                    <button class="button margin-right-10" type="submit">Clotûrer le compte</button>
+                    <button class="button margin-right-10" type="submit">Clôturer le compte</button>
                     <a href="https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Mettre à jour le contrat</a>
                 </div>
             </form>
@@ -40,7 +41,7 @@
                             </p>
                         <% } %>
                         <p>
-                            <span class="font-weight-bold">Compte Github : </span> 
+                            <span class="font-weight-bold">Compte Github : </span>
                             <% if (userInfos.github) { %>
                                 <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
                             <% } else { %>
@@ -64,7 +65,7 @@
             <% if(userInfos) { %>
                 <% if(marrainageState) { %>
                     <h3>Marrainage</h3>
-                    <% if (marrainageState.completed) { %> 
+                    <% if (marrainageState.completed) { %>
                         <p>Marrain·e : <strong><%= marrainageState.last_onboarder %></strong>.</p>
                     <% } else { %>
                         <p>
