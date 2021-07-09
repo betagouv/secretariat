@@ -6,7 +6,6 @@ const ovh = require('ovh')({
   appSecret: process.env.OVH_APP_SECRET,
   consumerKey: process.env.OVH_CONSUMER_KEY,
 });
-
 const config = require('./config');
 
 const betaGouv = {
@@ -65,6 +64,16 @@ const betaOVH = {
     } catch (err) {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
+  },
+  // get active users with email registered on ovh
+  getActiveRegisteredOVHUsers: async () => {
+    const users = await betaGouv.usersInfos();
+    const allOvhEmails = await betaOVH.getAllEmailInfos();
+    const { checkUserIsExpired } = require('./controllers/utils');
+    const activeUsers = users.filter(
+      (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
+    );
+    return activeUsers;
   },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;

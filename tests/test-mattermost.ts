@@ -33,6 +33,7 @@ describe('invite users to mattermost', () => {
     const date = new Date('2021-01-20T07:59:59+01:00');
     clock = sinon.useFakeTimers(date);
     utils.cleanMocks();
+    utils.mockOvhTime();
   });
 
   afterEach(async () => {
@@ -40,6 +41,10 @@ describe('invite users to mattermost', () => {
   });
 
   it('invite users to team by emails', async () => {
+    nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/account/)
+    .reply(200, testUsers.map((user) => user.id));
+
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
@@ -58,10 +63,15 @@ describe('invite users to mattermost', () => {
     .persist();
     const { inviteUsersToTeamByEmail } = mattermostScheduler;
     const result = await inviteUsersToTeamByEmail();
+    console.log(result);
     result.length.should.be.equal(2);
   });
 
   it('create users to team by emails', async () => {
+    nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/account/)
+    .reply(200, testUsers.map((user) => user.id));
+
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);

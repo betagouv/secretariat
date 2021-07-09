@@ -115,15 +115,7 @@ module.exports.newsletterThursdayEveningReminderJob = new CronJob(
   'Europe/Paris',
 );
 
-// get active users with email registered on ovh
-const getActiveRegisteredOVHUsers = async () => {
-  const users = await BetaGouv.usersInfos();
-  const allOvhEmails = await BetaGouv.getAllEmailInfos();
-  const activeUsers = users.filter(
-    (user) => !utils.checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
-  );
-  return activeUsers;
-};
+
 
 const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
@@ -136,7 +128,7 @@ const sendNewsletterAndCreateNewOne = async () => {
     const newsletterCurrentId = currentNewsletter.url.replace(`${config.padURL}/`, '');
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
-    const activeRegisteredOVHUsers = await getActiveRegisteredOVHUsers();
+    const activeRegisteredOVHUsers = await BetaGouv.getActiveRegisteredOVHUsers();
     const usersEmails = activeRegisteredOVHUsers.map(
       (user) => user.id,
     ).map(utils.buildBetaEmail);
