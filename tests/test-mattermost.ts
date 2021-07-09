@@ -63,7 +63,6 @@ describe('invite users to mattermost', () => {
     .persist();
     const { inviteUsersToTeamByEmail } = mattermostScheduler;
     const result = await inviteUsersToTeamByEmail();
-    console.log(result);
     result.length.should.be.equal(2);
   });
 
