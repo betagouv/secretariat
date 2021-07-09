@@ -102,7 +102,7 @@ function isValidGithubUserName(value) {
 }
 exports.isValidGithubUserName = isValidGithubUserName;
 
-const octokit = new Octokit({ auth: config.githubToken });
+const octokit = new Octokit({ auth: config.githubOrgAdminToken });
 
 const getGithubMembers = (i) => octokit.request('GET /orgs/{org}/members', {
   org: 'betagouv',
