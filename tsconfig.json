@@ -6,6 +6,7 @@
         "module": "commonjs",
         "esModuleInterop": true,
         "moduleResolution": "node",
+        "resolveJsonModule": true,
         "removeComments": true,
         "noUnusedLocals": true,
         "sourceMap": true,

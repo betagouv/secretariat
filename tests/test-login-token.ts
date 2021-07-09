@@ -1,20 +1,24 @@
-const sinon = require('sinon');
-const chai = require('chai');
-const crypto = require('crypto');
+import sinon from 'sinon';
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import crypto from 'crypto';
+import app from '../src/index';
+import knex from '../src/db';
+import controllerUtils from '../src/controllers/utils';
+import config from '../src/config';
 
-const app = require('../src/index.ts');
-const knex = require('../src/db');
-const controllerUtils = require('../src/controllers/utils');
-const config = require('../src/config');
+chai.use(chaiHttp);
 
 describe('Login token', () => {
+  let sendEmailStub;
+
   beforeEach((done) => {
-    this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
     done();
   });
 
   afterEach((done) => {
-    this.sendEmailStub.restore();
+    sendEmailStub.restore();
     done();
   });
 
@@ -69,6 +73,7 @@ describe('Login token', () => {
 
   it('should only be usable once', (done) => {
     const userEmail = `membre.actif@${config.domain}`;
+    let token = null
 
     // Make a login request to generate a token
     chai.request(app)
@@ -80,10 +85,10 @@ describe('Login token', () => {
 
       // Extract token from the DB
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then((dbRes) => dbRes[0].token)
+      .then((dbRes) => token = dbRes[0].token)
 
       // Use the token to make a first GET request
-      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+      .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
 
       // Ensure the response sets the token auth cookie
       .then((res) => {
@@ -91,7 +96,7 @@ describe('Login token', () => {
       })
 
       // Make the same GET request again (second time)
-      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+      .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
 
       // Ensure the response did NOT set an auth cookie
       .then((res) => {

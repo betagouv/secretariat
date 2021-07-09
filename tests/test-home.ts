@@ -1,7 +1,7 @@
-const chai = require('chai');
-const chaiHttp = require('chai-http');
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import app from '../src/index';
+import utils from './utils.js';
 
 chai.use(chaiHttp);
 chai.should();
@@ -37,7 +37,7 @@ describe('Home', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/account');
+          res.header.location.should.equal('/account');
           done();
         });
     });
