@@ -100,30 +100,30 @@ exports.fetchDetails = fetchDetails;
 function isValidGithubUserName(value) {
   return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
 }
-module.exports.isValidGithubUserName = isValidGithubUserName;
+exports.isValidGithubUserName = isValidGithubUserName;
 
-const octokit = new Octokit({ auth: config.githubAccessToken });
+const octokit = new Octokit({ auth: config.githubToken });
 
 const getGithubMembers = (i) => octokit.request('GET /orgs/{org}/members', {
   org: 'betagouv',
   per_page: 100,
   page: i,
-});
+}).then((resp) => resp.data);
 
-module.exports.getGithubMembers = getGithubMembers;
+exports.getGithubMembers = getGithubMembers;
 
-module.exports.getAllOrganizationMembers = async (i = 0) => {
-  const githubUsers = getGithubMembers(i);
+exports.getAllOrganizationMembers = async (i = 0) => {
+  const githubUsers = await getGithubMembers(i);
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await getGithubMembers(i + 1);
+  const nextPageGithubUsers = await exports.getAllOrganizationMembers(i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
 };
 
-module.exports.inviteUserByUsername = (member) => {
-  octokit.request('PUT /orgs/{org}/memberships/{username}', {
+exports.inviteUserByUsername = function inviteUserByUsername(username) {
+  return octokit.request('PUT /orgs/{org}/memberships/{username}', {
     org: 'betagouv',
-    username: member.github,
+    username,
   });
 };
