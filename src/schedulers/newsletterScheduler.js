@@ -115,8 +115,6 @@ module.exports.newsletterThursdayEveningReminderJob = new CronJob(
   'Europe/Paris',
 );
 
-
-
 const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
   const currentNewsletter = await knex('newsletters').where({
