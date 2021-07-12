@@ -509,27 +509,33 @@ describe('User', () => {
   });
 
   describe('POST /user/:username/email/delete', () => {
-    it('should delete user in database secretariat', (done) => {
+    it('should keep the user in database secretariat', (done) => {
+      const addRedirection = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+
       knex('users')
-        .insert({ username: 'membre.actif', secondary_email: 'membre.actif@example.com' })
-        .then(() => knex('users').select().where({ username: 'membre.actif' }))
+        .insert({
+          username: 'membre.actif',
+          secondary_email: 'membre.actif@example.com',
+        })
+        .then(() => knex('users')
+          .select()
+          .where({ username: 'membre.actif' }))
         .then((dbRes) => {
-          console.log('Verif before', dbRes);
           dbRes.length.should.equal(1);
         })
         .then(() => {
-          const ovhEmailDeletion = nock(/.*ovh.com/)
-            .delete(/^.*email\/domain\/.*\/account\/.*/)
-            .reply(200);
-
           chai.request(app)
             .post('/users/membre.actif/email/delete')
             .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .then(() => knex('users').select().where({ username: 'membre.actif' }))
+            .then(() => knex('users')
+              .select()
+              .where({ username: 'membre.actif' }))
             .then((dbNewRes) => {
-              ovhEmailDeletion.isDone().should.be.true;
-              console.log('VERIF: ', dbNewRes);
-              dbNewRes.length.should.equal(0);
+              dbNewRes.length.should.equal(1);
+              (dbNewRes[0].secondary_email === null).should.be.true;
+              addRedirection.isDone().should.be.true;
             })
             .then(done)
             .catch(done);
