@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        "rootDir": "./src",
         "outDir": "./dist",
         "target": "es6",
         "module": "commonjs",
@@ -12,7 +11,7 @@
         "sourceMap": true,
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
     },
     "exclude": [
         "node_modules",

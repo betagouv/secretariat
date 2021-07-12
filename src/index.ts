@@ -2,7 +2,6 @@ import bodyParser from 'body-parser';
 import compression from 'compression';
 import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
-import dotenv from 'dotenv';
 import express from 'express';
 import expressJWT from 'express-jwt';
 import expressSanitizer from 'express-sanitizer';
@@ -18,6 +17,7 @@ import indexController from './controllers/indexController';
 import loginController from './controllers/loginController';
 import logoutController from './controllers/logoutController';
 import marrainageController from './controllers/marrainageController';
+// fixme: unused feature
 // const visitController = require('./controllers/visitController');
 import newsletterController from './controllers/newsletterController';
 import onboardingController from './controllers/onboardingController';
@@ -26,7 +26,6 @@ import usersController from './controllers/usersController';
 import knex from './db';
 import sentry from './lib/sentry';
 
-dotenv.config();
 
 const app = express();
 
@@ -153,4 +152,4 @@ app.get('/resources', resourceController.getResources);
 
 sentry.initCaptureConsoleWithHandler(app);
 
-export default app.listen(config.port, () => console.log(`Running on port: http://${config.host}:${config.port}`));
+export default app.listen(config.port, () => console.log(`Running on: ${config.protocol}://${config.host}:${config.port}`));
