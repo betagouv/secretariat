@@ -554,11 +554,15 @@ describe('User', () => {
       done();
     });
 
+    // fixme: this test test nothing since it fail silently on chai.request
+    // because user.canChangeSecondaryEmail is false. It should be tested with
+    // a valid BetaGouvUser
     it('should add secondary email', (done) => {
       const username = 'membre.actif';
       const secondaryEmail = 'membre.actif.perso@example.com';
 
-      knex('users').select()
+      knex('users')
+        .select()
         .where({ username: 'membre.actif' })
         .first()
         .then(() => {
@@ -639,20 +643,6 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
-    it('should ask OVH to delete the email account', (done) => {
-      const ovhEmailDeletion = nock(/.*ovh.com/)
-        .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
-        .reply(200);
-
-      chai.request(app)
-        .post('/users/membre.expire/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .end((err, res) => {
-          ovhEmailDeletion.isDone().should.be.true;
-          done();
-        });
-    });
-
     it('should ask OVH to delete all redirections', (done) => {
       nock.cleanAll();
 
@@ -955,7 +945,9 @@ describe('User', () => {
         .reply(200);
       const consoleSpy = sinon.spy(console, 'warn');
 
-      let marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      let marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
       await knex('users').insert({
         username: newMember.id,
@@ -966,7 +958,9 @@ describe('User', () => {
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
       consoleSpy.firstCall.args[0].message.should.equal('Aucun·e marrain·e n\'est disponible pour le moment');
       sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage').where({ username: newMember.id }).select();
+      marrainage = await knex('marrainage')
+        .where({ username: newMember.id })
+        .select();
       marrainage.length.should.equal(0);
       consoleSpy.restore();
     });

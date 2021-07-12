@@ -49,4 +49,5 @@ module.exports = {
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
 };
