@@ -30,7 +30,7 @@ describe('Add user to github organization', () => {
   beforeEach(() => {
     getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
 
-    inviteUser = sinon.stub(github, 'inviteUserByUsername').resolves(true);
+    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves(true);
   });
 
   it('should add new users to organization', async () => {
