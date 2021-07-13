@@ -1,10 +1,10 @@
-const rewire = require('rewire');
-const nock = require('nock');
-const sinon = require('sinon');
-const BetaGouv = require('../src/betagouv');
-const config = require('../src/config');
-const utils = require('./utils');
-const controllerUtils = require('../src/controllers/utils');
+import rewire from 'rewire'
+import nock from 'nock'
+import sinon from 'sinon'
+import BetaGouv from '../src/betagouv'
+import config from '../src/config'
+import utils from './utils'
+import controllerUtils from '../src/controllers/utils'
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateMore15days = '2020-01-16';
