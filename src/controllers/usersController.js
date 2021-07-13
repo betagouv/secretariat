@@ -162,7 +162,7 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
 
     try {
       await BetaGouv.sendInfoToChat(message);
-      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), to_email);
+      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), toEmail);
     } catch (err) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
