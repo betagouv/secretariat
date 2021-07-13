@@ -52,4 +52,6 @@ module.exports = {
   mattermostDefaultPassword: process.env.MATTERMOST_DEFAULT_PASSWORD,
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
+  // STAGING VALUES
+  stagingUsers: process.env.STAGING_USERS ? JSON.parse(process.env.STAGING_USERS) : undefined,
 };

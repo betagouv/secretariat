@@ -5,6 +5,9 @@ const BetaGouv = require('../betagouv');
 const utils = require('../controllers/utils');
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
+  if (config.stagingUsers) {
+    return config.stagingUsers;
+  }
   const allMattermostUsers = await mattermost.getUserWithParams();
   const activeGithubUsers = await BetaGouv.getActiveRegisteredOVHUsers();
   const allMattermostUsersEmails = allMattermostUsers.map((mattermostUser) => mattermostUser.email);
