@@ -104,26 +104,26 @@ exports.isValidGithubUserName = isValidGithubUserName;
 
 const octokit = new Octokit({ auth: config.githubOrgAdminToken });
 
-const getGithubMembers = (i) => octokit.request('GET /orgs/{org}/members', {
-  org: 'betagouv',
+const getGithubMembersOfOrganization = (org, i) => octokit.request('GET /orgs/{org}/members', {
+  org,
   per_page: 100,
   page: i,
 }).then((resp) => resp.data);
 
-exports.getGithubMembers = getGithubMembers;
+exports.getGithubMembersOfOrganization = getGithubMembersOfOrganization;
 
-exports.getAllOrganizationMembers = async (i = 0) => {
-  const githubUsers = await getGithubMembers(i);
+exports.getAllOrganizationMembers = async (org, i = 0) => {
+  const githubUsers = await getGithubMembersOfOrganization(org, i);
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await exports.getAllOrganizationMembers(i + 1);
+  const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
 };
 
-exports.inviteUserByUsername = function inviteUserByUsername(username) {
+exports.inviteUserByUsernameToOrganization = function inviteUserByUsername(username, org) {
   return octokit.request('PUT /orgs/{org}/memberships/{username}', {
-    org: 'betagouv',
+    org,
     username,
   });
 };
