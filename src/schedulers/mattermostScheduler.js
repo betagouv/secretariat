@@ -2,7 +2,6 @@ const mattermost = require('../lib/mattermost');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('../controllers/utils');
-const { padPassword } = require('../config');
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getUnregisteredMemberActifs = async (activeGithubUsers, allMattermostUsers) => {
@@ -41,12 +40,12 @@ module.exports.reactivateUsers = async () => {
 
   const currentUsersEmails = currentUsers.map((user) => `${user.id}@${config.domain}`);
   const mattermostUsersToReactivate = inactiveMattermostUsers.filter(({ email }) => {
-    const results = currentUsersEmails.find((userMail) => userMail === email);
-    return results;
+    const found = currentUsersEmails.find((userMail) => userMail === email);
+    return found;
   });
 
   mattermostUsersToReactivate.forEach(async (member) => {
-    const result = await mattermost.activeUsers(member.id);
+    const activedUser = await mattermost.activeUsers(member.id);
   });
   return mattermostUsersToReactivate;
 };
