@@ -56,7 +56,7 @@ const createNewsletter = async () => {
   await knex('newsletters').insert({
     url: padUrl,
   });
-  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.sendInfoToChat(message);
 
   return padUrl;
 };
@@ -85,7 +85,7 @@ const newsletterReminder = async (reminder) => {
   }).first();
 
   if (currentNewsletter) {
-    await BetaGouv.sendInfoToSlack(computeMessageReminder(reminder, currentNewsletter), 'general');
+    await BetaGouv.sendInfoToChat(computeMessageReminder(reminder, currentNewsletter), 'general');
   }
 };
 
