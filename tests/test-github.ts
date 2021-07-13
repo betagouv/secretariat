@@ -1,7 +1,8 @@
-const nock = require('nock');
-const sinon = require('sinon');
-const github = require('../src/lib/github');
-const testUsers = require('./users.json');
+import nock from 'nock';
+import sinon from 'sinon';
+import github from '../src/lib/github';
+import testUsers from './users.json';
+import { addGithubUserToOrganization } from '../src/schedulers/githubScheduler';
 
 const githubOrganizationMembers = [
   {
@@ -21,8 +22,6 @@ const githubOrganizationMembers = [
     login: 'countdoesnotexist',
   },
 ];
-
-const { addGithubUserToOrganization } = require('../src/schedulers/githubScheduler');
 
 describe('Add user to github organization', () => {
   let inviteUser;
