@@ -39,7 +39,7 @@ module.exports = {
   usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',
   startupsAPI: process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   githubToken: process.env.GITHUB_TOKEN,
-  githubOrganizationName: process.env.ORGANIZATION_NAME || 'betagouv',
+  githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || 'betagouv',
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
@@ -53,5 +53,5 @@ module.exports = {
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   // staging tests values
-  stagingUsers: JSON.parse(process.env.STAGING_USERS || '[]'),
+  stagingUsers: process.env.STAGING_USERS ? JSON.parse(process.env.STAGING_USERS) : undefined,
 };
