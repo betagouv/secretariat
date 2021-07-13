@@ -60,3 +60,46 @@ describe('invite users to mattermost', () => {
     result.length.should.be.equal(2);
   });
 });
+
+const inactiveMattermostUsers = [
+  {
+    id: 'julien.dauphant',
+    email: `julien.dauphant@${config.domain}`,
+  },
+];
+
+describe('Reactivate current users on mattermost', () => {
+  let clock;
+  beforeEach(async () => {
+    const date = new Date('2021-01-20T07:59:59+01:00');
+    clock = sinon.useFakeTimers(date);
+    utils.cleanMocks();
+  });
+
+  afterEach(async () => {
+    clock.restore();
+  });
+
+  it('reactivate current users', async () => {
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, [...inactiveMattermostUsers]);
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, []);
+
+    const postBatchMock = nock(/.*mattermost.incubateur.net/)
+    .put(/^.*api\/v4\/users\/julien.dauphant\/active/)
+    .reply(200, [{ status: 'ok' }]).persist();
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, testUsers)
+    .persist();
+
+    const { reactivateUsers } = mattermostScheduler;
+    const result = await reactivateUsers();
+    result.length.should.be.equal(1); // il n'y a qu'un utilisateur inactif simulé (julien.dauphant)
+  });
+});
