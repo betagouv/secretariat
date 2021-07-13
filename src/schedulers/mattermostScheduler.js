@@ -45,9 +45,8 @@ module.exports.reactivateUsers = async () => {
     return results;
   });
 
-  console.log('to reactivate', mattermostUsersToReactivate);
   mattermostUsersToReactivate.forEach(async (member) => {
     const result = await mattermost.activeUsers(member.id);
-    console.log('result', result);
   });
+  return mattermostUsersToReactivate;
 };
