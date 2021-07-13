@@ -27,6 +27,7 @@ const addGithubUserToOrganization = async () => {
   try {
     const results = await Promise.all(githubUserNotOnBetagouvOrganization.map(async (member) => {
       await github.inviteUserByUsername(member.github);
+      console.log(`Add user ${member.github} to organization`);
     }));
   } catch (err) {
     throw new Error(err);
