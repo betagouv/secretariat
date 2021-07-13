@@ -59,7 +59,7 @@ module.exports.getInactiveMattermostUsers = async (params, i = 0) => {
 module.exports.activeUsers = async (userId) => {
   try {
     const payload = { active: true };
-    const response = await axios.post(
+    const response = await axios.put(
       `https://mattermost.incubateur.net/api/v4/users/${userId}/active`,
       payload,
       mattermostConfig,
