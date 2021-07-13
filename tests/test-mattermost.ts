@@ -4,6 +4,8 @@ import sinon from 'sinon';
 import config from '../src/config';
 import testUsers from './users.json';
 import utils from './utils';
+import mattermost from '../src/lib/mattermost';
+import controllerUtils from '../src/controllers/utils';
 
 const mattermostUsers = [
   {
