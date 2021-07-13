@@ -20,7 +20,7 @@ module.exports.createEmail = async function (username, creator, toEmail) {
 
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
 
-  await BetaGouv.sendInfoToSlack(message);
+  await BetaGouv.sendInfoToChat(message);
   await BetaGouv.createEmail(username, password);
 
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
@@ -119,7 +119,7 @@ module.exports.createRedirectionForUser = async function (req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
     try {
-      await BetaGouv.sendInfoToSlack(message);
+      await BetaGouv.sendInfoToChat(message);
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(username),
         req.body.to_email,
@@ -161,8 +161,8 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
     try {
-      await BetaGouv.sendInfoToSlack(message);
-      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), toEmail);
+      await BetaGouv.sendInfoToChat(message);
+      await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), to_email);
     } catch (err) {
       throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
@@ -221,7 +221,7 @@ module.exports.updatePasswordForUser = async function (req, res) {
 
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
 
-    await BetaGouv.sendInfoToSlack(message);
+    await BetaGouv.sendInfoToChat(message);
     await BetaGouv.changePassword(username, password);
 
     req.flash('message', 'Le mot de passe a bien été modifié.');
@@ -247,7 +247,7 @@ module.exports.deleteEmailForUser = async function (req, res) {
       );
     }
 
-    await BetaGouv.sendInfoToSlack(`Suppression de compte de ${username} (à la demande de ${req.user.id})`);
+    await BetaGouv.sendInfoToChat(`Suppression de compte de ${username} (à la demande de ${req.user.id})`);
 
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map((x) => x.id));
