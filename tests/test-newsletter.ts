@@ -1,17 +1,19 @@
-const nock = require('nock');
-const rewire = require('rewire');
-const chai = require('chai');
-const sinon = require('sinon');
-const HedgedocApi = require('hedgedoc-api');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import HedgedocApi from 'hedgedoc-api';
+import nock from 'nock';
+import rewire from 'rewire';
+import sinon from 'sinon';
+import BetaGouv from '../src/betagouv';
+import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
+import { renderHtmlFromMd } from '../src/lib/mdtohtml';
+import testUsers from './users.json';
+import utils from './utils';
 
-const config = require('../src/config');
-const knex = require('../src/db');
-const BetaGouv = require('../src/betagouv');
-const app = require('../src/index.ts');
-const controllerUtils = require('../src/controllers/utils');
-const utils = require('./utils');
-const testUsers = require('./users');
-const { renderHtmlFromMd, getTitle } = require('../src/lib/mdtohtml');
+chai.use(chaiHttp);
 
 const should = chai.should();
 
@@ -81,8 +83,10 @@ const mockNewsletter = {
   created_at: new Date('2021-04-04 00:00:00+00'),
   id: utils.randomUuid(),
 };
-const MOST_RECENT_NEWSLETTER_INDEX = 3;
+
 describe('Newsletter', () => {
+  let clock;
+
   describe('should get newsletter data for newsletter page', () => {
     beforeEach(async () => {
       await knex('newsletters').insert([...mockNewsletters, mockNewsletter]);
@@ -93,7 +97,7 @@ describe('Newsletter', () => {
 
     it('should get previous newsletters and current newsletter', (done) => {
       const date = new Date('2021-01-20T07:59:59+01:00');
-      this.clock = sinon.useFakeTimers(date);
+      clock = sinon.useFakeTimers(date);
       chai.request(app)
         .get('/newsletters')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -110,7 +114,7 @@ describe('Newsletter', () => {
           res.text.should.include(`<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
             addDays(getMonday(currentNewsletter.created_at), 7),
           )}</h3>`);
-          this.clock.restore();
+          clock.restore();
           done();
         });
     });
@@ -132,7 +136,7 @@ describe('Newsletter', () => {
       const createNewNoteWithContentAndAliasSpy = sinon.spy(HedgedocApi.prototype, 'createNewNoteWithContentAndAlias');
       const date = new Date('2021-03-04T07:59:59+01:00');
       const newsletterDate = addDays(getMonday(date), 7);
-      this.clock = sinon.useFakeTimers(date);
+      clock = sinon.useFakeTimers(date);
       const newsletterName = `infolettre-${computeId(newsletterDate.toISOString().split('T')[0])}`;
       const padHeadCall = nock(`${config.padURL}`).persist()
       .head(/.*/)
@@ -160,7 +164,7 @@ describe('Newsletter', () => {
       .get(`/${newsletterName}`)
       .reply(200, '');
 
-      const res = await createNewsletter();
+      await createNewsletter();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
@@ -175,44 +179,45 @@ describe('Newsletter', () => {
       );
       const newsletter = await knex('newsletters').orderBy('created_at').first();
       newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
-      this.clock.restore();
+      clock.restore();
       await knex('newsletters').truncate();
     });
 
     it('should send remind on monday at 8am', async () => {
       await knex('newsletters').insert([mockNewsletter]);
-      this.clock = sinon.useFakeTimers(new Date('2021-03-01T07:59:59+01:00'));
+      clock = sinon.useFakeTimers(new Date('2021-03-01T07:59:59+01:00'));
       await newsletterReminder('FIRST_REMINDER');
       slack.firstCall.args[0].should.equal(computeMessageReminder('FIRST_REMINDER', mockNewsletter));
+      clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
     });
 
     it('should send remind on thursday at 8am', async () => {
       await knex('newsletters').insert([mockNewsletter]);
-      this.clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
+      clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
       await newsletterReminder('SECOND_REMINDER');
       slack.firstCall.args[0].should.equal(computeMessageReminder('SECOND_REMINDER', mockNewsletter));
-      this.clock.restore();
+      clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
     });
 
     it('should send remind on thursday at 6pm', async () => {
       await knex('newsletters').insert([mockNewsletter]);
-      this.clock = sinon.useFakeTimers(new Date('2021-03-04T17:59:59+01:00'));
+      clock = sinon.useFakeTimers(new Date('2021-03-04T17:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
       slack.firstCall.args[0].should.equal(computeMessageReminder('THIRD_REMINDER', mockNewsletter));
-      this.clock.restore();
+      clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
     });
 
     it('should send remind on friday at 8am', async () => {
-      this.clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
+      clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
       slack.notCalled.should.be.true;
-      this.clock.restore();
+      clock.restore();
       slack.restore();
     });
 
@@ -268,7 +273,7 @@ describe('Newsletter', () => {
         sent_at: null,
       }]);
       const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      this.clock = sinon.useFakeTimers(date);
+      clock = sinon.useFakeTimers(date);
       await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
@@ -286,7 +291,7 @@ describe('Newsletter', () => {
       slack.called.should.be.true;
       const newsletter = await knex('newsletters').orderBy('created_at').whereNotNull('sent_at').first();
       newsletter.sent_at.should.not.be.null;
-      this.clock.restore();
+      clock.restore();
       sendEmailStub.restore();
       slack.restore();
       await knex('newsletters').truncate();
@@ -299,14 +304,14 @@ describe('Newsletter', () => {
         ...mockNewsletter,
       }]);
       const date = new Date('2021-03-05T07:59:59+01:00');
-      this.clock = sinon.useFakeTimers(date);
-      const res = await chai.request(app)
+      clock = sinon.useFakeTimers(date);
+      await chai.request(app)
         .get('/validateNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       newsletter.validator.should.equal('membre.actif');
       await knex('newsletters').truncate();
-      this.clock.restore();
+      clock.restore();
     });
 
     it('should cancel newsletter', async () => {
@@ -315,14 +320,14 @@ describe('Newsletter', () => {
         validator: 'membre.actif',
       }]);
       const date = new Date('2021-03-05T07:59:59+01:00');
-      this.clock = sinon.useFakeTimers(date);
-      const res = await chai.request(app)
+      clock = sinon.useFakeTimers(date);
+      await chai.request(app)
         .get('/cancelNewsletter')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters').where({ id: mockNewsletter.id }).first();
       should.equal(newsletter.validator, null);
       await knex('newsletters').truncate();
-      this.clock.restore();
+      clock.restore();
     });
   });
 });

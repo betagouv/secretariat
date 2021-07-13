@@ -1,6 +1,4 @@
-/* eslint-disable func-names */
-
-const utils = require('../utils');
+import utils from '../utils';
 
 exports.seed = async function (knex) {
   // A few universities

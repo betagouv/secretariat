@@ -1,9 +1,12 @@
-const chai = require('chai');
-const rewire = require('rewire');
-const nock = require('nock');
-const _ = require('lodash/array');
-const testUsers = require('./users.json');
-const utils = require('./utils.js');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import _ from 'lodash/array';
+import nock from 'nock';
+import rewire from 'rewire';
+import testUsers from './users.json';
+import utils from './utils';
+
+chai.use(chaiHttp);
 
 const emailCreationScheduler = rewire('../src/schedulers/emailCreationScheduler');
 

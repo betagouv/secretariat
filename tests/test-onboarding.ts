@@ -1,11 +1,14 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const nock = require('nock');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import nock from 'nock';
+import sinon from 'sinon';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
-const controllerUtils = require('../src/controllers/utils');
-const knex = require('../src/db');
+chai.use(chaiHttp);
+
 
 describe('Onboarding', () => {
   describe('GET /onboarding', () => {
@@ -25,24 +28,30 @@ describe('Onboarding', () => {
   });
 
   describe('POST /onboarding', () => {
+    let getGithubMasterSha;
+    let createGithubBranch;
+    let createGithubFile;
+    let makeGithubPullRequest;
+    let sendEmailStub;
+
     beforeEach((done) => {
-      this.getGithubMasterSha = sinon
+      getGithubMasterSha = sinon
         .stub(controllerUtils, 'getGithubMasterSha')
         .resolves({ data: { object: { sha: 'sha' } } });
 
-      this.createGithubBranch = sinon
+      createGithubBranch = sinon
         .stub(controllerUtils, 'createGithubBranch')
         .resolves(true);
 
-      this.createGithubFile = sinon
+      createGithubFile = sinon
         .stub(controllerUtils, 'createGithubFile')
         .resolves(true);
 
-      this.makeGithubPullRequest = sinon
+      makeGithubPullRequest = sinon
         .stub(controllerUtils, 'makeGithubPullRequest')
         .resolves({ status: 201, data: { html_url: 'https://example.com/' } });
 
-      this.sendEmailStub = sinon
+      sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
         .returns(true);
 
@@ -50,11 +59,11 @@ describe('Onboarding', () => {
     });
 
     afterEach((done) => {
-      this.getGithubMasterSha.restore();
-      this.createGithubBranch.restore();
-      this.createGithubFile.restore();
-      this.makeGithubPullRequest.restore();
-      this.sendEmailStub.restore();
+      getGithubMasterSha.restore();
+      createGithubBranch.restore();
+      createGithubFile.restore();
+      makeGithubPullRequest.restore();
+      sendEmailStub.restore();
       knex('users').truncate()
         .then(() => done());
     });
@@ -75,10 +84,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -99,10 +108,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -123,10 +132,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -147,10 +156,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -171,10 +180,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -195,10 +204,10 @@ describe('Onboarding', () => {
           // domaine missing
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -219,10 +228,10 @@ describe('Onboarding', () => {
           // referent missing
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -243,10 +252,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -268,10 +277,10 @@ describe('Onboarding', () => {
           website: 'example.com/me',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -293,10 +302,10 @@ describe('Onboarding', () => {
           github: 'https://github.com/betagouv',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -318,10 +327,10 @@ describe('Onboarding', () => {
           github: 'github.com/betagouv',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.called.should.be.false;
-          this.createGithubBranch.called.should.be.false;
-          this.createGithubFile.called.should.be.false;
-          this.makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });
@@ -342,10 +351,10 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.getGithubMasterSha.calledOnce.should.be.true;
-          this.createGithubBranch.calledOnce.should.be.true;
-          this.createGithubFile.calledOnce.should.be.true;
-          this.makeGithubPullRequest.calledOnce.should.be.true;
+          getGithubMasterSha.calledOnce.should.be.true;
+          createGithubBranch.calledOnce.should.be.true;
+          createGithubFile.calledOnce.should.be.true;
+          makeGithubPullRequest.calledOnce.should.be.true;
           done();
         });
     });
@@ -367,7 +376,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const sha = this.createGithubBranch.args[0][0];
+          const sha = createGithubBranch.args[0][0];
           sha.should.equal('sha');
           done();
         });
@@ -389,7 +398,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const branch = this.createGithubBranch.args[0][1];
+          const branch = createGithubBranch.args[0][1];
           branch.should.contain('author-raphael-fernandao-uniibe-');
           done();
         });
@@ -411,7 +420,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const path = this.createGithubFile.args[0][0];
+          const path = createGithubFile.args[0][0];
           path.should.contain('jean-jacques.dupont.md');
           done();
         });
@@ -433,7 +442,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const branch = this.createGithubBranch.args[0][1];
+          const branch = createGithubBranch.args[0][1];
           branch.should.contain('author-fernandao-unibe-');
           done();
         });
@@ -455,7 +464,7 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          const prTitle = this.makeGithubPullRequest.args[0][1];
+          const prTitle = makeGithubPullRequest.args[0][1];
           prTitle.should.contain('Référent : John Doe.');
           done();
         });
@@ -485,9 +494,9 @@ describe('Onboarding', () => {
           email: 'test@example.com',
         })
         .end((err, res) => {
-          this.sendEmailStub.calledOnce.should.be.true;
+          sendEmailStub.calledOnce.should.be.true;
 
-          const toEmail = this.sendEmailStub.args[0][0];
+          const toEmail = sendEmailStub.args[0][0];
           toEmail.should.equal('membre.actif@example.com');
           done();
         });
@@ -509,7 +518,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const path = this.createGithubFile.args[0][0];
+          const path = createGithubFile.args[0][0];
           path.should.contain('rene-d-herblay.d-aramitz.md');
           done();
         });
@@ -531,7 +540,7 @@ describe('Onboarding', () => {
           referent: 'membre actif',
         })
         .end((err, res) => {
-          const path = this.createGithubFile.args[0][0];
+          const path = createGithubFile.args[0][0];
           path.should.contain('rene-l.d-a.md');
           done();
         });
@@ -555,7 +564,7 @@ describe('Onboarding', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.contain('/onboardingSuccess/');
+          res.header.location.should.contain('/onboardingSuccess/');
           done();
         });
     });

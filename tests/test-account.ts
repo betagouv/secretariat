@@ -1,9 +1,13 @@
-const chai = require('chai');
-const nock = require('nock');
-const utils = require('./utils.js');
-const app = require('../src/index.ts');
-const config = require('../src/config');
-const knex = require('../src/db');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import nock from 'nock';
+import { Response } from 'superagent';
+import config from '../src/config';
+import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
+
+chai.use(chaiHttp);
 
 describe('Account', () => {
   afterEach((done) => {
@@ -16,10 +20,10 @@ describe('Account', () => {
       chai.request(app)
         .get('/account')
         .redirects(0)
-        .end((err, res) => {
+        .end((err, res: Response) => {
           res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/account');
+          res.header.location.should.include('/login');
+          res.header.location.should.equal('/login?next=/account');
           done();
         });
     });
@@ -58,7 +62,7 @@ describe('Account', () => {
         });
     });
 
-    it("should include a link to OVH's webmail", (done) => {
+    it('should include a link to OVH\'s webmail', (done) => {
       chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -107,37 +111,37 @@ describe('Account', () => {
         });
     });
 
-    it("don't show reload button if last change is under 24h", (done) => {
+    it('don\'t show reload button if last change is under 24h', (done) => {
       knex('marrainage').insert({
         username: 'membre.actif',
-        last_onboarder: 'membre.peutimporte',
+        last_onboarder: 'membre.peutimporte'
       })
-      .then(() => {
-        chai.request(app)
-          .get('/account')
-          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-          .end((err, res) => {
-            res.text.should.not.include('action="/marrainage/reload" method="POST"');
-            done();
-          });
-      });
+        .then(() => {
+          chai.request(app)
+            .get('/account')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .end((err, res) => {
+              res.text.should.not.include('action="/marrainage/reload" method="POST"');
+              done();
+            });
+        });
     });
 
     it('show reload button if last change is after 24h', (done) => {
       knex('marrainage').insert({
         username: 'membre.actif',
         last_onboarder: 'membre.peutimporte',
-        last_updated: new Date(Date.now() - 24 * 3601 * 1000),
+        last_updated: new Date(Date.now() - 24 * 3601 * 1000)
       })
-      .then(() => {
-        chai.request(app)
-          .get('/account')
-          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-          .end((err, res) => {
-            res.text.should.include('action="/marrainage/reload" method="POST"');
-            done();
-          });
-      });
+        .then(() => {
+          chai.request(app)
+            .get('/account')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .end((err, res) => {
+              res.text.should.include('action="/marrainage/reload" method="POST"');
+              done();
+            });
+        });
     });
 
     it('should display dates in french locale', (done) => {
