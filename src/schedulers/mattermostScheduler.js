@@ -34,8 +34,8 @@ module.exports.reactivateUsers = async () => {
 
   const users = await BetaGouv.usersInfos();
   const currentUsers = users.filter((x) => {
-    const notExpiredUsers = !utils.checkUserIsExpired(x);
-    return notExpiredUsers;
+    const isNotExpired = !utils.checkUserIsExpired(x);
+    return isNotExpired;
   });
 
   const currentUsersEmails = currentUsers.map((user) => `${user.id}@${config.domain}`);
