@@ -57,6 +57,7 @@ const betaOVH = {
     }
   },
   getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
+    // result is an array of the users ids : ['firstname1.lastname1', 'firstname2.lastname2', ...]
     const url = `/email/domain/${config.domain}/account/`;
 
     try {
