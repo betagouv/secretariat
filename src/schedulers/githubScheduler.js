@@ -8,7 +8,7 @@ const getGithubUserNotOnOrganization = async () => {
   if (config.stagingUsers) {
     return config.stagingUsers;
   }
-  const allGithubOrganizationMembers = await github.getAllOrganizationMembers();
+  const allGithubOrganizationMembers = await github.getAllOrganizationMembers(config.githubOrganizationName);
   const users = await BetaGouv.usersInfos();
 
   const activeGithubUsers = users.filter((x) => {
