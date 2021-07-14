@@ -239,6 +239,7 @@ module.exports.renderHtmlFromMd = function (content) {
     // smartypants: false,
   });
   function build(coll, k, level, ctx) {
+    /* eslint-disable no-param-reassign */
     if (k >= coll.length || coll[k].level <= level) { return k; }
     const node = coll[k];
     ctx.push(`<li><a href='#${node.anchor}'>${node.text}</a>`);
