@@ -56,7 +56,7 @@ describe('invite users to mattermost', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, testUsers)
     .persist();
-    const inviteUsersToTeamByEmail = mattermostScheduler.inviteUsersToTeamByEmail
+    const { inviteUsersToTeamByEmail } = mattermostScheduler;
     const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
     result.length.should.be.equal(2);
   });
