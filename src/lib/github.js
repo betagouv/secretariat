@@ -102,13 +102,23 @@ function isValidGithubUserName(value) {
 }
 exports.isValidGithubUserName = isValidGithubUserName;
 
-const octokit = new Octokit({ auth: config.githubOrgAdminToken });
+const createOctokitAuth = () => {
+  if (config.githubOrgAdminToken) {
+    const errorMessage = 'Unable to launch github request without env var githubOrgAdminToken';
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return Octokit({ auth: config.githubOrgAdminToken });
+};
 
-const getGithubMembersOfOrganization = (org, i) => octokit.request('GET /orgs/{org}/members', {
-  org,
-  per_page: 100,
-  page: i,
-}).then((resp) => resp.data);
+const getGithubMembersOfOrganization = (org, i) => {
+  const octokit = createOctokitAuth();
+  return octokit.request('GET /orgs/{org}/members', {
+    org,
+    per_page: 100,
+    page: i,
+  }).then((resp) => resp.data);
+};
 
 exports.getGithubMembersOfOrganization = getGithubMembersOfOrganization;
 
@@ -122,6 +132,7 @@ exports.getAllOrganizationMembers = async (org, i = 0) => {
 };
 
 exports.inviteUserByUsernameToOrganization = function inviteUserByUsername(username, org) {
+  const octokit = createOctokitAuth();
   return octokit.request('PUT /orgs/{org}/memberships/{username}', {
     org,
     username,

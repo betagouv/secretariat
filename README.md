@@ -22,7 +22,7 @@ Le secrétariat de l’incubateur
    - `GITHUB_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour créer les PR des nouvelles recrues
    - `GITHUB_REPOSITORY` - Le repository Github qui contient les fiches des utilisateurs (par ex: `betagouv/beta.gouv.fr`)
    - `GITHUB_FORK` - Le fork du GITHUB_REPOSITORY utilisé pour créer les PRs, (par ex: `test-user/beta.gouv.fr`).
-
+   - `GITHUB_ORG_ADMIN_TOKEN` - Le [Personal Access Token](https://github.com/settings/tokens) du compte Github utilisé pour gérer les membres de la communauté
 - Variables d'environnement optionnelles :
    - `SECRETARIAT_DOMAIN` - Domaine OVH à utiliser ([Débugger avec un autre domaine OVH](#Debug-avec-un-autre-domaine-OVH))
    - `USERS_API` - API User à utiliser ([Débugger avec une autre API](#Debug-avec-une-autre-API-utilisateur))
@@ -32,6 +32,8 @@ Le secrétariat de l’incubateur
    - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
    - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
    - `INVESTIGATION_REPORTS_IFRAME_URL` - URL de l'iframe Airtable contenant les bilans d'investigations et qui est intégrée à la page ressources
+   - `GITHUB_ORGANIZATION_NAME` - Nom de l'organization github à laquelle inviter les membres
+
 
 ### Lancer en mode développement
 

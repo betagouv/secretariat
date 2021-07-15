@@ -5,9 +5,6 @@ const github = require('../lib/github');
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUserNotOnOrganization = async (org) => {
-  if (config.stagingUsers) {
-    return config.stagingUsers;
-  }
   const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
   const users = await BetaGouv.usersInfos();
 
