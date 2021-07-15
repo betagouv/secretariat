@@ -1,4 +1,5 @@
 const ejs = require('ejs');
+const generator = require('generate-password');
 const mattermost = require('../lib/mattermost');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
@@ -37,7 +38,12 @@ module.exports.createUsersByEmail = async () => {
     await mattermost.createUser({
       email,
       username: user.id,
-      password: config.mattermostDefaultPassword,
+      password: generator.generateMultiple(3, {
+        length: 10,
+        uppercase: false,
+        numbers: true,
+        symbols: true,
+      }),
     });
 
     const html = await ejs.renderFile('./views/emails/mattermost.ejs', {

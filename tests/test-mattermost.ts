@@ -47,14 +47,14 @@ describe('invite users to mattermost', () => {
     .get(/^.*email\/domain\/.*\/account/)
     .reply(200, testUsers.map((user) => user.id));
 
-    nock(/.*mattermost.incubateur.net/)
+    nock(/^.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, []);
 
-    nock(/.*mattermost.incubateur.net/)
+    nock(/^.*mattermost.incubateur.net/)
     .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
     .reply(200, [{}, {}]).persist();
 
@@ -73,7 +73,7 @@ describe('invite users to mattermost', () => {
     .get(/^.*email\/domain\/.*\/account/)
     .reply(200, testUsers.map((user) => user.id));
 
-    nock(/.*mattermost.incubateur.net/)
+    nock(/^.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)

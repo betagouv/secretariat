@@ -32,6 +32,9 @@ Le secrétariat de l’incubateur
    - `MAIL_IGNORE_TLS` - Si la variable `MAIL_SERVICE` est absente, cette variable sera utilisée pour l'utilisation de TLS dans la connexion email avec [Nodemailer](https://nodemailer.com/smtp/).
    - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
    - `INVESTIGATION_REPORTS_IFRAME_URL` - URL de l'iframe Airtable contenant les bilans d'investigations et qui est intégrée à la page ressources
+   - `MATTERMOST_INVITE_ID` - ID secret de l'invitation qui permet de se créer un compte sur l'espace mattermost https://mattermost.incubateur.net/signup_user_complete/?id=[ID]
+   - `MATTERMOST_TEAM_ID` - ID de la team `Communauté`
+   - `MATTERMOST_BOT_TOKEN` - Token du bot mattermost qui permet de faire les requêtes à l'api
 
 ### Lancer en mode développement
 
