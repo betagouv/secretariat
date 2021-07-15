@@ -35,6 +35,8 @@ jobs:
         SESSION_SECRET: fakesessionsecret
         SLACK_WEBHOOK_URL_SECRETARIAT: https://example.com
         SLACK_WEBHOOK_URL_GENERAL: https://example.com
+        MATTERMOST_BOT_TOKEN: faketoken
+        MATTERMOST_INVITE_ID: fakeid
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser
