@@ -56,8 +56,13 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
   }
 };
 
-module.exports.onUserContractEnding = async (configName) => {
+module.exports.onUserContractEnding = async (configName, users) => {
   const messageConfig = CONFIG_MESSAGE[configName];
-  const registeredUsersWithEndingContractInXDays = await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
+  let registeredUsersWithEndingContractInXDays;
+  if (users) {
+    registeredUsersWithEndingContractInXDays = users;
+  } else {
+    registeredUsersWithEndingContractInXDays = await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
+  }
   await Promise.all(registeredUsersWithEndingContractInXDays.map(async (user) => sendMessageOnChatAndEmail(user, messageConfig)));
 };
