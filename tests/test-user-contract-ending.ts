@@ -109,8 +109,8 @@ describe('invite users to mattermost', () => {
     .get((uri) => uri.includes('authors.json'))
     .reply(200, betaGouvUsers)
     .persist();
-    const { onUserContractEnding } = userContractEndingScheduler;
-    const result = await onUserContractEnding('mail15days');
+    const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
+    const result = await sendContractEndingMessageToUsers('mail15days');
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });

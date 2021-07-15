@@ -63,7 +63,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
   }
 };
 
-module.exports.onUserContractEnding = async (configName, users) => {
+module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
   const messageConfig = CONFIG_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays;
   if (users) {
