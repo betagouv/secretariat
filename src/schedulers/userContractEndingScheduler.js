@@ -48,7 +48,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
   const html = await ejs.renderFile(`./views/emails/${messageConfig.emailFile}`, {
     user,
   });
-  await BetaGouv.sendInfoToChat(html, 'general', user);
+  await BetaGouv.sendInfoToChat(html, 'secretariat', user);
   try {
     await utils.sendMail(user.toEmail, `Départ dans ${messageConfig.days} jours 🙂`, html);
   } catch (err) {
