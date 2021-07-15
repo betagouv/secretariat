@@ -35,10 +35,13 @@ module.exports.createUsersByEmail = async () => {
   });
   const results = await Promise.all(activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
     const email = utils.buildBetaEmail(user.id);
+
     await mattermost.createUser({
       email,
       username: user.id,
-      password: generator.generateMultiple(3, {
+      // mattermost spec : password must contain at least 10 character,
+      // one lowercase, one upper, one number and a special character (amongst "~!@#$%^&*()").
+      password: generator.generate({
         length: 10,
         uppercase: true,
         numbers: true,
