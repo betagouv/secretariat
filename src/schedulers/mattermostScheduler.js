@@ -40,7 +40,7 @@ module.exports.createUsersByEmail = async () => {
       username: user.id,
       password: generator.generateMultiple(3, {
         length: 10,
-        uppercase: false,
+        uppercase: true,
         numbers: true,
         symbols: true,
       }),
