@@ -112,6 +112,6 @@ describe('invite users to mattermost', () => {
     const { onUserContractEnding } = userContractEndingScheduler;
     const result = await onUserContractEnding('mail15days');
     chat.calledOnce.should.be.true;
-    chat.firstCall.args[2].mattermostUsername.should.be.equal('membre.quipart');
+    chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
 });
