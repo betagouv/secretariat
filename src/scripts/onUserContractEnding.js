@@ -1,4 +1,4 @@
-import { onUserContractEnding } from '../schedulers/userContractEndingScheduler';
+const { onUserContractEnding } = require('../schedulers/userContractEndingScheduler');
 
 const args = process.argv.slice(2);
 if (args[1]) {
