@@ -1,17 +1,15 @@
 import axios from 'axios';
 
-import ovh0 from 'ovh';
-
 import config from './config';
 
-const ovh = ovh0({
+const ovh = require('ovh')({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
   consumerKey: process.env.OVH_CONSUMER_KEY,
 });
 
-class BetaGouv {
-  async sendInfoToSlack(text, channel) {
+const betaGouv = {
+  sendInfoToSlack: async (text, channel) => {
     let hookURL = config.slackWebhookURLSecretariat;
     if (channel === 'general') {
       hookURL = config.slackWebhookURLGeneral;
@@ -21,41 +19,34 @@ class BetaGouv {
     } catch (err) {
       throw new Error(`Error to notify slack: ${err}`);
     }
-  }
+  },
+  usersInfos: async () => axios.get(config.usersAPI).then((response) => response.data.map((author) => {
+    if (author.missions && author.missions.length > 0) {
+      const sortedStartDates = author.missions.map((x) => x.start).sort();
+      const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
+      const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
 
-  async usersInfos() {
-    return axios.get(config.usersAPI).then((response) => response.data.map((author) => {
-      if (author.missions && author.missions.length > 0) {
-        const sortedStartDates = author.missions.map((x) => x.start).sort();
-        const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
-        const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
-
-        [author.start] = sortedStartDates;
-        author.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
-        author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
-      }
-      return author;
-    })).catch((err) => {
-      throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
-    });
-  }
-
-  async userInfosById(id) {
-    const users = await this.usersInfos();
+      [author.start] = sortedStartDates;
+      author.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
+      author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+    }
+    return author;
+  })).catch((err) => {
+    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+  }),
+  userInfosById: async (id) => {
+    const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
-  }
+  },
+  startupsInfos: async () => axios.get(config.startupsAPI)
+    .then((x) => x.data.data) // data key
+    .catch((err) => {
+      throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
+    }),
+};
 
-  async startupsInfos() {
-    return axios.get(config.startupsAPI)
-      .then((x) => x.data.data) // data key
-      .catch((err) => {
-        throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
-      });
-  }
-}
-
-class BetaOVH {
-  async emailInfos(id) {
+const betaOVH = {
+  emailInfos: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
@@ -64,8 +55,17 @@ class BetaOVH {
       if (err.error == '404') return null;
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
-  }
-  async createEmail(id, password) {
+  },
+  getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
+    const url = `/email/domain/${config.domain}/account/`;
+
+    try {
+      return await ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
 
     try {
@@ -73,48 +73,100 @@ class BetaOVH {
 
       return await ovh.requestPromised('POST', url, {
         accountName: id,
-        password
+        password,
       });
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
-  }
-  async requestRedirection(method, redirectionId) {
-    return ovh.requestPromised(
-      method,
-      `/email/domain/${config.domain}/redirection/${redirectionId}`
-    );
-  }
-  /* eslint arrow-body-style: "warn" */
-  async requestRedirections(method, redirectionIds) {
-    return Promise.all(redirectionIds.map((x) => this.requestRedirection(method, x)));
-  }
-  async deleteRedirection(from, to) {
+  },
+  deleteEmail: async (id, password) => {
+    const url = `/email/domain/${config.domain}/account/${id}`;
+
+    try {
+      console.log(`OVH DELETE ${url}`);
+
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  createRedirection: async (from, to, localCopy) => {
+    const url = `/email/domain/${config.domain}/redirection`;
+
+    try {
+      console.log(`OVH POST ${url} from+${from} &to=${to}`);
+
+      return await ovh.requestPromised('POST', url, { from, to, localCopy });
+    } catch (err) {
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  requestRedirection: async (method, redirectionId) => ovh.requestPromised(
+    method,
+    `/email/domain/${config.domain}/redirection/${redirectionId}`,
+  ),
+  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
+  redirectionsForId: async (query) => {
+    if (!query.from && !query.to) {
+      throw new Error('paramètre \'from\' ou \'to\' manquant');
+    }
+
+    const url = `/email/domain/${config.domain}/redirection`;
+
+    const options = {};
+
+    if (query.from) {
+      options['from'] = `${query.from}@${config.domain}`;
+    }
+
+    if (query.to) {
+      options['to'] = `${query.to}@${config.domain}`;
+    }
+
+    try {
+      const redirectionIds = await ovh.requestPromised('GET', url, options);
+
+      return await betaOVH.requestRedirections('GET', redirectionIds);
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  deleteRedirection: async (from, to) => {
     const url = `/email/domain/${config.domain}/redirection`;
 
     try {
       const redirectionIds = await ovh.requestPromised('GET', url, {
         from,
-        to
+        to,
       });
 
-      return await this.requestRedirections('DELETE', redirectionIds);
+      return await betaOVH.requestRedirections('DELETE', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
-  }
-  async redirections() {
+  },
+  redirections: async () => {
     const url = `/email/domain/${config.domain}/redirection`;
 
     try {
       const redirectionIds = await ovh.requestPromised('GET', url);
 
-      return await this.requestRedirections('GET', redirectionIds);
+      return await betaOVH.requestRedirections('GET', redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
-  }
-  async changePassword(id, password) {
+  },
+  accounts: async () => {
+    const url = `/email/domain/${config.domain}/account`;
+
+    try {
+      return await ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      if (err.error == '404') return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  changePassword: async (id, password) => {
     const url = `/email/domain/${config.domain}/account/${id}/changePassword`;
 
     try {
@@ -122,8 +174,7 @@ class BetaOVH {
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
-  }
-}
+  },
+};
 
-export {BetaGouv, BetaOVH}
-// module.exports = { ...betaGouv, ...betaOVH };
+module.exports = { ...betaGouv, ...betaOVH };
