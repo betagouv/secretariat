@@ -17,6 +17,7 @@ if (config.featureAddGithubUserToOrganization) {
 }
 
 if (config.featureCreateUserOnMattermost) {
+  console.log('Cron job to create user on mattermost by email on');
   const { createUsersByEmail } = require('./mattermostScheduler');
   const createMattermostUsers = new CronJob(
     '0 */8 * * * *',
@@ -25,4 +26,6 @@ if (config.featureCreateUserOnMattermost) {
     true,
     'Europe/Paris',
   );
+} else {
+  console.log('Cron job to create user on mattermost by email off');
 }
