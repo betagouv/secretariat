@@ -1,3 +1,4 @@
+const { CronJob } = require('cron');
 const mattermost = require('../lib/mattermost');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
@@ -34,8 +35,8 @@ module.exports.reactivateUsers = async () => {
 
   const users = await BetaGouv.usersInfos();
   const currentUsers = users.filter((x) => {
-    const isNotExpired = !utils.checkUserIsExpired(x);
-    return isNotExpired;
+    const isnotExpired = !utils.checkUserIsExpired(x);
+    return isnotExpired;
   });
 
   const currentUsersEmails = currentUsers.map((user) => `${user.id}@${config.domain}`);
@@ -48,4 +49,19 @@ module.exports.reactivateUsers = async () => {
     const activedUser = await mattermost.activeUsers(member.id);
   });
   return mattermostUsersToReactivate;
+};
+
+module.exports.reactivateUsersJob = () => {
+  if (config.featureReactiveMattermostUsers) {
+    console.log(`🚀 The job reactiveMattermostUsers is started`);
+    new CronJob(
+      '0 0 10 * * 1-5', // monday through friday at 10:00:00
+      this.reactivateUsers,
+      null,
+      true,
+      'Europe/Paris',
+    );
+  } else {
+    console.log(`❌ The job reactiveMattermostUsers is OFF`);
+  };
 };

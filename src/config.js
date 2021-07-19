@@ -47,4 +47,5 @@ module.exports = {
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  featureReactiveMattermostUsers: process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
 };
