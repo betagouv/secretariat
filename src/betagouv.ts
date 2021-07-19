@@ -1,6 +1,7 @@
 import axios from "axios";
 import ovh0 from "ovh";
 import config from "./config";
+import { checkUserIsExpired } from "./controllers/utils";
 import { Member } from "./models/member";
 
 const ovh = ovh0({
@@ -68,7 +69,6 @@ const betaOVH = {
     }
   },
   getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
-    // result is an array of the users ids : ['firstname1.lastname1', 'firstname2.lastname2', ...]
     const url = `/email/domain/${config.domain}/account/`;
 
     try {
@@ -81,8 +81,6 @@ const betaOVH = {
   getActiveRegisteredOVHUsers: async () => {
     const users = await betaGouv.usersInfos();
     const allOvhEmails = await betaOVH.getAllEmailInfos();
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { checkUserIsExpired } = require('./controllers/utils');
     const activeUsers = users.filter(
       (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
     );

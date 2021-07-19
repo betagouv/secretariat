@@ -3,6 +3,7 @@ import config from "../config";
 import fm from "front-matter";
 import axios from "axios";
 
+
 function getURL(objectID) {
   return `https://api.github.com/repos/betagouv/beta.gouv.fr/${objectID}`;
 }
@@ -100,7 +101,7 @@ function isValidGithubUserName(value) {
 const createOctokitAuth = () => {
 
   if (!config.githubOrgAdminToken) {
-    const errorMessage = 'Unable to launch github request without env var githubOrgAdminToken';
+    const errorMessage = "Unable to launch github request without env var githubOrgAdminToken";
     console.error(errorMessage);
     throw new Error(errorMessage);
   }

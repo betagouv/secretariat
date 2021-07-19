@@ -1,10 +1,10 @@
+import { CronJob } from "cron";
+import ejs from "ejs";
+import generator from "generate-password";
 import { betaGouv, betaOVH } from "../betagouv";
 import config from "../config";
 import * as utils from "../controllers/utils";
 import * as mattermost from "../lib/mattermost";
-import generator from "generate-password";
-import ejs from "ejs";
-import { CronJob } from "cron";
 
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
