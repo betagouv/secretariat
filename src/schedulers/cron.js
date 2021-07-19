@@ -15,15 +15,14 @@ if (config.featureAddGithubUserToOrganization) {
     'Europe/Paris',
   );
 }
-const { createUsersByEmail } = require('./mattermostScheduler');
-// const { CronJob } = require('cron');
-// const { createUsersByEmail } = require('./mattermostScheduler');
-const { createUsersByEmail } = require('./mattermostScheduler');
 
-module.exports.createMattermostUsers = new CronJob(
-  '0 */8 * * * *',
-  createUsersByEmail,
-  null,
-  true,
-  'Europe/Paris',
-);
+if (!config.createUserOnMattermost) {
+  const { createUsersByEmail } = require('./mattermostScheduler');
+  const createMattermostUsers = new CronJob(
+    '0 */8 * * * *',
+    createUsersByEmail,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}

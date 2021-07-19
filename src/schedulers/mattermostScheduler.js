@@ -24,9 +24,6 @@ module.exports.inviteUsersToTeamByEmail = async () => {
 };
 
 module.exports.createUsersByEmail = async () => {
-  if (!config.createUserOnMattermost) {
-    return;
-  }
   let activeGithubUsersUnregisteredOnMattermost = await getActiveGithubUsersUnregisteredOnMattermost();
   activeGithubUsersUnregisteredOnMattermost = activeGithubUsersUnregisteredOnMattermost.filter((user) => {
     const userStartDate = new Date(user.start).getTime();
