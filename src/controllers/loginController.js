@@ -7,15 +7,15 @@ const utils = require('./utils');
 const knex = require('../db');
 
 function renderLogin(req, res, params) {
-  // init params
-  params.currentUser = undefined;
-  params.domain = config.domain;
-  params.nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  // enrich params
-  params.errors = req.flash('error');
-  params.messages = req.flash('message');
-  // render
-  return res.render('login', params);
+  res.render('login', {
+    // init params
+    currentUser: undefined,
+    domain: config.domain,
+    nextParam: req.query.next ? `?next=${req.query.next}` : '',
+    // enrich params
+    errors: req.flash('error'),
+    messages: req.flash('message'),
+  });
 }
 
 function generateToken() {

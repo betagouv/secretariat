@@ -33,7 +33,7 @@ module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
     ).then((response) => response.data);
   } catch (err) {
     console.error('Erreur d\'ajout des utilisateurs à mattermost', err, userEmails);
-    return;
+    return null;
   }
   console.log('Ajout des utilisateurs à mattermost', userEmails);
   return res;
