@@ -30,9 +30,9 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-module.exports.sendMail = async function (to_email, subject, html, extraParams = {}) {
+module.exports.sendMail = async function (toEmail, subject, html, extraParams = {}) {
   const mail = {
-    to: to_email,
+    to: toEmail,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
     subject,
     html,
@@ -144,10 +144,10 @@ module.exports.NUMBER_OF_DAY_FROM_MONDAY = {
 };
 
 module.exports.getMonday = (d) => {
-  d = new Date(d);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-  return new Date(d.setDate(diff));
+  const date = new Date(d);
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+  return new Date(date.setDate(diff));
 };
 
 module.exports.addDays = (date, days, week) => {
@@ -232,19 +232,25 @@ module.exports.deleteGithubBranch = function (branch) {
 module.exports.createGithubFile = function (path, branch, content) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
   const message = `Création de fichier ${path} sur la branche ${branch}`;
-  content = Buffer.from(content, 'utf-8').toString('base64');
+  const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
 
-  return requestWithAuth(`PUT ${url}`, { message, content, branch });
+  return requestWithAuth(`PUT ${url}`, {
+    branch,
+    message,
+    content: base64EncodedContent,
+  });
 };
 
 module.exports.makeGithubPullRequest = function (branch, title) {
   const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
   const head = `${config.githubFork.split('/')[0]}:${branch}`;
   const base = 'master';
-  const maintainer_can_modify = true;
 
   return requestWithAuth(`POST ${url}`, {
-    title, head, base, maintainer_can_modify,
+    title,
+    head,
+    base,
+    maintainer_can_modify: true,
   });
 };
 

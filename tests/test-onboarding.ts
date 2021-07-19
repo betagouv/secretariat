@@ -9,7 +9,6 @@ import utils from './utils';
 
 chai.use(chaiHttp);
 
-
 describe('Onboarding', () => {
   describe('GET /onboarding', () => {
     it('should return a valid page', (done) => {
