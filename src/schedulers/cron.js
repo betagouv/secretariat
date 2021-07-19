@@ -16,7 +16,7 @@ if (config.featureAddGithubUserToOrganization) {
   );
 }
 
-if (!config.createUserOnMattermost) {
+if (config.createUserOnMattermost) {
   const { createUsersByEmail } = require('./mattermostScheduler');
   const createMattermostUsers = new CronJob(
     '0 */8 * * * *',
