@@ -51,7 +51,7 @@ module.exports.reactivateUsers = async () => {
   return mattermostUsersToReactivate;
 };
 
-module.exports.reactivateUsersJob = () => {
+const reactivateUsersJob = () => {
   if (config.featureReactiveMattermostUsers) {
     console.log(`🚀 The job reactiveMattermostUsers is started`);
     new CronJob(
