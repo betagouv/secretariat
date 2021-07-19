@@ -65,6 +65,7 @@ const { onUserContractEnding } = require('./userContractEndingScheduler');
 //   'Europe/Paris',
 // );
 if (config.featureOnUserContractEnd) {
+  console.log('Create cron job for sending contract ending message to users');
   const { sendContractEndingMessageToUsers } = require('./userContractEndingScheduler');
 
   const onUserContractEndIn15days = new CronJob(
@@ -82,4 +83,6 @@ if (config.featureOnUserContractEnd) {
     true,
     'Europe/Paris',
   );
+} else {
+  console.log('Send contract ending message job is off');
 }
