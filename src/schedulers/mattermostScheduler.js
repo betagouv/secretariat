@@ -35,14 +35,12 @@ module.exports.reactivateUsers = async () => {
 
   const users = await BetaGouv.usersInfos();
   const currentUsers = users.filter((x) => {
-    const isnotExpired = !utils.checkUserIsExpired(x);
-    return isnotExpired;
+    return !utils.checkUserIsExpired(x);
   });
 
   const currentUsersEmails = currentUsers.map((user) => `${user.id}@${config.domain}`);
   const mattermostUsersToReactivate = inactiveMattermostUsers.filter(({ email }) => {
-    const found = currentUsersEmails.find((userMail) => userMail === email);
-    return found;
+    return currentUsersEmails.find((userMail) => userMail === email);
   });
 
   mattermostUsersToReactivate.forEach(async (member) => {
