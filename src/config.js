@@ -52,4 +52,5 @@ module.exports = {
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
+  featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
 };
