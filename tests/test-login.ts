@@ -1,9 +1,12 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const controllerUtils = require('../src/controllers/utils');
-const app = require('../src/index.ts');
-const knex = require('../src/db');
-const config = require('../src/config');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import sinon from 'sinon';
+import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
+
+chai.use(chaiHttp);
 
 describe('Login', () => {
   let sendEmailStub;
@@ -46,7 +49,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login?next=/users');
+          res.header.location.should.equal('/login?next=/users');
           done();
         });
     });
@@ -63,7 +66,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.header.location.should.equal('/login');
           done();
         });
     });
@@ -80,7 +83,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.header.location.should.equal('/login');
           done();
         });
     });
@@ -97,7 +100,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.header.location.should.equal('/login');
           done();
         });
     });
@@ -156,7 +159,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/login');
+          res.header.location.should.equal('/login');
           sendEmailStub.notCalled.should.be.true;
           done();
         });
@@ -177,7 +180,7 @@ describe('Login', () => {
           .redirects(0)
           .end((err, res) => {
             res.should.have.status(302);
-            res.headers.location.should.equal('/login');
+            res.header.location.should.equal('/login');
             sendEmailStub.notCalled.should.be.true;
             done();
           });

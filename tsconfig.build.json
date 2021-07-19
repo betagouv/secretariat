@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "static",
+    "**/*.d.ts",
+    "knexfile.js",
+    "migrations",
+    "dist",
+    "tests/"
+  ]
+}

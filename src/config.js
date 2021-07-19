@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const userStatusOptions = [
@@ -48,4 +50,5 @@ module.exports = {
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   featureReactiveMattermostUsers: process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
+  leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
 };

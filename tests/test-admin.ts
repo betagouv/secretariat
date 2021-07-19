@@ -1,27 +1,29 @@
-const chai = require('chai');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import app from '../src/index';
+import utils from './utils';
 
-const app = require('../src/index.ts');
-const utils = require('./utils');
+chai.use(chaiHttp);
 
-describe('Resource', () => {
-  describe('GET /resources unauthenticated', () => {
+describe('Admin', () => {
+  describe('GET /admin unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
-        .get('/resources')
+        .get('/admin')
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/resources');
+          res.header.location.should.include('/login');
+          res.header.location.should.equal('/login?next=/admin');
           done();
         });
     });
   });
 
-  describe('GET /resources authenticated', () => {
+  describe('GET /admin authenticated', () => {
     it('should return a valid page', (done) => {
       chai.request(app)
-        .get('/resources')
+        .get('/admin')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);

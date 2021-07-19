@@ -11,10 +11,10 @@
     "rolldown": "knex migrate:down",
     "dev": "ts-node-dev src/index.ts",
     "lint": "eslint . --fix",
-    "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.js --timeout 3000",
+    "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.ts --timeout 3000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "build": "./node_modules/.bin/tsc -p tsconfig.json"
+    "build": "./node_modules/.bin/tsc -p tsconfig.build.json"
   },
   "lint-staged": {
     "*.{js}": [
@@ -37,7 +37,7 @@
   "dependencies": {
     "@octokit/request": "^5.6.0",
     "@sentry/integrations": "^6.8.0",
-    "@sentry/node": "^6.8.0",
+    "@sentry/node": "^6.9.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
@@ -55,7 +55,7 @@
     "hedgedoc-api": "git+https://github.com/betagouv/hedgedoc-api-lib-js.git#v1.0",
     "jsonwebtoken": "^8.2.2",
     "juice": "^8.0.0",
-    "knex": "^0.95.6",
+    "knex": "^0.95.7",
     "lodash": "^4.17.21",
     "marked": "^2.1.3",
     "nodemailer": "^6.6.0",
@@ -69,21 +69,23 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^8.2.3",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "eslint": "^7.30.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-node": "^11.1.0",
-    "husky": "^6.0.0",
+    "husky": "^7.0.1",
     "lint-staged": "^11.0.0",
     "mocha": "^9.0.1",
     "nock": "^13.1.0",
-    "nodemon": "^2.0.9",
+    "nodemon": "^2.0.12",
     "pg-connection-string": "^2.5.0",
     "prettier": "^2.3.1",
     "rewire": "^5.0.0",
-    "sinon": "^10.0.1",
+    "sinon": "^11.1.1",
     "ts-node-dev": "^1.1.8",
     "typescript": "^4.3.5"
   },

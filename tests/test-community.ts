@@ -1,10 +1,11 @@
-const chai = require('chai');
-const nock = require('nock');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import nock from 'nock';
+import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
-const knex = require('../src/db');
-
+chai.use(chaiHttp);
 describe('Community', () => {
   describe('GET /community unauthenticated', () => {
     it('should redirect to login', (done) => {
@@ -13,8 +14,8 @@ describe('Community', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.include('/login');
-          res.headers.location.should.equal('/login?next=/community');
+          res.header.location.should.include('/login');
+          res.header.location.should.equal('/login?next=/community');
           done();
         });
     });
@@ -54,7 +55,7 @@ describe('Community', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community');
+          res.header.location.should.equal('/community');
           done();
         });
     });
@@ -66,7 +67,7 @@ describe('Community', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/account');
+          res.header.location.should.equal('/account');
           done();
         });
     });

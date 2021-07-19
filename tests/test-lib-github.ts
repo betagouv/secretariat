@@ -1,5 +1,3 @@
-const chai = require('chai');
-
 const { isValidGithubUserName } = require('../src/lib/github');
 
 describe('Github lib', () => {

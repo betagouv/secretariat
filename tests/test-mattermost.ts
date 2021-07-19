@@ -1,9 +1,9 @@
-const rewire = require('rewire');
-const nock = require('nock');
-const sinon = require('sinon');
-const utils = require('./utils');
-const testUsers = require('./users.json');
-const config = require('../src/config');
+import nock from 'nock';
+import rewire from 'rewire';
+import sinon from 'sinon';
+import config from '../src/config';
+import testUsers from './users.json';
+import utils from './utils';
 
 const mattermostUsers = [
   {
@@ -28,6 +28,7 @@ const mattermostScheduler = rewire('../src/schedulers/mattermostScheduler');
 
 describe('invite users to mattermost', () => {
   let clock;
+
   beforeEach(async () => {
     const date = new Date('2021-01-20T07:59:59+01:00');
     clock = sinon.useFakeTimers(date);
@@ -46,7 +47,7 @@ describe('invite users to mattermost', () => {
     .get(/^.*api\/v4\/users.*/)
     .reply(200, []);
 
-    const postBatchMock = nock(/.*mattermost.incubateur.net/)
+    nock(/.*mattermost.incubateur.net/)
     .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
     .reply(200, [{}, {}]).persist();
 

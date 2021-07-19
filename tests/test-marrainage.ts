@@ -1,24 +1,29 @@
-const chai = require('chai');
-const sinon = require('sinon');
-const jwt = require('jsonwebtoken');
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import jwt from 'jsonwebtoken';
+import sinon from 'sinon';
+import config from '../src/config';
+import controllerUtils from '../src/controllers/utils';
+import knex from '../src/db';
+import app from '../src/index';
+import utils from './utils';
 
-const app = require('../src/index.ts');
-const utils = require('./utils.js');
-const controllerUtils = require('../src/controllers/utils');
-const config = require('../src/config');
-const knex = require('../src/db');
+chai.use(chaiHttp);
 
 describe('Marrainage', () => {
+  let clock;
+  let sendEmailStub;
+
   beforeEach((done) => {
-    this.sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-    this.clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });
 
   afterEach((done) => {
     knex('marrainage').truncate()
-      .then(() => this.sendEmailStub.restore())
-      .then(() => this.clock.restore())
+      .then(() => sendEmailStub.restore())
+      .then(() => clock.restore())
       .then(() => done());
   });
 
@@ -52,10 +57,10 @@ describe('Marrainage', () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.text.should.include('Vous allez recevoir un email avec tous les deux en copie');
-            this.sendEmailStub.calledOnce.should.be.true;
+            sendEmailStub.calledOnce.should.be.true;
 
-            const subject = this.sendEmailStub.args[0][1];
-            const emailBody = this.sendEmailStub.args[0][2];
+            const subject = sendEmailStub.args[0][1];
+            const emailBody = sendEmailStub.args[0][2];
 
             subject.should.equal('Mise en contact 👋');
             emailBody.should.include('Membre Actif a accepté de te marrainer');
@@ -80,9 +85,9 @@ describe('Marrainage', () => {
           .end((err, res) => {
             res.should.have.status(200);
             res.text.should.include('Votre décision a été prise en compte');
-            this.sendEmailStub.calledOnce.should.be.true;
+            sendEmailStub.calledOnce.should.be.true;
 
-            const newOnboarderEmailArgs = this.sendEmailStub.args[0];
+            const newOnboarderEmailArgs = sendEmailStub.args[0];
 
             const subject = newOnboarderEmailArgs[1];
             const emailBody = newOnboarderEmailArgs[2];
@@ -155,11 +160,11 @@ describe('Marrainage', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community/membre.actif');
-          this.sendEmailStub.calledOnce.should.be.true;
+          res.header.location.should.equal('/community/membre.actif');
+          sendEmailStub.calledOnce.should.be.true;
 
-          const subject = this.sendEmailStub.args[0][1];
-          const emailBody = this.sendEmailStub.args[0][2];
+          const subject = sendEmailStub.args[0][1];
+          const emailBody = sendEmailStub.args[0][2];
 
           subject.should.equal('Tu as été sélectionné·e comme marrain·e 🙌');
           emailBody.should.include('marrainage/accept');
@@ -197,8 +202,8 @@ describe('Marrainage', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.headers.location.should.equal('/community/membre.actif');
-          this.sendEmailStub.notCalled.should.be.true;
+          res.header.location.should.equal('/community/membre.actif');
+          sendEmailStub.notCalled.should.be.true;
           done();
         });
     });
@@ -221,7 +226,7 @@ describe('Marrainage', () => {
           .redirects(0)
           .end((err, res) => {
             res.should.have.status(302);
-            res.headers.location.should.equal(`/community/${newcomerId}`);
+            res.header.location.should.equal(`/community/${newcomerId}`);
             done();
           });
       });
@@ -269,7 +274,7 @@ describe('Marrainage', () => {
           .redirects(0)
           .end((err, res) => {
             res.should.have.status(302);
-            res.headers.location.should.equal(`/community/${newcomerId}`);
+            res.header.location.should.equal(`/community/${newcomerId}`);
             done();
           });
       });
@@ -361,8 +366,8 @@ describe('Marrainage', () => {
         // will immediatly start it.
         /* eslint-disable global-require */
         const { reloadMarrainageJob } = require('../src/schedulers/marrainageScheduler');
-        this.clock.tick(1001);
-        this.listener = (response, obj, builder) => {
+        clock.tick(1001);
+        const listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
             return;
           }
@@ -378,10 +383,10 @@ describe('Marrainage', () => {
           .then(done)
           .catch(done)
           .finally(() => {
-            knex.off('query-response', this.listener); // remove listener else it runs in the next tests
+            knex.off('query-response', listener); // remove listener else it runs in the next tests
           });
         };
-        knex.on('query-response', this.listener);
+        knex.on('query-response', listener);
       });
     });
 
@@ -417,8 +422,8 @@ describe('Marrainage', () => {
         // we start it manually as it may have been stopped in previous tests
         reloadMarrainageJob.start();
 
-        this.clock.tick(1001);
-        this.listener = (response, obj, builder) => {
+        clock.tick(1001);
+        const listener = (response, obj, builder) => {
           if (obj.method !== 'update') {
             return;
           }
@@ -432,9 +437,9 @@ describe('Marrainage', () => {
           })
           .then(done)
           .catch(done)
-          .finally(() => knex.off('query-response', this.listener)); // remove listener else it runs in the next tests
+          .finally(() => knex.off('query-response', listener)); // remove listener else it runs in the next tests
         };
-        knex.on('query-response', this.listener);
+        knex.on('query-response', listener);
       });
     });
   });
