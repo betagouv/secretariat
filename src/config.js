@@ -58,4 +58,5 @@ module.exports = {
   featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
   featureCreateUserOnMattermost: process.env.FEATURE_CREATE_USER_ON_MATTERMOST,
   featureRemoveGithubUserFromOrganization: process.env.FEATURE_REMOVE_GITHUB_USER_FROM_ORGANIZATION,
+  featureOnUserContractEnd: process.env.FEATURE_ON_USER_CONTRACT_END,
 };
