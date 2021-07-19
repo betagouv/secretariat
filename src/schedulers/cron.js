@@ -18,11 +18,12 @@ if (config.featureAddGithubUserToOrganization) {
 const { createUsersByEmail } = require('./mattermostScheduler');
 // const { CronJob } = require('cron');
 // const { createUsersByEmail } = require('./mattermostScheduler');
+const { createUsersByEmail } = require('./mattermostScheduler');
 
-// module.exports.createMattermostUsers = new CronJob(
-//   '0 */8 * * * *',
-//   createUsersByEmail,
-//   null,
-//   true,
-//   'Europe/Paris',
-// );
+module.exports.createMattermostUsers = new CronJob(
+  '0 */8 * * * *',
+  createUsersByEmail,
+  null,
+  true,
+  'Europe/Paris',
+);

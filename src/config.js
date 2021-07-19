@@ -54,4 +54,5 @@ module.exports = {
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
+  createUserOnMattermost: process.env.CREATE_USER_ON_MATTERMOST,
 };
