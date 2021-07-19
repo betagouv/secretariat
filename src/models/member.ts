@@ -14,6 +14,7 @@ export interface Member {
   id: string,
   fullname: string,
   github: string,
+  email: string,
   missions: Mission[],
   start: string,
   end: string,

@@ -103,7 +103,7 @@ const createOctokitAuth = () => {
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
-  return Octokit({ auth: config.githubOrgAdminToken });
+  return new Octokit({ auth: config.githubOrgAdminToken });
 };
 
 const getGithubMembersOfOrganization = (org, i) => {

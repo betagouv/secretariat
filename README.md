@@ -33,7 +33,9 @@ Le secrétariat de l’incubateur
    - `NEWSLETTER_HASH_SECRET` - Clé pour générer un id pour les newsletters, important en prod
    - `INVESTIGATION_REPORTS_IFRAME_URL` - URL de l'iframe Airtable contenant les bilans d'investigations et qui est intégrée à la page ressources
    - `GITHUB_ORGANIZATION_NAME` - Nom de l'organization github à laquelle inviter les membres
-
+   - `MATTERMOST_INVITE_ID` - ID secret de l'invitation qui permet de se créer un compte sur l'espace mattermost https://mattermost.incubateur.net/signup_user_complete/?id=[ID]
+   - `MATTERMOST_TEAM_ID` - ID de la team `Communauté`
+   - `MATTERMOST_BOT_TOKEN` - Token du bot mattermost qui permet de faire les requêtes à l'api
 
 ### Lancer en mode développement
 

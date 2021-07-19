@@ -68,6 +68,7 @@ const betaOVH = {
     }
   },
   getAllEmailInfos: async () => { // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
+    // result is an array of the users ids : ['firstname1.lastname1', 'firstname2.lastname2', ...]
     const url = `/email/domain/${config.domain}/account/`;
 
     try {
@@ -75,6 +76,17 @@ const betaOVH = {
     } catch (err) {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
+  },
+  // get active users with email registered on ovh
+  getActiveRegisteredOVHUsers: async () => {
+    const users = await betaGouv.usersInfos();
+    const allOvhEmails = await betaOVH.getAllEmailInfos();
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { checkUserIsExpired } = require('./controllers/utils');
+    const activeUsers = users.filter(
+      (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
+    );
+    return activeUsers;
   },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;

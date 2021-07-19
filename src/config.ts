@@ -52,7 +52,9 @@ export default {
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
+  mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
+  featureCreateUserOnMattermost: process.env.FEATURE_CREATE_USER_ON_MATTERMOST,
 };

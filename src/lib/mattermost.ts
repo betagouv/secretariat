@@ -1,10 +1,17 @@
 import axios from "axios";
 import config from "../config";
 
-const mattermostConfig = {
-  headers: {
-    Authorization: `Bearer ${config.mattermostBotToken}`,
-  },
+const getMattermostConfig = () => {
+  if (!config.mattermostBotToken) {
+    const errorMessage = 'Unable to launch mattermost api calls without env var mattermostBotToken';
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return {
+    headers: {
+      Authorization: `Bearer ${config.mattermostBotToken}`,
+    },
+  };
 };
 
 export async function getUserWithParams(params={}, i = 0) {
@@ -14,7 +21,7 @@ export async function getUserWithParams(params={}, i = 0) {
       per_page: 200,
       page: i,
     },
-    ...mattermostConfig,
+    ...getMattermostConfig(),
   }).then((response) => response.data);
   if (!mattermostUsers.length) {
     return [];
@@ -29,12 +36,37 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
     res = await axios.post(
       `https://mattermost.incubateur.net/api/v4/teams/${teamId}/invite/email`,
       userEmails,
-      mattermostConfig,
+      getMattermostConfig(),
     ).then((response) => response.data);
   } catch (err) {
     console.error('Erreur d\'ajout des utilisateurs à mattermost', err, userEmails);
     return null;
   }
   console.log('Ajout des utilisateurs à mattermost', userEmails);
+  return res;
+}
+
+export async function createUser({ email, username, password }, teamId=null) {
+  if (!config.mattermostInviteId) {
+    const errorMessage = 'Unable to launch createUser without env var mattermostInviteId';
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  let res;
+  try {
+    res = await axios.post(
+      `https://mattermost.incubateur.net/api/v4/users?iid=${config.mattermostInviteId}`,
+      {
+        email,
+        username,
+        password,
+      },
+      getMattermostConfig(),
+    ).then((response) => response.data);
+  } catch (err) {
+    console.error('Erreur d\'ajout des utilisateurs à mattermost', err, email, username);
+    return;
+  }
+  console.log('Ajout de l\'utilisateur', email, username);
   return res;
 }

@@ -182,5 +182,16 @@
         "employer": "dinsic"
       }
     ]
+  },
+  {
+    "id": "mattermost.newuser",
+    "fullname": "Mattermost Newuser",
+    "missions": [
+      { 
+        "start": "2021-07-09",
+        "end": "2021-12-24",
+        "employer": "dinsic"
+      }
+    ]
   }
 ]
