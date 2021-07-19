@@ -64,6 +64,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
 };
 
 module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
+  console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays;
   if (users) {
