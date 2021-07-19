@@ -65,3 +65,5 @@ module.exports.reactivateUsersJob = () => {
     console.log(`❌ The job reactiveMattermostUsers is OFF`);
   };
 };
+
+reactivateUsersJob();
