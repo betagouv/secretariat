@@ -39,6 +39,8 @@ module.exports = {
   usersAPI: process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',
   startupsAPI: process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   githubToken: process.env.GITHUB_TOKEN,
+  githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || 'betagouv',
+  githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
   defaultLoggedInRedirectUrl: '/account',
@@ -51,4 +53,5 @@ module.exports = {
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   featureReactiveMattermostUsers: process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
+  featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
 };

@@ -1,3 +1,6 @@
+const { Octokit } = require('@octokit/core');
+const config = require('../config');
+
 const fm = require('front-matter');
 const axios = require('axios').default;
 
@@ -98,3 +101,40 @@ function isValidGithubUserName(value) {
   return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
 }
 exports.isValidGithubUserName = isValidGithubUserName;
+
+const createOctokitAuth = () => {
+  if (config.githubOrgAdminToken) {
+    const errorMessage = 'Unable to launch github request without env var githubOrgAdminToken';
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return Octokit({ auth: config.githubOrgAdminToken });
+};
+
+const getGithubMembersOfOrganization = (org, i) => {
+  const octokit = createOctokitAuth();
+  return octokit.request('GET /orgs/{org}/members', {
+    org,
+    per_page: 100,
+    page: i,
+  }).then((resp) => resp.data);
+};
+
+exports.getGithubMembersOfOrganization = getGithubMembersOfOrganization;
+
+exports.getAllOrganizationMembers = async (org, i = 0) => {
+  const githubUsers = await getGithubMembersOfOrganization(org, i);
+  if (!githubUsers.length) {
+    return [];
+  }
+  const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
+  return [...githubUsers, ...nextPageGithubUsers];
+};
+
+exports.inviteUserByUsernameToOrganization = function inviteUserByUsername(username, org) {
+  const octokit = createOctokitAuth();
+  return octokit.request('PUT /orgs/{org}/memberships/{username}', {
+    org,
+    username,
+  });
+};

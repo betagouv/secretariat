@@ -1,6 +1,7 @@
-import utils from '../utils';
+import utils from '../utils'
 
-exports.seed = async function (knex) {
+export default {
+  seed: async function (knex) {
   // A few universities
   const newsletterList = [
     {
@@ -44,4 +45,4 @@ exports.seed = async function (knex) {
 
   await knex('newsletters').insert(newsletterList);
   console.log(`inserted ${newsletterList.length} fake data to newsletters table`);
-};
+}};
