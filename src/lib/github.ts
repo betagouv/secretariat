@@ -1,3 +1,5 @@
+import { Octokit } from "@octokit/core";
+import config from "../config";
 import fm from "front-matter";
 import axios from "axios";
 
@@ -10,26 +12,26 @@ async function getJson(uri) {
     url: uri,
     auth: {
       username: process.env.GITHUB_CLIENT_ID,
-      password: process.env.GITHUB_CLIENT_SECRET,
+      password: process.env.GITHUB_CLIENT_SECRET
     },
     headers: {
-      'User-Agent': 'Secretariat beta.gouv.fr',
-      Accept: 'application/vnd.github.v3+json',
-    },
+      "User-Agent": "Secretariat beta.gouv.fr",
+      Accept: "application/vnd.github.v3+json"
+    }
   }).then((x) => x.data);
 }
 
 async function getAuthorFileList(hash) {
-  if (hash === '0000000000000000000000000000000000000000') {
+  if (hash === "0000000000000000000000000000000000000000") {
     return {};
   }
   const before: any = await getJson(getURL(`commits/${hash}`));
 
   const beforeRootTree: any = await getJson(before.commit.tree.url);
-  const contentObject = beforeRootTree.tree.find((element) => element.path === 'content');
+  const contentObject = beforeRootTree.tree.find((element) => element.path === "content");
 
   const beforeContentTree: any = await getJson(contentObject.url);
-  const authorsObject = beforeContentTree.tree.find((element) => element.path === '_authors');
+  const authorsObject = beforeContentTree.tree.find((element) => element.path === "_authors");
 
   const fileList: any = await getJson(authorsObject.url);
 
@@ -48,7 +50,7 @@ async function listChanges(input) {
     if (beforeMap[key] && afterMap[key].sha !== beforeMap[key].sha) {
       changes.push({
         ...afterMap[key],
-        before: beforeMap[key],
+        before: beforeMap[key]
       });
     }
     return changes;
@@ -56,18 +58,18 @@ async function listChanges(input) {
 }
 
 function getContent(payload) {
-  const buff = Buffer.from(payload, 'base64');
-  const str = buff.toString('utf-8');
+  const buff = Buffer.from(payload, "base64");
+  const str = buff.toString("utf-8");
   return fm(str);
 }
 
 function extractEndDates(item) {
-  const periods = ['before', 'after'];
+  const periods = ["before", "after"];
   return periods.reduce((result, p) => {
     const dates = item[p].attributes.missions.map((m) => m.end);
     dates.sort((a, b) => a - b);
     result[p] = dates[dates.length - 1];
-
+inviteUserByUsernameToOrganization
     return result;
   }, {});
 }
@@ -81,7 +83,7 @@ async function fetchDetails(input) {
     return {
       data,
       before: getContent(beforeMetadata.content),
-      after: getContent(afterMetadata.content),
+      after: getContent(afterMetadata.content)
     };
   }));
 }
@@ -95,4 +97,46 @@ function isValidGithubUserName(value) {
   return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
 }
 
-export { isValidGithubUserName, extractEndDates, fetchDetails }
+const createOctokitAuth = () => {
+  if (config.githubOrgAdminToken) {
+    const errorMessage = "Unable to launch github request without env var githubOrgAdminToken";
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return Octokit({ auth: config.githubOrgAdminToken });
+};
+
+const getGithubMembersOfOrganization = (org, i) => {
+  const octokit = createOctokitAuth();
+  return octokit.request("GET /orgs/{org}/members", {
+    org,
+    per_page: 100,
+    page: i
+  }).then((resp) => resp.data);
+};
+
+const getAllOrganizationMembers = async (org, i = 0) => {
+  const githubUsers = await getGithubMembersOfOrganization(org, i);
+  if (!githubUsers.length) {
+    return [];
+  }
+  const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
+  return [...githubUsers, ...nextPageGithubUsers];
+};
+
+const inviteUserByUsernameToOrganization = function inviteUserByUsername(username, org) {
+  const octokit = createOctokitAuth();
+  return octokit.request("PUT /orgs/{org}/memberships/{username}", {
+    org,
+    username
+  });
+};
+
+export {
+  isValidGithubUserName,
+  extractEndDates,
+  fetchDetails,
+  getGithubMembersOfOrganization,
+  getAllOrganizationMembers,
+  inviteUserByUsernameToOrganization
+};
