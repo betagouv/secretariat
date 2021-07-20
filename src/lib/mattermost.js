@@ -76,6 +76,7 @@ module.exports.activeUsers = async (userId) => {
   } catch (err) {
     console.error('Erreur d\'activation de l‘utilisateurs à mattermost', err);
   }
+};
 
 module.exports.createUser = async ({ email, username, password }, teamId) => {
   if (!config.mattermostInviteId) {
