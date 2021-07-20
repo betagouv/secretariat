@@ -98,8 +98,9 @@ function isValidGithubUserName(value) {
 }
 
 const createOctokitAuth = () => {
-  if (config.githubOrgAdminToken) {
-    const errorMessage = "Unable to launch github request without env var githubOrgAdminToken";
+
+  if (!config.githubOrgAdminToken) {
+    const errorMessage = 'Unable to launch github request without env var githubOrgAdminToken';
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
