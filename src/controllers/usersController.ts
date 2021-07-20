@@ -284,10 +284,10 @@ export async function createSecondaryEmailForUser(req, res) {
   try {
     if (user.canChangeSecondaryEmail) {
       await knex('users')
-        .update({
+        .insert({
           secondary_email: secondaryEmail,
-        })
-        .where({ username });
+          username
+        });
       req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
       res.redirect(`/community/${username}`);
     }

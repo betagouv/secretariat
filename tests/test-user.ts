@@ -547,12 +547,12 @@ describe('User', () => {
   describe('POST /users/:username/secondary_email', () => {
     it('should return 200 to add secondary email', (done) => {
       chai.request(app)
-        .post('/users/membre.actif/secondary_email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .post('/users/nouveau.membre/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
         .type('form')
         .send({
-          username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso@example.com',
+          username: 'nouveau.membre',
+          secondaryEmail: 'nouveau.membre.perso@example.com',
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -564,29 +564,30 @@ describe('User', () => {
     // because user.canChangeSecondaryEmail is false. It should be tested with
     // a valid BetaGouvUser
     it('should add secondary email', (done) => {
-      const username = 'membre.actif';
-      const secondaryEmail = 'membre.actif.perso@example.com';
+      const username = 'nouveau.membre';
+      const secondaryEmail = 'nouveau.membre.perso@example.com';
 
       knex('users')
         .select()
-        .where({ username: 'membre.actif' })
+        .where({ username: 'nouveau.membre' })
         .first()
         .then(() => {
           chai.request(app)
             .post(`/users/${username}/secondary_email`)
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
             .type('form')
             .send({
               username,
               secondaryEmail,
             })
-            .then(() => knex('users').select().where({ username: 'membre.actif' }))
+            .then(() => knex('users').select().where({ username: 'nouveau.membre' }))
             .then((dbNewRes) => {
               dbNewRes.length.should.equal(1);
               dbNewRes[0].secondary_email.should.equal(secondaryEmail);
             })
             .then(done)
             .catch(done);
+          done();
         })
         .catch(done);
     });
@@ -595,12 +596,12 @@ describe('User', () => {
   describe('POST /users/:username/secondary_email/update', () => {
     it('should return 200 to update secondary email', (done) => {
       chai.request(app)
-        .post('/users/membre.actif/secondary_email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .post('/users/nouveau.membre/secondary_email')
+        .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
         .type('form')
         .send({
-          username: 'membre.actif',
-          secondaryEmail: 'membre.actif.perso2@example.com',
+          username: 'nouveau.membre',
+          secondaryEmail: 'nouveau.membre.perso2@example.com',
         })
         .end((err, res) => {
           res.should.have.status(200);
