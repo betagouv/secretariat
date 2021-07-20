@@ -54,7 +54,7 @@ module.exports.getInactiveMattermostUsers = async (params, i = 0) => {
       page: i,
       inactive: true,
     },
-    ...mattermostConfig,
+    ...getMattermostConfig(),
   }).then((response) => response.data);
   if (!mattermostUsers.length) {
     return [];
@@ -69,7 +69,7 @@ module.exports.activeUsers = async (userId) => {
     const response = await axios.put(
       `https://mattermost.incubateur.net/api/v4/users/${userId}/active`,
       payload,
-      mattermostConfig,
+      getMattermostConfig(),
     );
     console.log(`Le compte mattermost ${userId} a été activé`);
     return response.data;
