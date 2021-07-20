@@ -4,6 +4,8 @@ import sinon from 'sinon';
 import config from '../src/config';
 import testUsers from './users.json';
 import utils from './utils';
+import mattermost from '../src/lib/mattermost';
+import controllerUtils from '../src/controllers/utils';
 
 const mattermostUsers = [
   {
@@ -33,6 +35,7 @@ describe('invite users to mattermost', () => {
     const date = new Date('2021-01-20T07:59:59+01:00');
     clock = sinon.useFakeTimers(date);
     utils.cleanMocks();
+    utils.mockOvhTime();
   });
 
   afterEach(async () => {
@@ -40,6 +43,10 @@ describe('invite users to mattermost', () => {
   });
 
   it('invite users to team by emails', async () => {
+    nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/account/)
+    .reply(200, testUsers.map((user) => user.id));
+
     nock(/.*mattermost.incubateur.net/)
     .get(/^.*api\/v4\/users.*/)
     .reply(200, [...mattermostUsers]);
@@ -57,8 +64,40 @@ describe('invite users to mattermost', () => {
     .reply(200, testUsers)
     .persist();
     const { inviteUsersToTeamByEmail } = mattermostScheduler;
-    const result = await inviteUsersToTeamByEmail([...mattermostUsers]);
+    const result = await inviteUsersToTeamByEmail();
     result.length.should.be.equal(2);
+  });
+
+  it('create users to team by emails', async () => {
+    nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/account/)
+    .reply(200, testUsers.map((user) => user.id));
+
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, [...mattermostUsers]);
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, []);
+    nock(/.*mattermost.incubateur.net/)
+    .post(/^.*api\/v4\/users\?iid=.*/)
+    .reply(200, []).persist();
+    const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    const mattermostCreateUser = sinon.spy(mattermost, 'createUser');
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, testUsers)
+    .persist();
+    const { createUsersByEmail } = mattermostScheduler;
+    const result = await createUsersByEmail();
+    result.length.should.be.equal(1);
+    mattermostCreateUser.calledOnce.should.be.true;
+    sendEmailStub.calledOnce.should.be.true;
+    sendEmailStub.restore();
+    mattermostCreateUser.firstCall.args[0].email = `mattermost.newuser@${config.domain}`;
+    mattermostCreateUser.firstCall.args[0].useranme = 'mattermost.newuser';
   });
 });
 
