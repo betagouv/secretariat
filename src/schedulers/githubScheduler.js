@@ -25,14 +25,14 @@ const getGithubUserNotOnOrganization = async (org) => {
 
 const addGithubUserToOrganization = async () => {
   const githubUserNotOnOrganization = await getGithubUserNotOnOrganization(config.githubOrganizationName);
-  try {
-    const results = await Promise.all(githubUserNotOnOrganization.map(async (member) => {
+  const results = await Promise.all(githubUserNotOnOrganization.map(async (member) => {
+    try {
       await github.inviteUserByUsernameToOrganization(member.github, config.githubOrganizationName);
       console.log(`Add user ${member.github} to organization`);
-    }));
-  } catch (err) {
-    throw new Error(err);
-  }
+    } catch (err) {
+      console.error(`Cannot add user ${member.github} to organization ${config.githubOrganizationName}. Error :`, err);
+    }
+  }));
 };
 
 module.exports.addGithubUserToOrganization = addGithubUserToOrganization;
