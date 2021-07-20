@@ -1,8 +1,8 @@
-const { buildBetaEmail, sendMail } = require('./utils');
-const signature = require('../lib/signature');
-const { extractEndDates, fetchDetails } = require('../lib/github');
+import { buildBetaEmail, sendMail } from "./utils";
+import signature from "../lib/signature";
+import { extractEndDates, fetchDetails } from "../lib/github";
 
-module.exports.processNotification = async function (req, res) {
+export async function processNotification(req, res) {
   if (!await signature.checkSignaturePresence(req)) {
     return res.json({
       status: 'Missing signature. Aborting…',
@@ -65,4 +65,4 @@ module.exports.processNotification = async function (req, res) {
   return res.json({
     status: 'OK',
   });
-};
+}

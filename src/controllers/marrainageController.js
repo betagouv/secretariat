@@ -1,13 +1,12 @@
-const ejs = require('ejs');
-const jwt = require('jsonwebtoken');
-
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('./utils');
-const knex = require('../db');
+import ejs from "ejs";
+import jwt from "jsonwebtoken";
+import { betaGouv } from "../betagouv";
+import config from "../config";
+import knex from "../db";
+import * as utils from "./utils";
 
 async function selectRandomOnboarder(newcomerId) {
-  const users = await BetaGouv.usersInfos();
+  const users = await betaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
   const existingCandidates = await knex('marrainage')
     .select('last_onboarder')
@@ -22,8 +21,7 @@ async function selectRandomOnboarder(newcomerId) {
     const isRequester = x.id === newcomerId;
     return !existingCandidate && senior && stillActive && !isRequester;
   });
-  const onboarder = onboarders[Math.floor(Math.random() * onboarders.length)];
-  return onboarder;
+  return onboarders[Math.floor(Math.random() * onboarders.length)];
 }
 
 async function getMarrainageTokenData(token) {
@@ -48,7 +46,7 @@ async function getMarrainageTokenData(token) {
   }
   const { newcomerId } = data;
   const { onboarderId } = data;
-  const userInfos = await BetaGouv.usersInfos();
+  const userInfos = await betaGouv.usersInfos();
   return {
     newcomer: userInfos.find((x) => x.id === newcomerId),
     onboarder: userInfos.find((x) => x.id === onboarderId),
@@ -80,8 +78,8 @@ function redirectOutdatedMarrainage(req, res) {
   return res.redirect('/');
 }
 
-module.exports.reloadMarrainage = async function (newcomerId) {
-  const newcomer = await BetaGouv.userInfosById(newcomerId);
+export async function reloadMarrainage(newcomerId) {
+  const newcomer = await betaGouv.userInfosById(newcomerId);
 
   if (!newcomer) {
     throw new Error(`${newcomerId} ne fais pas partie de la communauté beta.gouv`);
@@ -107,10 +105,10 @@ module.exports.reloadMarrainage = async function (newcomerId) {
   await sendOnboarderRequestEmail(newcomer, onboarder);
   console.log(`Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`);
   return { newcomer, onboarder };
-};
+}
 
-module.exports.createRequestForUser = async function (userId) {
-  const newcomer = await BetaGouv.userInfosById(userId);
+export async function createRequestForUser(userId) {
+  const newcomer = await betaGouv.userInfosById(userId);
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
@@ -133,16 +131,16 @@ module.exports.createRequestForUser = async function (userId) {
     newcomer,
     onboarder,
   };
-};
+}
 
-module.exports.createRequest = async function (req, res) {
+export async function createRequest(req, res) {
   try {
     const newcomerId = req.sanitize(req.body.newcomerId);
-    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
+    const loggedUserInfo = await betaGouv.userInfosById(req.user.id);
     if (utils.checkUserIsExpired(loggedUserInfo)) {
       throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
     }
-    const { newcomer, onboarder } = await module.exports.createRequestForUser(newcomerId);
+    const { newcomer, onboarder } = await createRequestForUser(newcomerId);
     const { user } = req;
     console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
 
@@ -156,9 +154,9 @@ module.exports.createRequest = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${req.body.newcomerId}`);
   }
-};
+}
 
-module.exports.acceptRequest = async function (req, res) {
+export async function acceptRequest(req, res) {
   try {
     const details = await getMarrainageTokenData(req.query.details);
     const { newcomer } = details;
@@ -193,9 +191,9 @@ module.exports.acceptRequest = async function (req, res) {
     }
     return res.render('marrainage', { errors: err.message });
   }
-};
+}
 
-module.exports.declineRequest = async function (req, res) {
+export async function declineRequest(req, res) {
   try {
     const details = await getMarrainageTokenData(req.query.details);
     const { newcomer } = details;
@@ -234,11 +232,11 @@ module.exports.declineRequest = async function (req, res) {
     }
     return res.render('marrainage', { errors: err.message });
   }
-};
+}
 
-module.exports.reloadRequest = async function (req, res) {
+export async function reloadRequest(req, res) {
   try {
-    const { newcomer, onboarder } = await module.exports.reloadMarrainage(req.body.newcomerId);
+    const { newcomer, onboarder } = await reloadMarrainage(req.body.newcomerId);
 
     if (req.body.newcomerId === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
     else req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
@@ -251,11 +249,11 @@ module.exports.reloadRequest = async function (req, res) {
     console.error(err);
     return res.redirect(`/community/${req.body.newcomerId}`);
   }
-};
+}
 
-module.exports.cancelRequest = async function (req, res) {
+export async function cancelRequest(req, res) {
   try {
-    const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
+    const newcomer = await betaGouv.userInfosById(req.body.newcomerId);
 
     const marrainageDetailsReponse = await knex('marrainage').select()
       .where({ username: newcomer.id, completed: false });
@@ -279,4 +277,4 @@ module.exports.cancelRequest = async function (req, res) {
     console.error(err);
     return res.redirect(`/community/${req.body.newcomerId}`);
   }
-};
+}

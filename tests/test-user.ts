@@ -1,15 +1,15 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import nock from 'nock';
-import sinon from 'sinon';
-import Betagouv from '../src/betagouv';
-import config from '../src/config';
-import controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
-import { createEmailAddresses } from '../src/schedulers/emailCreationScheduler';
-import testUsers from './users.json';
-import utils from './utils';
+import chai from "chai";
+import chaiHttp from "chai-http";
+import nock from "nock";
+import sinon from "sinon";
+import { betaOVH } from "../src/betagouv";
+import config from "../src/config";
+import * as controllerUtils from "../src/controllers/utils";
+import knex from "../src/db";
+import app from "../src/index";
+import { createEmailAddresses } from "../src/schedulers/emailCreationScheduler";
+import testUsers from "./users.json";
+import utils from "./utils";
 
 chai.use(chaiHttp);
 
@@ -784,7 +784,7 @@ describe('User', () => {
     let betagouvCreateEmail;
     beforeEach((done) => {
       sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
-      betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
+      betagouvCreateEmail = sinon.spy(betaOVH, 'createEmail');
       done();
     });
 

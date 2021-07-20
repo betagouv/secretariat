@@ -1,10 +1,10 @@
-const ejs = require('ejs');
-const crypto = require('crypto');
-const config = require('../config');
-const utils = require('./utils');
-const BetaGouv = require('../betagouv');
-const knex = require('../db');
-const { isValidGithubUserName } = require('../lib/github');
+import ejs from "ejs";
+import crypto from "crypto";
+import config from "../config";
+import * as utils from "./utils";
+import { betaGouv, betaOVH } from "../betagouv";
+import knex from "../db";
+import { isValidGithubUserName } from "../lib/github";
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -47,10 +47,10 @@ async function createNewcomerGithubFile(username, content, referent) {
   return prInfo;
 }
 
-module.exports.getForm = async function (req, res) {
+export async function getForm(req, res) {
   try {
-    const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.usersInfos();
+    const startups = await betaGouv.startupsInfos();
+    const users = await betaGouv.usersInfos();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
@@ -85,9 +85,9 @@ module.exports.getForm = async function (req, res) {
     req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
     return res.redirect('/');
   }
-};
+}
 
-module.exports.postForm = async function (req, res) {
+export async function postForm(req, res) {
   try {
     const formValidationErrors = [];
 
@@ -203,7 +203,7 @@ module.exports.postForm = async function (req, res) {
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
     if (referent && prInfo.status === 201 && prInfo.data.html_url) {
-      const referentEmailInfos = await BetaGouv.emailInfos(referent);
+      const referentEmailInfos = await betaOVH.emailInfos(referent);
       if (referentEmailInfos && referentEmailInfos.email) {
         const prUrl = prInfo.data.html_url;
         const userUrl = `${config.protocol}://${config.host}/community/${username}`;
@@ -227,8 +227,8 @@ module.exports.postForm = async function (req, res) {
       const errors = req.flash('error');
       req.flash('error', [...errors, err.message]);
     }
-    const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.usersInfos();
+    const startups = await betaGouv.startupsInfos();
+    const users = await betaGouv.usersInfos();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
@@ -242,8 +242,9 @@ module.exports.postForm = async function (req, res) {
       useSelectList: isMobileFirefox,
     });
   }
-};
-module.exports.getConfirmation = async function (req, res) {
+}
+
+export async function getConfirmation(req, res) {
   try {
     const { prNumber } = req.params;
     const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
@@ -252,4 +253,4 @@ module.exports.getConfirmation = async function (req, res) {
     console.error(err);
     res.redirect('/');
   }
-};
+}

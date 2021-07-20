@@ -4,14 +4,16 @@ import HedgedocApi from 'hedgedoc-api';
 import nock from 'nock';
 import rewire from 'rewire';
 import sinon from 'sinon';
-import BetaGouv from '../src/betagouv';
+import { betaGouv } from '../src/betagouv';
 import config from '../src/config';
-import controllerUtils from '../src/controllers/utils';
+import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import { renderHtmlFromMd } from '../src/lib/mdtohtml';
 import testUsers from './users.json';
 import utils from './utils';
+
+import { createNewsletter } from "../src/schedulers/newsletterScheduler";
 
 chai.use(chaiHttp);
 
@@ -24,9 +26,7 @@ const {
   getMonday,
   formatDateToFrenchTextReadableFormat,
 } = controllerUtils;
-const {
-  createNewsletter,
-} = require('../src/schedulers/newsletterScheduler');
+
 
 const NEWSLETTER_TITLE = '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
@@ -123,7 +123,7 @@ describe('Newsletter', () => {
   describe('cronjob newsletter', () => {
     let slack;
     beforeEach((done) => {
-      slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
+      slack = sinon.spy(betaGouv, 'sendInfoToSlack');
       done();
     });
 
@@ -272,7 +272,7 @@ describe('Newsletter', () => {
         validator: 'julien.dauphant',
         sent_at: null,
       }]);
-      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
       clock = sinon.useFakeTimers(date);
       await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.true;

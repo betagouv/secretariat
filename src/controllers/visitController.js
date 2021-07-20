@@ -1,7 +1,7 @@
-const BetaGouv = require('../betagouv');
-const config = require('../config');
-const knex = require('../db');
-const utils = require('./utils');
+import { betaGouv } from "../betagouv";
+import config from "../config";
+import knex from "../db";
+import * as utils from "./utils";
 
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
@@ -19,9 +19,9 @@ const getFuturVisitsList = async function (usersInfos) {
   return visitsInfos;
 };
 
-module.exports.getForm = async function (req, res) {
+export async function getForm(req, res) {
   try {
-    const users = await BetaGouv.usersInfos();
+    const users = await betaGouv.usersInfos();
 
     const title = 'Prévoir une visite';
     return res.render('visit', {
@@ -46,9 +46,9 @@ module.exports.getForm = async function (req, res) {
     req.flash('error', `Impossible de récupérer la liste des membres sur ${config.domain}`);
     return res.redirect('/');
   }
-};
+}
 
-module.exports.postForm = async function (req, res) {
+export async function postForm(req, res) {
   try {
     const formValidationErrors = [];
 
@@ -83,7 +83,7 @@ module.exports.postForm = async function (req, res) {
 
     res.redirect('/visit');
   } catch (err) {
-    const users = await BetaGouv.usersInfos();
+    const users = await betaGouv.usersInfos();
     res.render('visit', {
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -97,4 +97,4 @@ module.exports.postForm = async function (req, res) {
       useSelectList: utils.isMobileFirefox(req),
     });
   }
-};
+}

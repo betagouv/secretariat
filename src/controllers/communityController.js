@@ -1,14 +1,14 @@
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('./utils');
-const knex = require('../db');
+import { betaGouv } from "../betagouv";
+import config from "../config";
+import knex from "../db";
+import * as utils from "./utils";
 
-module.exports.getCommunity = async function (req, res) {
+export async function getCommunity(req, res) {
   if (req.query.username) {
     return res.redirect(`/community/${req.query.username}`);
   }
   try {
-    const users = await BetaGouv.usersInfos();
+    const users = await betaGouv.usersInfos();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Communauté';
@@ -26,9 +26,9 @@ module.exports.getCommunity = async function (req, res) {
     console.error(err);
     return res.send('Erreur interne : impossible de récupérer les informations de la communauté');
   }
-};
+}
 
-module.exports.getUser = async function (req, res) {
+export async function getUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -83,4 +83,4 @@ module.exports.getUser = async function (req, res) {
     req.flash('error', 'Impossible de récupérer les informations du membre de la communauté.');
     res.redirect('/');
   }
-};
+}

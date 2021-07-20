@@ -2,7 +2,9 @@ import axios from 'axios';
 
 import config from './config';
 
-const ovh = require('ovh')({
+import ovh0 from "ovh";
+
+const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
   consumerKey: process.env.OVH_CONSUMER_KEY,
@@ -113,14 +115,15 @@ const betaOVH = {
 
     const url = `/email/domain/${config.domain}/redirection`;
 
-    const options = {};
+    // fixme
+    const options = {} as any;
 
     if (query.from) {
-      options['from'] = `${query.from}@${config.domain}`;
+      options.from = `${query.from}@${config.domain}`;
     }
 
     if (query.to) {
-      options['to'] = `${query.to}@${config.domain}`;
+      options.to = `${query.to}@${config.domain}`;
     }
 
     try {
@@ -177,4 +180,6 @@ const betaOVH = {
   },
 };
 
-module.exports = { ...betaGouv, ...betaOVH };
+export {
+  betaGouv, betaOVH
+}

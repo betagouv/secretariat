@@ -1,3 +1,3 @@
-module.exports.getLogout = function (req, res) {
+export function getLogout(req, res) {
   res.clearCookie('token').redirect('/login');
-};
+}

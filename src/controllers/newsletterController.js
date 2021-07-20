@@ -1,7 +1,6 @@
-const BetaGouv = require('../betagouv');
-const config = require('../config');
-const utils = require('./utils');
-const knex = require('../db');
+import config from "../config";
+import * as utils from "./utils";
+import knex from "../db";
 
 const errorMessage = 'Impossible de récupérer les infolettres.';
 
@@ -39,7 +38,7 @@ const formatNewsletter = (newsletter) => ({
     ? utils.formatDateToReadableDateAndTimeFormat(newsletter.sent_at) : undefined,
 });
 
-module.exports.getNewsletter = async function (req, res) {
+export async function getNewsletter(req, res) {
   try {
     let newsletters = await knex('newsletters').select().orderBy('created_at', 'desc');
     newsletters = newsletters.map((newsletter) => formatNewsletter(newsletter));
@@ -50,9 +49,9 @@ module.exports.getNewsletter = async function (req, res) {
     req.flash('error', errorMessage);
     res.render('newsletter', formatNewsletterPageData(req, []));
   }
-};
+}
 
-module.exports.validateNewsletter = async (req, res) => {
+export async function validateNewsletter(req, res) {
   try {
     const currentNewsletter = await updateCurrentNewsletterValidator(req.user.id);
     if (!currentNewsletter) {
@@ -66,9 +65,9 @@ module.exports.validateNewsletter = async (req, res) => {
     req.flash('error', errorMessage);
     res.redirect('/newsletters');
   }
-};
+}
 
-module.exports.cancelNewsletter = async (req, res) => {
+export async function cancelNewsletter(req, res) {
   try {
     const currentNewsletter = await updateCurrentNewsletterValidator(null);
     if (!currentNewsletter) {
@@ -82,4 +81,4 @@ module.exports.cancelNewsletter = async (req, res) => {
     req.flash('error', errorMessage);
     res.redirect('/newsletters');
   }
-};
+}
