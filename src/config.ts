@@ -54,6 +54,7 @@ export default {
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  featureReactiveMattermostUsers: process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureAddGithubUserToOrganization: process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
   featureCreateUserOnMattermost: process.env.FEATURE_CREATE_USER_ON_MATTERMOST,

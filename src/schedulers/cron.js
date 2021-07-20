@@ -2,6 +2,7 @@ const config = require('../config');
 require('./marrainageScheduler');
 require('./emailCreationScheduler');
 require('./newsletterScheduler');
+require('./mattermostScheduler.js');
 const { CronJob } = require('cron');
 
 if (config.featureAddGithubUserToOrganization) {
