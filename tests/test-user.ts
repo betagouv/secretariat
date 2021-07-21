@@ -38,7 +38,7 @@ describe('User', () => {
 
     let sendEmailStub;
     beforeEach((done) => {
-      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
       done();
     });
 
@@ -783,7 +783,7 @@ describe('User', () => {
     let sendEmailStub;
     let betagouvCreateEmail;
     beforeEach((done) => {
-      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
       betagouvCreateEmail = sinon.spy(betaOVH, 'createEmail');
       done();
     });

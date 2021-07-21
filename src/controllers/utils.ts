@@ -150,7 +150,7 @@ export function getMonday(d) {
   return new Date(date.setDate(diff));
 }
 
-export function addDays(date, days, week) {
+export function addDays(date, days, week=null) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;

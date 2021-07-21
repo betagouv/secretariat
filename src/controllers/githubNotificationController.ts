@@ -23,9 +23,9 @@ export async function processNotification(req, res) {
     });
   }
 
-  const details = await fetchDetails(req.body);
+  const details: any = await fetchDetails(req.body);
   const emailData = details.reduce((result, item) => {
-    const dates = extractEndDates(item);
+    const dates: any = extractEndDates(item);
     if (dates.before < dates.after) {
       const formatDate = (d) => d.toISOString().slice(0, 10);
       const msg = `Le badge de ${item.after.attributes.fullname} est aujourd'hui valable jusqu'au ${formatDate(dates.before)}. Il doit être prolongé jusqu'au ${formatDate(dates.after)}.`;

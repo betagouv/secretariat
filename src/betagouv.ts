@@ -9,6 +9,12 @@ const ovh = ovh0({
   consumerKey: process.env.OVH_CONSUMER_KEY
 });
 
+export interface OvhRedirection {
+  from: string,
+  to: string,
+  id: string
+}
+
 const betaGouv = {
   sendInfoToSlack: async (text: string, channel: string) => {
     let hookURL = config.slackWebhookURLSecretariat;
@@ -106,12 +112,12 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  requestRedirection: async (method, redirectionId) => ovh.requestPromised(
+  requestRedirection: async (method, redirectionId): Promise<OvhRedirection> => ovh.requestPromised(
     method,
     `/email/domain/${config.domain}/redirection/${redirectionId}`
   ),
-  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
-  redirectionsForId: async (query) => {
+  requestRedirections: async (method, redirectionIds): Promise<OvhRedirection[]> => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
+  redirectionsForId: async (query): Promise<OvhRedirection[]> => {
     if (!query.from && !query.to) {
       throw new Error("paramètre 'from' ou 'to' manquant");
     }
@@ -131,7 +137,6 @@ const betaOVH = {
 
     try {
       const redirectionIds = await ovh.requestPromised("GET", url, options);
-
       return await betaOVH.requestRedirections("GET", redirectionIds);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
@@ -151,7 +156,7 @@ const betaOVH = {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
   },
-  redirections: async () => {
+  redirections: async (): Promise<OvhRedirection[]> => {
     const url = `/email/domain/${config.domain}/redirection`;
 
     try {

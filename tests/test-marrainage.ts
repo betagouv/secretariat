@@ -15,7 +15,7 @@ describe('Marrainage', () => {
   let sendEmailStub;
 
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
     clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });
@@ -364,7 +364,7 @@ describe('Marrainage', () => {
       knex('marrainage').insert([staleRequest, validRequest]).then(() => {
         // Disabels global require since requiring the cron job
         // will immediatly start it.
-        /* eslint-disable global-require */
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { reloadMarrainageJob } = require('../src/schedulers/marrainageScheduler');
         clock.tick(1001);
         const listener = (response, obj, builder) => {
@@ -417,7 +417,7 @@ describe('Marrainage', () => {
       knex('marrainage').insert([staleRequest, validRequest]).then(() => {
         // Disabels global require since requiring the cron job
         // will immediatly start it.
-        /* eslint-disable global-require */
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const { reloadMarrainageJob } = require('../src/schedulers/marrainageScheduler');
         // we start it manually as it may have been stopped in previous tests
         reloadMarrainageJob.start();

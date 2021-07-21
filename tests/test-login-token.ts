@@ -13,7 +13,7 @@ describe('Login token', () => {
   let sendEmailStub;
 
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
     done();
   });
 
