@@ -13,11 +13,17 @@ const getGithubUserNotOnOrganization = async (org) => {
     return stillActive && x.github;
   });
   const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
-    (githubOrganizationMember) => githubOrganizationMember.login,
+    (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
   );
 
+  const pendingInvitations = await github.getAllPendingInvitations(config.githubOrganizationName);
+  const pendingInvitationsUsernames = pendingInvitations.map((r) => r.login.toLowerCase());
   const githubUserNotOnOrganization = activeGithubUsers.filter(
-    (user) => !allGithubOrganizationMembersUsername.includes(user.github),
+    (user) => {
+      const githubUsername = user.github.toLowerCase();
+      return !allGithubOrganizationMembersUsername.includes(githubUsername)
+        && !pendingInvitationsUsernames.includes(githubUsername);
+    },
   );
 
   return githubUserNotOnOrganization;

@@ -122,6 +122,24 @@ const getGithubMembersOfOrganization = (org, i) => {
 
 exports.getGithubMembersOfOrganization = getGithubMembersOfOrganization;
 
+const getPendingInvitations = (org, i) => {
+  const octokit = createOctokitAuth();
+  return octokit.request('GET /orgs/{org}/invitations', {
+    org,
+    per_page: 100,
+    page: i,
+  }).then((resp) => resp.data);
+};
+
+exports.getAllPendingInvitations = async (org, i = 0) => {
+  const githubUsers = await getPendingInvitations(org, i);
+  if (!githubUsers.length) {
+    return [];
+  }
+  const nextPageGithubUsers = await exports.getAllPendingInvitations(org, i + 1);
+  return [...githubUsers, ...nextPageGithubUsers];
+};
+
 exports.getAllOrganizationMembers = async (org, i = 0) => {
   const githubUsers = await getGithubMembersOfOrganization(org, i);
   if (!githubUsers.length) {
