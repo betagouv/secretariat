@@ -13,11 +13,17 @@ const getGithubUserNotOnOrganization = async (org) => {
     return stillActive && x.github;
   });
   const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
-    (githubOrganizationMember) => githubOrganizationMember.login,
+    (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
   );
 
+  const pendingInvitations = await github.getAllPendingInvitations(config.githubOrganizationName);
+  const pendingInvitationsUsernames = pendingInvitations.map((r) => r.login.toLowerCase());
   const githubUserNotOnOrganization = activeGithubUsers.filter(
-    (user) => !allGithubOrganizationMembersUsername.includes(user.github),
+    (user) => {
+      const githubUsername = user.github.toLowerCase();
+      return !allGithubOrganizationMembersUsername.includes(githubUsername)
+        && !pendingInvitationsUsernames.includes(githubUsername);
+    },
   );
 
   return githubUserNotOnOrganization;
@@ -25,10 +31,12 @@ const getGithubUserNotOnOrganization = async (org) => {
 
 const addGithubUserToOrganization = async () => {
   console.log('Launch add github users to organization');
+
   const githubUserNotOnOrganization = await getGithubUserNotOnOrganization(config.githubOrganizationName);
   const results = await Promise.all(githubUserNotOnOrganization.map(async (member) => {
     try {
       await github.inviteUserByUsernameToOrganization(member.github, config.githubOrganizationName);
+      console.log(`Add user ${member.github} to organization`);
     } catch (err) {
       console.error(`Cannot add user ${member.github} to organization ${config.githubOrganizationName}. Error : ${err}`);
     }
