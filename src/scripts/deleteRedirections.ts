@@ -1,5 +1,8 @@
-require('dotenv').config();
-const BetaGouv = require('../betagouv');
+import {betaOVH} from "../betagouv";
+
+import { config } from "dotenv";
+
+config();
 
 if (process.argv.length < 4) {
   console.log('Not enought arguments');
@@ -7,7 +10,7 @@ if (process.argv.length < 4) {
   const from = process.argv[2];
   const to = process.argv[3];
   console.log(`Delete ${from} to ${to}`);
-  BetaGouv.deleteRedirection(from, to).then((result) => {
+  betaOVH.deleteRedirection(from, to).then((result) => {
     console.log('Done');
   });
 }

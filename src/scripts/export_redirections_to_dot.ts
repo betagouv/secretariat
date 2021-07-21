@@ -1,7 +1,9 @@
-require('dotenv').config();
-const BetaGouv = require('../betagouv');
+import { config } from "dotenv";
+import { betaOVH } from "../betagouv";
 
-BetaGouv.redirections().then((redirections) => {
+config();
+
+betaOVH.redirections().then((redirections) => {
   console.log('digraph D {');
   console.log('rankdir=LR; ');
   redirections.forEach((redirection) => {

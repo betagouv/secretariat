@@ -1,5 +1,5 @@
-const axios = require('axios').default;
-const config = require('../config');
+import axios from "axios";
+import config from "../config";
 
 const mattermostConfig = {
   headers: {
@@ -7,7 +7,7 @@ const mattermostConfig = {
   },
 };
 
-module.exports.getUserWithParams = async (params, i = 0) => {
+export async function getUserWithParams(params={}, i = 0) {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     params: {
       ...params,
@@ -21,9 +21,9 @@ module.exports.getUserWithParams = async (params, i = 0) => {
   }
   const nextPageMattermostUsers = await module.exports.getUserWithParams(params, i + 1);
   return [...mattermostUsers, ...nextPageMattermostUsers];
-};
+}
 
-module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
+export async function inviteUsersToTeamByEmail(userEmails, teamId) {
   let res;
   try {
     res = await axios.post(
@@ -37,4 +37,4 @@ module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
   }
   console.log('Ajout des utilisateurs à mattermost', userEmails);
   return res;
-};
+}

@@ -60,7 +60,7 @@ const createNewsletter = async () => {
     .insert({
       url: padUrl
     });
-  await betaGouv.sendInfoToSlack(message);
+  await betaGouv.sendInfoToSlack(message, "general");
 
   return padUrl;
 };
@@ -83,7 +83,6 @@ const computeMessageReminder = (reminder, newsletter) => {
 };
 
 const newsletterReminder = async (reminder) => {
-  const date = new Date();
   const currentNewsletter = await knex("newsletters")
     .where({
       sent_at: null
@@ -169,7 +168,7 @@ const sendNewsletterAndCreateNewOne = async () => {
   }
 };
 
-export const sendNewsletterAndCreateNewOne = new CronJob(
+export const sendNewsletterAndCreateNewOneJob = new CronJob(
   config.newsletterSendTime || "0 16 * * 4", // run on thursday et 4pm,
   sendNewsletterAndCreateNewOne,
   null,

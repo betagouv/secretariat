@@ -1,5 +1,5 @@
-const marked = require('marked');
-const juice = require('juice');
+import marked from "marked";
+import juice from "juice";
 
 const css = `.markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -174,7 +174,7 @@ overflow: visible !important;
 }
 `;
 
-module.exports.getTitle = function (content) {
+export function getTitle(content) {
   const renderer = new marked.Renderer();
 
   const toc = [];
@@ -202,9 +202,9 @@ module.exports.getTitle = function (content) {
   });
   marked(content);
   return toc[0].raw;
-};
+}
 
-module.exports.renderHtmlFromMd = function (content) {
+export function renderHtmlFromMd(content) {
   const toc = [];
   const rendererFunc = (function () {
     const renderer = new marked.Renderer();
@@ -266,4 +266,4 @@ module.exports.renderHtmlFromMd = function (content) {
     ${css}
   </style><div id="doc" class="container markdown-body">${html}</div>`);
   return html;
-};
+}

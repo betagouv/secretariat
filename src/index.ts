@@ -24,7 +24,7 @@ import * as onboardingController from './controllers/onboardingController';
 import * as resourceController from './controllers/resourceController';
 import * as usersController from './controllers/usersController';
 import knex from './db';
-import sentry from './lib/sentry';
+import * as sentry from './lib/sentry';
 
 
 const app = express();

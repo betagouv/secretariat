@@ -3,7 +3,7 @@ import { betaGouv } from "../betagouv";
 import config from "../config";
 
 import * as utils from "../controllers/utils";
-import mattermost from "../lib/mattermost";
+import * as mattermost from "../lib/mattermost";
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getUnregisteredMemberActifs = async (activeGithubUsers, allMattermostUsers) => {
@@ -15,7 +15,7 @@ const getUnregisteredMemberActifs = async (activeGithubUsers, allMattermostUsers
   return unregisteredMemberActifs;
 };
 
-module.exports.inviteUsersToTeamByEmail = async () => {
+export async function inviteUsersToTeamByEmail() {
   const allMattermostUsers = await mattermost.getUserWithParams();
   const users = await betaGouv.usersInfos();
   const activeGithubUsers = users.filter((x) => {
@@ -27,4 +27,4 @@ module.exports.inviteUsersToTeamByEmail = async () => {
     unregisteredMemberActifs.map((member) => member.email), config.mattermostTeamId,
   );
   return results;
-};
+}
