@@ -1,11 +1,10 @@
+import { betaGouv } from "../betagouv";
 import { checkUserIsExpired } from "../controllers/utils";
 import config from "../config";
-import { betaGouv } from "../betagouv";
 import * as github from "../lib/github";
 
 // get users that are member (got a github card) and that have github account that is not in the team
-const getGithubUserNotOnOrganization = async (org) => {
-  const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
+const getGithubUserNotOnOrganization = async (org) => {  const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
   const users = await betaGouv.usersInfos();
 
   const activeGithubUsers = users.filter((x) => {
@@ -13,11 +12,17 @@ const getGithubUserNotOnOrganization = async (org) => {
     return stillActive && x.github;
   });
   const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
-    (githubOrganizationMember) => githubOrganizationMember.login,
+    (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
   );
 
+  const pendingInvitations = await github.getAllPendingInvitations(config.githubOrganizationName);
+  const pendingInvitationsUsernames = pendingInvitations.map((r) => r.login.toLowerCase());
   const githubUserNotOnOrganization = activeGithubUsers.filter(
-    (user) => !allGithubOrganizationMembersUsername.includes(user.github),
+    (user) => {
+      const githubUsername = user.github.toLowerCase();
+      return !allGithubOrganizationMembersUsername.includes(githubUsername)
+        && !pendingInvitationsUsernames.includes(githubUsername);
+    },
   );
 
   return githubUserNotOnOrganization;

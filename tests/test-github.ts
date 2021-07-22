@@ -1,8 +1,8 @@
-import nock from 'nock';
-import sinon from 'sinon';
-import * as github from '../src/lib/github';
+import nock from "nock";
+import sinon from "sinon";
+import * as github from "../src/lib/github";
 import { addGithubUserToOrganization } from "../src/schedulers/githubScheduler";
-import testUsers from './users.json';
+import testUsers from "./users.json";
 
 const githubOrganizationMembers = [
   {
@@ -26,16 +26,17 @@ const githubOrganizationMembers = [
 describe('Add user to github organization', () => {
   let inviteUser;
   let pendingInvitations;
-  let getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
+  const getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
 
   beforeEach(() => {
-    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves(true);
+    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves();
     pendingInvitations = sinon.stub(github, 'getAllPendingInvitations').resolves([])
   })
 
   afterEach(() => {
     pendingInvitations.restore();
     inviteUser.restore();
+    getGithubMembers.restore();
   })
 
   it('should add new users to organization', async () => {
@@ -52,7 +53,7 @@ describe('Add user to github organization', () => {
   });
 
   it('should not add new users to organization if invitation exist', async () => {
-    pendingInvitations.resolves([{ login: 'membre.actif' }])
+    pendingInvitations.resolves([{ login: 'membre.actif' }]);
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
