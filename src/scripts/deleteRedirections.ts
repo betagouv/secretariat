@@ -1,5 +1,8 @@
-require('dotenv').config();
-const BetaGouv = require('../betagouv');
+import { config } from "dotenv";
+
+import BetaGouv from "../betagouv";
+
+config();
 
 if (process.argv.length < 4) {
   console.log('Not enought arguments');

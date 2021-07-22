@@ -1,5 +1,7 @@
-require('dotenv').config();
-const BetaGouv = require('../betagouv');
+import BetaGouv from "../betagouv";
+import { config } from "dotenv";
+
+config();
 
 BetaGouv.redirections().then((redirections) => {
   console.log('digraph D {');
