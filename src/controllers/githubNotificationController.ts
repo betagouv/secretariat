@@ -1,5 +1,5 @@
 import { buildBetaEmail, sendMail } from "./utils";
-import signature from "../lib/signature";
+import * as signature from "../lib/signature";
 import { extractEndDates, fetchDetails } from "../lib/github";
 
 export async function processNotification(req, res) {

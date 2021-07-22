@@ -99,7 +99,6 @@ function isValidGithubUserName(value) {
 }
 
 const createOctokitAuth = () => {
-
   if (!config.githubOrgAdminToken) {
     const errorMessage = "Unable to launch github request without env var githubOrgAdminToken";
     console.error(errorMessage);
@@ -115,6 +114,24 @@ const getGithubMembersOfOrganization = (org, i) => {
     per_page: 100,
     page: i
   }).then((resp) => resp.data);
+};
+
+const getPendingInvitations = (org, i) => {
+  const octokit = createOctokitAuth();
+  return octokit.request('GET /orgs/{org}/invitations', {
+    org,
+    per_page: 100,
+    page: i,
+  }).then((resp) => resp.data);
+};
+
+const getAllPendingInvitations = async (org, i = 0) => {
+  const githubUsers = await getPendingInvitations(org, i);
+  if (!githubUsers.length) {
+    return [];
+  }
+  const nextPageGithubUsers = await exports.getAllPendingInvitations(org, i + 1);
+  return [...githubUsers, ...nextPageGithubUsers];
 };
 
 const getAllOrganizationMembers = async (org, i = 0) => {
@@ -140,5 +157,6 @@ export {
   fetchDetails,
   getGithubMembersOfOrganization,
   getAllOrganizationMembers,
-  inviteUserByUsernameToOrganization
+  inviteUserByUsernameToOrganization,
+  getAllPendingInvitations
 };

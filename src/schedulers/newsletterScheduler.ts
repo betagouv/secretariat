@@ -120,16 +120,6 @@ export const newsletterThursdayEveningReminderJob = new CronJob(
   "Europe/Paris"
 );
 
-// get active users with email registered on ovh
-const getActiveRegisteredOVHUsers = async () => {
-  const users = await betaGouv.usersInfos();
-  const allOvhEmails = await betaOVH.getAllEmailInfos();
-  const activeUsers = users.filter(
-    (user) => !utils.checkUserIsExpired(user.id) && allOvhEmails.includes(user.id)
-  );
-  return activeUsers;
-};
-
 const sendNewsletterAndCreateNewOne = async () => {
   const date = new Date();
   const currentNewsletter = await knex("newsletters")
