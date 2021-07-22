@@ -2,7 +2,7 @@ import nock from 'nock';
 import sinon from 'sinon';
 import github from '../src/lib/github';
 import testUsers from './users.json';
-import { addGithubUserToOrganization } from '../src/schedulers/githubScheduler';
+import { addGithubUserToOrganization, removeGithubUserFromOrganization } from '../src/schedulers/githubScheduler';
 
 const githubOrganizationMembers = [
   {
@@ -26,16 +26,19 @@ const githubOrganizationMembers = [
 describe('Add user to github organization', () => {
   let inviteUser;
   let pendingInvitations;
-  let getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
+  let getGithubMembers
 
   beforeEach(() => {
+    getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
     inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves(true);
     pendingInvitations = sinon.stub(github, 'getAllPendingInvitations').resolves([])
+    
   })
 
   afterEach(() => {
     pendingInvitations.restore();
     inviteUser.restore();
+    getGithubMembers.restore();
   })
 
   it('should add new users to organization', async () => {
@@ -62,5 +65,35 @@ describe('Add user to github organization', () => {
     await addGithubUserToOrganization();
     inviteUser.calledOnce.should.be.true;
     inviteUser.firstCall.args[0].should.equal('test-github');
+  });
+});
+
+describe('Removed user from github organization', () => {
+  let removeUser;
+  let getGithubMembers;
+
+  beforeEach(() => {
+    removeUser = sinon.stub(github, 'removeUserByUsernameFromOrganization').resolves(true);
+    getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves([...githubOrganizationMembers, {
+      login: 'membre.expire',
+      id: '45548'
+    }]);
+  })
+
+  afterEach(() => {
+    removeUser.restore();
+    getGithubMembers.restore();
+  })
+
+  it('should add new users to organization', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, testUsers)
+    .persist();
+
+    await removeGithubUserFromOrganization();
+    removeUser.calledOnce.should.be.true;
+    removeUser.firstCall.args[0].should.equal('membre.expire');
   });
 });

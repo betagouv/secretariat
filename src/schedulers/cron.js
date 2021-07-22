@@ -17,6 +17,19 @@ if (config.featureAddGithubUserToOrganization) {
   );
 }
 
+if (config.featureRemoveGithubUserFromOrganization) {
+  const { removeGithubUserFromOrganization } = require('./githubScheduler');
+
+  module.exports.removeGithubUserFromOrganization = new CronJob(
+    '0 0 * * * *',
+    removeGithubUserFromOrganization,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
+
+
 if (config.featureCreateUserOnMattermost) {
   console.log('Cron job to create user on mattermost by email on');
   const { createUsersByEmail } = require('./mattermostScheduler');

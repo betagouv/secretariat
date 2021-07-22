@@ -4,7 +4,7 @@ const BetaGouv = require('../betagouv');
 const github = require('../lib/github');
 
 // get users that are member (got a github card) and that have github account that is not in the team
-const getGithubUserNotOnOrganization = async (org) => {
+const getGithubUsersNotInOrganization = async (org) => {
   const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
   const users = await BetaGouv.usersInfos();
 
@@ -29,11 +29,34 @@ const getGithubUserNotOnOrganization = async (org) => {
   return githubUserNotOnOrganization;
 };
 
+// get users that are member (got a github card) and that have github account that is not in the team
+const getExpiredGithubUsersInOrganization = async (org) => {
+  const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
+  const users = await BetaGouv.usersInfos();
+
+  const expiredGithubUsers = users.filter((x) => {
+    const stillActive = checkUserIsExpired(x);
+    return stillActive && x.github;
+  });
+  const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
+    (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
+  );
+
+  const githubUserNotOnOrganization = expiredGithubUsers.filter(
+    (user) => {
+      const githubUsername = user.github.toLowerCase();
+      return allGithubOrganizationMembersUsername.includes(githubUsername);
+    },
+  );
+
+  return githubUserNotOnOrganization;
+};
+
 const addGithubUserToOrganization = async () => {
   console.log('Launch add github users to organization');
 
-  const githubUserNotOnOrganization = await getGithubUserNotOnOrganization(config.githubOrganizationName);
-  const results = await Promise.all(githubUserNotOnOrganization.map(async (member) => {
+  const githubUsersNotOnOrganization = await getGithubUsersNotInOrganization(config.githubOrganizationName);
+  const results = await Promise.all(githubUsersNotOnOrganization.map(async (member) => {
     try {
       await github.inviteUserByUsernameToOrganization(member.github, config.githubOrganizationName);
       console.log(`Add user ${member.github} to organization`);
@@ -44,3 +67,19 @@ const addGithubUserToOrganization = async () => {
 };
 
 module.exports.addGithubUserToOrganization = addGithubUserToOrganization;
+
+const removeGithubUserFromOrganization = async () => {
+  console.log('Launch remove github users from organization');
+
+  const expiredUsers = await getExpiredGithubUsersInOrganization(config.githubOrganizationName);
+  const results = await Promise.all(expiredUsers.map(async (member) => {
+    try {
+      await github.removeUserByUsernameFromOrganization(member.github, config.githubOrganizationName);
+      console.log(`Remove user ${member.github} from organization`);
+    } catch (err) {
+      console.error(`Cannot remove user ${member.github} from organization ${config.githubOrganizationName}. Error : ${err}`);
+    }
+  }));
+};
+
+module.exports.removeGithubUserFromOrganization = removeGithubUserFromOrganization;
