@@ -4,7 +4,7 @@ import nock from 'nock';
 import sinon from 'sinon';
 import Betagouv from '../src/betagouv';
 import config from '../src/config';
-import controllerUtils from '../src/controllers/utils';
+import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import { createEmailAddresses } from '../src/schedulers/emailCreationScheduler';
@@ -784,7 +784,7 @@ describe('User', () => {
     let sendEmailStub;
     let betagouvCreateEmail;
     beforeEach((done) => {
-      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+      sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
       betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
