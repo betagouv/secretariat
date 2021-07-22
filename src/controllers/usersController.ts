@@ -57,7 +57,7 @@ export async function createEmailForUser(req, res) {
     }
 
     if (!user.canCreateEmail) {
-      throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
+      throw new Error('Vous n\'avez pas le droenvit de créer le compte email du membre.');
     }
 
     if (!isCurrentUser) {

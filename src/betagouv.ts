@@ -17,7 +17,7 @@ export interface OvhRedirection {
 }
 
 const betaGouv = {
-  sendInfoToSlack: async (text: string, channel: string) => {
+  sendInfoToSlack: async (text: string, channel: string = null) => {
     let hookURL = config.slackWebhookURLSecretariat;
     if (channel === "general") {
       hookURL = config.slackWebhookURLGeneral;

@@ -47,7 +47,7 @@ export async function getNewsletter(req, res) {
   } catch (err) {
     console.error(err);
     req.flash('error', errorMessage);
-    res.render('newsletter', formatNewsletterPageData(req, []));
+    res.render('newsletter', formatNewsletterPageData(req, [], null));
   }
 }
 

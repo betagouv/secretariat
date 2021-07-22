@@ -220,7 +220,7 @@ export async function declineRequest(req, res) {
       .increment('count', 1)
       .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
 
-    await sendOnboarderRequestEmail(newcomer, onboarder, req);
+    await sendOnboarderRequestEmail(newcomer, onboarder);
 
     console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
 
