@@ -1,7 +1,7 @@
 import { checkUserIsExpired } from "../controllers/utils";
 import config from "../config";
 import BetaGouv from "../betagouv";
-import github from "../lib/github";
+import * as github from "../lib/github";
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUsersNotInOrganization = async (org) => {
@@ -56,7 +56,7 @@ const addGithubUserToOrganization = async () => {
   console.log('Launch add github users to organization');
 
   const githubUsersNotOnOrganization = await getGithubUsersNotInOrganization(config.githubOrganizationName);
-  const results = await Promise.all(githubUsersNotOnOrganization.map(async (member) => {
+  await Promise.all(githubUsersNotOnOrganization.map(async (member) => {
     try {
       await github.inviteUserByUsernameToOrganization(member.github, config.githubOrganizationName);
       console.log(`Add user ${member.github} to organization`);
@@ -72,7 +72,7 @@ const removeGithubUserFromOrganization = async () => {
   console.log('Launch remove github users from organization');
 
   const expiredUsers = await getExpiredGithubUsersInOrganization(config.githubOrganizationName);
-  const results = await Promise.all(expiredUsers.map(async (member) => {
+  await Promise.all(expiredUsers.map(async (member) => {
     try {
       await github.removeUserByUsernameFromOrganization(member.github, config.githubOrganizationName);
       console.log(`Remove user ${member.github} from organization`);

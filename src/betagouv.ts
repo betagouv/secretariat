@@ -5,6 +5,7 @@ import ovh0 from "ovh";
 import config from "./config";
 
 import { checkUserIsExpired } from "./controllers/utils";
+import { Member } from "./models/member";
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
@@ -12,8 +13,14 @@ const ovh = ovh0({
   consumerKey: process.env.OVH_CONSUMER_KEY,
 });
 
+export interface OvhRedirection {
+  from: string,
+  to: string,
+  id: string
+}
+
 const betaGouv = {
-  sendInfoToSlack: async (text, channel = null) => {
+  sendInfoToSlack: async (text: string, channel: string = null) => {
     let hookURL = config.slackWebhookURLSecretariat;
     if (channel === 'general') {
       hookURL = config.slackWebhookURLGeneral;
@@ -24,24 +31,28 @@ const betaGouv = {
       throw new Error(`Error to notify slack: ${err}`);
     }
   },
-  usersInfos: async () => axios.get(config.usersAPI).then((response) => response.data.map((author) => {
-    if (author.missions && author.missions.length > 0) {
-      const sortedStartDates = author.missions.map((x) => x.start).sort();
-      const sortedEndDates = author.missions.map((x) => x.end || '').sort().reverse();
-      const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
 
-      [author.start] = sortedStartDates;
-      author.end = sortedEndDates.includes('') ? '' : sortedEndDates[0];
-      author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
-    }
-    return author;
-  })).catch((err) => {
-    throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
-  }),
-  userInfosById: async (id) => {
+  usersInfos: async (): Promise<Member[]> =>
+    axios.get<Member[]>(config.usersAPI).then((response) => response.data.map((author: Member) => {
+      if (author.missions && author.missions.length > 0) {
+        const sortedStartDates = author.missions.map((x) => x.start).sort();
+        const sortedEndDates = author.missions.map((x) => x.end || "").sort().reverse();
+        const latestMission = author.missions.reduce((a, v) => (v.end > a.end || !v.end ? v : a));
+
+        [author.start] = sortedStartDates;
+        author.end = sortedEndDates.includes("") ? "" : sortedEndDates[0];
+        author.employer = latestMission.status ? `${latestMission.status}/${latestMission.employer}` : latestMission.employer;
+      }
+      return author;
+    })).catch((err) => {
+      throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+    }),
+
+  userInfosById: async (id: string): Promise<Member> => {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
   },
+
   startupsInfos: async () => axios.get(config.startupsAPI)
     .then((x) => x.data.data) // data key
     .catch((err) => {
@@ -50,7 +61,7 @@ const betaGouv = {
 };
 
 const betaOVH = {
-  emailInfos: async (id) => {
+  emailInfos: async (id: string) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
@@ -119,15 +130,15 @@ const betaOVH = {
     method,
     `/email/domain/${config.domain}/redirection/${redirectionId}`,
   ),
-  /* eslint arrow-body-style: "warn" */
-  requestRedirections: async (method, redirectionIds) => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
-  redirectionsForId: async (query) => {
+  requestRedirections: async (method, redirectionIds): Promise<OvhRedirection[]> => Promise.all(redirectionIds.map((x) => betaOVH.requestRedirection(method, x))),
+  redirectionsForId: async (query): Promise<OvhRedirection[]> => {
     if (!query.from && !query.to) {
-      throw new Error('paramètre \'from\' ou \'to\' manquant');
+      throw new Error("paramètre 'from' ou 'to' manquant");
     }
 
     const url = `/email/domain/${config.domain}/redirection`;
 
+    // fixme
     const options = {} as any;
 
     if (query.from) {
@@ -160,7 +171,7 @@ const betaOVH = {
       throw new Error(`OVH Error on deleting ${url} : ${JSON.stringify(err)}`);
     }
   },
-  redirections: async () => {
+  redirections: async (): Promise<OvhRedirection[]> => {
     const url = `/email/domain/${config.domain}/redirection`;
 
     try {

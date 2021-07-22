@@ -32,7 +32,7 @@ if (config.featureCreateUserOnMattermost) {
   console.log('Cron job to create user on mattermost by email on');
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { createUsersByEmail } = require('./mattermostScheduler');
-  const createMattermostUsers = new CronJob(
+  module.exports.createMattermostUsers = new CronJob(
     '0 */8 * * * *',
     createUsersByEmail,
     null,
