@@ -1,10 +1,10 @@
-const { CronJob } = require('cron');
-const ejs = require('ejs');
-const generator = require('generate-password');
-const mattermost = require('../lib/mattermost');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('../controllers/utils');
+import { CronJob } from "cron";
+import ejs from "ejs";
+import generator from "generate-password";
+import * as mattermost from "../lib/mattermost";
+import config from "../config";
+import * as utils from "../controllers/utils";
+import BetaGouv from "../betagouv";
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   const allMattermostUsers = await mattermost.getUserWithParams();
@@ -16,17 +16,15 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   return activeGithubUsersUnregisteredOnMattermost;
 };
 
-module.exports.inviteUsersToTeamByEmail = async () => {
+export async function inviteUsersToTeamByEmail() {
   const activeGithubUsersUnregisteredOnMattermost = await getActiveGithubUsersUnregisteredOnMattermost();
   const results = await mattermost.inviteUsersToTeamByEmail(
     activeGithubUsersUnregisteredOnMattermost.map((user) => user.email).slice(0, 19), config.mattermostTeamId,
   );
   return results;
-};
+}
 
-module.exports.reactivateUsers = async () => {
-  const params = {};
-  const isActive = false;
+export async function reactivateUsers() {
   const inactiveMattermostUsers = await mattermost.getInactiveMattermostUsers();
 
   const users = await BetaGouv.usersInfos();
@@ -39,18 +37,18 @@ module.exports.reactivateUsers = async () => {
     return currentUsersEmails.find((userMail) => userMail === email);
   });
 
-  mattermostUsersToReactivate.forEach(async (member) => {
-    const activedUser = await mattermost.activeUsers(member.id);
-  });
+  for (const member of mattermostUsersToReactivate) {
+    await mattermost.activeUsers(member.id);
+  }
   return mattermostUsersToReactivate;
-};
+}
 
 const reactivateUsersJob = () => {
   if (config.featureReactiveMattermostUsers) {
     console.log(`🚀 The job reactiveMattermostUsers is started`);
     new CronJob(
       '0 0 10 * * 1-5', // monday through friday at 10:00:00
-      this.reactivateUsers,
+      reactivateUsers,
       null,
       true,
       'Europe/Paris',
@@ -62,7 +60,7 @@ const reactivateUsersJob = () => {
 
 reactivateUsersJob();
 
-module.exports.createUsersByEmail = async () => {
+export async function createUsersByEmail() {
   let activeGithubUsersUnregisteredOnMattermost = await getActiveGithubUsersUnregisteredOnMattermost();
   activeGithubUsersUnregisteredOnMattermost = activeGithubUsersUnregisteredOnMattermost.filter((user) => {
     const userStartDate = new Date(user.start).getTime();
@@ -91,4 +89,4 @@ module.exports.createUsersByEmail = async () => {
     await utils.sendMail(email, 'Inscription à mattermost', html);
   }));
   return results;
-};
+}

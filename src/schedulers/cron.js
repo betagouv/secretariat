@@ -1,11 +1,8 @@
-const config = require('../config');
-require('./marrainageScheduler');
-require('./emailCreationScheduler');
-require('./newsletterScheduler');
-require('./mattermostScheduler.js');
-const { CronJob } = require('cron');
+import config from "../config";
+import { CronJob } from "cron";
 
 if (config.featureAddGithubUserToOrganization) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { addGithubUserToOrganization } = require('./githubScheduler');
 
   module.exports.addGithubUserToOrganization = new CronJob(
@@ -18,6 +15,7 @@ if (config.featureAddGithubUserToOrganization) {
 }
 
 if (config.featureRemoveGithubUserFromOrganization) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { removeGithubUserFromOrganization } = require('./githubScheduler');
 
   module.exports.removeGithubUserFromOrganization = new CronJob(
@@ -32,6 +30,7 @@ if (config.featureRemoveGithubUserFromOrganization) {
 
 if (config.featureCreateUserOnMattermost) {
   console.log('Cron job to create user on mattermost by email on');
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { createUsersByEmail } = require('./mattermostScheduler');
   const createMattermostUsers = new CronJob(
     '0 */8 * * * *',

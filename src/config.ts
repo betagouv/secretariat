@@ -1,4 +1,6 @@
-require('dotenv').config();
+import { config } from "dotenv";
+
+config();
 
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
@@ -12,7 +14,7 @@ const userBadgeOptions = [
   { label: 'Ségur (Paris)', value: 'segur' },
 ];
 
-module.exports = {
+export default {
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',

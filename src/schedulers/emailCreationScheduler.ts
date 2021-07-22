@@ -1,12 +1,11 @@
-require('dotenv').config();
-const _ = require('lodash/array');
-const { CronJob } = require('cron');
-const config = require('../config');
-const knex = require('../db');
-const BetaGouv = require('../betagouv');
-const utils = require('../controllers/utils');
-const { createEmail } = require('../controllers/usersController');
-const { createRequestForUser } = require('../controllers/marrainageController');
+import _ from "lodash/array";
+import { CronJob } from "cron";
+import knex from "../db";
+import BetaGouv from "../betagouv";
+import * as utils from "../controllers/utils";
+import { createEmail } from "../controllers/usersController";
+import { createRequestForUser } from "../controllers/marrainageController";
+
 
 const createEmailAndMarrainage = async (user, creator) => {
   await createEmail(user.id, creator, user.toEmail);
@@ -42,7 +41,7 @@ const getValidUsers = async () => {
   return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
-module.exports.createEmailAddresses = async function createEmailAddresses() {
+export async function createEmailAddresses() {
   console.log('Demarrage du cron job pour la création des adresses email');
 
   const dbUsers = await knex('users').whereNotNull('secondary_email');
@@ -64,12 +63,12 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   return Promise.all(
     unregisteredUsers.map((user) => createEmailAndMarrainage(user, 'Secretariat Cron')),
   );
-};
+}
 
-module.exports.emailCreationJob = new CronJob(
-  '0 */4 * * * *',
-  module.exports.createEmailAddresses,
+export const emailCreationJob = new CronJob(
+  "0 */4 * * * *",
+  createEmailAddresses,
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );

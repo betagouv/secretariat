@@ -14,7 +14,7 @@ const getMattermostConfig = () => {
   };
 };
 
-export async function getUserWithParams(params, i = 0) {
+export async function getUserWithParams(params={}, i = 0) {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     params: {
       ...params,
@@ -46,7 +46,7 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
   return res;
 }
 
-export async function getInactiveMattermostUsers(params, i = 0) {
+export async function getInactiveMattermostUsers(params={}, i = 0) {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     params: {
       ...params,
@@ -82,7 +82,7 @@ export async function createUser({
   email,
   username,
   password
-}, teamId) {
+}, teamId=null) {
   if (!config.mattermostInviteId) {
     const errorMessage = 'Unable to launch createUser without env var mattermostInviteId';
     console.error(errorMessage);

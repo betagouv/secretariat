@@ -1,11 +1,13 @@
-const { CronJob } = require('cron');
-const crypto = require('crypto');
-const HedgedocApi = require('hedgedoc-api');
-const BetaGouv = require('../betagouv');
-const config = require('../config');
-const knex = require('../db');
-const utils = require('../controllers/utils');
-const { renderHtmlFromMd, getTitle } = require('../lib/mdtohtml');
+import { CronJob } from "cron";
+import crypto from "crypto";
+import HedgedocApi from "hedgedoc-api";
+import BetaGouv from "../betagouv";
+import config from "../config";
+import knex from "../db";
+import * as utils from "../controllers/utils";
+import { getTitle, renderHtmlFromMd } from "../lib/mdtohtml";
+
+
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -79,7 +81,6 @@ const computeMessageReminder = (reminder, newsletter) => {
 };
 
 const newsletterReminder = async (reminder) => {
-  const date = new Date();
   const currentNewsletter = await knex('newsletters').where({
     sent_at: null,
   }).first();
@@ -89,30 +90,30 @@ const newsletterReminder = async (reminder) => {
   }
 };
 
-module.exports.createNewsletter = createNewsletter;
+export { createNewsletter }
 
-module.exports.newsletterMondayReminderJob = new CronJob(
-  '0 8 * * 1', // every week a 8:00 on monday
-  () => newsletterReminder('FIRST_REMINDER'),
+export const newsletterMondayReminderJob = new CronJob(
+  "0 8 * * 1", // every week a 8:00 on monday
+  () => newsletterReminder("FIRST_REMINDER"),
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );
 
-module.exports.newsletterThursdayMorningReminderJob = new CronJob(
-  '0 0 8 * * 4', // every week a 8:00 on thursday
-  () => newsletterReminder('SECOND_REMINDER'),
+export const newsletterThursdayMorningReminderJob = new CronJob(
+  "0 0 8 * * 4", // every week a 8:00 on thursday
+  () => newsletterReminder("SECOND_REMINDER"),
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );
 
-module.exports.newsletterThursdayEveningReminderJob = new CronJob(
-  '0 14 * * 4', // every week a 14:00 on thursday
-  (type) => newsletterReminder('THIRD_REMINDER'),
+export const newsletterThursdayEveningReminderJob = new CronJob(
+  "0 14 * * 4", // every week a 14:00 on thursday
+  (type) => newsletterReminder("THIRD_REMINDER"),
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );
 
 const sendNewsletterAndCreateNewOne = async () => {
@@ -148,10 +149,10 @@ const sendNewsletterAndCreateNewOne = async () => {
   }
 };
 
-module.exports.sendNewsletterAndCreateNewOne = new CronJob(
-  config.newsletterSendTime || '0 16 * * 4', // run on thursday et 4pm,
+export const sendNewsletterAndCreateNewOneJob = new CronJob(
+  config.newsletterSendTime || "0 16 * * 4", // run on thursday et 4pm,
   sendNewsletterAndCreateNewOne,
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );

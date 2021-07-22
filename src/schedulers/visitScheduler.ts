@@ -1,10 +1,9 @@
-require('dotenv').config();
-const { CronJob } = require('cron');
-const ejs = require('ejs');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const knex = require('../db');
-const utils = require('../controllers/utils');
+import { CronJob } from "cron";
+import ejs from "ejs";
+import config from "../config";
+import BetaGouv from "../betagouv";
+import knex from "../db";
+import * as utils from "../controllers/utils";
 
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
@@ -54,10 +53,10 @@ const sendVisitEmail = async function () {
   console.info('L\' email de visite à Ségur a été envoyé');
 };
 
-module.exports.sendVisitEmailJob = new CronJob(
-  '0 0 18 * * *', // monday through sunday at 18:00:00
+export const sendVisitEmailJob = new CronJob(
+  "0 0 18 * * *", // monday through sunday at 18:00:00
   sendVisitEmail,
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );

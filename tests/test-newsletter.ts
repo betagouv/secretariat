@@ -4,7 +4,7 @@ import HedgedocApi from 'hedgedoc-api';
 import nock from 'nock';
 import rewire from 'rewire';
 import sinon from 'sinon';
-import { betaGouv } from '../src/betagouv';
+import betaGouv from '../src/betagouv';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';

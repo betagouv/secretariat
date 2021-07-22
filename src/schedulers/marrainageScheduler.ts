@@ -1,7 +1,7 @@
-require('dotenv').config();
-const { CronJob } = require('cron');
-const knex = require('../db');
-const { reloadMarrainage } = require('../controllers/marrainageController');
+import knex from "../db";
+import { CronJob } from "cron";
+import { reloadMarrainage } from "../controllers/marrainageController";
+
 
 const reloadMarrainages = async function () {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -26,10 +26,10 @@ const reloadMarrainages = async function () {
     .catch(console.error);
 };
 
-module.exports.reloadMarrainageJob = new CronJob(
-  '0 0 10 * * 1-5', // monday through friday at 10:00:00
+export const reloadMarrainageJob = new CronJob(
+  "0 0 10 * * 1-5", // monday through friday at 10:00:00
   reloadMarrainages,
   null,
   true,
-  'Europe/Paris',
+  "Europe/Paris"
 );

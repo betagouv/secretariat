@@ -1,7 +1,7 @@
-const { checkUserIsExpired } = require('../controllers/utils');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const github = require('../lib/github');
+import { checkUserIsExpired } from "../controllers/utils";
+import config from "../config";
+import BetaGouv from "../betagouv";
+import github from "../lib/github";
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUsersNotInOrganization = async (org) => {
@@ -66,7 +66,7 @@ const addGithubUserToOrganization = async () => {
   }));
 };
 
-module.exports.addGithubUserToOrganization = addGithubUserToOrganization;
+export { addGithubUserToOrganization }
 
 const removeGithubUserFromOrganization = async () => {
   console.log('Launch remove github users from organization');
@@ -82,4 +82,4 @@ const removeGithubUserFromOrganization = async () => {
   }));
 };
 
-module.exports.removeGithubUserFromOrganization = removeGithubUserFromOrganization;
+export { removeGithubUserFromOrganization }
