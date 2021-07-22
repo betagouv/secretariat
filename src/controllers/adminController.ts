@@ -1,7 +1,7 @@
-const PromiseMemoize = require('promise-memoize');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('./utils');
+import PromiseMemoize from "promise-memoize";
+import config from "../config";
+import BetaGouv from "../betagouv";
+import * as utils from "./utils";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
@@ -53,7 +53,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
   },
 );
 
-module.exports.getEmailLists = async function (req, res) {
+export async function getEmailLists(req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter((user) => user.expired);
@@ -74,4 +74,4 @@ module.exports.getEmailLists = async function (req, res) {
     req.flash('error', 'Erreur interne');
     res.redirect('/account');
   }
-};
+}

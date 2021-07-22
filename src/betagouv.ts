@@ -1,15 +1,19 @@
 // betagouv.js
 // ======
-const axios = require('axios').default;
-const ovh = require('ovh')({
+import axios from "axios";
+import ovh0 from "ovh";
+import config from "./config";
+
+import { checkUserIsExpired } from "./controllers/utils";
+
+const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
   appSecret: process.env.OVH_APP_SECRET,
   consumerKey: process.env.OVH_CONSUMER_KEY,
 });
-const config = require('./config');
 
 const betaGouv = {
-  sendInfoToSlack: async (text, channel) => {
+  sendInfoToSlack: async (text, channel = null) => {
     let hookURL = config.slackWebhookURLSecretariat;
     if (channel === 'general') {
       hookURL = config.slackWebhookURLGeneral;
@@ -70,7 +74,6 @@ const betaOVH = {
   getActiveRegisteredOVHUsers: async () => {
     const users = await betaGouv.usersInfos();
     const allOvhEmails = await betaOVH.getAllEmailInfos();
-    const { checkUserIsExpired } = require('./controllers/utils');
     const activeUsers = users.filter(
       (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id),
     );
@@ -125,7 +128,7 @@ const betaOVH = {
 
     const url = `/email/domain/${config.domain}/redirection`;
 
-    const options = {};
+    const options = {} as any;
 
     if (query.from) {
       options.from = `${query.from}@${config.domain}`;
@@ -189,4 +192,4 @@ const betaOVH = {
   },
 };
 
-module.exports = { ...betaGouv, ...betaOVH };
+export default { ...betaGouv, ...betaOVH };

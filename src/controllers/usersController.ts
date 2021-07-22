@@ -1,12 +1,12 @@
-const ejs = require('ejs');
-const crypto = require('crypto');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('./utils');
-const knex = require('../db/index');
-const { createRequestForUser } = require('./marrainageController');
+import ejs from "ejs";
+import crypto from "crypto";
+import config from "../config";
+import BetaGouv from "../betagouv";
+import * as utils from "./utils";
+import knex from "../db/index";
+import { createRequestForUser } from "./marrainageController";
 
-module.exports.createEmail = async function (username, creator, toEmail) {
+export async function createEmail(username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
   const password = crypto.randomBytes(16)
     .toString('base64')
@@ -35,9 +35,9 @@ module.exports.createEmail = async function (username, creator, toEmail) {
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
-};
+}
 
-module.exports.createEmailForUser = async function (req, res) {
+export async function createEmailForUser(req, res) {
   const username = req.sanitize(req.params.username);
   const isCurrentUser = req.user.id === username;
 
@@ -67,7 +67,7 @@ module.exports.createEmailForUser = async function (req, res) {
       }
     }
 
-    await module.exports.createEmail(username, req.user.id, req.body.to_email);
+    await createEmail(username, req.user.id, req.body.to_email);
     try {
       // create marrainage request
       await createRequestForUser(username);
@@ -84,9 +84,9 @@ module.exports.createEmailForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect('/community');
   }
-};
+}
 
-module.exports.createRedirectionForUser = async function (req, res) {
+export async function createRedirectionForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -137,9 +137,9 @@ module.exports.createRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}
 
-module.exports.deleteRedirectionForUser = async function (req, res) {
+export async function deleteRedirectionForUser(req, res) {
   const {
     username,
     email: toEmail,
@@ -175,9 +175,9 @@ module.exports.deleteRedirectionForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}
 
-module.exports.updatePasswordForUser = async function (req, res) {
+export async function updatePasswordForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -232,9 +232,9 @@ module.exports.updatePasswordForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}
 
-module.exports.deleteEmailForUser = async function (req, res) {
+export async function deleteEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
 
@@ -273,9 +273,9 @@ module.exports.deleteEmailForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}
 
-module.exports.createSecondaryEmailForUser = async function (req, res) {
+export async function createSecondaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { secondaryEmail } = req.body;
@@ -296,9 +296,9 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}
 
-module.exports.updateSecondaryEmailForUser = async function (req, res) {
+export async function updateSecondaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { newSecondaryEmail } = req.body;
@@ -320,4 +320,4 @@ module.exports.updateSecondaryEmailForUser = async function (req, res) {
     req.flash('error', err.message);
     res.redirect(`/community/${username}`);
   }
-};
+}

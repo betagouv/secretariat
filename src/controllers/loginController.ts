@@ -1,10 +1,9 @@
-const crypto = require('crypto');
-const ejs = require('ejs');
-
-const config = require('../config');
-const BetaGouv = require('../betagouv');
-const utils = require('./utils');
-const knex = require('../db');
+import crypto from "crypto";
+import ejs from "ejs";
+import config from "../config";
+import BetaGouv from "../betagouv";
+import * as utils from "./utils";
+import knex from "../db";
 
 function renderLogin(req, res, params) {
   res.render('login', {
@@ -81,11 +80,11 @@ function censorEmail(email) {
   return `${censorWord(username)}@${censorWord(emailHost)}.${censorWord(topLevelDomain)}`;
 }
 
-module.exports.getLogin = async function (req, res) {
+export async function getLogin(req, res) {
   renderLogin(req, res, {});
-};
+}
 
-module.exports.postLogin = async function (req, res) {
+export async function postLogin(req, res) {
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
   const { username, useSecondaryEmail } = req.body;
 
@@ -129,4 +128,4 @@ module.exports.postLogin = async function (req, res) {
     req.flash('error', err.message);
     return res.redirect(`/login${nextParam}`);
   }
-};
+}

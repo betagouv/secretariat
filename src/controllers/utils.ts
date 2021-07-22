@@ -1,8 +1,8 @@
-const nodemailer = require('nodemailer');
-const { request } = require('@octokit/request');
-const _ = require('lodash');
-const config = require('../config');
-const BetaGouv = require('../betagouv');
+import nodemailer from "nodemailer";
+import { request } from "@octokit/request";
+import _ from "lodash";
+import config from "../config";
+import BetaGouv from "../betagouv";
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
@@ -30,7 +30,7 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-module.exports.sendMail = async function (toEmail, subject, html, extraParams = {}) {
+export async function sendMail(toEmail, subject, html, extraParams = {}) {
   const mail = {
     to: toEmail,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
@@ -44,13 +44,13 @@ module.exports.sendMail = async function (toEmail, subject, html, extraParams = 
   return new Promise((resolve, reject) => {
     mailTransport.sendMail(mail, (error, info) => (error ? reject(error) : resolve(info)));
   });
-};
+}
 
-module.exports.buildBetaEmail = function (id) {
+export function buildBetaEmail(id) {
   return `${id}@${config.domain}`;
-};
+}
 
-module.exports.checkUserIsExpired = function (user) {
+export function checkUserIsExpired(user) {
   // Le membre est considéré comme expiré si:
   // - il/elle existe
   // - il/elle a une date de fin
@@ -59,28 +59,28 @@ module.exports.checkUserIsExpired = function (user) {
     && user.end !== undefined
     && new Date().toString() !== 'Invalid Date'
     && new Date(user.end).getTime() < new Date().getTime();
-};
+}
 
-module.exports.isMobileFirefox = (req) => {
+export function isMobileFirefox(req) {
   const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
   return userAgent && /Android.+Firefox\//.test(userAgent);
-};
+}
 
-module.exports.requiredError = (formValidationErrors, field) => {
+export function requiredError(formValidationErrors, field) {
   formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
-};
+}
 
-module.exports.isValidDate = (formValidationErrors, field, date) => {
+export function isValidDate(formValidationErrors, field, date) {
   if (date instanceof Date && !Number.isNaN(date.getTime())) {
     return date;
   }
   formValidationErrors.push(`${field} : la date n'est pas valide`);
   return null;
-};
+}
 
-module.exports.isValidNumber = (formValidationErrors, field, number) => {
+export function isValidNumber(formValidationErrors, field, number) {
   if (!number) {
-    module.exports.requiredError(formValidationErrors, field);
+    requiredError(formValidationErrors, field);
     return null;
   }
   const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gmi;
@@ -89,17 +89,17 @@ module.exports.isValidNumber = (formValidationErrors, field, number) => {
   }
   formValidationErrors.push(`${field} : le numéro n'est pas valide`);
   return null;
-};
+}
 
-module.exports.formatDateToReadableFormat = (date) => {
+export function formatDateToReadableFormat(date) {
   let day = date.getDate().toString();
   day = day.length === 1 ? `0${day}` : day;
   let month = (date.getMonth() + 1).toString();
   month = month.length === 1 ? `0${month}` : month;
   return `${day}/${month}/${date.getFullYear()}`;
-};
+}
 
-module.exports.formatDateToReadableDateAndTimeFormat = (date) => {
+export function formatDateToReadableDateAndTimeFormat(date) {
   let day = date.getDate().toString();
   day = day.length === 1 ? `0${day}` : day;
 
@@ -111,9 +111,9 @@ module.exports.formatDateToReadableDateAndTimeFormat = (date) => {
 
   const hour = date.getHours();
   return `${day}/${month} à ${hour}:${minutes}`;
-};
+}
 
-module.exports.formatDateToFrenchTextReadableFormat = (date) => {
+export function formatDateToFrenchTextReadableFormat(date) {
   const frenchMonth = [
     'janvier',
     'février',
@@ -131,32 +131,32 @@ module.exports.formatDateToFrenchTextReadableFormat = (date) => {
   const day = date.getDate().toString();
   const month = frenchMonth[date.getMonth()];
   return `${day} ${month} ${date.getFullYear()}`;
-};
+}
 
-module.exports.NUMBER_OF_DAY_IN_A_WEEK = 7;
+export const NUMBER_OF_DAY_IN_A_WEEK = 7;
 
-module.exports.NUMBER_OF_DAY_FROM_MONDAY = {
+export const NUMBER_OF_DAY_FROM_MONDAY = {
   MONDAY: 0,
   TUESDAY: 1,
   WEDNESDAY: 2,
   THURSDAY: 3,
-  FRIDAY: 4,
+  FRIDAY: 4
 };
 
-module.exports.getMonday = (d) => {
+export function getMonday(d) {
   const date = new Date(d);
   const day = date.getDay();
   const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
   return new Date(date.setDate(diff));
-};
+}
 
-module.exports.addDays = (date, days, week) => {
+export function addDays(date, days, week) {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
-};
+}
 
-module.exports.userInfos = async function (id, isCurrentUser) {
+export async function userInfos(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([
       BetaGouv.userInfosById(id),
@@ -166,7 +166,7 @@ module.exports.userInfos = async function (id, isCurrentUser) {
 
     const hasUserInfos = userInfos !== undefined;
 
-    const isExpired = module.exports.checkUserIsExpired(userInfos);
+    const isExpired = checkUserIsExpired(userInfos);
 
     // On ne peut créé un compte que si:
     // - la page fiche Github existe
@@ -211,25 +211,25 @@ module.exports.userInfos = async function (id, isCurrentUser) {
       `Problème pour récupérer les infos du membre ${id}`,
     );
   }
-};
+}
 
-module.exports.getGithubMasterSha = function () {
+export function getGithubMasterSha() {
   const url = `https://api.github.com/repos/${config.githubRepository}/git/ref/heads/master`;
   return requestWithAuth(url);
-};
+}
 
-module.exports.createGithubBranch = function (sha, branch) {
+export function createGithubBranch(sha, branch) {
   const url = `https://api.github.com/repos/${config.githubFork}/git/refs`;
   const ref = `refs/heads/${branch}`;
   return requestWithAuth(`POST ${url}`, { sha, ref });
-};
+}
 
-module.exports.deleteGithubBranch = function (branch) {
+export function deleteGithubBranch(branch) {
   const url = `https://api.github.com/repos/${config.githubFork}/git/refs/heads/${branch}`;
   return requestWithAuth(`DELETE ${url}`);
-};
+}
 
-module.exports.createGithubFile = function (path, branch, content) {
+export function createGithubFile(path, branch, content) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
   const message = `Création de fichier ${path} sur la branche ${branch}`;
   const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
@@ -239,9 +239,9 @@ module.exports.createGithubFile = function (path, branch, content) {
     message,
     content: base64EncodedContent,
   });
-};
+}
 
-module.exports.makeGithubPullRequest = function (branch, title) {
+export function makeGithubPullRequest(branch, title) {
   const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
   const head = `${config.githubFork.split('/')[0]}:${branch}`;
   const base = 'master';
@@ -252,9 +252,9 @@ module.exports.makeGithubPullRequest = function (branch, title) {
     base,
     maintainer_can_modify: true,
   });
-};
+}
 
-module.exports.createUsername = function (firstName, lastName) {
+export function createUsername(firstName, lastName) {
   const prepareName = function (str) {
     const normalizedStr = replaceSpecialCharacters(str)
       .split(' ')
@@ -264,4 +264,4 @@ module.exports.createUsername = function (firstName, lastName) {
     return hyphenateWhitespace(normalizedStr);
   };
   return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
-};
+}

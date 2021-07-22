@@ -1,6 +1,6 @@
-const config = require('../config');
+import config from "../config";
 
-module.exports.getResources = function (req, res) {
+export function getResources(req, res) {
   res.render('resource', {
     title: 'Ressources',
     activeTab: 'resources',
@@ -9,4 +9,4 @@ module.exports.getResources = function (req, res) {
     messages: req.flash('message'),
     investigationReportsIframeURL: config.investigationReportsIframeURL,
   });
-};
+}

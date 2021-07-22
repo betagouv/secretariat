@@ -1,9 +1,9 @@
-const config = require('../config');
+import config from "../config";
 
-module.exports.getIndex = function (req, res) {
+export function getIndex(req, res) {
   if (!req.cookies.token) {
     return res.redirect('/login');
   }
 
   return res.redirect(config.defaultLoggedInRedirectUrl);
-};
+}

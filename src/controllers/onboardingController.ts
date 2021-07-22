@@ -1,10 +1,11 @@
-const ejs = require('ejs');
-const crypto = require('crypto');
-const config = require('../config');
-const utils = require('./utils');
-const BetaGouv = require('../betagouv');
-const knex = require('../db');
-const { isValidGithubUserName } = require('../lib/github');
+import ejs from "ejs";
+import crypto from "crypto";
+import config from "../config";
+import * as utils from "./utils";
+import BetaGouv from "../betagouv";
+import knex from "../db";
+import { isValidGithubUserName } from "../lib/github";
+
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -47,7 +48,7 @@ async function createNewcomerGithubFile(username, content, referent) {
   return prInfo;
 }
 
-module.exports.getForm = async function (req, res) {
+export async function getForm(req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
@@ -85,9 +86,9 @@ module.exports.getForm = async function (req, res) {
     req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
     return res.redirect('/');
   }
-};
+}
 
-module.exports.postForm = async function (req, res) {
+export async function postForm(req, res) {
   try {
     const formValidationErrors = [];
 
@@ -242,8 +243,9 @@ module.exports.postForm = async function (req, res) {
       useSelectList: isMobileFirefox,
     });
   }
-};
-module.exports.getConfirmation = async function (req, res) {
+}
+
+export async function getConfirmation(req, res) {
   try {
     const { prNumber } = req.params;
     const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
@@ -252,4 +254,4 @@ module.exports.getConfirmation = async function (req, res) {
     console.error(err);
     res.redirect('/');
   }
-};
+}

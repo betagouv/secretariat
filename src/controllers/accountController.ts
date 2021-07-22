@@ -1,8 +1,8 @@
-const config = require('../config');
-const utils = require('./utils');
-const knex = require('../db');
+import config from "../config";
+import knex from "../db";
+import * as utils from "./utils";
 
-module.exports.getCurrentAccount = async function (req, res) {
+export async function getCurrentAccount(req, res) {
   try {
     const [currentUser, marrainageState, secondaryEmail] = await Promise.all([
       (async () => utils.userInfos(req.user.id, true))(),
@@ -40,4 +40,4 @@ module.exports.getCurrentAccount = async function (req, res) {
     req.flash('error', 'Impossible de récupérer vos informations.');
     return res.redirect('/');
   }
-};
+}

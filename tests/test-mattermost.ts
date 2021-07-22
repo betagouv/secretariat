@@ -128,7 +128,7 @@ describe('Reactivate current users on mattermost', () => {
     .get(/^.*api\/v4\/users.*/)
     .reply(200, []);
 
-    const postBatchMock = nock(/.*mattermost.incubateur.net/)
+    nock(/.*mattermost.incubateur.net/)
     .put(/^.*api\/v4\/users\/julien.dauphant\/active/)
     .reply(200, [{ status: 'ok' }]).persist();
 
