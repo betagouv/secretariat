@@ -26,9 +26,10 @@ const githubOrganizationMembers = [
 describe('Add user to github organization', () => {
   let inviteUser;
   let pendingInvitations;
-  const getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
+  let getGithubMembers;
 
   beforeEach(() => {
+    getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
     inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves();
     pendingInvitations = sinon.stub(github, 'getAllPendingInvitations').resolves([])
   })

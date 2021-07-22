@@ -130,7 +130,7 @@ const getAllPendingInvitations = async (org, i = 0) => {
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await exports.getAllPendingInvitations(org, i + 1);
+  const nextPageGithubUsers = await getAllPendingInvitations(org, i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
 };
 
@@ -139,7 +139,7 @@ const getAllOrganizationMembers = async (org, i = 0) => {
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
+  const nextPageGithubUsers = await getAllOrganizationMembers(org, i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
 };
 
