@@ -91,6 +91,14 @@ module.exports.isValidNumber = (formValidationErrors, field, number) => {
   return null;
 };
 
+module.exports.formatDateYearMonthDay = (date) => {
+  let day = date.getDate().toString();
+  day = day.length === 1 ? `0${day}` : day;
+  let month = (date.getMonth() + 1).toString();
+  month = month.length === 1 ? `0${month}` : month;
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
 module.exports.formatDateToReadableFormat = (date) => {
   let day = date.getDate().toString();
   day = day.length === 1 ? `0${day}` : day;
