@@ -116,10 +116,10 @@ module.exports.reinitPasswordEmail = async () => {
   });
 }; 
 
-// module.exports.emailCreationJob = new CronJob(
-//   '0 */4 * * * *',
-//   module.exports.createEmailAddresses,
-//   null,
-//   true,
-//   'Europe/Paris',
-// );
+module.exports.emailCreationJob = new CronJob(
+  '0 */4 * * * *',
+  module.exports.createEmailAddresses,
+  null,
+  true,
+  'Europe/Paris',
+);
