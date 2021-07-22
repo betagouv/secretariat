@@ -20,7 +20,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
     const emails = Array.from(
       new Set([
         ...redirections.reduce(
-          (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
+          (acc, r) => !isBetaEmail(r.to) ? [...acc, r.from] : acc,
           [],
         ),
         ...accounts.map(utils.buildBetaEmail),

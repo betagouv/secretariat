@@ -21,8 +21,7 @@ async function selectRandomOnboarder(newcomerId) {
     const isRequester = x.id === newcomerId;
     return !existingCandidate && senior && stillActive && !isRequester;
   });
-  const onboarder = onboarders[Math.floor(Math.random() * onboarders.length)];
-  return onboarder;
+  return onboarders[Math.floor(Math.random() * onboarders.length)];
 }
 
 async function getMarrainageTokenData(token) {
