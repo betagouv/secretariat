@@ -1,5 +1,5 @@
-const axios = require('axios').default;
-const config = require('../config');
+import axios from "axios";
+import config from "../config";
 
 const getMattermostConfig = () => {
   if (!config.mattermostBotToken) {
@@ -14,7 +14,7 @@ const getMattermostConfig = () => {
   };
 };
 
-module.exports.getUserWithParams = async (params, i = 0) => {
+export async function getUserWithParams(params, i = 0) {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     params: {
       ...params,
@@ -28,9 +28,9 @@ module.exports.getUserWithParams = async (params, i = 0) => {
   }
   const nextPageMattermostUsers = await module.exports.getUserWithParams(params, i + 1);
   return [...mattermostUsers, ...nextPageMattermostUsers];
-};
+}
 
-module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
+export async function inviteUsersToTeamByEmail(userEmails, teamId) {
   let res;
   try {
     res = await axios.post(
@@ -44,9 +44,9 @@ module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
   }
   console.log('Ajout des utilisateurs à mattermost', userEmails);
   return res;
-};
+}
 
-module.exports.getInactiveMattermostUsers = async (params, i = 0) => {
+export async function getInactiveMattermostUsers(params, i = 0) {
   const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users', {
     params: {
       ...params,
@@ -61,9 +61,9 @@ module.exports.getInactiveMattermostUsers = async (params, i = 0) => {
   }
   const nextPageMattermostUsers = await module.exports.getInactiveMattermostUsers(params, i + 1);
   return [...mattermostUsers, ...nextPageMattermostUsers];
-};
+}
 
-module.exports.activeUsers = async (userId) => {
+export async function activeUsers(userId) {
   try {
     const payload = { active: true };
     const response = await axios.put(
@@ -76,9 +76,13 @@ module.exports.activeUsers = async (userId) => {
   } catch (err) {
     console.error('Erreur d\'activation de l‘utilisateurs à mattermost', err);
   }
-};
+}
 
-module.exports.createUser = async ({ email, username, password }, teamId) => {
+export async function createUser({
+  email,
+  username,
+  password
+}, teamId) {
   if (!config.mattermostInviteId) {
     const errorMessage = 'Unable to launch createUser without env var mattermostInviteId';
     console.error(errorMessage);
@@ -101,4 +105,4 @@ module.exports.createUser = async ({ email, username, password }, teamId) => {
   }
   console.log('Ajout de l\'utilisateur', email, username);
   return res;
-};
+}

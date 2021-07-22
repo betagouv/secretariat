@@ -1,8 +1,7 @@
-const { Octokit } = require('@octokit/core');
-const config = require('../config');
-
-const fm = require('front-matter');
-const axios = require('axios').default;
+import { Octokit } from "@octokit/core";
+import config from "../config";
+import fm from "front-matter";
+import axios from "axios";
 
 function getURL(objectID) {
   return `https://api.github.com/repos/betagouv/beta.gouv.fr/${objectID}`;
@@ -12,8 +11,8 @@ async function getJson(uri) {
   await axios({
     url: uri,
     auth: {
-      user: process.env.GITHUB_CLIENT_ID,
-      pass: process.env.GITHUB_CLIENT_SECRET,
+      username: process.env.GITHUB_CLIENT_ID,
+      password: process.env.GITHUB_CLIENT_SECRET,
     },
     headers: {
       'User-Agent': 'Secretariat beta.gouv.fr',
@@ -26,15 +25,15 @@ async function getAuthorFileList(hash) {
   if (hash === '0000000000000000000000000000000000000000') {
     return {};
   }
-  const before = await getJson(getURL(`commits/${hash}`));
+  const before: any = await getJson(getURL(`commits/${hash}`));
 
-  const beforeRootTree = await getJson(before.commit.tree.url);
+  const beforeRootTree: any = await getJson(before.commit.tree.url);
   const contentObject = beforeRootTree.tree.find((element) => element.path === 'content');
 
-  const beforeContentTree = await getJson(contentObject.url);
+  const beforeContentTree: any = await getJson(contentObject.url);
   const authorsObject = beforeContentTree.tree.find((element) => element.path === '_authors');
 
-  const fileList = await getJson(authorsObject.url);
+  const fileList: any = await getJson(authorsObject.url);
 
   return fileList.tree.reduce((map, fileInfo) => {
     map[fileInfo.path] = fileInfo;
@@ -74,14 +73,15 @@ function extractEndDates(item) {
     return result;
   }, {});
 }
-exports.extractEndDates = extractEndDates;
+
+export { extractEndDates }
 
 async function fetchDetails(input) {
   const changes = await listChanges(input);
 
   await Promise.all(changes.map(async (data) => {
-    const beforeMetadata = await getJson(data.before.url);
-    const afterMetadata = await getJson(data.url);
+    const beforeMetadata: any = await getJson(data.before.url);
+    const afterMetadata: any = await getJson(data.url);
     return {
       data,
       before: getContent(beforeMetadata.content),
@@ -90,7 +90,7 @@ async function fetchDetails(input) {
   }));
 }
 
-exports.fetchDetails = fetchDetails;
+export { fetchDetails }
 
 /**
  * Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
@@ -100,7 +100,8 @@ exports.fetchDetails = fetchDetails;
 function isValidGithubUserName(value) {
   return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
 }
-exports.isValidGithubUserName = isValidGithubUserName;
+
+export { isValidGithubUserName }
 
 const createOctokitAuth = () => {
   if (!config.githubOrgAdminToken) {
@@ -120,7 +121,7 @@ const getGithubMembersOfOrganization = (org, i) => {
   }).then((resp) => resp.data);
 };
 
-exports.getGithubMembersOfOrganization = getGithubMembersOfOrganization;
+export { getGithubMembersOfOrganization }
 
 const getPendingInvitations = (org, i) => {
   const octokit = createOctokitAuth();
@@ -131,36 +132,36 @@ const getPendingInvitations = (org, i) => {
   }).then((resp) => resp.data);
 };
 
-exports.getAllPendingInvitations = async (org, i = 0) => {
+export async function getAllPendingInvitations(org, i = 0) {
   const githubUsers = await getPendingInvitations(org, i);
   if (!githubUsers.length) {
     return [];
   }
   const nextPageGithubUsers = await exports.getAllPendingInvitations(org, i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
-};
+}
 
-exports.getAllOrganizationMembers = async (org, i = 0) => {
+export async function getAllOrganizationMembers(org, i = 0) {
   const githubUsers = await getGithubMembersOfOrganization(org, i);
   if (!githubUsers.length) {
     return [];
   }
   const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
   return [...githubUsers, ...nextPageGithubUsers];
-};
+}
 
-exports.inviteUserByUsernameToOrganization = function inviteUserByUsername(username, org) {
+export function inviteUserByUsernameToOrganization(username, org) {
   const octokit = createOctokitAuth();
   return octokit.request('PUT /orgs/{org}/memberships/{username}', {
     org,
     username,
   });
-};
+}
 
-exports.removeUserByUsernameFromOrganization = function (username, org) {
+export function removeUserByUsernameFromOrganization(username, org) {
   const octokit = createOctokitAuth();
   return octokit.request('DELETE /orgs/{org}/memberships/{username}', {
     org,
     username,
   });
-};
+}

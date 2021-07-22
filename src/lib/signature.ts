@@ -1,5 +1,5 @@
-const crypto = require('crypto');
-const getRawBody = require('raw-body');
+import crypto from "crypto";
+import getRawBody from "raw-body";
 
 function compute(secret, data) {
   const hmac = crypto.createHmac('sha1', secret);
@@ -28,7 +28,7 @@ async function checkSignatureValidity(req) {
   }
 }
 
-module.exports = {
+export default {
   compute,
   checkSignaturePresence,
   checkSignatureValidity,
