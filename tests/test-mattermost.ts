@@ -4,8 +4,8 @@ import sinon from 'sinon';
 import config from '../src/config';
 import testUsers from './users.json';
 import utils from './utils';
-import mattermost from '../src/lib/mattermost';
-import controllerUtils from '../src/controllers/utils';
+import * as mattermost from '../src/lib/mattermost';
+import * as controllerUtils from '../src/controllers/utils';
 
 const mattermostUsers = [
   {
@@ -82,7 +82,7 @@ describe('invite users to mattermost', () => {
     nock(/.*mattermost.incubateur.net/)
     .post(/^.*api\/v4\/users\?iid=.*/)
     .reply(200, []).persist();
-    const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
     const mattermostCreateUser = sinon.spy(mattermost, 'createUser');
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
@@ -97,7 +97,7 @@ describe('invite users to mattermost', () => {
     sendEmailStub.calledOnce.should.be.true;
     sendEmailStub.restore();
     mattermostCreateUser.firstCall.args[0].email = `mattermost.newuser@${config.domain}`;
-    mattermostCreateUser.firstCall.args[0].useranme = 'mattermost.newuser';
+    mattermostCreateUser.firstCall.args[0].username = 'mattermost.newuser';
   });
 });
 
