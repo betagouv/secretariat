@@ -156,3 +156,11 @@ exports.inviteUserByUsernameToOrganization = function inviteUserByUsername(usern
     username,
   });
 };
+
+exports.removeUserByUsernameFromOrganization = function (username, org) {
+  const octokit = createOctokitAuth();
+  return octokit.request('DELETE /orgs/{org}/memberships/{username}', {
+    org,
+    username,
+  });
+};
