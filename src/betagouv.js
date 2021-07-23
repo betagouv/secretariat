@@ -183,7 +183,6 @@ const betaOVH = {
 
     try {
       await ovh.requestPromised('POST', url, { password });
-      console.log('TEST');
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }

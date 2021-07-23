@@ -2,7 +2,7 @@ const config = require('../config');
 require('./marrainageScheduler');
 require('./emailScheduler');
 require('./newsletterScheduler');
-require('./mattermostScheduler.js');
+require('./mattermostScheduler');
 const { CronJob } = require('cron');
 
 if (config.featureReinitPasswordEmail) {
@@ -13,7 +13,7 @@ if (config.featureReinitPasswordEmail) {
     null,
     true,
     'Europe/Paris',
-  )
+  );
 }
 
 if (config.featureAddGithubUserToOrganization) {

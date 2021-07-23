@@ -82,13 +82,10 @@ module.exports.reinitPasswordEmail = async () => {
   return Promise.all(
     expiredUsers.map(async (user) => {
       const newPassword = utils.getRandomPassword(24, 16);
-      console.log('PASSWORD DONE');
       try {
         await BetaGouv.changePassword(user.id, newPassword);
-        console.log('CALLING PASSWORD DONE');
         console.log(`Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`);
       } catch (err) {
-        console.log('CALLING PASSWORD FAILED');
         console.log(`Le mode de passe de ${user.fullname} n'a pas pu être modifié: ${err}`);
       }
     }),
