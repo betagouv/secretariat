@@ -7,6 +7,7 @@ import rewire from 'rewire';
 import testUsers from './users.json';
 import utilsTest from './utils';
 import utils from '../src/controllers/utils';
+import betagouv from '../src/betagouv';
 
 chai.use(chaiHttp);
 
@@ -72,7 +73,7 @@ describe('Reinit password for expired users', () => {
   const formatedDate = utils.formatDateYearMonthDay(datePassed);
   const users =  [
     {
-      id: 'aembre.actif',
+      id: 'membre.actif',
       fullname: 'membre actif',
       role: 'Chargé de déploiement',
       start: '2020-09-01',
@@ -99,15 +100,16 @@ describe('Reinit password for expired users', () => {
     result.length.should.be.equal(1);
   })
 
-  it('should call ovh api to change password', async () => {
+  it('should call once ovh api to change password', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
     nock(url)
       .get((uri) => uri.includes('authors.json'))
       .reply(200, users)
       .persist();
 
-    const OVHChangePassword = utilsTest.mockOvhChangePassword();
-    emailScheduler.reinitPasswordEmail();
-    OVHChangePassword.isDone().should.be.true;
+    const funcCalled = sinon.spy(betagouv, 'changePassword');
+    utilsTest.mockOvhChangePassword();
+    await emailScheduler.reinitPasswordEmail();
+    funcCalled.calledOnce;
   });
 });
