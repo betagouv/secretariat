@@ -67,54 +67,33 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   );
 };
 
-const getOneDayExpiredUsers = async () => {
-    // const users = await BetaGouv.usersInfos();
-
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    const formatedDate = utils.formatDateYearMonthDay(date);
-    console.log('formated date ', formatedDate)
-  
-    const users =  [
-      {
-        id: 'charlotte.poursuibes',
-        fullname: 'Charlotte Poursuibes',
-        role: 'Chargée de déploiement',
-        start: '2020-09-01',
-        end: '2021-01-30',
-        employer: 'admin/'
-      }, {
-        id: 'cherif.manfredini',
-        fullname: 'Cherif Manfredini',
-        role: 'Intrapreneur',
-        start: '2018-01-01',
-        end: '2021-07-21',
-        employer: 'admin/Département du Var'
-      },
-    ];
-  
-    const oneDayExpiredUsers = users.filter((x) => {
-      return x.end === formatedDate; 
-    });
-    return oneDayExpiredUsers;
-}
-
-const getRandomPassword = (maxLength, minLength) => {
-  const passwordChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#@!%&()/";
-  const randPasswordLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
-  return Array(randPasswordLength).fill(passwordChars).map(function(x) { 
-    return x[Math.floor(Math.random() * x.length)] 
-  }).join('');
-}
+const getOneDayExpiredUsers = (users) => {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  const formatedDate = utils.formatDateYearMonthDay(date);
+  const oneDayExpiredUsers = users.filter((x) => x.end === formatedDate);
+  return oneDayExpiredUsers;
+};
 
 module.exports.reinitPasswordEmail = async () => {
-  const expiredUsers = await getOneDayExpiredUsers();
-  expiredUsers.forEach(user => {
-    const newPassword = getRandomPassword(24, 16);
-    await betagouv.changePassword(user.id, newPassword);
-    console.log(`Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`)
-  });
-}; 
+  const users = await BetaGouv.usersInfos();
+  const expiredUsers = getOneDayExpiredUsers(users);
+
+  return Promise.all(
+    expiredUsers.map(async (user) => {
+      const newPassword = utils.getRandomPassword(24, 16);
+      console.log('PASSWORD DONE');
+      try {
+        await BetaGouv.changePassword(user.id, newPassword);
+        console.log('CALLING PASSWORD DONE');
+        console.log(`Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`);
+      } catch (err) {
+        console.log('CALLING PASSWORD FAILED');
+        console.log(`Le mode de passe de ${user.fullname} n'a pas pu être modifié: ${err}`);
+      }
+    }),
+  );
+};
 
 module.exports.emailCreationJob = new CronJob(
   '0 */4 * * * *',
