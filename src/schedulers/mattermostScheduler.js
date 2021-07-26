@@ -78,7 +78,7 @@ module.exports.createUsersByEmail = async () => {
       // mattermost spec : password must contain at least 10 character,
       // one lowercase, one upper, one number and a special character (amongst "~!@#$%^&*()").
       password: generator.generate({
-        length: 10,
+        length: 20,
         uppercase: true,
         numbers: true,
         symbols: true,
