@@ -164,14 +164,6 @@ module.exports.addDays = (date, days, week) => {
   return result;
 };
 
-module.exports.getRandomPassword = (maxLength, minLength) => {
-  const passwordChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#@!%&()/";
-  const randPasswordLength = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
-  return Array(randPasswordLength).fill(passwordChars).map(function(x) { 
-    return x[Math.floor(Math.random() * x.length)] 
-  }).join('');
-}
-
 module.exports.userInfos = async function (id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections] = await Promise.all([

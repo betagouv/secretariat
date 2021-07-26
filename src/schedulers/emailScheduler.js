@@ -1,6 +1,7 @@
 require('dotenv').config();
 const _ = require('lodash/array');
 const { CronJob } = require('cron');
+const crypto = require('crypto');
 const config = require('../config');
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
@@ -81,7 +82,7 @@ module.exports.reinitPasswordEmail = async () => {
 
   return Promise.all(
     expiredUsers.map(async (user) => {
-      const newPassword = utils.getRandomPassword(24, 16);
+      const newPassword = crypto.randomBytes(16).toString('base64').slice(0, -2);
       try {
         await BetaGouv.changePassword(user.id, newPassword);
         console.log(`Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`);
