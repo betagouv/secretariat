@@ -50,7 +50,7 @@ module.exports.buildBetaEmail = function (id) {
   return `${id}@${config.domain}`;
 };
 
-module.exports.checkUserIsExpired = function (user) {
+module.exports.checkUserIsExpired = function (user, daysOfExpiration = 0) {
   // Le membre est considéré comme expiré si:
   // - il/elle existe
   // - il/elle a une date de fin
@@ -58,7 +58,7 @@ module.exports.checkUserIsExpired = function (user) {
   return user
     && user.end !== undefined
     && new Date().toString() !== 'Invalid Date'
-    && new Date(user.end).getTime() < new Date().getTime();
+    && new Date(user.end).getTime() + daysOfExpiration * 24 * 3600 < new Date().getTime();
 };
 
 module.exports.isMobileFirefox = (req) => {
