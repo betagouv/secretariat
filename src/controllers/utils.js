@@ -61,6 +61,14 @@ module.exports.checkUserIsExpired = function (user, daysOfExpiration = 0) {
     && new Date(user.end).getTime() + daysOfExpiration * 24 * 3600 < new Date().getTime();
 };
 
+module.exports.getExpiredUsersForXDays = (users, nbDays) => {
+  const date = new Date();
+  date.setDate(date.getDate() - nbDays);
+  const formatedDate = this.formatDateYearMonthDay(date);
+  const oneDayExpiredUsers = users.filter((x) => x.end === formatedDate);
+  return oneDayExpiredUsers;
+};
+
 module.exports.isMobileFirefox = (req) => {
   const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
   return userAgent && /Android.+Firefox\//.test(userAgent);
@@ -96,8 +104,8 @@ module.exports.formatDateYearMonthDay = (date) => {
   day = day.length === 1 ? `0${day}` : day;
   let month = (date.getMonth() + 1).toString();
   month = month.length === 1 ? `0${month}` : month;
-  return `${date.getFullYear()}-${month}-${day}`
-}
+  return `${date.getFullYear()}-${month}-${day}`;
+};
 
 module.exports.formatDateToReadableFormat = (date) => {
   let day = date.getDate().toString();

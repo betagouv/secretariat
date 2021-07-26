@@ -94,12 +94,6 @@ describe('Reinit password for expired users', () => {
     utilsTest.mockOvhTime();
   });
 
-  it('should be expired since 1 day', async () => {
-    const getOneDayExpiredUsers = emailScheduler.__get__('getOneDayExpiredUsers');
-    const result = getOneDayExpiredUsers(users);
-    result.length.should.be.equal(1);
-  })
-
   it('should call once ovh api to change password', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
     nock(url)

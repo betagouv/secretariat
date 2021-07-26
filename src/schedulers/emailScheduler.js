@@ -68,17 +68,9 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   );
 };
 
-const getOneDayExpiredUsers = (users) => {
-  const date = new Date();
-  date.setDate(date.getDate() - 1);
-  const formatedDate = utils.formatDateYearMonthDay(date);
-  const oneDayExpiredUsers = users.filter((x) => x.end === formatedDate);
-  return oneDayExpiredUsers;
-};
-
 module.exports.reinitPasswordEmail = async () => {
   const users = await BetaGouv.usersInfos();
-  const expiredUsers = getOneDayExpiredUsers(users);
+  const expiredUsers = utils.getExpiredUsersForXDays(users, 1);
 
   return Promise.all(
     expiredUsers.map(async (user) => {
