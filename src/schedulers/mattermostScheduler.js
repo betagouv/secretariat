@@ -82,6 +82,7 @@ module.exports.createUsersByEmail = async () => {
         uppercase: true,
         numbers: true,
         symbols: true,
+        strict: true,
       }),
     });
 
