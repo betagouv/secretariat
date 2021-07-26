@@ -3,7 +3,7 @@ const config = require('../config');
 const BetaGouv = require('../betagouv');
 const github = require('../lib/github');
 
-// get users that are member (got a github card) and that have github account that is not in the team
+// get users that are members of organization but don't have matching github card
 const getUnknownGithubUsersInOrganization = async (org) => {
   const allGithubOrganizationMembers = await github.getAllOrganizationMembers(org);
   const users = await BetaGouv.usersInfos();
