@@ -65,8 +65,8 @@ module.exports.getExpiredUsersForXDays = (users, nbDays) => {
   const date = new Date();
   date.setDate(date.getDate() - nbDays);
   const formatedDate = this.formatDateYearMonthDay(date);
-  const oneDayExpiredUsers = users.filter((x) => x.end === formatedDate);
-  return oneDayExpiredUsers;
+  const xDayExpiredUsers = users.filter((x) => x.end === formatedDate);
+  return xDayExpiredUsers;
 };
 
 module.exports.isMobileFirefox = (req) => {
