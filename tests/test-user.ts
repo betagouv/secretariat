@@ -7,7 +7,7 @@ import config from '../src/config';
 import controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
-import { createEmailAddresses } from '../src/schedulers/emailCreationScheduler';
+import { createEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
 

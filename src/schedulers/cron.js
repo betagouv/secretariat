@@ -1,9 +1,20 @@
 const config = require('../config');
 require('./marrainageScheduler');
-require('./emailCreationScheduler');
+require('./emailScheduler');
 require('./newsletterScheduler');
-require('./mattermostScheduler.js');
+require('./mattermostScheduler');
 const { CronJob } = require('cron');
+
+if (config.featureReinitPasswordEmail) {
+  const { reinitPasswordEmail } = require('../schedulers/emailScheduler');
+  const reinitPasswordEmailJob = new CronJob(
+    '0 0 14 * * *',
+    reinitPasswordEmail(),
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
 
 if (config.featureAddGithubUserToOrganization) {
   const { addGithubUserToOrganization } = require('./githubScheduler');

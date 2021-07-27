@@ -1,12 +1,14 @@
 require('dotenv').config();
 const _ = require('lodash/array');
 const { CronJob } = require('cron');
+const crypto = require('crypto');
 const config = require('../config');
 const knex = require('../db');
 const BetaGouv = require('../betagouv');
 const utils = require('../controllers/utils');
 const { createEmail } = require('../controllers/usersController');
 const { createRequestForUser } = require('../controllers/marrainageController');
+const betagouv = require('../betagouv');
 
 const createEmailAndMarrainage = async (user, creator) => {
   await createEmail(user.id, creator, user.toEmail);
@@ -63,6 +65,23 @@ module.exports.createEmailAddresses = async function createEmailAddresses() {
   // create email and marrainage
   return Promise.all(
     unregisteredUsers.map((user) => createEmailAndMarrainage(user, 'Secretariat Cron')),
+  );
+};
+
+module.exports.reinitPasswordEmail = async () => {
+  const users = await BetaGouv.usersInfos();
+  const expiredUsers = utils.getExpiredUsersForXDays(users, 1);
+
+  return Promise.all(
+    expiredUsers.map(async (user) => {
+      const newPassword = crypto.randomBytes(16).toString('base64').slice(0, -2);
+      try {
+        await BetaGouv.changePassword(user.id, newPassword);
+        console.log(`Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`);
+      } catch (err) {
+        console.log(`Le mode de passe de ${user.fullname} n'a pas pu être modifié: ${err}`);
+      }
+    }),
   );
 };
 

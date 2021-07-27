@@ -61,6 +61,14 @@ module.exports.checkUserIsExpired = function (user, daysOfExpiration = 0) {
     && new Date(user.end).getTime() + daysOfExpiration * 24 * 3600 < new Date().getTime();
 };
 
+module.exports.getExpiredUsersForXDays = (users, nbDays) => {
+  const date = new Date();
+  date.setDate(date.getDate() - nbDays);
+  const formatedDate = this.formatDateYearMonthDay(date);
+  const xDayExpiredUsers = users.filter((x) => x.end === formatedDate);
+  return xDayExpiredUsers;
+};
+
 module.exports.isMobileFirefox = (req) => {
   const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
   return userAgent && /Android.+Firefox\//.test(userAgent);
@@ -89,6 +97,14 @@ module.exports.isValidNumber = (formValidationErrors, field, number) => {
   }
   formValidationErrors.push(`${field} : le numéro n'est pas valide`);
   return null;
+};
+
+module.exports.formatDateYearMonthDay = (date) => {
+  let day = date.getDate().toString();
+  day = day.length === 1 ? `0${day}` : day;
+  let month = (date.getMonth() + 1).toString();
+  month = month.length === 1 ? `0${month}` : month;
+  return `${date.getFullYear()}-${month}-${day}`;
 };
 
 module.exports.formatDateToReadableFormat = (date) => {
