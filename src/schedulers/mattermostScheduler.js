@@ -1,6 +1,6 @@
 const { CronJob } = require('cron');
 const ejs = require('ejs');
-const generator = require('generate-password');
+const crypto = require('crypto');
 const mattermost = require('../lib/mattermost');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
@@ -30,14 +30,10 @@ module.exports.reactivateUsers = async () => {
   const inactiveMattermostUsers = await mattermost.getInactiveMattermostUsers();
 
   const users = await BetaGouv.usersInfos();
-  const currentUsers = users.filter((x) => {
-    return !utils.checkUserIsExpired(x);
-  });
+  const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
 
   const currentUsersEmails = currentUsers.map((user) => `${user.id}@${config.domain}`);
-  const mattermostUsersToReactivate = inactiveMattermostUsers.filter(({ email }) => {
-    return currentUsersEmails.find((userMail) => userMail === email);
-  });
+  const mattermostUsersToReactivate = inactiveMattermostUsers.filter(({ email }) => currentUsersEmails.find((userMail) => userMail === email));
 
   mattermostUsersToReactivate.forEach(async (member) => {
     const activedUser = await mattermost.activeUsers(member.id);
@@ -47,7 +43,7 @@ module.exports.reactivateUsers = async () => {
 
 const reactivateUsersJob = () => {
   if (config.featureReactiveMattermostUsers) {
-    console.log(`🚀 The job reactiveMattermostUsers is started`);
+    console.log('🚀 The job reactiveMattermostUsers is started');
     new CronJob(
       '0 0 10 * * 1-5', // monday through friday at 10:00:00
       this.reactivateUsers,
@@ -56,8 +52,8 @@ const reactivateUsersJob = () => {
       'Europe/Paris',
     );
   } else {
-    console.log(`❌ The job reactiveMattermostUsers is OFF`);
-  };
+    console.log('❌ The job reactiveMattermostUsers is OFF');
+  }
 };
 
 reactivateUsersJob();
@@ -71,18 +67,13 @@ module.exports.createUsersByEmail = async () => {
   });
   const results = await Promise.all(activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
     const email = utils.buildBetaEmail(user.id);
-
+    const password = crypto.randomBytes(20).toString('base64')
+      .slice(0, -2);
     await mattermost.createUser({
       email,
       username: user.id,
-      // mattermost spec : password must contain at least 10 character,
-      // one lowercase, one upper, one number and a special character (amongst "~!@#$%^&*()").
-      password: generator.generate({
-        length: 10,
-        uppercase: true,
-        numbers: true,
-        symbols: true,
-      }),
+      // mattermost spec : password must contain at least 20 characters
+      password,
     });
 
     const html = await ejs.renderFile('./views/emails/mattermost.ejs', {

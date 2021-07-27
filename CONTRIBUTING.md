@@ -14,6 +14,10 @@
 - Privilégier la réutilisation des fonctionnalités (une même fonction pourrait être utilisée par une interaction utilisateur ou par un job et cela pourrait changer au cours du temps)
 - KISS : Keep It Simple Stupid
 - L'application suit les [12 factor](https://12factor.net/)
+- Essayer de réduire les dépendances
+    - Evaluer la maintenance et la notoriété de chaques dépendances que vous ajoutez
+    - Si le code est simple, privilégiez de l'écrire dans l'app que d'utiliser une dépendance
+    - Supprimez les dépendances que vous n'utilisez plus
 
 ### Javascript/Typescript
 - Vous pouvez écrire le nouveau code en Typescript
@@ -35,7 +39,7 @@
 ### Configuration
 - La configuration de l'app se fait uniquement par variables d'environnements dans `src/config.js`
 - Essayez de rendre la configuration optionnelle
-    - Mettez une configuration par défaut qui marche pour la prod
+    - Mettez une configuration par défaut qui marche pour la production
     - On ne pas de configuration par défaut pour du développement
     - Faites en sorte qu'une configuration essentielle manquante fasse soit : un non lancement de l'application ou mieux désactive les fonctionnalités concernées
 
