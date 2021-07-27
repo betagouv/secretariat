@@ -53,17 +53,20 @@ if (config.featureCreateUserOnMattermost) {
   console.log('Cron job to create user on mattermost by email off');
 }
 
-const { onUserContractEnding } = require('./userContractEndingScheduler');
-// const { CronJob } = require('cron');
-// const { sendContractEndingMessageToUsers } = require('./userContractEndingScheduler');
+if (config.featureReactiveMattermostUsers) {
+  const { reactivateUsers } = require('./mattermostScheduler');
+  console.log('🚀 The job reactiveMattermostUsers is started');
+  new CronJob(
+    '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    reactivateUsers,
+    null,
+    true,
+    'Europe/Paris',
+  );
+} else {
+  console.log('❌ The job reactiveMattermostUsers is OFF');
+}
 
-// const onUserContractEndIn15days = new CronJob(
-//   '0 */8 * * * *',
-//   () => sendContractEndingMessageToUsers('mail15days'),
-//   null,
-//   true,
-//   'Europe/Paris',
-// );
 if (config.featureOnUserContractEnd) {
   console.log('Create cron job for sending contract ending message to users');
   const { sendContractEndingMessageToUsers } = require('./userContractEndingScheduler');

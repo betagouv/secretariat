@@ -41,23 +41,6 @@ module.exports.reactivateUsers = async () => {
   return mattermostUsersToReactivate;
 };
 
-const reactivateUsersJob = () => {
-  if (config.featureReactiveMattermostUsers) {
-    console.log('🚀 The job reactiveMattermostUsers is started');
-    new CronJob(
-      '0 0 10 * * 1-5', // monday through friday at 10:00:00
-      this.reactivateUsers,
-      null,
-      true,
-      'Europe/Paris',
-    );
-  } else {
-    console.log('❌ The job reactiveMattermostUsers is OFF');
-  }
-};
-
-reactivateUsersJob();
-
 module.exports.createUsersByEmail = async () => {
   let activeGithubUsersUnregisteredOnMattermost = await getActiveGithubUsersUnregisteredOnMattermost();
   activeGithubUsersUnregisteredOnMattermost = activeGithubUsersUnregisteredOnMattermost.filter((user) => {
