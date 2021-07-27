@@ -286,7 +286,7 @@ module.exports.createSecondaryEmailForUser = async function (req, res) {
       await knex('users')
         .insert({
           secondary_email: secondaryEmail,
-          username
+          username,
         });
       req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
       res.redirect(`/community/${username}`);

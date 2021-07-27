@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { CronJob } = require('cron');
 const knex = require('../db');
+const BetaGouv = require('../betagouv');
+const utils = require('../controllers/utils');
 const { reloadMarrainage } = require('../controllers/marrainageController');
 
 const reloadMarrainages = async function () {
@@ -25,6 +27,19 @@ const reloadMarrainages = async function () {
     .then(() => console.log('Cron de marranaige terminé'))
     .catch(console.error);
 };
+
+module.exports.removeMarrainageForExpiredUsers = async () => {
+  const users = await BetaGouv.usersInfos();
+  const expiredUsers = utils.getExpiredUsersForXDays(users, 1);
+
+  expiredUsers.forEach(async (user) => {
+    await knex('marrainage')
+    .where({ last_onboarder: user.id})
+    .update({ completed: false})
+    console.log(`Le marrainage de ${user.fullname} a pris fin suite à son départ.`)
+  });
+  return expiredUsers;
+}
 
 module.exports.reloadMarrainageJob = new CronJob(
   '0 0 10 * * 1-5', // monday through friday at 10:00:00

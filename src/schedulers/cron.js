@@ -56,7 +56,7 @@ if (config.featureCreateUserOnMattermost) {
 if (config.featureReactiveMattermostUsers) {
   const { reactivateUsers } = require('./mattermostScheduler');
   console.log('🚀 The job reactiveMattermostUsers is started');
-  new CronJob(
+  const reactiveUsers = new CronJob(
     '0 0 10 * * 1-5', // monday through friday at 10:00:00
     reactivateUsers,
     null,
@@ -88,4 +88,18 @@ if (config.featureOnUserContractEnd) {
   );
 } else {
   console.log('Send contract ending message job is off');
+}
+
+if (config.featureRemoveMarrainageForExpiredUsers) {
+  console.log('Create cron job for removing marrainage for expired users');
+  const { removeMarrainageForExpiredUsers } = require('./marrainageScheduler');
+  const removeMarrainage = new CronJob(
+    '0 0 14 * * *',
+    removeMarrainageForExpiredUsers,
+    null,
+    true,
+    'Europe/Paris',
+  );
+} else {
+  console.log('❌ The job removeMarrainageForExpiredUsers is OFF');
 }
