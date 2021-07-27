@@ -1,20 +1,12 @@
-⏲ Plus que 2 semaines pour faire le point sur ta mission
-Bonjour <%= user.username %> !
+Bonjour <%= user.fullname %> !  
 
-D'après [nos informations](https://beta.gouv.fr/communaute/), c'est le <%= user.end %> que ta mission à beta s'achève.
+Ton départ de la communauté beta.gouv.fr est prévu pour dans 15 jours (le <%= user.end %>). Si cette date a changé, mets-là à jour pour rester membre de la communauté.
 
-Si tu nous quittes bien à cette date (snif), assure-toi de prendre connaissance dès maintenant de [ce qu'il te faudra faire](https://doc.incubateur.net/communaute/au-revoir) en partant.
+Pour mettre à jour ta date de fin de mission, tu peux : 
+- <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md">modifier ta fiche sur Github</a>
+- <a href="https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>"></a>utiliser l'interface en ligne
+- <a href="https://pad.incubateur.net/xAj0p9RKTPW00RUGJHtbyA">suivre la documentation</a>
 
-Si ta mission se prolonge et que tes nouvelles dates sont connues, [mets-les à jour en deux minutes](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md) tout de suite !
+Si tu as besoin d'aide, n'hésite pas à répondre à ce mail ou à poser tes questions sur Mattermost dans #incubateur-secretaria
 
-Tu n'es pas à l'aise avec Github ? Tu peux le faire [directement à travers notre interface en ligne](https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>) en suivant [ce petit guide](https://pad.incubateur.net/xAj0p9RKTPW00RUGJHtbyA).
-
-Si quelque chose n'est pas clair, réponds à cet email ou ouvre une conversation [dans #incubateur-secretaria](https://startups-detat.slack.com/archives/incubateur-secretaria) sur Slack.
-
-Sans changement de date, un dernier rappel sera automatiquement envoyé la veille de ton départ.
-
-Bonne journée,
-Le secrétariat
-
-PS : ce message est envoyé par robot [non-AGI](https://en.wikipedia.org/wiki/Artificial_general_intelligence). En cas de problème, contacter un humain !
- 
+Belle journée

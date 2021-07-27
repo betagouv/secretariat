@@ -1,18 +1,12 @@
-⏰ Dernier jour pour faire le point sur ta mission
-Bonjour <%= user.fullname %> !
+Bonjour <%= user.fullname %> !  
 
-D'après [nos informations](https://beta.gouv.fr/communaute/), c'est demain que ta mission à beta s'achève. Sans action de ta part, on va donc considérer que c'est ta date de départ.
+Ton départ de la communauté beta.gouv.fr est prévu pour dans 2 jours (le <%= user.end %>). Si cette date a changé, mets-là à jour pour rester membre de la communauté.
 
-Peut-être que tu as oublié, ou remis à la dernière minute, ou que tu n'avais pas encore tous les éléments concernant la suite de ta mission : si c'est le cas, on s'en réjouit et tu peux dès maintenant [mettre à jour ta nouvelle date de fin (ou de renouvellement)](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md).
-C'est possible que ces modifications ne soient pas publiées à temps, et que tu reçoives des messages de désabonnement à la liste de diffusion par exemple; ce n'est pas très grave, dès qu'elles seront publiées on te réabonnera à nouveau, etc.
+Pour mettre à jour ta date de fin de mission, tu peux : 
+- <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md">modifier ta fiche sur Github</a>
+- <a href="https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>"></a>utiliser l'interface en ligne
+- <a href="https://pad.incubateur.net/xAj0p9RKTPW00RUGJHtbyA">suivre la documentation</a>
 
-Tu n'es pas à l'aise avec Github ? Tu peux le faire [directement à travers notre interface en ligne](https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>) en suivant [ce petit guide](https://pad.incubateur.net/xAj0p9RKTPW00RUGJHtbyA).
+Si tu as besoin d'aide, n'hésite pas à répondre à ce mail ou à poser tes questions sur Mattermost dans #incubateur-secretaria
 
-Si c'est bien un "au revoir", c'est le moment de t'assurer que tu as bien coché tous les éléments de la [checklist de départ](https://doc.incubateur.net/communaute/au-revoir).
-
-On espère que tu as passé un moment positif avec nous !
-
-Bonne journée et à une prochaine,
-Le secrétariat
-
-PS : ce message est envoyé par robot [non-AGI](https://en.wikipedia.org/wiki/Artificial_general_intelligence). En cas de problème, contacter un humain !
+Belle journée
