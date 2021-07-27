@@ -123,7 +123,7 @@ describe('Newsletter', () => {
   describe('cronjob newsletter', () => {
     let slack;
     beforeEach((done) => {
-      slack = sinon.spy(BetaGouv, 'sendInfoToSlack');
+      slack = sinon.spy(BetaGouv, 'sendInfoToChat');
       done();
     });
 
