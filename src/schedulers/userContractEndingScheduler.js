@@ -52,7 +52,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
     await BetaGouv.sendInfoToChat(html, 'secretariat', user.mattermostUsername);
     console.log(`Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`)
   } catch (err) {
-    throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
+    throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
   try {
     const email = utils.buildBetaEmail(user.id)
