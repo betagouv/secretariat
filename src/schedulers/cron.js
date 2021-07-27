@@ -72,7 +72,7 @@ if (config.featureOnUserContractEnd) {
   const { sendContractEndingMessageToUsers } = require('./userContractEndingScheduler');
 
   const onUserContractEndIn15days = new CronJob(
-    '0 */8 * * * *',
+    '0 0 10 * * *',
     () => sendContractEndingMessageToUsers('mail15days'),
     null,
     true,
@@ -80,7 +80,7 @@ if (config.featureOnUserContractEnd) {
   );
 
   const onUserContractEndIn2days = new CronJob(
-    '0 */8 * * * *',
+    '0 0 10 * * *',
     () => sendContractEndingMessageToUsers('mail2days'),
     null,
     true,
