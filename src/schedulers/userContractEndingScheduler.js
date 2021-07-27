@@ -59,7 +59,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
     await utils.sendMail(email, `Départ dans ${messageConfig.days} jours 🙂`, html);
     console.log(`Send ending contract (${messageConfig.days} days) email to ${email}`)
   } catch (err) {
-    throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
+    throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
 };
 
