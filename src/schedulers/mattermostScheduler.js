@@ -34,7 +34,7 @@ module.exports.moveUsersToAlumniTeam = async (optionalUsers) => {
   }
   const results = await Promise.all(users.map(async (user) => {
     try {
-      const mattermostUser = await mattermost.searchUsers(users, {
+      const mattermostUser = await mattermost.searchUsers({
         term: user.id,
         team_id: config.mattermostTeamId,
       });
@@ -47,7 +47,7 @@ module.exports.moveUsersToAlumniTeam = async (optionalUsers) => {
       console.log(`User ${user.id} with mattermost username ${mattermostUser.username} has been moved to alumni`);
       return res;
     } catch (err) {
-      throw new Error(`Error while moving user ${user.id} to alumni team : ${err}`);
+      throw new Error(`Error while moving user ${user.id} to alumni team : ${err}`, err);
     }
   }));
   return results;
