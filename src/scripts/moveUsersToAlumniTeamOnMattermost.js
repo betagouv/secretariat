@@ -1,4 +1,4 @@
-const { moveUsersToAlumniTeam } = require('./mattermostScheduler');
+const { moveUsersToAlumniTeam } = require('../schedulers/mattermostScheduler');
 
 const args = process.argv.slice(2);
 if (args[1]) {
