@@ -79,8 +79,8 @@ module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
 
 module.exports.sendJ1Email = async (optionalExpiredUsers) => {
   let expiredUsers = optionalExpiredUsers;
-  const users = await BetaGouv.usersInfos();
   if (!expiredUsers) {
+    const users = await BetaGouv.usersInfos();
     expiredUsers = utils.getExpiredUsersForXDays(users, 1);
   }
   return Promise.all(
@@ -93,10 +93,10 @@ module.exports.sendJ1Email = async (optionalExpiredUsers) => {
             user,
           });
           await utils.sendMail(email, 'A bientôt 🙂', messageContent);
+          console.log(`Envoie du message fin de contrat +1 à ${email}`);
         } else {
           console.error(`Le compte ${user.id} n'a pas d'adresse secondaire`);
         }
-        console.log(`Envoie du message fin de contrat +1 à ${email}`);
       } catch (err) {
         throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
       }
