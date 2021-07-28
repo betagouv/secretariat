@@ -42,14 +42,15 @@ module.exports.moveUsersToAlumniTeam = async (optionalUsers) => {
         console.error(`Cannot find mattermost user for ${user.id} : ${mattermostUser.length} found`);
         return;
       }
-      await mattermost.addUserToTeam(mattermostUser.id, config.mattermostAlumniTeamId);
       await mattermost.removeUserFromTeam(mattermostUser.id, config.mattermostTeamId);
-
+      const res = await mattermost.addUserToTeam(mattermostUser.id, config.mattermostAlumniTeamId);
       console.log(`User ${user.id} with mattermost username ${mattermostUser.username} has been moved to alumni`);
-    } catch (e) {
-      throw new Error(`Error while moving user ${user.id} to alumni team`);
+      return res;
+    } catch (err) {
+      throw new Error(`Error while moving user ${user.id} to alumni team : ${err}`);
     }
   }));
+  return results;
 };
 
 module.exports.reactivateUsers = async () => {

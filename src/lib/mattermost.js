@@ -35,12 +35,14 @@ module.exports.searchUsers = async (params = {}) => {
     params,
     ...getMattermostConfig(),
   }).then((response) => response.data);
+  return mattermostUsers;
 };
 
 module.exports.getUserByEmail = async (email) => {
   const mattermostUsers = await axios.get(`https://mattermost.incubateur.net/api/v4/users/email/${email}`, {
     ...getMattermostConfig(),
   }).then((response) => response.data);
+  return mattermostUsers;
 };
 
 module.exports.addUserToTeam = async (userId, teamId) => {
