@@ -57,6 +57,7 @@ module.exports.addUserToTeam = async (userId, teamId) => {
       getMattermostConfig(),
     ).then((response) => response.data);
   } catch (err) {
+    console.error(err);
     throw new Error(`Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`);
   }
   console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
@@ -72,6 +73,7 @@ module.exports.removeUserFromTeam = async (userId, teamId) => {
       getMattermostConfig(),
     ).then((response) => response.data);
   } catch (err) {
+    console.error(err);
     throw new Error(`Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`);
   }
   console.log(`Suppression de utilisateur ${userId} de la team ${teamId}`);
