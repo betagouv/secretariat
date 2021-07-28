@@ -77,7 +77,7 @@ module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
   await Promise.all(registeredUsersWithEndingContractInXDays.map(async (user) => sendMessageOnChatAndEmail(user, messageConfig)));
 };
 
-module.exports.sendJ1EmailJob = async (optionalExpiredUsers) => {
+module.exports.sendJ1Email = async (optionalExpiredUsers) => {
   let expiredUsers = optionalExpiredUsers;
   const users = await BetaGouv.usersInfos();
   if (!expiredUsers) {
