@@ -31,10 +31,10 @@ module.exports.getUserWithParams = async (params, i = 0) => {
 };
 
 module.exports.searchUsers = async (params = {}) => {
-  const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users/search', {
+  const mattermostUsers = await axios.post('https://mattermost.incubateur.net/api/v4/users/search',
     params,
-    ...getMattermostConfig(),
-  }).then((response) => response.data);
+    getMattermostConfig(),
+  ).then((response) => response.data);
   return mattermostUsers;
 };
 

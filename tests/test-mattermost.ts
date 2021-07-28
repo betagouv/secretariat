@@ -164,7 +164,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
         email: `julien.dauphant@${config.domain}`,
     }]);
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users\/search.*/)
+    .post(/^.*api\/v4\/users\/search.*/)
     .reply(200, [{
       id: 265695,
       username: 'julien.dauphant',
