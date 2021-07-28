@@ -69,8 +69,9 @@ module.exports.removeUserFromTeam = async (userId, teamId) => {
   try {
     res = await axios.delete(
       `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members/${userId}`,
-      {},
-      getMattermostConfig(),
+      {
+        ...getMattermostConfig(),
+      },
     ).then((response) => response.data);
   } catch (err) {
     console.error(err);
