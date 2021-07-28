@@ -7,6 +7,7 @@ import utils from './utils';
 import * as controllerUtils from '../src/controllers/utils';
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
+const fakeDateMore1day = '2020-01-02';
 const fakeDateMore15days = '2020-01-16';
 
 const betaGouvUsers = [
@@ -74,7 +75,7 @@ const userContractEndingScheduler = rewire(
   '../src/schedulers/userContractEndingScheduler.ts'
 );
 
-describe('invite users to mattermost', () => {
+describe('send message on contract end to user', () => {
   let chat;
   let clock;
   let sendEmailStub;
@@ -119,4 +120,36 @@ describe('invite users to mattermost', () => {
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
+
+  it('send j+1 mail to users', async () => {
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, [...mattermostUsers]);
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, []);
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateMore1day,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }])
+    .persist();
+    const { sendJ1Email } = userContractEndingScheduler;
+    const result = await sendJ1Email();
+    sendEmailStub.calledOnce.should.be.true;
+    console.log(sendEmailStub.firstCall.args);
+  });
 });
+
+
