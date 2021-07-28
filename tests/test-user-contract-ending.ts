@@ -111,9 +111,8 @@ describe('send message on contract end to user', () => {
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-      .get((uri) => uri.includes('authors.json'))
-      .reply(200, betaGouvUsers)
-      .persist();
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, betaGouvUsers)
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     await sendContractEndingMessageToUsers('mail15days');
     console.log(chat);
@@ -144,7 +143,6 @@ describe('send message on contract end to user', () => {
         }
       ]
     }])
-    .persist();
     const { sendJ1Email } = userContractEndingScheduler;
     const result = await sendJ1Email();
     sendEmailStub.calledOnce.should.be.true;
