@@ -30,6 +30,56 @@ module.exports.getUserWithParams = async (params, i = 0) => {
   return [...mattermostUsers, ...nextPageMattermostUsers];
 };
 
+module.exports.searchUsers = async (params = {}) => {
+  const mattermostUsers = await axios.get('https://mattermost.incubateur.net/api/v4/users/search', {
+    params,
+    ...getMattermostConfig(),
+  }).then((response) => response.data);
+  return mattermostUsers;
+};
+
+module.exports.getUserByEmail = async (email) => {
+  const mattermostUsers = await axios.get(`https://mattermost.incubateur.net/api/v4/users/email/${email}`, {
+    ...getMattermostConfig(),
+  }).then((response) => response.data);
+  return mattermostUsers;
+};
+
+module.exports.addUserToTeam = async (userId, teamId) => {
+  let res;
+  try {
+    res = await axios.post(
+      `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members`,
+      {
+        team_id: teamId,
+        user_id: userId,
+      },
+      getMattermostConfig(),
+    ).then((response) => response.data);
+  } catch (err) {
+    console.error(`Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`);
+    return null;
+  }
+  console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
+  return res;
+};
+
+module.exports.removeUserFromTeam = async (userId, teamId) => {
+  let res;
+  try {
+    res = await axios.delete(
+      `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members/${userId}`,
+      {},
+      getMattermostConfig(),
+    ).then((response) => response.data);
+  } catch (err) {
+    console.error(`Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`);
+    return null;
+  }
+  console.log(`Suppression de utilisateur ${userId} de la team ${teamId}`);
+  return res;
+};
+
 module.exports.inviteUsersToTeamByEmail = async (userEmails, teamId) => {
   let res;
   try {

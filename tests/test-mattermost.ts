@@ -143,3 +143,69 @@ describe('Reactivate current users on mattermost', () => {
     result.length.should.be.equal(1); // il n'y a qu'un utilisateur inactif simulé (julien.dauphant)
   });
 });
+
+describe('Move expired user to team Alumni on mattermost', () => {
+  let clock;
+  beforeEach(async () => {
+    const date = new Date('2021-01-20T07:59:59+01:00');
+    clock = sinon.useFakeTimers(date);
+    utils.cleanMocks();
+  });
+
+  afterEach(async () => {
+    clock.restore();
+  });
+
+  it('Move expired user to team Alumni on mattermost', async () => {
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users.*/)
+    .reply(200, [{
+        id: 'julien.dauphant',
+        email: `julien.dauphant@${config.domain}`,
+    }]);
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/users\/search.*/)
+    .reply(200, [{
+      id: 265695,
+      username: 'julien.dauphant',
+      email: 'julien.dauphant'
+    }]);
+
+    const addToTeamMock = nock(/.*mattermost.incubateur.net/)
+    .post(/^.*api\/v4\/teams\/testalumniteam\/members/)
+    .reply(200, [{
+      "team_id": "testalumniteam",
+      "user_id": 265695,
+      "roles": "string",
+      "delete_at": 0,
+      "scheme_user": true,
+      "scheme_admin": true,
+      "explicit_roles": "string"
+    }]).persist();
+
+    const removeFromTeamMock = nock(/.*mattermost.incubateur.net/)
+    .delete(/^.*api\/v4\/teams\/testteam\/members/)
+    .reply(200, [{ status: 'ok' }]).persist();
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": "2021-01-17",
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }])
+    .persist();
+
+    const { moveUsersToAlumniTeam } = mattermostScheduler;
+    const result = await moveUsersToAlumniTeam();
+    result.length.should.be.equal(1);
+  });
+});

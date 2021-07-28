@@ -89,3 +89,15 @@ if (config.featureOnUserContractEnd) {
 } else {
   console.log('Send contract ending message job is off');
 }
+
+if (config.featureAddExpiredUsersToAlumniOnMattermost) {
+  console.log('Cron job to add user to alumni on mattermost');
+  const { moveUsersToAlumniTeam } = require('./mattermostScheduler');
+  const createMattermostUsers = new CronJob(
+    '0 0 10 * * *',
+    moveUsersToAlumniTeam,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
