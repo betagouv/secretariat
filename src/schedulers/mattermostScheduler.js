@@ -24,6 +24,35 @@ module.exports.inviteUsersToTeamByEmail = async () => {
   return results;
 };
 
+module.exports.moveUsersToAlumniTeam = async (optionalUsers) => {
+  let users = optionalUsers;
+  console.log('Start function move users to team alumni');
+  let registeredUsersWithEndingContractInXDays;
+  if (!users) {
+    users = await BetaGouv.usersInfos();
+    users = utils.getExpiredUsersForXDays(users, 3);
+  }
+  const results = await Promise.all(users.map(async (user) => {
+    try {
+      const mattermostUser = await mattermost.searchUsers({
+        term: user.id,
+        team_id: config.mattermostTeamId,
+      });
+      if (!mattermostUser.length || mattermostUser.length > 1) {
+        console.error(`Cannot find mattermost user for ${user.id} : ${mattermostUser.length} found`);
+        return;
+      }
+      await mattermost.removeUserFromTeam(mattermostUser[0].id, config.mattermostTeamId);
+      const res = await mattermost.addUserToTeam(mattermostUser[0].id, config.mattermostAlumniTeamId);
+      console.log(`User ${user.id} with mattermost username ${mattermostUser.username} has been moved to alumni`);
+      return res;
+    } catch (err) {
+      throw new Error(`Error while moving user ${user.id} to alumni team : ${err}`, err);
+    }
+  }));
+  return results;
+};
+
 module.exports.reactivateUsers = async () => {
   const params = {};
   const isActive = false;

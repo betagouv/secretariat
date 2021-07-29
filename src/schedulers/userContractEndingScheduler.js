@@ -3,6 +3,7 @@ const mattermost = require('../lib/mattermost');
 const config = require('../config');
 const BetaGouv = require('../betagouv');
 const utils = require('../controllers/utils');
+const { renderHtmlFromMd } = require('../lib/mdtohtml');
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (days) => {
@@ -45,19 +46,19 @@ const CONFIG_MESSAGE = {
 };
 
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
-  const html = await ejs.renderFile(`./views/emails/${messageConfig.emailFile}`, {
+  const messageContent = await ejs.renderFile(`./views/emails/${messageConfig.emailFile}`, {
     user,
   });
   try {
-    await BetaGouv.sendInfoToChat(html, 'secretariat', user.mattermostUsername);
-    console.log(`Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`)
+    await BetaGouv.sendInfoToChat(messageContent, 'secretariat', user.mattermostUsername);
+    console.log(`Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
   try {
-    const email = utils.buildBetaEmail(user.id)
-    await utils.sendMail(email, `Départ dans ${messageConfig.days} jours 🙂`, html);
-    console.log(`Send ending contract (${messageConfig.days} days) email to ${email}`)
+    const email = utils.buildBetaEmail(user.id);
+    await utils.sendMail(email, `Départ dans ${messageConfig.days} jours 🙂`, renderHtmlFromMd(messageContent));
+    console.log(`Send ending contract (${messageConfig.days} days) email to ${email}`);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }

@@ -49,6 +49,7 @@ module.exports = {
   sentryDNS: process.env.SENTRY_DNS || false,
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
+  mattermostAlumniTeamId: process.env.MATTERMOST_ALUMNI_TEAM_ID || 'testalumniteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL: process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
@@ -60,4 +61,5 @@ module.exports = {
   featureRemoveGithubUserFromOrganization: process.env.FEATURE_REMOVE_GITHUB_USER_FROM_ORGANIZATION,
   featureOnUserContractEnd: process.env.FEATURE_ON_USER_CONTRACT_END,
   featureRemoveMarrainageForExpiredUsers: process.env.FEATURE_REMOVE_MARRAINAGE_FOR_EXPIRED_USERS || false,
+  featureAddExpiredUsersToAlumniOnMattermost: process.env.FEATURE_ADD_EXPIRED_USERS_TO_ALUMNI_ON_MATTERMOST,
 };

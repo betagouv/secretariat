@@ -72,7 +72,7 @@ if (config.featureOnUserContractEnd) {
   const { sendContractEndingMessageToUsers } = require('./userContractEndingScheduler');
 
   const onUserContractEndIn15days = new CronJob(
-    '0 */8 * * * *',
+    '0 0 10 * * *',
     () => sendContractEndingMessageToUsers('mail15days'),
     null,
     true,
@@ -80,7 +80,7 @@ if (config.featureOnUserContractEnd) {
   );
 
   const onUserContractEndIn2days = new CronJob(
-    '0 */8 * * * *',
+    '0 0 10 * * *',
     () => sendContractEndingMessageToUsers('mail2days'),
     null,
     true,
@@ -90,16 +90,25 @@ if (config.featureOnUserContractEnd) {
   console.log('Send contract ending message job is off');
 }
 
+
 if (config.featureRemoveMarrainageForExpiredUsers) {
   console.log('Create cron job for removing marrainage for expired users');
   const { removeMarrainageForExpiredUsers } = require('./marrainageScheduler');
   const removeMarrainage = new CronJob(
     '0 0 14 * * *',
     removeMarrainageForExpiredUsers,
+} else {
+  console.log('❌ The job removeMarrainageForExpiredUsers is OFF');
+}
+
+if (config.featureAddExpiredUsersToAlumniOnMattermost) {
+  console.log('Cron job to add user to alumni on mattermost');
+  const { moveUsersToAlumniTeam } = require('./mattermostScheduler');
+  const createMattermostUsers = new CronJob(
+    '0 0 10 * * *',
+    moveUsersToAlumniTeam,
     null,
     true,
     'Europe/Paris',
   );
-} else {
-  console.log('❌ The job removeMarrainageForExpiredUsers is OFF');
 }
