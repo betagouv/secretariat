@@ -90,7 +90,6 @@ if (config.featureOnUserContractEnd) {
   console.log('Send contract ending message job is off');
 }
 
-
 if (config.featureRemoveMarrainageForExpiredUsers) {
   console.log('Create cron job for removing marrainage for expired users');
   const { removeMarrainageForExpiredUsers } = require('./marrainageScheduler');

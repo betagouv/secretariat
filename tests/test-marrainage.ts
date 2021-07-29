@@ -361,7 +361,7 @@ describe('Marrainage', () => {
       },
     ];
 
-    const url = process.env.USERS_API
+    const url = config.usersAPI;
     nock(url)
       .get((uri) => uri.includes('authors.json'))
       .reply(200, betaUsers)
