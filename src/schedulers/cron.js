@@ -97,6 +97,7 @@ if (config.featureRemoveMarrainageForExpiredUsers) {
   const removeMarrainage = new CronJob(
     '0 0 14 * * *',
     removeMarrainageForExpiredUsers,
+  );
 } else {
   console.log('❌ The job removeMarrainageForExpiredUsers is OFF');
 }
