@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import jwt from 'jsonwebtoken';
+import nock from 'nock';
 import sinon from 'sinon';
 import config from '../src/config';
 import controllerUtils from '../src/controllers/utils';
@@ -338,6 +339,57 @@ describe('Marrainage', () => {
           .then(done)
           .catch(done);
       });
+    });
+  });
+
+  describe('marrainage scheduler', () => {
+    const betaUsers =  [
+      {
+        id: 'membre.actif',
+        fullname: 'membre actif',
+        role: 'Chargé de déploiement',
+        start: '2020-09-01',
+        end: '2090-01-30',
+        employer: 'admin/'
+      }, {
+        id: 'membre.expire',
+        fullname: 'membre expire',
+        role: 'Intrapreneur',
+        start: '2018-01-01',
+        end: '2019-12-31',
+        employer: 'admin/'
+      },
+    ];
+
+    const url = process.env.USERS_API
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, betaUsers)
+      .persist();
+
+    it('should change completed to false', (done) => {
+      const user = {
+        username: 'membre.actif',
+        last_onboarder: 'membre.expire',
+        created_at: new Date(new Date().setDate(new Date().getDate() - 3)),
+        last_updated: new Date(new Date().setDate(new Date().getDate() - 3)),
+        completed: true,
+        count: 1,
+      };
+      knex('marrainage').insert([user]).then(async () => {
+
+        const { removeMarrainageForExpiredUsers } = require('../src/schedulers/marrainageScheduler');
+        const expiredUsers =  await removeMarrainageForExpiredUsers();
+
+        expiredUsers.length.should.equal(1);
+
+        knex('marrainage').select().where({ username: user.username })
+        .then((res) => {
+          res[0].completed.should.be.false;
+        })
+        .then(done)
+        .catch(done);
+      })
     });
   });
 

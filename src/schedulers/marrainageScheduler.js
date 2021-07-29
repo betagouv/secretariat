@@ -34,12 +34,12 @@ module.exports.removeMarrainageForExpiredUsers = async () => {
 
   expiredUsers.forEach(async (user) => {
     await knex('marrainage')
-    .where({ last_onboarder: user.id})
-    .update({ completed: false})
-    console.log(`Le marrainage de ${user.fullname} a pris fin suite à son départ.`)
+    .where({ last_onboarder: user.id })
+    .update({ completed: false });
+    console.log(`Le marrainage de ${user.fullname} a pris fin suite à son départ.`);
   });
   return expiredUsers;
-}
+};
 
 module.exports.reloadMarrainageJob = new CronJob(
   '0 0 10 * * 1-5', // monday through friday at 10:00:00
