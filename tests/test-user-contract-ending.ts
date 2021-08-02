@@ -1,13 +1,13 @@
-import rewire from 'rewire';
-import nock from 'nock';
-import sinon from 'sinon';
-import BetaGouv from '../src/betagouv';
-import config from '../src/config';
-import utils from './utils';
-import * as controllerUtils from '../src/controllers/utils';
+import nock from 'nock'
+import sinon from 'sinon'
+import BetaGouv from '../src/betagouv'
+import config from '../src/config'
+import utils from './utils'
+import controllerUtils from '../src/controllers/utils'
+import knex from '../src/db';
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
-const fakeDateMore1day = '2020-01-02';
+const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
 
 const betaGouvUsers = [
@@ -71,9 +71,7 @@ const mattermostUsers = [
   },
 ];
 
-const userContractEndingScheduler = rewire(
-  '../src/schedulers/userContractEndingScheduler.ts'
-);
+const userContractEndingScheduler = require('../src/schedulers/userContractEndingScheduler');
 
 describe('send message on contract end to user', () => {
   let chat;
@@ -92,6 +90,12 @@ describe('send message on contract end to user', () => {
       .returns(Promise.resolve(true));
     chat = sinon.spy(BetaGouv, 'sendInfoToChat');
     clock = sinon.useFakeTimers(new Date(fakeDate));
+    nock('https://mattermost.incubateur.net/^.*api\/v4\/users?per_page=200&page=0')
+    .get(/.*/)
+    .reply(200, [...mattermostUsers]);
+    nock('https://mattermost.incubateur.net/^.*api\/v4\/users?per_page=200&page=1')
+    .get(/.*/)
+    .reply(200, []);
   });
 
   afterEach(async () => {
@@ -101,14 +105,7 @@ describe('send message on contract end to user', () => {
     utils.cleanMocks();
   });
 
-  it('send message to users', async () => {
-    nock(/.*mattermost.incubateur.net/)
-      .get(/^.*api\/v4\/users.*/)
-      .reply(200, [...mattermostUsers]);
-    nock(/.*mattermost.incubateur.net/)
-      .get(/^.*api\/v4\/users.*/)
-      .reply(200, []);
-
+  it('should send message to users', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
     .get((uri) => uri.includes('authors.json'))
@@ -120,14 +117,7 @@ describe('send message on contract end to user', () => {
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
 
-  it('send j+1 mail to users', async () => {
-    nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [...mattermostUsers]);
-    nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, []);
-
+  it('should send j1 mail to users', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
     .get((uri) => uri.includes('authors.json'))
@@ -137,17 +127,22 @@ describe('send message on contract end to user', () => {
       "missions": [
         { 
           "start": "2016-11-03",
-          "end": fakeDateMore1day,
+          "end": fakeDateLess1day,
           "status": "independent",
           "employer": "octo"
         }
       ]
-    }])
+    }]).persist()
     const { sendJ1Email } = userContractEndingScheduler;
-    const result = await sendJ1Email();
-    sendEmailStub.calledOnce.should.be.true;
+    await sendJ1Email();
+    // sendEmail not call because secondary email does not exists for user
+    sendEmailStub.calledOnce.should.be.false;
+    await knex('users').insert({
+      secondary_email: 'uneadressesecondaire@gmail.com',
+      username: 'julien.dauphant'
+    })
+    await sendJ1Email();
     console.log(sendEmailStub.firstCall.args);
-  });
+    sendEmailStub.calledOnce.should.be.true;
+  });  
 });
-
-

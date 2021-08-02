@@ -89,7 +89,7 @@ module.exports.sendJ1Email = async (optionalExpiredUsers) => {
         const dbResponse = await knex('users').select('secondary_email').where({ username: user.id });
         if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
           const email = dbResponse[0].secondary_email;
-          const messageContent = await ejs.renderFile('./views/emails/mailExpired1day', {
+          const messageContent = await ejs.renderFile('../../views/emails/mailExpired1day.ejs', {
             user,
           });
           await utils.sendMail(email, 'A bientôt 🙂', messageContent);
