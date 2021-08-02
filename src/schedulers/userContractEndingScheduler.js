@@ -46,6 +46,10 @@ const CONFIG_MESSAGE = {
   },
 };
 
+const EMAIL_FILES = {
+  'j+1': 'mailExpired1day',
+};
+
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
   const messageContent = await ejs.renderFile(`./views/emails/${messageConfig.emailFile}`, {
     user,
@@ -77,11 +81,11 @@ module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
   await Promise.all(registeredUsersWithEndingContractInXDays.map(async (user) => sendMessageOnChatAndEmail(user, messageConfig)));
 };
 
-module.exports.sendJ1Email = async (optionalExpiredUsers) => {
+module.exports.sendJXInfoToSecondaryEmail = async (optionalExpiredUsers, nbDays) => {
   let expiredUsers = optionalExpiredUsers;
   if (!expiredUsers) {
     const users = await BetaGouv.usersInfos();
-    expiredUsers = utils.getExpiredUsersForXDays(users, 1);
+    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
   }
   return Promise.all(
     expiredUsers.map(async (user) => {
@@ -89,11 +93,11 @@ module.exports.sendJ1Email = async (optionalExpiredUsers) => {
         const dbResponse = await knex('users').select('secondary_email').where({ username: user.id });
         if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
           const email = dbResponse[0].secondary_email;
-          const messageContent = await ejs.renderFile('./views/emails/mailExpired1day.ejs', {
+          const messageContent = await ejs.renderFile(`./views/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`, {
             user,
           });
           await utils.sendMail(email, 'A bientôt 🙂', messageContent);
-          console.log(`Envoie du message fin de contrat +1 à ${email}`);
+          console.log(`Envoie du message fin de contrat +${nbDays} à ${email}`);
         } else {
           console.error(`Le compte ${user.id} n'a pas d'adresse secondaire`);
         }
@@ -103,3 +107,5 @@ module.exports.sendJ1Email = async (optionalExpiredUsers) => {
     }),
   );
 };
+
+module.exports.sendJ1Email = async (users) => module.exports.sendJXInfoToSecondaryEmail(users, 1);
