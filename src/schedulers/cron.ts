@@ -47,6 +47,17 @@ if (config.featureSendJ1Email) {
   );
 }
 
+if (config.featureSendJ30Email) {
+  const { sendJ30Email } = require('./userContractEndingScheduler');
+  const sendJ1EmailJob = new CronJob(
+    '0 8 * * * *',
+    sendJ30Email,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
+
 if (config.featureRemoveGithubUserFromOrganization) {
   // j+1
   const { removeGithubUserFromOrganization } = require('./githubScheduler');

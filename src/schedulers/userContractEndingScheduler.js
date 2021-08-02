@@ -48,6 +48,7 @@ const CONFIG_MESSAGE = {
 
 const EMAIL_FILES = {
   'j+1': 'mailExpired1day',
+  'j+30': 'mailExpired30days',
 };
 
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
@@ -78,10 +79,11 @@ module.exports.sendContractEndingMessageToUsers = async (configName, users) => {
   } else {
     registeredUsersWithEndingContractInXDays = await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
+  console.log(users);
   await Promise.all(registeredUsersWithEndingContractInXDays.map(async (user) => sendMessageOnChatAndEmail(user, messageConfig)));
 };
 
-module.exports.sendJXInfoToSecondaryEmail = async (optionalExpiredUsers, nbDays) => {
+module.exports.sendInfoToSecondaryEmailAfterXDays = async (nbDays, optionalExpiredUsers) => {
   let expiredUsers = optionalExpiredUsers;
   if (!expiredUsers) {
     const users = await BetaGouv.usersInfos();
@@ -108,4 +110,6 @@ module.exports.sendJXInfoToSecondaryEmail = async (optionalExpiredUsers, nbDays)
   );
 };
 
-module.exports.sendJ1Email = async (users) => module.exports.sendJXInfoToSecondaryEmail(users, 1);
+module.exports.sendJ1Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(1, users);
+
+module.exports.sendJ30Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);

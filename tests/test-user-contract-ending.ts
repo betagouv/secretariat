@@ -5,6 +5,7 @@ import config from '../src/config'
 import utils from './utils'
 import controllerUtils from '../src/controllers/utils'
 import knex from '../src/db';
+import { sendInfoToSecondaryEmailAfterXDays } from '../src/schedulers/userContractEndingScheduler'
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
@@ -134,14 +135,14 @@ describe('send message on contract end to user', () => {
       ]
     }]).persist()
     const { sendJ1Email } = userContractEndingScheduler;
-    await sendJ1Email();
+    await sendInfoToSecondaryEmailAfterXDays(1);
     // sendEmail not call because secondary email does not exists for user
     sendEmailStub.calledOnce.should.be.false;
     await knex('users').insert({
       secondary_email: 'uneadressesecondaire@gmail.com',
       username: 'julien.dauphant'
     })
-    await sendJ1Email();
+    await sendInfoToSecondaryEmailAfterXDays(1)
     console.log(sendEmailStub.firstCall.args);
     sendEmailStub.calledOnce.should.be.true;
   });  
