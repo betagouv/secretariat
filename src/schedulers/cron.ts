@@ -3,7 +3,6 @@ import config from '../config';
 
 import {
   addGithubUserToOrganization,
-  removeGithubUserFromOrganization,
 } from './githubScheduler';
 
 import {
@@ -38,7 +37,7 @@ if (config.featureAddGithubUserToOrganization) {
 
 if (config.featureSendJ1Email) {
   const { sendJ1Email } = require('./userContractEndingScheduler');
-  const sendJ1EmailJob = new CronJob(
+  new CronJob(
     '0 8 * * * *',
     sendJ1Email,
     null,
@@ -49,7 +48,7 @@ if (config.featureSendJ1Email) {
 
 if (config.featureSendJ30Email) {
   const { sendJ30Email } = require('./userContractEndingScheduler');
-  const sendJ1EmailJob = new CronJob(
+  new CronJob(
     '0 8 * * * *',
     sendJ30Email,
     null,
