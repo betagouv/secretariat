@@ -112,6 +112,7 @@ describe('invite users to mattermost', () => {
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     const result = await sendContractEndingMessageToUsers('mail15days');
     chat.calledOnce.should.be.true;
+    console.log('test')
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
 });
