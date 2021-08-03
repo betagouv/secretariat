@@ -1,16 +1,16 @@
-import Sentry from "@sentry/node";
-import sentryIntegrations from "@sentry/integrations";
-import config from "../config";
+import { CaptureConsole } from '@sentry/integrations';
+import * as Sentry from '@sentry/node';
+import config from '../config';
 
 export function initCaptureConsole() {
   const logLevel = ['error'];
-  console.log(`Initializing Sentry for log level "${logLevel}" and config: ${config.sentryDNS}`);
+  console.log(
+    `Initializing Sentry for log level "${logLevel}" and config: ${config.sentryDNS}`
+  );
   Sentry.init({
     dsn: config.sentryDNS as string,
     // https://docs.sentry.io/platforms/javascript/configuration/integrations/plugin/#captureconsole
-    integrations: [
-      new sentryIntegrations.CaptureConsole({ levels: logLevel }),
-    ],
+    integrations: [new CaptureConsole({ levels: logLevel })],
   });
 }
 
@@ -25,6 +25,8 @@ export function initCaptureConsoleWithHandler(app) {
     // The error handler must be before any other error middleware and after all controllers
     app.use(Sentry.Handlers.errorHandler());
   } else {
-    console.log('Sentry was not initialized as SENTRY_DNS env variable is missing');
+    console.log(
+      'Sentry was not initialized as SENTRY_DNS env variable is missing'
+    );
   }
 }
