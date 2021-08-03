@@ -52,14 +52,12 @@ export async function getUser(req, res) {
     const marrainageState = marrainageStateResponse[0];
 
     let secondaryEmail = '';
-    if (!user.emailInfos) {
-      await knex('users').where({ username })
-        .then((dbRes) => {
-          if (dbRes.length === 1) {
-            secondaryEmail = dbRes[0].secondary_email;
-          }
-        });
-    }
+    await knex('users').where({ username })
+      .then((dbRes) => {
+        if (dbRes.length === 1) {
+          secondaryEmail = dbRes[0].secondary_email;
+        }
+      });
 
     const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('user', {
