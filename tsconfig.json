@@ -8,10 +8,12 @@
         "resolveJsonModule": true,
         "removeComments": true,
         "noUnusedLocals": true,
+        "declaration": true,
         "sourceMap": true,
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,
-        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true
     },
     "exclude": [
         "node_modules",

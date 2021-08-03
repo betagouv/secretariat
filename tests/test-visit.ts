@@ -4,7 +4,7 @@ import _ from 'lodash';
 import rewire from 'rewire';
 import sinon from 'sinon';
 import config from '../src/config';
-import controllerUtils from '../src/controllers/utils';
+import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
@@ -18,7 +18,7 @@ describe.skip('Visit', () => {
   let sendEmailStub;
 
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
     clock = sinon.useFakeTimers(new Date('2020-01-01T09:59:59+01:00'));
     done();
   });

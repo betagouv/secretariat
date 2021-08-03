@@ -150,7 +150,7 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 ### Générer le graphe des redirections emails
 
 - Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
-- Lancer le script : `node ./scripts/export_redirections_to_dot.js > redirections.dot`
+- Lancer le script : `node ./scripts/export_redirections_to_dot.ts > redirections.dot`
 - Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
 
 ### Supprimer une redirection
@@ -166,7 +166,7 @@ Pour cela une une branche est créée sur un fork du repository `betagrouv/beta.
 ### Pourquoi utiliser un fork ?
 
 Afin de créer une branche et faire une pull request sur un repository, on donne les droits d'accès en écriture sur ce repository via un token (`GITHUB_TOKEN`) utilisé
-par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal. 
+par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal.
 
 Il faut donc préciser ces variables d'environnement:
 

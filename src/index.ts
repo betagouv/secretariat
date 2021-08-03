@@ -9,22 +9,22 @@ import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import path from 'path';
 import config from './config';
-import accountController from './controllers/accountController';
-import adminController from './controllers/adminController';
-import communityController from './controllers/communityController';
-import githubNotificationController from './controllers/githubNotificationController';
-import indexController from './controllers/indexController';
-import loginController from './controllers/loginController';
-import logoutController from './controllers/logoutController';
-import marrainageController from './controllers/marrainageController';
+import * as accountController from './controllers/accountController';
+import * as adminController from './controllers/adminController';
+import * as communityController from './controllers/communityController';
+import * as githubNotificationController from './controllers/githubNotificationController';
+import * as indexController from './controllers/indexController';
+import * as loginController from './controllers/loginController';
+import * as logoutController from './controllers/logoutController';
+import * as marrainageController from './controllers/marrainageController';
 // fixme: unused feature
 // const visitController = require('./controllers/visitController');
-import newsletterController from './controllers/newsletterController';
-import onboardingController from './controllers/onboardingController';
-import resourceController from './controllers/resourceController';
-import usersController from './controllers/usersController';
+import * as newsletterController from './controllers/newsletterController';
+import * as onboardingController from './controllers/onboardingController';
+import * as resourceController from './controllers/resourceController';
+import * as usersController from './controllers/usersController';
 import knex from './db';
-import sentry from './lib/sentry';
+import * as sentry from './lib/sentry';
 
 
 const app = express();
