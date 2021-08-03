@@ -1,6 +1,4 @@
-import { Knex } from 'knex';
-
-const config: Knex.Config = {
+module.exports = {
   client: 'postgresql',
   connection: process.env.DATABASE_URL,
   migrations: {
@@ -10,5 +8,3 @@ const config: Knex.Config = {
     directory: './tests/seed',
   },
 };
-
-export default config;
