@@ -5,6 +5,7 @@ module.exports = {
     tableName: 'knex_migrations',
   },
   seeds: {
+    extension: 'ts',
     directory: './tests/seed',
   },
 };
