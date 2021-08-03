@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import rewire from 'rewire';
 import testUsers from './users.json';
 import utilsTest from './utils';
-import utils from '../src/controllers/utils';
+import * as utils from '../src/controllers/utils';
 import betagouv from '../src/betagouv';
 
 chai.use(chaiHttp);
@@ -21,13 +21,20 @@ describe('getUnregisteredOVHUsers', () => {
 
   it('should return accounts not registered in OVH and registered in github ', async () => {
     const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
-    const allAccountsExceptANewMember = testUsers.filter((user) => user.id !== newMember.id);
+    const allAccountsExceptANewMember = testUsers.filter(
+      (user) => user.id !== newMember.id
+    );
 
     nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/account/)
-    .reply(200, allAccountsExceptANewMember.map((user) => user.id));
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(
+        200,
+        allAccountsExceptANewMember.map((user) => user.id)
+      );
 
-    const getUnregisteredOVHUsers = emailScheduler.__get__('getUnregisteredOVHUsers');
+    const getUnregisteredOVHUsers = emailScheduler.__get__(
+      'getUnregisteredOVHUsers'
+    );
     const result = await getUnregisteredOVHUsers(testUsers);
 
     result.length.should.be.equal(1);
@@ -46,10 +53,15 @@ describe('getUnregisteredOVHUsers', () => {
 
   it('should return no accounts if there is no new ones in github', async () => {
     nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/account/)
-    .reply(200, testUsers.map((user) => user.id));
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(
+        200,
+        testUsers.map((user) => user.id)
+      );
 
-    const getUnregisteredOVHUsers = emailScheduler.__get__('getUnregisteredOVHUsers');
+    const getUnregisteredOVHUsers = emailScheduler.__get__(
+      'getUnregisteredOVHUsers'
+    );
     const result = await getUnregisteredOVHUsers(testUsers);
 
     result.length.should.be.equal(0);
@@ -57,10 +69,12 @@ describe('getUnregisteredOVHUsers', () => {
 
   it('should return all github accounts if there is nothing inside OVH ', async () => {
     nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/account/)
-    .reply(200, []);
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(200, []);
 
-    const getUnregisteredOVHUsers = emailScheduler.__get__('getUnregisteredOVHUsers');
+    const getUnregisteredOVHUsers = emailScheduler.__get__(
+      'getUnregisteredOVHUsers'
+    );
     const result = await getUnregisteredOVHUsers(testUsers);
 
     _.difference(result, testUsers).length.should.equal(0);
@@ -71,21 +85,22 @@ describe('Reinit password for expired users', () => {
   const datePassed = new Date();
   datePassed.setDate(datePassed.getDate() - 1);
   const formatedDate = utils.formatDateYearMonthDay(datePassed);
-  const users =  [
+  const users = [
     {
       id: 'membre.actif',
       fullname: 'membre actif',
       role: 'Chargé de déploiement',
       start: '2020-09-01',
       end: '2090-01-30',
-      employer: 'admin/'
-    }, {
+      employer: 'admin/',
+    },
+    {
       id: 'membre.expire',
       fullname: 'membre expire',
       role: 'Intrapreneur',
       start: '2018-01-01',
       end: `${formatedDate}`,
-      employer: 'admin/'
+      employer: 'admin/',
     },
   ];
 
