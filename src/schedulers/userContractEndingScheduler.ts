@@ -106,3 +106,34 @@ export async function sendContractEndingMessageToUsers(
     })
   );
 }
+
+module.exports.sendInfoToSecondaryEmailAfterXDays = async (nbDays, optionalExpiredUsers) => {
+  let expiredUsers = optionalExpiredUsers;
+  if (!expiredUsers) {
+    const users = await BetaGouv.usersInfos();
+    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
+  }
+  return Promise.all(
+    expiredUsers.map(async (user) => {
+      try {
+        const dbResponse = await knex('users').select('secondary_email').where({ username: user.id });
+        if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
+          const email = dbResponse[0].secondary_email;
+          const messageContent = await ejs.renderFile(`./views/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`, {
+            user,
+          });
+          await utils.sendMail(email, 'A bientôt 🙂', messageContent);
+          console.log(`Envoie du message fin de contrat +${nbDays} à ${email}`);
+        } else {
+          console.error(`Le compte ${user.id} n'a pas d'adresse secondaire`);
+        }
+      } catch (err) {
+        throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
+      }
+    }),
+  );
+};
+
+module.exports.sendJ1Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(1, users);
+
+module.exports.sendJ30Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
