@@ -1,3 +1,3 @@
-const { reinitPasswordEmail } = require('../schedulers/emailScheduler');
+import { reinitPasswordEmail } from '../schedulers/emailScheduler';
 
 reinitPasswordEmail();

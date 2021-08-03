@@ -27,6 +27,7 @@ rules:
 
 ignorePatterns:
   - "static/**/*.js"
+  - "knexfile.js"
 
 overrides:
   - files:
