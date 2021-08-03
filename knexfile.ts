@@ -1,8 +1,6 @@
-import { config } from "dotenv";
+import { Knex } from 'knex';
 
-config();
-
-export default {
+const config: Knex.Config = {
   client: 'postgresql',
   connection: process.env.DATABASE_URL,
   migrations: {
@@ -12,3 +10,5 @@ export default {
     directory: './tests/seed',
   },
 };
+
+export default config;
