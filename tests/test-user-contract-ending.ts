@@ -1,10 +1,10 @@
-import rewire from 'rewire'
-import nock from 'nock'
-import sinon from 'sinon'
-import BetaGouv from '../src/betagouv'
-import config from '../src/config'
-import utils from './utils'
-import controllerUtils from '../src/controllers/utils'
+import rewire from 'rewire';
+import nock from 'nock';
+import sinon from 'sinon';
+import BetaGouv from '../src/betagouv';
+import config from '../src/config';
+import utils from './utils';
+import * as controllerUtils from '../src/controllers/utils';
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateMore15days = '2020-01-16';
@@ -70,7 +70,9 @@ const mattermostUsers = [
   },
 ];
 
-const userContractEndingScheduler = rewire('../src/schedulers/userContractEndingScheduler.js');
+const userContractEndingScheduler = rewire(
+  '../src/schedulers/userContractEndingScheduler.ts'
+);
 
 describe('invite users to mattermost', () => {
   let chat;
@@ -84,7 +86,9 @@ describe('invite users to mattermost', () => {
     utils.mockOvhRedirections();
     utils.mockOvhUserEmailInfos();
     utils.mockOvhAllEmailInfos();
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(true);
+    sendEmailStub = sinon
+      .stub(controllerUtils, 'sendMail')
+      .returns(Promise.resolve(true));
     chat = sinon.spy(BetaGouv, 'sendInfoToChat');
     clock = sinon.useFakeTimers(new Date(fakeDate));
   });
@@ -98,19 +102,20 @@ describe('invite users to mattermost', () => {
 
   it('send message to users', async () => {
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [...mattermostUsers]);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, []);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, betaGouvUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, betaGouvUsers)
+      .persist();
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
-    const result = await sendContractEndingMessageToUsers('mail15days');
+    await sendContractEndingMessageToUsers('mail15days');
+    console.log(chat);
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
