@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-import controllerUtils from '../src/controllers/utils';
+import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
@@ -36,23 +36,23 @@ describe('Onboarding', () => {
     beforeEach((done) => {
       getGithubMasterSha = sinon
         .stub(controllerUtils, 'getGithubMasterSha')
-        .resolves({ data: { object: { sha: 'sha' } } });
+        .resolves({ headers: null, url: null, status: null, data: { object: { sha: 'sha' } } });
 
       createGithubBranch = sinon
         .stub(controllerUtils, 'createGithubBranch')
-        .resolves(true);
+        .resolves({ headers: null, url: null, status: null, data: {} });
 
       createGithubFile = sinon
         .stub(controllerUtils, 'createGithubFile')
-        .resolves(true);
+        .resolves({ headers: null, url: null, status: null, data: {} });
 
       makeGithubPullRequest = sinon
         .stub(controllerUtils, 'makeGithubPullRequest')
-        .resolves({ status: 201, data: { html_url: 'https://example.com/' } });
+        .resolves({ headers: null, url: null, status: 201, data: { html_url: 'https://example.com/' } });
 
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
-        .returns(true);
+        .returns(Promise.resolve(true));
 
       done();
     });

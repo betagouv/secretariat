@@ -1,6 +1,6 @@
 import nock from 'nock';
 import sinon from 'sinon';
-import github from '../src/lib/github';
+import * as github from '../src/lib/github';
 import testUsers from './users.json';
 import { addGithubUserToOrganization, removeGithubUserFromOrganization } from '../src/schedulers/githubScheduler';
 
@@ -26,11 +26,11 @@ const githubOrganizationMembers = [
 describe('Add user to github organization', () => {
   let inviteUser;
   let pendingInvitations;
-  let getGithubMembers
+  let getGithubMembers;
 
   beforeEach(() => {
     getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
-    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves(true);
+    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves();
     pendingInvitations = sinon.stub(github, 'getAllPendingInvitations').resolves([])
     
   })
@@ -55,12 +55,12 @@ describe('Add user to github organization', () => {
   });
 
   it('should not add new users to organization if invitation exist', async () => {
-    pendingInvitations.resolves([{ login: 'membre.actif' }])
+    pendingInvitations.resolves([{ login: 'membre.actif' }]);
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
 
     await addGithubUserToOrganization();
     inviteUser.calledOnce.should.be.true;

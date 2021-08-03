@@ -14,7 +14,7 @@
     "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.ts --timeout 3000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "build": "./node_modules/.bin/tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json"
   },
   "lint-staged": {
     "*.{js}": [
@@ -72,12 +72,13 @@
   "devDependencies": {
     "@types/chai": "^4.2.21",
     "@types/mocha": "^9.0.0",
+    "@types/sinon": "^10.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "eslint": "^7.32.0",
-    "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-node": "^11.1.0",
+    "eslint-config-prettier": "^8.1.0",
     "husky": "^7.0.1",
     "lint-staged": "^11.1.1",
     "mocha": "^9.0.3",
