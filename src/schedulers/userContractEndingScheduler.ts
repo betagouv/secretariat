@@ -113,7 +113,7 @@ export async function sendContractEndingMessageToUsers(
   );
 }
 
-module.exports.sendInfoToSecondaryEmailAfterXDays = async (nbDays, optionalExpiredUsers) => {
+export async function sendInfoToSecondaryEmailAfterXDays(nbDays, optionalExpiredUsers) {
   let expiredUsers = optionalExpiredUsers;
   if (!expiredUsers) {
     const users = await BetaGouv.usersInfos();
@@ -140,6 +140,6 @@ module.exports.sendInfoToSecondaryEmailAfterXDays = async (nbDays, optionalExpir
   );
 };
 
-module.exports.sendJ1Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(1, users);
+export async function sendJ1Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(1, users)};
 
-module.exports.sendJ30Email = async (users) => module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
+export async function sendJ30Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users)};
