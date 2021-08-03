@@ -1,2 +1,2 @@
 web: npm start
-clock: node ./src/schedulers/cron.js
+clock: node ./schedulers/cron.js
