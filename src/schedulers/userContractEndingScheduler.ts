@@ -3,6 +3,7 @@ import * as mattermost from '../lib/mattermost';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
+import knex from '../db';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (days) => {
@@ -50,6 +51,11 @@ const CONFIG_MESSAGE = {
     emailFile: 'mail2days.ejs',
     days: 2,
   },
+};
+
+const EMAIL_FILES = {
+  'j+1': 'mailExpired1day',
+  'j+30': 'mailExpired30days',
 };
 
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
