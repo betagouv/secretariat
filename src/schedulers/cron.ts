@@ -1,101 +1,129 @@
 import { CronJob } from 'cron';
 import config from '../config';
-
+import { createEmailAddresses, reinitPasswordEmail } from './emailScheduler';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from './githubScheduler';
-
+import { reloadMarrainages } from './marrainageScheduler';
 import {
   createUsersByEmail,
   moveUsersToAlumniTeam,
   reactivateUsers,
 } from './mattermostScheduler';
-
+import {
+  newsletterReminder,
+  sendNewsletterAndCreateNewOne,
+} from './newsletterScheduler';
 import { sendContractEndingMessageToUsers } from './userContractEndingScheduler';
 
-if (config.featureReinitPasswordEmail) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { reinitPasswordEmail } = require('./emailScheduler');
-  new CronJob(
-    '0 0 14 * * *',
-    reinitPasswordEmail(),
-    null,
-    true,
-    'Europe/Paris'
-  );
+interface Job {
+  cronTime: string;
+  onTick: (any) => void;
+  isActive: boolean;
+  name: string;
+  timezone?: string;
+  start?: boolean;
 }
 
-if (config.featureAddGithubUserToOrganization) {
-  new CronJob(
-    '0 */15 * * * 1-5',
-    addGithubUserToOrganization,
-    null,
-    true,
-    'Europe/Paris'
-  );
+const jobs: Job[] = [
+  {
+    cronTime: '0 8 * * 1', // every week a 8:00 on monday
+    onTick: () => newsletterReminder('FIRST_REMINDER'),
+    isActive: true,
+    name: 'newsletterMondayReminderJob',
+  },
+  {
+    cronTime: '0 0 8 * * 4',
+    onTick: () => newsletterReminder('SECOND_REMINDER'),
+    isActive: true,
+    name: 'newsletterThursdayMorningReminderJob',
+  },
+  {
+    cronTime: '0 14 * * 4', // every week a 14:00 on thursday
+    onTick: () => newsletterReminder('THIRD_REMINDER'),
+    isActive: true,
+    name: 'newsletterThursdayEveningReminderJob',
+  },
+  {
+    cronTime: config.newsletterSendTime || '0 16 * * 4', // run on thursday et 4pm,
+    onTick: sendNewsletterAndCreateNewOne,
+    isActive: true,
+    name: 'sendNewsletterAndCreateNewOneJob',
+  },
+  {
+    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    onTick: reloadMarrainages,
+    isActive: true,
+    name: 'reloadMarrainageJob',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: createEmailAddresses,
+    isActive: true,
+    name: 'emailCreationJob',
+  },
+  {
+    cronTime: '0 */15 * * * 1-5',
+    onTick: addGithubUserToOrganization,
+    isActive: !!config.featureAddGithubUserToOrganization,
+    name: 'addGithubUserToOrganization',
+  },
+  {
+    cronTime: '0 0 * * * *',
+    onTick: removeGithubUserFromOrganization,
+    isActive: !!config.featureRemoveGithubUserFromOrganization,
+    name: 'removeGithubUserFromOrganization',
+  },
+  {
+    cronTime: '0 0 14 * * *',
+    onTick: reinitPasswordEmail,
+    isActive: !!config.featureReinitPasswordEmail,
+    name: 'reinitPasswordEmail',
+  },
+  {
+    cronTime: '0 */8 * * * *',
+    onTick: createUsersByEmail,
+    isActive: !!config.featureCreateUserOnMattermost,
+    name: 'createUsersByEmail: Cron job to create user on mattermost by email',
+  },
+  {
+    cronTime: '0 8 1 * *',
+    onTick: reactivateUsers,
+    isActive: !!config.featureReactiveMattermostUsers,
+    name: 'reactivateUsers',
+  },
+  {
+    cronTime: '0 0 10 * * *',
+    onTick: () => sendContractEndingMessageToUsers('mail15days'),
+    isActive: !!config.featureOnUserContractEnd,
+    name: 'sendContractEndingMessageToUsers: Create cron job for sending contract ending message to users',
+  },
+  {
+    cronTime: '0 0 10 * * *',
+    onTick: () => sendContractEndingMessageToUsers('mail2days'),
+    isActive: !!config.featureOnUserContractEnd,
+    name: 'sendContractEndingMessageToUsers: Create cron job for sending contract ending message to users',
+  },
+  {
+    cronTime: '0 0 10 * * *',
+    onTick: moveUsersToAlumniTeam,
+    isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
+    name: 'moveUsersToAlumniTeam: Cron job to add user to alumni on mattermost',
+  },
+];
+
+let activeJobs = 0;
+for (const job of jobs) {
+  const cronjob = { timezone: 'Europe/Paris', start: true, ...job };
+
+  if (cronjob.isActive) {
+    console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
+    new CronJob(cronjob);
+    activeJobs++;
+  } else {
+    console.log(`❌ The job "${cronjob.name}" is OFF`);
+  }
 }
 
-if (config.featureRemoveGithubUserFromOrganization) {
-  new CronJob(
-    '0 0 * * * *',
-    removeGithubUserFromOrganization,
-    null,
-    true,
-    'Europe/Paris'
-  );
-}
-
-if (config.featureCreateUserOnMattermost) {
-  console.log('Cron job to create user on mattermost by email on');
-  new CronJob('0 */8 * * * *', createUsersByEmail, null, true, 'Europe/Paris');
-} else {
-  console.log('Cron job to create user on mattermost by email off');
-}
-
-if (config.featureReactiveMattermostUsers) {
-  console.log('🚀 The job reactiveMattermostUsers is started');
-  new CronJob(
-    '0 0 10 * * 1-5', // monday through friday at 10:00:00
-    reactivateUsers,
-    null,
-    true,
-    'Europe/Paris'
-  );
-} else {
-  console.log('❌ The job reactiveMattermostUsers is OFF');
-}
-
-if (config.featureOnUserContractEnd) {
-  console.log('Create cron job for sending contract ending message to users');
-
-  new CronJob(
-    '0 0 10 * * *',
-    () => sendContractEndingMessageToUsers('mail15days'),
-    null,
-    true,
-    'Europe/Paris'
-  );
-
-  new CronJob(
-    '0 0 10 * * *',
-    () => sendContractEndingMessageToUsers('mail2days'),
-    null,
-    true,
-    'Europe/Paris'
-  );
-} else {
-  console.log('Send contract ending message job is off');
-}
-
-if (config.featureAddExpiredUsersToAlumniOnMattermost) {
-  console.log('Cron job to add user to alumni on mattermost');
-
-  new CronJob(
-    '0 0 10 * * *',
-    moveUsersToAlumniTeam,
-    null,
-    true,
-    'Europe/Paris'
-  );
-}
+console.log(`Started ${activeJobs} cron jobs`);
