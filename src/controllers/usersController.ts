@@ -321,7 +321,6 @@ export async function updateSecondaryEmailForUser(req, res) {
     res.redirect(`/community/${username}`);
   }
 }
-};
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
