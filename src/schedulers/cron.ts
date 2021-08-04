@@ -15,7 +15,11 @@ import {
   newsletterReminder,
   sendNewsletterAndCreateNewOne,
 } from './newsletterScheduler';
-import { sendContractEndingMessageToUsers } from './userContractEndingScheduler';
+import {
+  sendContractEndingMessageToUsers,
+  sendJ1Email,
+  sendJ30Email,
+} from './userContractEndingScheduler';
 
 interface Job {
   cronTime: string;
@@ -71,10 +75,22 @@ const jobs: Job[] = [
     name: 'addGithubUserToOrganization',
   },
   {
-    cronTime: '0 0 * * * *',
+    cronTime: '0 18 * * * *',
     onTick: removeGithubUserFromOrganization,
     isActive: !!config.featureRemoveGithubUserFromOrganization,
     name: 'removeGithubUserFromOrganization',
+  },
+  {
+    cronTime: '0 8 * * * *',
+    onTick: sendJ1Email,
+    isActive: !!config.featureSendJ1Email,
+    name: 'sendJ1Email',
+  },
+  {
+    cronTime: '0 8 * * * *',
+    onTick: sendJ30Email,
+    isActive: !!config.featureSendJ30Email,
+    name: 'sendJ30Email',
   },
   {
     cronTime: '0 0 14 * * *',
