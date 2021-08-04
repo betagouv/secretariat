@@ -366,7 +366,6 @@ async function updateAuthorGithubFile(username, changes) {
 
 export async function updateEndDateForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
 
   try {
     const formValidationErrors = [];
