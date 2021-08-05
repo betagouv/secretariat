@@ -3,7 +3,6 @@ import config from '../config';
 
 import {
   addGithubUserToOrganization,
-  removeGithubUserFromOrganization,
 } from './githubScheduler';
 
 import {
@@ -36,9 +35,33 @@ if (config.featureAddGithubUserToOrganization) {
   );
 }
 
-if (config.featureRemoveGithubUserFromOrganization) {
+if (config.featureSendJ1Email) {
+  const { sendJ1Email } = require('./userContractEndingScheduler');
   new CronJob(
-    '0 0 * * * *',
+    '0 8 * * * *',
+    sendJ1Email,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
+
+if (config.featureSendJ30Email) {
+  const { sendJ30Email } = require('./userContractEndingScheduler');
+  new CronJob(
+    '0 8 * * * *',
+    sendJ30Email,
+    null,
+    true,
+    'Europe/Paris',
+  );
+}
+
+if (config.featureRemoveGithubUserFromOrganization) {
+  // j+1
+  const { removeGithubUserFromOrganization } = require('./githubScheduler');
+  module.exports.removeGithubUserFromOrganization = new CronJob(
+    '0 18 * * * *',
     removeGithubUserFromOrganization,
     null,
     true,
