@@ -6,6 +6,7 @@ import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
+import { reloadMarrainages } from '../src/schedulers/marrainageScheduler';
 import utils from './utils';
 
 chai.use(chaiHttp);
@@ -416,13 +417,7 @@ describe('Marrainage', () => {
       knex('marrainage')
         .insert([staleRequest, validRequest])
         .then(() => {
-          // fixme
-          // Disabels global require since requiring the cron job
-          // will immediatly start it.
-          /* eslint-disable global-require */
-          const {
-            reloadMarrainageJob,
-          } = require('../src/schedulers/marrainageScheduler');
+          reloadMarrainages();
           clock.tick(1001);
           const listener = (response, obj, builder) => {
             if (obj.method !== 'update') {
@@ -441,7 +436,6 @@ describe('Marrainage', () => {
               )
               .then((res) => {
                 res[0].count.should.equal(1);
-                reloadMarrainageJob.stop();
               })
               .then(done)
               .catch(done)
@@ -484,15 +478,7 @@ describe('Marrainage', () => {
       knex('marrainage')
         .insert([staleRequest, validRequest])
         .then(() => {
-          // Disabels global require since requiring the cron job
-          // will immediatly start it.
-          /* eslint-disable global-require */
-          const {
-            reloadMarrainageJob,
-          } = require('../src/schedulers/marrainageScheduler');
-          // we start it manually as it may have been stopped in previous tests
-          reloadMarrainageJob.start();
-
+          reloadMarrainages();
           clock.tick(1001);
           const listener = (response, obj, builder) => {
             if (obj.method !== 'update') {

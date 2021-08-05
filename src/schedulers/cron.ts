@@ -22,6 +22,7 @@ interface Job {
   onTick: (any) => void;
   isActive: boolean;
   name: string;
+  description?: string;
   timezone?: string;
   start?: boolean;
 }
@@ -85,7 +86,8 @@ const jobs: Job[] = [
     cronTime: '0 */8 * * * *',
     onTick: createUsersByEmail,
     isActive: !!config.featureCreateUserOnMattermost,
-    name: 'createUsersByEmail: Cron job to create user on mattermost by email',
+    name: 'createUsersByEmail',
+    description: 'Cron job to create user on mattermost by email',
   },
   {
     cronTime: '0 8 1 * *',
@@ -97,19 +99,22 @@ const jobs: Job[] = [
     cronTime: '0 0 10 * * *',
     onTick: () => sendContractEndingMessageToUsers('mail15days'),
     isActive: !!config.featureOnUserContractEnd,
-    name: 'sendContractEndingMessageToUsers: Create cron job for sending contract ending message to users',
+    name: 'sendContractEndingMessageToUsers15days',
+    description: 'Create cron job for sending contract ending message to users',
   },
   {
     cronTime: '0 0 10 * * *',
     onTick: () => sendContractEndingMessageToUsers('mail2days'),
     isActive: !!config.featureOnUserContractEnd,
-    name: 'sendContractEndingMessageToUsers: Create cron job for sending contract ending message to users',
+    name: 'sendContractEndingMessageToUsers2days',
+    description: 'Create cron job for sending contract ending message to users',
   },
   {
     cronTime: '0 0 10 * * *',
     onTick: moveUsersToAlumniTeam,
     isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
-    name: 'moveUsersToAlumniTeam: Cron job to add user to alumni on mattermost',
+    name: 'moveUsersToAlumniTeam',
+    description: 'Cron job to add user to alumni on mattermost',
   },
 ];
 
@@ -119,11 +124,10 @@ for (const job of jobs) {
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-    new CronJob(cronjob);
+    CronJob(cronjob);
     activeJobs++;
   } else {
     console.log(`❌ The job "${cronjob.name}" is OFF`);
   }
 }
-
-console.log(`Started ${activeJobs} cron jobs`);
+console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);

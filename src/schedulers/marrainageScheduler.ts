@@ -16,7 +16,7 @@ export async function reloadMarrainages() {
       reloadMarrainage(marrainageDetailsResponse[i].username)
         .then(() => {
           console.log(
-            `Cron de marranaige a relancé ${marrainageDetailsResponse[i].username}`
+            `Cron de marrainage a relancé ${marrainageDetailsResponse[i].username}`
           );
         })
         .catch((error) => {
@@ -27,6 +27,6 @@ export async function reloadMarrainages() {
     );
   }
   return Promise.all(reloadItems)
-    .then(() => console.log('Cron de marranaige terminé'))
+    .then(() => console.log('Cron de marrainage terminé'))
     .catch(console.error);
 }
