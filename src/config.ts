@@ -61,4 +61,6 @@ export default {
   featureRemoveGithubUserFromOrganization: process.env.FEATURE_REMOVE_GITHUB_USER_FROM_ORGANIZATION,
   featureOnUserContractEnd: process.env.FEATURE_ON_USER_CONTRACT_END,
   featureAddExpiredUsersToAlumniOnMattermost: process.env.FEATURE_ADD_EXPIRED_USERS_TO_ALUMNI_ON_MATTERMOST,
+  featureSendJ1Email: process.env.FEATURE_SEND_J1_EMAIL,
+  featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL,
 };

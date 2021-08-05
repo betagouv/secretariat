@@ -3,6 +3,7 @@ import * as mattermost from '../lib/mattermost';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
+import knex from '../db';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (days) => {
@@ -50,6 +51,11 @@ const CONFIG_MESSAGE = {
     emailFile: 'mail2days.ejs',
     days: 2,
   },
+};
+
+const EMAIL_FILES = {
+  'j+1': 'mailExpired1day',
+  'j+30': 'mailExpired30days',
 };
 
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
@@ -106,3 +112,34 @@ export async function sendContractEndingMessageToUsers(
     })
   );
 }
+
+export async function sendInfoToSecondaryEmailAfterXDays(nbDays, optionalExpiredUsers) {
+  let expiredUsers = optionalExpiredUsers;
+  if (!expiredUsers) {
+    const users = await BetaGouv.usersInfos();
+    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
+  }
+  return Promise.all(
+    expiredUsers.map(async (user) => {
+      try {
+        const dbResponse = await knex('users').select('secondary_email').where({ username: user.id });
+        if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
+          const email = dbResponse[0].secondary_email;
+          const messageContent = await ejs.renderFile(`./views/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`, {
+            user,
+          });
+          await utils.sendMail(email, 'A bientôt 🙂', messageContent);
+          console.log(`Envoie du message fin de contrat +${nbDays} à ${email}`);
+        } else {
+          console.error(`Le compte ${user.id} n'a pas d'adresse secondaire`);
+        }
+      } catch (err) {
+        throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
+      }
+    }),
+  );
+};
+
+export async function sendJ1Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(1, users)};
+
+export async function sendJ30Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users)};
