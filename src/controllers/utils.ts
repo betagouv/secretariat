@@ -263,13 +263,20 @@ export function deleteGithubBranch(branch) {
   return requestWithAuth(`DELETE ${url}`);
 }
 
-export function createGithubFile(path, branch, content) {
+export function getGithubFile(path, branch) {
+  const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
+
+  return requestWithAuth(`GET ${url}`, { branch });
+};
+
+export function createGithubFile(path, branch, content, sha = undefined) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
-  const message = `Création de fichier ${path} sur la branche ${branch}`;
+  const message = `${sha ? 'Mise à jour' : 'Création'} de fichier ${path} sur la branche ${branch}`; 
   const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
 
   return requestWithAuth(`PUT ${url}`, {
     branch,
+    sha,
     message,
     content: base64EncodedContent,
   });
