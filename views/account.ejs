@@ -19,7 +19,7 @@
                         <p>
                             <span class="font-weight-bold">Mission :</span>
                             du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
-                            <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %>
+                            <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %><br>
                             <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
                         </p>
                         <section id="update-end-date-form" style="display:none" class="panel">
