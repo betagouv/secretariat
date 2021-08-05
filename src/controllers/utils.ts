@@ -264,7 +264,7 @@ export function deleteGithubBranch(branch) {
 }
 
 export function getGithubFile(path, branch) {
-  const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
+  const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
 
   return requestWithAuth(`GET ${url}`, { branch });
 };
