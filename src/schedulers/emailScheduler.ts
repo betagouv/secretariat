@@ -28,24 +28,12 @@ const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
 };
 
-// get users that have github acount and no email registered on ovh (yet)
-const getUnregisteredOVHUsers = async (githubUsers) => {
-  const allOvhEmails = await BetaGouv.getAllEmailInfos();
-  console.log(
-    `${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github.`
-  );
-
-  return _.differenceWith(githubUsers, allOvhEmails, differenceGithubOVH);
-};
-
 const getValidUsers = async () => {
   const githubUsers = await BetaGouv.usersInfos();
   return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
 export async function createEmailAddresses() {
-  console.log('Demarrage du cron job pour la création des adresses email');
-
   const dbUsers = await knex('users').whereNotNull('secondary_email');
 
   const githubUsers = await getValidUsers();
@@ -58,8 +46,9 @@ export async function createEmailAddresses() {
     return acc;
   }, []);
 
-  const unregisteredUsers = await getUnregisteredOVHUsers(concernedUsers);
-  console.log(`${unregisteredUsers.length} unregistered user(s) in OVH.`);
+  const allOvhEmails = await BetaGouv.getAllEmailInfos();
+  const unregisteredUsers = _.differenceWith(concernedUsers, allOvhEmails, differenceGithubOVH);
+  console.log(`Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`);
 
   // create email and marrainage
   return Promise.all(
