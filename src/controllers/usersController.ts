@@ -382,8 +382,7 @@ export async function updateEndDateForUser(req, res) {
       return null;
     }
 
-    const { start } = req.body;
-    const { end } = req.body; // can be empty
+    const { start, end } = req.body;
     const newEnd = req.body.newEnd || requiredError('nouvelle date de fin');
 
     const startDate = new Date(start);
