@@ -112,7 +112,7 @@ Tous les emails envoyés par le code du secrétariat seront visibles depuis l'in
 
 ### Debug sans notifications Slack
 
-Pour certaines actions, le secrétariat envoie une notification Slack. En local, vous pouvez mettre la variable d'environnement `SLACK_WEBHOOK_URL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
+Pour certaines actions, le secrétariat envoie une notification Slack. En local, vous pouvez mettre les variables d'environnements `SLACK_WEBHOOK_URL_SECRETARIAT` et `SLACK_WEBHOOK_URL_GENERAL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
 
 [Beeceptor](https://beeceptor.com/) permet de le faire avec une interface en ligne sans besoin de télécharger quoi que ce soit.
 
