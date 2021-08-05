@@ -146,6 +146,7 @@ app.post(
   '/users/:username/secondary_email/update',
   usersController.updateSecondaryEmailForUser
 );
+app.post('/users/:username/end-date', usersController.updateEndDateForUser);
 app.post(
   '/notifications/github',
   githubNotificationController.processNotification
