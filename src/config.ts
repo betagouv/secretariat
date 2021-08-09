@@ -64,4 +64,5 @@ export default {
   featureSendJ1Email: process.env.FEATURE_SEND_J1_EMAIL,
   featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL,
   featureDeleteOVHEmailAccounts: process.env.FEATURE_DELETE_OVH_EMAIL_ACCOUNTS,
+  featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL
 };

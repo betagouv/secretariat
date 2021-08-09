@@ -187,7 +187,7 @@ describe('send message on contract end to user', () => {
       "missions": [
         { 
           "start": "2016-11-03",
-          "end": fakeDateLess1day,
+          "end": fakeDateLess30days,
           "status": "independent",
           "employer": "octo"
         }
@@ -201,7 +201,7 @@ describe('send message on contract end to user', () => {
     const users = await knex('users').where({
       username: 'julien.dauphant'
     })
-    should.equal(users[0].secondary_email, undefined)
+    should.equal(users[0].secondary_email, null)
     await knex('users').where({
       username: 'julien.dauphant'
     }).delete()
