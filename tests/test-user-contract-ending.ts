@@ -147,8 +147,10 @@ describe('send message on contract end to user', () => {
       username: 'julien.dauphant'
     })
     await sendInfoToSecondaryEmailAfterXDays(1)
-    console.log(sendEmailStub.firstCall.args);
     sendEmailStub.calledOnce.should.be.true;
+    await knex('users').where({
+      username: 'julien.dauphant'
+    }).delete()
   });  
 
   it('should delete user ovh account', async () => {
@@ -197,5 +199,8 @@ describe('send message on contract end to user', () => {
       username: 'julien.dauphant'
     })
     users[0].secondary_email.should.be.undefined
+    await knex('users').where({
+      username: 'julien.dauphant'
+    }).delete()
   }); 
 });
