@@ -7,6 +7,7 @@ import * as controllerUtils from '../src/controllers/utils'
 import knex from '../src/db';
 import {
   sendInfoToSecondaryEmailAfterXDays,
+  deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts
 } from '../src/schedulers/userContractEndingScheduler'
 
@@ -138,7 +139,6 @@ describe('send message on contract end to user', () => {
         }
       ]
     }]).persist()
-    const { sendJ1Email } = userContractEndingScheduler;
     await sendInfoToSecondaryEmailAfterXDays(1);
     // sendEmail not call because secondary email does not exists for user
     sendEmailStub.calledOnce.should.be.false;
@@ -173,4 +173,29 @@ describe('send message on contract end to user', () => {
     await deleteOVHEmailAcounts()
     ovhEmailDeletion.isDone().should.be.true;
   });
+  it('should delete user secondary_email', async () => {
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateLess1day,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }]).persist()
+    await knex('users').insert({
+      secondary_email: 'uneadressesecondaire@gmail.com',
+      username: 'julien.dauphant'
+    })
+    await deleteSecondaryEmailsForUsers()
+    const users = await knex('users').where({
+      username: 'julien.dauphant'
+    })
+    users[0].secondary_email.should.be.undefined
+  }); 
 });
