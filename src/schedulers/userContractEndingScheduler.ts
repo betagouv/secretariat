@@ -175,7 +175,7 @@ export async function deleteSecondaryEmailsForUsers(optionalExpiredUsers?: Membe
   }
   const dbUsers: DBUser[] = await knex('users')
     .whereNotNull('secondary_email')
-    .where({ username_in: expiredUsers.map(user => user.id)});
+    .whereIn('username', expiredUsers.map(user => user.id));
   for (const user of dbUsers) {
     try {
       await knex('users')
