@@ -1,4 +1,3 @@
-import { CronJob } from 'cron';
 import crypto from 'crypto';
 import _ from 'lodash/array';
 import BetaGouv from '../betagouv';
@@ -81,11 +80,3 @@ export async function reinitPasswordEmail() {
     })
   );
 }
-
-export const emailCreationJob = new CronJob(
-  '0 */4 * * * *',
-  createEmailAddresses,
-  null,
-  true,
-  'Europe/Paris'
-);
