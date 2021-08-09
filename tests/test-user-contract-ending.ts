@@ -1,4 +1,5 @@
 import nock from 'nock'
+import chai from 'chai'
 import sinon from 'sinon'
 import BetaGouv from '../src/betagouv'
 import config from '../src/config'
@@ -11,6 +12,7 @@ import {
   deleteOVHEmailAcounts
 } from '../src/schedulers/userContractEndingScheduler'
 
+const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
@@ -176,6 +178,7 @@ describe('send message on contract end to user', () => {
     ovhEmailDeletion.isDone().should.be.true;
   });
   it('should delete user secondary_email', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
     .get((uri) => uri.includes('authors.json'))
     .reply(200, [{
@@ -198,7 +201,7 @@ describe('send message on contract end to user', () => {
     const users = await knex('users').where({
       username: 'julien.dauphant'
     })
-    users[0].secondary_email.should.be.undefined
+    should.equal(users[0].secondary_email, undefined)
     await knex('users').where({
       username: 'julien.dauphant'
     }).delete()
