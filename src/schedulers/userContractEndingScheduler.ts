@@ -185,7 +185,7 @@ export async function deleteSecondaryEmailsForUsers(optionalExpiredUsers?: Membe
         .where({
           username: user.username
         })
-        console.log(`Suppression d secondary_email pour ${user.username}`)
+        console.log(`Suppression de secondary_email pour ${user.username}`)
     } catch {
       console.log(`Erreur lors de la suppression de secondary_email pour ${user.username}`)
     }
