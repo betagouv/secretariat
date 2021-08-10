@@ -6,7 +6,7 @@ import utils from './utils'
 import * as controllerUtils from '../src/controllers/utils'
 import knex from '../src/db';
 import {
-  sendInfoToSecondaryEmailAfterXDay,
+  sendInfoToSecondaryEmailAfterXDays,
   deleteOVHEmailAcounts
 } from '../src/schedulers/userContractEndingScheduler'
 
