@@ -5,16 +5,16 @@
   "main": "index.ts",
   "scripts": {
     "start": "node dist/index.js",
-    "migrate": "knex migrate:latest",
-    "makeMigration": "knex migrate:make",
-    "seed": "knex seed:run",
-    "rolldown": "knex migrate:down",
     "dev": "ts-node-dev src/index.ts",
-    "lint": "eslint . --fix",
     "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.js --exit --require ./tests/env-setup.ts --timeout 3000",
-    "prepare": "husky install",
+    "lint": "eslint . --fix",
     "pre-commit": "lint-staged",
-    "build": "tsc -p tsconfig.build.json"
+    "prepare": "husky install",
+    "build": "tsc -p tsconfig.build.json",
+    "migrate": "knex --knexfile 'knexfile.ts' migrate:latest",
+    "makeMigration": "knex --knexfile 'knexfile.ts' migrate:make",
+    "seed": "knex --knexfile 'knexfile.ts' seed:run",
+    "rolldown": "knex --knexfile 'knexfile.ts' migrate:down"
   },
   "lint-staged": {
     "*.{js}": [
