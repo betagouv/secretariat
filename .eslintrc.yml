@@ -31,6 +31,6 @@ ignorePatterns:
 
 overrides:
   - files:
-      - "tests/*.js"
+      - "tests/*.ts"
     rules:
       no-unused-expressions: "off"
