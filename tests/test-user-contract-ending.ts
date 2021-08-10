@@ -5,11 +5,15 @@ import config from '../src/config'
 import utils from './utils'
 import * as controllerUtils from '../src/controllers/utils'
 import knex from '../src/db';
-import { sendInfoToSecondaryEmailAfterXDays } from '../src/schedulers/userContractEndingScheduler'
+import {
+  sendInfoToSecondaryEmailAfterXDay,
+  deleteOVHEmailAcounts
+} from '../src/schedulers/userContractEndingScheduler'
 
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
+const fakeDateLess30days = '2019-12-01'
 
 const betaGouvUsers = [
   {
@@ -146,4 +150,27 @@ describe('send message on contract end to user', () => {
     console.log(sendEmailStub.firstCall.args);
     sendEmailStub.calledOnce.should.be.true;
   });  
+
+  it('should delete user ovh account', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "membre.expire",
+      "fullname": "Membre expire",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateLess30days,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }]).persist()
+    const ovhEmailDeletion = nock(/.*ovh.com/)
+      .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
+      .reply(200);
+    await deleteOVHEmailAcounts()
+    ovhEmailDeletion.isDone().should.be.true;
+  });
 });

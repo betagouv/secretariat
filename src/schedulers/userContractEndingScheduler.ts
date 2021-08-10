@@ -4,6 +4,7 @@ import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
 import knex from '../db';
+import { Member } from '../models/member';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (days) => {
@@ -143,3 +144,24 @@ export async function sendInfoToSecondaryEmailAfterXDays(nbDays, optionalExpired
 export async function sendJ1Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(1, users)};
 
 export async function sendJ30Email(users) { return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users)};
+
+export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
+  let expiredUsers: Member[] = optionalExpiredUsers;
+  if (!expiredUsers) {
+    const users: Member[] = await BetaGouv.usersInfos();
+    const allOvhEmails = await BetaGouv.getAllEmailInfos();
+    expiredUsers =  users.filter(
+      (user) => {
+        return utils.checkUserIsExpired(user, 30) && allOvhEmails.includes(user.id)
+      }
+    );
+  }
+  for (const user of expiredUsers) {
+    try {
+      await BetaGouv.deleteEmail(user.id)
+        console.log(`Suppression de l'email ovh pour ${user.id}`)
+    } catch {
+      console.log(`Erreur lors de la suppression de l'email ovh pour ${user.id}`)
+    }
+  }
+}

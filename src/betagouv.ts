@@ -112,7 +112,7 @@ const betaOVH = {
     const users = await betaGouv.usersInfos();
     const allOvhEmails = await betaOVH.getAllEmailInfos();
     const activeUsers = users.filter(
-      (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id)
+      (user) => !checkUserIsExpired(user) && allOvhEmails.includes(user.id)
     );
     return activeUsers;
   },
@@ -130,7 +130,7 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  deleteEmail: async (id, password) => {
+  deleteEmail: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
