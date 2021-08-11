@@ -1,4 +1,5 @@
 import nock from 'nock'
+import chai from 'chai'
 import sinon from 'sinon'
 import BetaGouv from '../src/betagouv'
 import config from '../src/config'
@@ -7,9 +8,11 @@ import * as controllerUtils from '../src/controllers/utils'
 import knex from '../src/db';
 import {
   sendInfoToSecondaryEmailAfterXDays,
+  deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts
 } from '../src/schedulers/userContractEndingScheduler'
 
+const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
@@ -138,7 +141,6 @@ describe('send message on contract end to user', () => {
         }
       ]
     }]).persist()
-    const { sendJ1Email } = userContractEndingScheduler;
     await sendInfoToSecondaryEmailAfterXDays(1);
     // sendEmail not call because secondary email does not exists for user
     sendEmailStub.calledOnce.should.be.false;
@@ -147,8 +149,10 @@ describe('send message on contract end to user', () => {
       username: 'julien.dauphant'
     })
     await sendInfoToSecondaryEmailAfterXDays(1)
-    console.log(sendEmailStub.firstCall.args);
     sendEmailStub.calledOnce.should.be.true;
+    await knex('users').where({
+      username: 'julien.dauphant'
+    }).delete()
   });  
 
   it('should delete user ovh account', async () => {
@@ -173,4 +177,33 @@ describe('send message on contract end to user', () => {
     await deleteOVHEmailAcounts()
     ovhEmailDeletion.isDone().should.be.true;
   });
+  it('should delete user secondary_email', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateLess30days,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }]).persist()
+    await knex('users').insert({
+      secondary_email: 'uneadressesecondaire@gmail.com',
+      username: 'julien.dauphant'
+    })
+    await deleteSecondaryEmailsForUsers()
+    const users = await knex('users').where({
+      username: 'julien.dauphant'
+    })
+    should.equal(users[0].secondary_email, null)
+    await knex('users').where({
+      username: 'julien.dauphant'
+    }).delete()
+  }); 
 });

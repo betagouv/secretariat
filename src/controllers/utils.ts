@@ -56,17 +56,20 @@ export function buildBetaEmail(id) {
   return `${id}@${config.domain}`;
 }
 
-export function checkUserIsExpired(user, daysOfExpiration = 0) {
+export function checkUserIsExpired(user, minDaysOfExpiration = 0) {
   // Le membre est considéré comme expiré si:
   // - il/elle existe
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
+
+  const today = new Date()
+  today.setHours(0,0,0,0)
   return (
     user &&
     user.end !== undefined &&
     new Date().toString() !== 'Invalid Date' &&
-    new Date(user.end).getTime() + daysOfExpiration * 24 * 3600 <
-      new Date().getTime()
+    new Date(user.end).getTime() + (minDaysOfExpiration * 24 * 3600 * 1000) <
+      today.getTime()
   );
 }
 

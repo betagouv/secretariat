@@ -16,6 +16,7 @@ import {
   sendNewsletterAndCreateNewOne,
 } from './newsletterScheduler';
 import {
+  deleteSecondaryEmailsForUsers,
   sendContractEndingMessageToUsers,
   sendJ1Email,
   sendJ30Email,
@@ -92,6 +93,13 @@ const jobs: Job[] = [
     onTick: sendJ30Email,
     isActive: !!config.featureSendJ30Email,
     name: 'sendJ30Email',
+  },
+    {
+    cronTime: '0 0 10 * * *',
+    onTick: deleteSecondaryEmailsForUsers,
+    isActive: !!config.featureDeleteSecondaryEmail,
+    name: 'deleteSecondaryEmailsForUsers',
+    description: 'Cron job to delete secondary email',
   },
   {
     cronTime: '0 15 * * * *',
