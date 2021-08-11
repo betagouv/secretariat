@@ -69,6 +69,13 @@ export default {
       .reply(200, [])
       .persist();
   },
+  mockOvhChangePassword() {
+    console.log('MOCK');
+    return nock(/.*ovh.com/)
+    .post(/^.*email\/domain\/.*\/account\/+.+\/changePassword/)
+    .reply(200, [])
+    .persist();
+  },
   mockOvhTime() {
     return nock(/.*ovh.com/)
       .get(/^.*auth\/time/)

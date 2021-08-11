@@ -112,7 +112,7 @@ Tous les emails envoyés par le code du secrétariat seront visibles depuis l'in
 
 ### Debug sans notifications Slack
 
-Pour certaines actions, le secrétariat envoie une notification Slack. En local, vous pouvez mettre la variable d'environnement `SLACK_WEBHOOK_URL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
+Pour certaines actions, le secrétariat envoie une notification Slack. En local, vous pouvez mettre les variables d'environnements `SLACK_WEBHOOK_URL_SECRETARIAT` et `SLACK_WEBHOOK_URL_GENERAL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
 
 [Beeceptor](https://beeceptor.com/) permet de le faire avec une interface en ligne sans besoin de télécharger quoi que ce soit.
 
@@ -150,7 +150,7 @@ Pour utiliser d'autres commandes, le [CLI de KnexJS](http://knexjs.org/#Migratio
 ### Générer le graphe des redirections emails
 
 - Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
-- Lancer le script : `node ./scripts/export_redirections_to_dot.js > redirections.dot`
+- Lancer le script : `node ./scripts/export_redirections_to_dot.ts > redirections.dot`
 - Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
 
 ### Supprimer une redirection
@@ -166,7 +166,7 @@ Pour cela une une branche est créée sur un fork du repository `betagrouv/beta.
 ### Pourquoi utiliser un fork ?
 
 Afin de créer une branche et faire une pull request sur un repository, on donne les droits d'accès en écriture sur ce repository via un token (`GITHUB_TOKEN`) utilisé
-par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal. 
+par le code. Pour prévenir tout problème ces droits sont donnés sur le repository "fork", et non sur le repository principal.
 
 Il faut donc préciser ces variables d'environnement:
 
