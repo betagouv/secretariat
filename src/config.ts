@@ -43,6 +43,7 @@ export default {
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
+  githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || 'beta-gouv-fr',
   defaultLoggedInRedirectUrl: '/account',
   visitRecipientEmail: process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
@@ -64,5 +65,5 @@ export default {
   featureSendJ1Email: process.env.FEATURE_SEND_J1_EMAIL,
   featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL,
   featureDeleteOVHEmailAccounts: process.env.FEATURE_DELETE_OVH_EMAIL_ACCOUNTS,
-  featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL
+  featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL,
 };
