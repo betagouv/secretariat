@@ -1,4 +1,3 @@
-import { CronJob } from 'cron';
 import crypto from 'crypto';
 import HedgedocApi from 'hedgedoc-api';
 import BetaGouv from '../betagouv';
@@ -96,7 +95,7 @@ const computeMessageReminder = (reminder, newsletter) => {
   return message;
 };
 
-const newsletterReminder = async (reminder) => {
+export async function newsletterReminder(reminder) {
   const currentNewsletter = await knex('newsletters')
     .where({
       sent_at: null,
@@ -109,35 +108,11 @@ const newsletterReminder = async (reminder) => {
       'general'
     );
   }
-};
+}
 
 export { createNewsletter };
 
-export const newsletterMondayReminderJob = new CronJob(
-  '0 8 * * 1', // every week a 8:00 on monday
-  () => newsletterReminder('FIRST_REMINDER'),
-  null,
-  true,
-  'Europe/Paris'
-);
-
-export const newsletterThursdayMorningReminderJob = new CronJob(
-  '0 0 8 * * 4', // every week a 8:00 on thursday
-  () => newsletterReminder('SECOND_REMINDER'),
-  null,
-  true,
-  'Europe/Paris'
-);
-
-export const newsletterThursdayEveningReminderJob = new CronJob(
-  '0 14 * * 4', // every week a 14:00 on thursday
-  (type) => newsletterReminder('THIRD_REMINDER'),
-  null,
-  true,
-  'Europe/Paris'
-);
-
-const sendNewsletterAndCreateNewOne = async () => {
+export async function sendNewsletterAndCreateNewOne() {
   const date = new Date();
   const currentNewsletter = await knex('newsletters')
     .where({
@@ -183,12 +158,4 @@ const sendNewsletterAndCreateNewOne = async () => {
       });
     await createNewsletter();
   }
-};
-
-export const sendNewsletterAndCreateNewOneJob = new CronJob(
-  config.newsletterSendTime || '0 16 * * 4', // run on thursday et 4pm,
-  sendNewsletterAndCreateNewOne,
-  null,
-  true,
-  'Europe/Paris'
-);
+}

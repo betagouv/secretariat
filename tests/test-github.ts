@@ -2,7 +2,10 @@ import nock from 'nock';
 import sinon from 'sinon';
 import * as github from '../src/lib/github';
 import testUsers from './users.json';
-import { addGithubUserToOrganization, removeGithubUserFromOrganization } from '../src/schedulers/githubScheduler';
+import {
+  addGithubUserToOrganization,
+  removeGithubUserFromOrganization,
+} from '../src/schedulers/githubScheduler';
 
 const githubOrganizationMembers = [
   {
@@ -29,24 +32,29 @@ describe('Add user to github organization', () => {
   let getGithubMembers;
 
   beforeEach(() => {
-    getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves(githubOrganizationMembers);
-    inviteUser = sinon.stub(github, 'inviteUserByUsernameToOrganization').resolves();
-    pendingInvitations = sinon.stub(github, 'getAllPendingInvitations').resolves([])
-    
-  })
+    getGithubMembers = sinon
+      .stub(github, 'getAllOrganizationMembers')
+      .resolves(githubOrganizationMembers);
+    inviteUser = sinon
+      .stub(github, 'inviteUserByUsernameToOrganization')
+      .resolves();
+    pendingInvitations = sinon
+      .stub(github, 'getAllPendingInvitations')
+      .resolves([]);
+  });
 
   afterEach(() => {
     pendingInvitations.restore();
     inviteUser.restore();
     getGithubMembers.restore();
-  })
+  });
 
   it('should add new users to organization', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
 
     await addGithubUserToOrganization();
     inviteUser.calledTwice.should.be.true;
@@ -73,24 +81,31 @@ describe('Removed user from github organization', () => {
   let getGithubMembers;
 
   beforeEach(() => {
-    removeUser = sinon.stub(github, 'removeUserByUsernameFromOrganization').resolves(true);
-    getGithubMembers = sinon.stub(github, 'getAllOrganizationMembers').resolves([...githubOrganizationMembers, {
-      login: 'membre.expire',
-      id: '45548'
-    }]);
-  })
+    removeUser = sinon
+      .stub(github, 'removeUserByUsernameFromOrganization')
+      .resolves();
+    getGithubMembers = sinon
+      .stub(github, 'getAllOrganizationMembers')
+      .resolves([
+        ...githubOrganizationMembers,
+        {
+          login: 'membre.expire',
+          id: '45548',
+        },
+      ]);
+  });
 
   afterEach(() => {
     removeUser.restore();
     getGithubMembers.restore();
-  })
+  });
 
   it('should add new users to organization', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
 
     await removeGithubUserFromOrganization();
     removeUser.calledOnce.should.be.true;

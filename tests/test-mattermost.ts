@@ -44,25 +44,29 @@ describe('invite users to mattermost', () => {
 
   it('invite users to team by emails', async () => {
     nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/account/)
-    .reply(200, testUsers.map((user) => user.id));
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(
+        200,
+        testUsers.map((user) => user.id)
+      );
 
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [...mattermostUsers]);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, []);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
 
     nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
-    .reply(200, [{}, {}]).persist();
+      .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
+      .reply(200, [{}, {}])
+      .persist();
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
     const { inviteUsersToTeamByEmail } = mattermostScheduler;
     const result = await inviteUsersToTeamByEmail();
     result.length.should.be.equal(2);
@@ -70,26 +74,32 @@ describe('invite users to mattermost', () => {
 
   it('create users to team by emails', async () => {
     nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/account/)
-    .reply(200, testUsers.map((user) => user.id));
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(
+        200,
+        testUsers.map((user) => user.id)
+      );
 
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [...mattermostUsers]);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, []);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
     nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/users\?iid=.*/)
-    .reply(200, []).persist();
-    const sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+      .post(/^.*api\/v4\/users\?iid=.*/)
+      .reply(200, [])
+      .persist();
+    const sendEmailStub = sinon
+      .stub(controllerUtils, 'sendMail')
+      .returns(Promise.resolve(true));
     const mattermostCreateUser = sinon.spy(mattermost, 'createUser');
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
     const { createUsersByEmail } = mattermostScheduler;
     const result = await createUsersByEmail();
     result.length.should.be.equal(1);
@@ -122,21 +132,22 @@ describe('Reactivate current users on mattermost', () => {
 
   it('reactivate current users', async () => {
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [...inactiveMattermostUsers]);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [...inactiveMattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, []);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
 
     nock(/.*mattermost.incubateur.net/)
-    .put(/^.*api\/v4\/users\/julien.dauphant\/active/)
-    .reply(200, [{ status: 'ok' }]).persist();
+      .put(/^.*api\/v4\/users\/julien.dauphant\/active/)
+      .reply(200, [{ status: 'ok' }])
+      .persist();
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, testUsers)
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
 
     const { reactivateUsers } = mattermostScheduler;
     const result = await reactivateUsers();
@@ -158,51 +169,61 @@ describe('Move expired user to team Alumni on mattermost', () => {
 
   it('Move expired user to team Alumni on mattermost', async () => {
     nock(/.*mattermost.incubateur.net/)
-    .get(/^.*api\/v4\/users.*/)
-    .reply(200, [{
-        id: 'julien.dauphant',
-        email: `julien.dauphant@${config.domain}`,
-    }]);
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          email: `julien.dauphant@${config.domain}`,
+        },
+      ]);
     nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/users\/search.*/)
-    .reply(200, [{
-      id: 265695,
-      username: 'julien.dauphant',
-      email: 'julien.dauphant'
-    }]);
+      .post(/^.*api\/v4\/users\/search.*/)
+      .reply(200, [
+        {
+          id: 265695,
+          username: 'julien.dauphant',
+          email: 'julien.dauphant',
+        },
+      ]);
 
     const addToTeamMock = nock(/.*mattermost.incubateur.net/)
-    .post(/^.*api\/v4\/teams\/testalumniteam\/members/)
-    .reply(200, [{
-      "team_id": "testalumniteam",
-      "user_id": 265695,
-      "roles": "string",
-      "delete_at": 0,
-      "scheme_user": true,
-      "scheme_admin": true,
-      "explicit_roles": "string"
-    }]).persist();
+      .post(/^.*api\/v4\/teams\/testalumniteam\/members/)
+      .reply(200, [
+        {
+          team_id: 'testalumniteam',
+          user_id: 265695,
+          roles: 'string',
+          delete_at: 0,
+          scheme_user: true,
+          scheme_admin: true,
+          explicit_roles: 'string',
+        },
+      ])
+      .persist();
 
     const removeFromTeamMock = nock(/.*mattermost.incubateur.net/)
-    .delete(/^.*api\/v4\/teams\/testteam\/members/)
-    .reply(200, [{ status: 'ok' }]).persist();
+      .delete(/^.*api\/v4\/teams\/testteam\/members/)
+      .reply(200, [{ status: 'ok' }])
+      .persist();
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, [{
-      "id": "julien.dauphant",
-      "fullname": "Julien Dauphant",
-      "missions": [
-        { 
-          "start": "2016-11-03",
-          "end": "2021-01-17",
-          "status": "independent",
-          "employer": "octo"
-        }
-      ]
-    }])
-    .persist();
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: '2021-01-17',
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
 
     const { moveUsersToAlumniTeam } = mattermostScheduler;
     const result = await moveUsersToAlumniTeam();
