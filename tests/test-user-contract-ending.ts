@@ -10,6 +10,7 @@ import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts,
+  removeEmailsFromMailingList,
   deleteUserEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
@@ -314,9 +315,9 @@ describe('After quitting', () => {
     const mailingListAideJeune = nock(/.*ovh.com/)
     .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aide-jeunes/subscriber/julien.dauphant@${config.domain}`))
     .reply(200)
-    await deleteUserEmailsFromMailingList()
+    await removeEmailsFromMailingList()
     ovhMailingList.isDone().should.be.true;
-    mailingListAideJeune.isDone().should.be.true;
     mailingListBeta.isDone().should.be.true;
+    mailingListAideJeune.isDone().should.be.true;
   }); 
 });

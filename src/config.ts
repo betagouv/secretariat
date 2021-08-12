@@ -82,5 +82,5 @@ export default {
   featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL,
   featureDeleteRedirectionsAfterQuitting:
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
-  featureDeleteUserEmailsFromMailingList: process.env.FEATURE_DELETE_USER_EMAILS_FROM_MAILING_LIST
+  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST
 };

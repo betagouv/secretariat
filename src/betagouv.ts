@@ -116,9 +116,8 @@ const betaOVH = {
   },
   removeFromMailingList: async(mailingListName: string, email: string) => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
-
     try {
-      return await ovh.requestPromised('delete', url, {});
+      return await ovh.requestPromised('DELETE', url);
     } catch (err) {
       if (err.error === 404) return null;
       throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);

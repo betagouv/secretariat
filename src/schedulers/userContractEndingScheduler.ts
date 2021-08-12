@@ -246,7 +246,7 @@ export async function deleteRedirectionsAfterQuitting(
     })
   );
 }
-const deleteUserEmailFromMailingList = async (user: string, mailingList:string[]) => {
+const removeEmailFromMailingList = async (user: string, mailingList:string[]) => {
   return Promise.all(mailingList.map(async (mailing: string) => {
     try {
       await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(user))
@@ -256,7 +256,7 @@ const deleteUserEmailFromMailingList = async (user: string, mailingList:string[]
   }))
 }
 
-export async function deleteUserEmailsFromMailingList(optionalExpiredUsers?: Member[], nbDays=30) {
+export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[], nbDays=30) {
   let expiredUsers: Member[] = optionalExpiredUsers;
   if (!expiredUsers) {
     const users: Member[] = await BetaGouv.usersInfos();
@@ -264,11 +264,7 @@ export async function deleteUserEmailsFromMailingList(optionalExpiredUsers?: Mem
   }
   const mailingList: string[] = await betagouv.getAllMailingList()
   for (const user of expiredUsers) {
-    try {
-      deleteUserEmailFromMailingList(user.id, mailingList)
-    } catch {
-      console.log(`Erreur lors de la suppression de secondary_email pour ${user.id}`)
-    }
+     await removeEmailFromMailingList(user.id, mailingList)
   }
 }
 
