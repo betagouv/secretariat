@@ -307,16 +307,16 @@ describe('After quitting', () => {
     }]).persist()
     const ovhMailingList = nock(/.*ovh.com/)
     .get(/^.*email\/domain\/.*\/mailingList\//)
-    .reply(['beta-gouv-fr', 'aide-jeunes']);
+    .reply(200, ['beta-gouv-fr', 'aide-jeunes']);
     const mailingListBeta = nock(/.*ovh.com/)
-    .delete(`/^.*email\/domain\/.*\/mailingList\/beta-gouv-fr\/julien.dauphant@${config.domain}/`)
-    .reply(404);
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant@${config.domain}`))
+    .reply(404)
     const mailingListAideJeune = nock(/.*ovh.com/)
-    .delete(`/^.*email\/domain\/.*\/mailingList\/aide-jeunes\/julien.dauphant@${config.domain}/`)
-    .reply(200);
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aide-jeunes/subscriber/julien.dauphant@${config.domain}`))
+    .reply(200)
     await deleteUserEmailsFromMailingList()
-    ovhMailingList.isDone().should.be.true
-    mailingListBeta.isDone().should.be.true
-    mailingListAideJeune.isDone().should.be.true
+    ovhMailingList.isDone().should.be.true;
+    mailingListAideJeune.isDone().should.be.true;
+    mailingListBeta.isDone().should.be.true;
   }); 
 });

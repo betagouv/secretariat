@@ -106,8 +106,7 @@ const betaOVH = {
     }
   },
   getAllMailingList: async() => {
-    const url = `/email/domain/${config.domain}/mailingList/${id}`;
-
+    const url = `/email/domain/${config.domain}/mailingList/`;
     try {
       return await ovh.requestPromised('GET', url, {});
     } catch (err) {
@@ -122,7 +121,7 @@ const betaOVH = {
       return await ovh.requestPromised('delete', url, {});
     } catch (err) {
       if (err.error === 404) return null;
-      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
     }
   },
   // get active users with email registered on ovh
