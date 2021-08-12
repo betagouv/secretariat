@@ -308,13 +308,20 @@ describe('After quitting', () => {
     }]).persist()
     const ovhMailingList = nock(/.*ovh.com/)
     .get(/^.*email\/domain\/.*\/mailingList\//)
-    .reply(200, ['beta-gouv-fr', 'aide-jeunes']);
+    .reply(200, ['beta-gouv-fr', 'aides-jeunes']);
     const mailingListBeta = nock(/.*ovh.com/)
     .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant@${config.domain}`))
     .reply(404)
     const mailingListAideJeune = nock(/.*ovh.com/)
-    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aide-jeunes/subscriber/julien.dauphant@${config.domain}`))
-    .reply(200)
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aides-jeunes/subscriber/julien.dauphant@${config.domain}`))
+    .reply(200, {
+      action: "mailinglist/deleteSubscriber",
+      id: 14564515,
+      language: "fr",
+      domain: config.domain,
+      account: "aides-jeunes",
+      date: "2021-08-12T15:29:55+02:00"
+    })
     await removeEmailsFromMailingList()
     ovhMailingList.isDone().should.be.true;
     mailingListBeta.isDone().should.be.true;
