@@ -260,7 +260,7 @@ export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[
   let expiredUsers: Member[] = optionalExpiredUsers;
   if (!expiredUsers) {
     const users: Member[] = await BetaGouv.usersInfos();
-    expiredUsers = users.filter(user => utils.checkUserIsExpired(user, nbDays));
+    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays)
   }
   const mailingList: string[] = await betagouv.getAllMailingList()
   for (const user of expiredUsers) {

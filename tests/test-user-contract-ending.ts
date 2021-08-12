@@ -11,7 +11,6 @@ import {
   deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts,
   removeEmailsFromMailingList,
-  deleteUserEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
 
@@ -19,7 +18,7 @@ const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
-const fakeDateLess30days = '2019-12-01';
+const fakeDateLess30days = '2019-12-02'
 
 const betaGouvUsers = [
   {
