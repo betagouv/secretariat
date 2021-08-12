@@ -246,12 +246,12 @@ export async function deleteRedirectionsAfterQuitting(
     })
   );
 }
-const removeEmailFromMailingList = async (user: string, mailingList:string[]) => {
+const removeEmailFromMailingList = async (userId: string, mailingList:string[]) => {
   return Promise.all(mailingList.map(async (mailing: string) => {
     try {
-      await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(user))
-    } catch (e) {
-      console.error(e)
+      await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(userId))
+    } catch (err) {
+      console.error(`Erreur lors de la suppression de l'email : ${userId}`)
     }
   }))
 }
