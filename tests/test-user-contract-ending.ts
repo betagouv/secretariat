@@ -10,6 +10,7 @@ import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts,
+  deleteUserEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
 
@@ -287,4 +288,35 @@ describe('After quitting', () => {
     const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
     should.equal(test.length, 2);
   });
+
+  it('should remove user from mailingList', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateLess30days,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }]).persist()
+    const ovhMailingList = nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/mailingList\//)
+    .reply(['beta-gouv-fr', 'aide-jeunes']);
+    const mailingListBeta = nock(/.*ovh.com/)
+    .delete(`/^.*email\/domain\/.*\/mailingList\/beta-gouv-fr\/julien.dauphant@${config.domain}/`)
+    .reply(404);
+    const mailingListAideJeune = nock(/.*ovh.com/)
+    .delete(`/^.*email\/domain\/.*\/mailingList\/aide-jeunes\/julien.dauphant@${config.domain}/`)
+    .reply(200);
+    await deleteUserEmailsFromMailingList()
+    ovhMailingList.isDone().should.be.true
+    mailingListBeta.isDone().should.be.true
+    mailingListAideJeune.isDone().should.be.true
+  }); 
 });
