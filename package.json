@@ -73,7 +73,7 @@
     "@types/chai": "^4.2.21",
     "@types/mocha": "^9.0.0",
     "@types/sinon": "^10.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
     "@typescript-eslint/parser": "^4.28.4",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
