@@ -1,0 +1,15 @@
+export interface MattermostUser {
+    "id": string,
+    "create_at": Date,
+    "update_at": Date,
+    "delete_at": Date,
+    "username": string,
+    "first_name": string,
+    "last_name": string,
+    "nickname": string,
+    "email": string,
+    "email_verified": boolean,
+    "auth_service": string,
+    "roles": string,
+    "locale": string,
+}
