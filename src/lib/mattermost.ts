@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config';
+import { MattermostUser } from '../models/mattermostUser';
 
 const getMattermostConfig = () => {
   if (!config.mattermostBotToken) {
@@ -185,4 +186,26 @@ export async function createUser({ email, username, password }, teamId = null) {
   }
   console.log("Ajout de l'utilisateur", email, username);
   return res;
+}
+
+export async function changeUserEmail(id: string, email: string) {
+  try {
+    const res: MattermostUser = await axios
+      .put(
+        `https://mattermost.incubateur.net/api/v4/users/${id}/patch`,
+        {
+          email,
+        },
+        getMattermostConfig()
+      )
+      .then((response) => response.data);
+    console.log(`Changement de l'email de l'utilisateur ${res.username}`);
+    return true;
+  } catch (err) {
+    console.error(
+      `Erreur de changement d'email de l'utilisateur mattermost : ${id}`,
+      err,
+    );
+    return false;
+  }
 }
