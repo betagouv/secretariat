@@ -217,7 +217,6 @@ export async function deleteRedirectionsAfterQuitting(
   check_all = false
 ): Promise<unknown[]> {
   const users: Member[] = await BetaGouv.usersInfos();
-  console.log(users);
   const expiredUsers: Member[] = check_all
     ? utils.getExpiredUsers(users, 1)
     : utils.getExpiredUsersForXDays(users, 1);
