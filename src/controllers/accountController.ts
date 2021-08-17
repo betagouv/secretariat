@@ -91,6 +91,11 @@ export async function getCurrentAccount(req, res) {
       formData: {
         newEnd: '',
       },
+      responderFormData: currentUser.responder || {
+        start: '',
+        end: '',
+        content: ''
+      },
       errors: req.flash('error'),
       messages: req.flash('message'),
     });

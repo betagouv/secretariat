@@ -275,7 +275,7 @@
                         Configurer une réponse automatique est utile à programmer lors de vos congés pour informer
                         vos correspondants de votre absence.
                     </p>
-                    <% if (!responder) { %>
+                    <% if (!responderFormData) { %>
                         <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <% } else { %>
                         <form class="no-margin" action="/account/set_email_responder" method="PUT" onsubmit="event.submitter && (event.submitter.disabled = true);">
@@ -284,14 +284,14 @@
                                 <label for="start">
                                     <strong>Texte de la réponse automatique</strong><br />
                                 </label>
-                                <textarea id="emailResponder" name="emailResponder"></textarea>
+                                <textarea id="emailResponder" name="emailResponder" value="<%= responderFormData.content %>"></textarea>
                             </div>
                             <div class="form__group">
                                 <label for="start">
                                     <strong>Début</strong><br />
                                     <i>Au format JJ/MM/YYYY</i>
                                 </label>
-                                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                             </div>
                 
                             <div class="form__group">
@@ -299,9 +299,9 @@
                                     <strong>Fin</strong><br />
                                     <i>Au format JJ/MM/YYYY</i>
                                 </label>
-                                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                             </div>
-                    <% if (!responder) { %>
+                    <% if (!responderFormData) { %>
                             <button class="button margin-10-0" type="submit">Changer la réponse automatique</button>
                         </form>
                     <% } else { %>
