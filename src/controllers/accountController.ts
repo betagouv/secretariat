@@ -1,6 +1,33 @@
+import betagouv from "../betagouv";
 import config from "../config";
 import knex from "../db";
 import * as utils from "./utils";
+
+export async function set_email_responder(req, res) {
+  const startDate = req.params.startDate
+  const endDate = req.params.endDate
+  const content = req.params.content
+  try {
+    if (req.method === 'PUT') {
+      await betagouv.setResponder(req.user.id, {
+        from: startDate,
+        to: endDate,
+        content
+      })
+    } else {
+      await betagouv.updateResponder(req.user.id, {
+        from: startDate,
+        to: endDate,
+        content
+      })
+    }
+  } catch(err) {
+    console.error(err);
+    req.flash('error', `Erreur lors de la configuration de la réponse automatique`);
+    return res.redirect('/');
+  }
+  return res.redirect('/account');
+}
 
 export async function getCurrentAccount(req, res) {
   try {

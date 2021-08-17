@@ -261,7 +261,7 @@
                         <% } %>
                     <% } %>
                     <hr />
-                </div>
+                </div> 
             </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
@@ -276,9 +276,9 @@
                         vos correspondants de votre absence.
                     </p>
                     <% if (!responder) { %>
-                        <form class="no-margin" action="/users/<%= userInfos.id %>/update_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <% } else { %>
-                        <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <form class="no-margin" action="/account/set_email_responder" method="PUT" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <% } %>       
                             <div class="form__group">
                                 <label for="start">

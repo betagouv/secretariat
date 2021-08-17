@@ -133,7 +133,7 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  setResponder: async (id, content, from, to) => {
+  setResponder: async (id, { content, from, to }) => {
     const url = `/email/domain/${config.domain}/responder`;
     try {
       console.log(`OVH POST ${url} name=${id}`);
@@ -148,6 +148,19 @@ const betaOVH = {
       return await ovh.requestPromised('POST', url, params);
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  updateResponder: async (id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH PUT ${url} name=${id}`);
+      return await ovh.requestPromised('PUT', url, {
+        content,
+        from,
+        to,
+      });
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
     }
   },
   createEmail: async (id, password) => {
