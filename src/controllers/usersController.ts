@@ -283,23 +283,21 @@ export async function manageSecondaryEmailForUser(req, res) {
 
   try {
     if (user.canChangeSecondaryEmail) {
-      const insert = knex('users')
-          .insert({
-            secondary_email: secondaryEmail,
-            username
-          })
-          .toString();
-      const update = knex('users')
-        .update({
-          secondary_email: secondaryEmail,
-        })
-        .where({ username })
-        .toString();
-      const query = `${insert} ON CONFLICT (username) DO UPDATE SET ${update}`;
-      await knex.raw(query);
+
+      await knex('users')
+      .insert({
+        secondary_email: secondaryEmail,
+        username
+      })
+      .onConflict('unsername')
+      .merge({
+        secondary_email: secondaryEmail,
+        username
+      });
+
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
       res.redirect(`/community/${username}`);
-      }
+    };
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);
