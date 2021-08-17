@@ -632,7 +632,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:username/secondary_email/update', () => {
+  describe('POST /users/:username/secondary_email/', () => {
     it('should return 200 to update secondary email', (done) => {
       chai
         .request(app)
@@ -670,7 +670,7 @@ describe('User', () => {
             .then(() => {
               chai
                 .request(app)
-                .post(`/users/${username}/secondary_email/update`)
+                .post(`/users/${username}/secondary_email/`)
                 .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
                 .type('form')
                 .send({
