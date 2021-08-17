@@ -266,16 +266,22 @@
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
-                        Mettre une message d'auto-response
+                        Configurer une réponse automatique
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
                 <div hidden class="collapse-content">
                     <p>
-                        L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
+                        Configurer une réponse automatique est utile à programmer lors de vos congés pour informer
+                        vos correspondants de votre absence.
                     </p>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <textarea id="emailResponder" name="emailResponder"></textarea>
+                        <div class="form__group">
+                            <label for="start">
+                                <strong>Texte de la réponse automatique</strong><br />
+                            </label>
+                            <textarea id="emailResponder" name="emailResponder"></textarea>
+                        </div>
                         <div class="form__group">
                             <label for="start">
                                 <strong>Début</strong><br />
