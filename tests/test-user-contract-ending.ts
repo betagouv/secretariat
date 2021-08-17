@@ -1,22 +1,23 @@
-import nock from 'nock'
-import chai from 'chai'
-import sinon from 'sinon'
-import BetaGouv from '../src/betagouv'
-import config from '../src/config'
-import utils from './utils'
-import * as controllerUtils from '../src/controllers/utils'
+import nock from 'nock';
+import chai from 'chai';
+import sinon from 'sinon';
+import BetaGouv from '../src/betagouv';
+import config from '../src/config';
+import utils from './utils';
+import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
-  deleteOVHEmailAcounts
-} from '../src/schedulers/userContractEndingScheduler'
+  deleteOVHEmailAcounts,
+  deleteRedirectionsAfterQuitting,
+} from '../src/schedulers/userContractEndingScheduler';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
-const fakeDateLess30days = '2019-12-01'
+const fakeDateLess30days = '2019-12-01';
 
 const betaGouvUsers = [
   {
@@ -98,12 +99,16 @@ describe('send message on contract end to user', () => {
       .returns(Promise.resolve(true));
     chat = sinon.spy(BetaGouv, 'sendInfoToChat');
     clock = sinon.useFakeTimers(new Date(fakeDate));
-    nock('https://mattermost.incubateur.net/^.*api\/v4\/users?per_page=200&page=0')
-    .get(/.*/)
-    .reply(200, [...mattermostUsers]);
-    nock('https://mattermost.incubateur.net/^.*api\/v4\/users?per_page=200&page=1')
-    .get(/.*/)
-    .reply(200, []);
+    nock(
+      'https://mattermost.incubateur.net/^.*api/v4/users?per_page=200&page=0'
+    )
+      .get(/.*/)
+      .reply(200, [...mattermostUsers]);
+    nock(
+      'https://mattermost.incubateur.net/^.*api/v4/users?per_page=200&page=1'
+    )
+      .get(/.*/)
+      .reply(200, []);
   });
 
   afterEach(async () => {
@@ -116,8 +121,8 @@ describe('send message on contract end to user', () => {
   it('should send message to users', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, betaGouvUsers)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, betaGouvUsers);
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     await sendContractEndingMessageToUsers('mail15days');
     console.log(chat);
@@ -128,82 +133,158 @@ describe('send message on contract end to user', () => {
   it('should send j1 mail to users', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, [{
-      "id": "julien.dauphant",
-      "fullname": "Julien Dauphant",
-      "missions": [
-        { 
-          "start": "2016-11-03",
-          "end": fakeDateLess1day,
-          "status": "independent",
-          "employer": "octo"
-        }
-      ]
-    }]).persist()
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess1day,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
     await sendInfoToSecondaryEmailAfterXDays(1);
     // sendEmail not call because secondary email does not exists for user
     sendEmailStub.calledOnce.should.be.false;
     await knex('users').insert({
       secondary_email: 'uneadressesecondaire@gmail.com',
-      username: 'julien.dauphant'
-    })
-    await sendInfoToSecondaryEmailAfterXDays(1)
+      username: 'julien.dauphant',
+    });
+    await sendInfoToSecondaryEmailAfterXDays(1);
     sendEmailStub.calledOnce.should.be.true;
-    await knex('users').where({
-      username: 'julien.dauphant'
-    }).delete()
-  });  
+    await knex('users')
+      .where({
+        username: 'julien.dauphant',
+      })
+      .delete();
+  });
 
   it('should delete user ovh account', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, [{
-      "id": "membre.expire",
-      "fullname": "Membre expire",
-      "missions": [
-        { 
-          "start": "2016-11-03",
-          "end": fakeDateLess30days,
-          "status": "independent",
-          "employer": "octo"
-        }
-      ]
-    }]).persist()
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'membre.expire',
+          fullname: 'Membre expire',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess30days,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
     const ovhEmailDeletion = nock(/.*ovh.com/)
       .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
       .reply(200);
-    await deleteOVHEmailAcounts()
+    await deleteOVHEmailAcounts();
     ovhEmailDeletion.isDone().should.be.true;
   });
   it('should delete user secondary_email', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
-    .get((uri) => uri.includes('authors.json'))
-    .reply(200, [{
-      "id": "julien.dauphant",
-      "fullname": "Julien Dauphant",
-      "missions": [
-        { 
-          "start": "2016-11-03",
-          "end": fakeDateLess30days,
-          "status": "independent",
-          "employer": "octo"
-        }
-      ]
-    }]).persist()
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess30days,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
     await knex('users').insert({
       secondary_email: 'uneadressesecondaire@gmail.com',
-      username: 'julien.dauphant'
-    })
-    await deleteSecondaryEmailsForUsers()
+      username: 'julien.dauphant',
+    });
+    await deleteSecondaryEmailsForUsers();
     const users = await knex('users').where({
-      username: 'julien.dauphant'
-    })
-    should.equal(users[0].secondary_email, null)
-    await knex('users').where({
-      username: 'julien.dauphant'
-    }).delete()
-  }); 
+      username: 'julien.dauphant',
+    });
+    should.equal(users[0].secondary_email, null);
+    await knex('users')
+      .where({
+        username: 'julien.dauphant',
+      })
+      .delete();
+  });
+});
+
+describe('After quitting', () => {
+  let clock;
+  let sendEmailStub;
+  beforeEach(async () => {
+    utils.cleanMocks();
+    utils.mockSlackGeneral();
+    utils.mockSlackSecretariat();
+    utils.mockOvhTime();
+    utils.mockOvhRedirections();
+    utils.mockOvhUserEmailInfos();
+    utils.mockOvhAllEmailInfos();
+    sendEmailStub = sinon
+      .stub(controllerUtils, 'sendMail')
+      .returns(Promise.resolve(true));
+    clock = sinon.useFakeTimers(new Date(fakeDate));
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess1day,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+        {
+          id: 'julien.dauphant2',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess30days,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ]);
+  });
+
+  afterEach(async () => {
+    clock.restore();
+    sendEmailStub.restore();
+    utils.cleanMocks();
+  });
+
+  it('should delete users redirections at j+1', async () => {
+    const test: unknown[] = await deleteRedirectionsAfterQuitting();
+    should.equal(test.length, 1);
+  });
+
+  it('could delete redirections even for past users', async () => {
+    const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
+    should.equal(test.length, 2);
+  });
 });
