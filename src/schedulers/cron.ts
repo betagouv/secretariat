@@ -162,7 +162,7 @@ for (const job of jobs) {
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-    CronJob(cronjob);
+    new CronJob(cronjob);
     activeJobs++;
   } else {
     console.log(`❌ The job "${cronjob.name}" is OFF`);
