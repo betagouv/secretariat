@@ -275,7 +275,7 @@
                         L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     </p>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <textarea id="emailResponder" name="emailResponder" />
+                        <textarea id="emailResponder" name="emailResponder"></textarea>
                         <div class="form__group">
                             <label for="start">
                                 <strong>Début</strong><br />
