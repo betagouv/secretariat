@@ -274,14 +274,14 @@
                     <p>
                         L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     </p>
-                    <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <textarea id="secondaryEmail" name="secondaryEmail" />
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <textarea id="emailResponder" name="emailResponder" />
                         <div class="form__group">
                             <label for="start">
                                 <strong>Début</strong><br />
                                 <i>Au format JJ/MM/YYYY</i>
                             </label>
-                            <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                         </div>
             
                         <div class="form__group">
