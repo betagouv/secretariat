@@ -123,7 +123,7 @@ const betaOVH = {
     );
     return activeUsers;
   },
-  getResponder: async (id):Promise<OvhResponder[]> => {
+  getResponder: async (id):Promise<OvhResponder> => {
     const url = `/email/domain/${config.domain}/responder/${id}`;
 
     try {
