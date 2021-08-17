@@ -263,7 +263,39 @@
                     <hr />
                 </div>
             </div>
-
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Mettre une message d'auto-response
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
+                    </p>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <textarea id="secondaryEmail" name="secondaryEmail" />
+                        <div class="form__group">
+                            <label for="start">
+                                <strong>Début</strong><br />
+                                <i>Au format JJ/MM/YYYY</i>
+                            </label>
+                            <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                        </div>
+            
+                        <div class="form__group">
+                            <label for="end">
+                                <strong>Fin</strong><br />
+                                <i>Au format JJ/MM/YYYY</i>
+                            </label>
+                            <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                        </div>
+                        <button class="button margin-10-0" type="submit">Save</button>
+                    </form>
+                    <hr />
+                </div>
+            </div>
         </div>
     </div>
 
