@@ -155,5 +155,31 @@ describe('Account', () => {
           done();
         });
     });
+
+    it('should set email responder', (done) => {
+      const createEmailResponder = nock(/.*ovh.com/)
+      .post(/^.*email\/domain\/.*\/responder.*/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+      .reply(200)
+      chai.request(app)
+        .post('/account/set_email_responder')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          createEmailResponder.isDone().should.be.true
+          done();
+        });
+    });
+
+    it('should update email responder', (done) => {
+      const updateEmailResponder = nock(/.*ovh.com/)
+      .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+      .reply(200)
+      chai.request(app)
+        .put('/account/set_email_responder')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          updateEmailResponder.isDone().should.be.true
+          done();
+        });
+    });
   });
 });

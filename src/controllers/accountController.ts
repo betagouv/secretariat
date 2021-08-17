@@ -8,7 +8,7 @@ export async function setEmailResponder(req, res) {
   const endDate = req.params.endDate
   const content = req.params.content
   try {
-    if (req.method === 'PUT') {
+    if (req.method === 'POST') {
       await betagouv.setResponder(req.user.id, {
         from: startDate,
         to: endDate,
