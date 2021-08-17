@@ -62,15 +62,19 @@ export function checkUserIsExpired(user, minDaysOfExpiration = 0) {
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
 
-  const today = new Date()
-  today.setHours(0,0,0,0)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   return (
     user &&
     user.end !== undefined &&
     new Date().toString() !== 'Invalid Date' &&
-    new Date(user.end).getTime() + (minDaysOfExpiration * 24 * 3600 * 1000) <
+    new Date(user.end).getTime() + minDaysOfExpiration * 24 * 3600 * 1000 <
       today.getTime()
   );
+}
+
+export function getExpiredUsers(users, minDaysOfExpiration = 0) {
+  return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
 }
 
 export function getExpiredUsersForXDays(users, nbDays) {
@@ -270,11 +274,13 @@ export function getGithubFile(path, branch) {
   const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
 
   return requestWithAuth(`GET ${url}`, { branch });
-};
+}
 
 export function createGithubFile(path, branch, content, sha = undefined) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
-  const message = `${sha ? 'Mise à jour' : 'Création'} de fichier ${path} sur la branche ${branch}`; 
+  const message = `${
+    sha ? 'Mise à jour' : 'Création'
+  } de fichier ${path} sur la branche ${branch}`;
   const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
 
   return requestWithAuth(`PUT ${url}`, {

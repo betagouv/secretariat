@@ -21,6 +21,7 @@ import {
   sendJ1Email,
   sendJ30Email,
   deleteOVHEmailAcounts,
+  deleteRedirectionsAfterQuitting,
 } from './userContractEndingScheduler';
 
 interface Job {
@@ -84,6 +85,12 @@ const jobs: Job[] = [
   },
   {
     cronTime: '0 8 * * * *',
+    onTick: deleteRedirectionsAfterQuitting,
+    isActive: !!config.featureDeleteRedirectionsAfterQuitting,
+    name: 'deleteRedirectionsAfterQuitting',
+  },
+  {
+    cronTime: '0 8 * * * *',
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
     name: 'sendJ1Email',
@@ -94,7 +101,7 @@ const jobs: Job[] = [
     isActive: !!config.featureSendJ30Email,
     name: 'sendJ30Email',
   },
-    {
+  {
     cronTime: '0 0 10 * * *',
     onTick: deleteSecondaryEmailsForUsers,
     isActive: !!config.featureDeleteSecondaryEmail,
