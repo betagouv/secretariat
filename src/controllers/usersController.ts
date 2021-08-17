@@ -289,7 +289,7 @@ export async function manageSecondaryEmailForUser(req, res) {
         secondary_email: secondaryEmail,
         username
       })
-      .onConflict('unsername')
+      .onConflict('username')
       .merge({
         secondary_email: secondaryEmail,
         username
