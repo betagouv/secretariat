@@ -163,6 +163,12 @@ describe('Account', () => {
       chai.request(app)
         .post('/account/set_email_responder')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          start: '2020-01-01',
+          end: '2021-01-01',
+          content: 'Je ne serai pas la cette semaine'
+        })
         .end((err, res) => {
           createEmailResponder.isDone().should.be.true
           done();
@@ -176,6 +182,12 @@ describe('Account', () => {
       chai.request(app)
         .put('/account/set_email_responder')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          start: '2020-01-01',
+          end: '2021-01-01',
+          content: 'Je ne serai pas la cette semaine'
+        })
         .end((err, res) => {
           updateEmailResponder.isDone().should.be.true
           done();

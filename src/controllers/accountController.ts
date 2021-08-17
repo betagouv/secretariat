@@ -4,9 +4,37 @@ import knex from "../db";
 import * as utils from "./utils";
 
 export async function setEmailResponder(req, res) {
-  const startDate = req.params.startDate
-  const endDate = req.params.endDate
-  const content = req.params.content
+  const formValidationErrors = [];
+
+  function requiredError(field) {
+    formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+  }
+
+  function isValidDate(field, date) {
+    if (date instanceof Date && !Number.isNaN(date.getTime())) {
+      return date;
+    }
+    formValidationErrors.push(`${field} : la date n'est pas valide`);
+    return null;
+  }
+
+  const { start, end } = req.body;
+  const content = req.body.content || requiredError('content')
+
+  const startDate = isValidDate('nouvelle date de fin', new Date(start));
+  const endDate = isValidDate('nouvelle date de fin', new Date(end));
+
+  if (startDate && endDate) {
+    if (endDate < startDate) {
+      formValidationErrors.push('nouvelle date de fin : la date doit être supérieure à la date de début');
+    }
+  }
+
+  if (formValidationErrors.length) {
+    req.flash('error', formValidationErrors);
+    throw new Error();
+  }
+
   try {
     if (req.method === 'POST') {
       await betagouv.setResponder(req.user.id, {
