@@ -101,6 +101,7 @@ describe('Account', () => {
         .reply(200, { description: '' });
 
       utils.mockUsers();
+      utils.mockOvhUserResponder();
       utils.mockOvhRedirections();
       chai.request(app)
         .get('/account')

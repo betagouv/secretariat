@@ -92,6 +92,7 @@ describe('send message on contract end to user', () => {
     utils.mockSlackSecretariat();
     utils.mockOvhTime();
     utils.mockOvhRedirections();
+    utils.mockOvhUserResponder();
     utils.mockOvhUserEmailInfos();
     utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon
@@ -235,6 +236,7 @@ describe('After quitting', () => {
     utils.mockSlackSecretariat();
     utils.mockOvhTime();
     utils.mockOvhRedirections();
+    utils.mockOvhUserResponder();
     utils.mockOvhUserEmailInfos();
     utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon

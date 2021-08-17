@@ -130,7 +130,8 @@ const betaOVH = {
       console.log(`OVH GET ${url} name=${id}`);
       return await ovh.requestPromised('GET', url);
     } catch (err) {
-      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
   setResponder: async (id, { content, from, to }) => {

@@ -52,7 +52,7 @@ export default {
   },
   mockOvhUserResponder() {
     return nock(/.*ovh.com/)
-    .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/account/membre.actif
+    .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
     .reply(404)
     .persist();
   },

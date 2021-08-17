@@ -108,6 +108,7 @@ describe('User', () => {
       utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
       const consoleSpy = sinon.spy(console, 'warn');
@@ -437,6 +438,7 @@ describe('User', () => {
         .reply(200, { description: '' });
 
       utils.mockUsers();
+      utils.mockOvhUserResponder();
       utils.mockOvhRedirections();
       utils.mockSlackGeneral();
       utils.mockSlackSecretariat();
@@ -715,6 +717,7 @@ describe('User', () => {
 
       utils.mockUsers();
       utils.mockOvhTime();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
       utils.mockSlackGeneral();
@@ -769,6 +772,7 @@ describe('User', () => {
 
       utils.mockUsers();
       utils.mockOvhTime();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
       utils.mockSlackGeneral();
@@ -808,6 +812,7 @@ describe('User', () => {
 
       utils.mockUsers();
       utils.mockOvhTime();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
       utils.mockOvhAllEmailInfos();
       utils.mockSlackGeneral();
@@ -882,6 +887,7 @@ describe('User', () => {
       utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
 
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
@@ -953,6 +959,7 @@ describe('User', () => {
       utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
 
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
@@ -1010,6 +1017,7 @@ describe('User', () => {
       utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
 
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
