@@ -249,7 +249,7 @@ export async function userInfos(id, isCurrentUser) {
       canCreateRedirection,
       canChangePassword,
       canChangeSecondaryEmail,
-      responder: undefined
+      responder
     };
   } catch (err) {
     console.error(err);
