@@ -30,6 +30,7 @@ export async function getCurrentAccount(req, res) {
       canChangeSecondaryEmail: currentUser.canChangeSecondaryEmail,
       redirections: currentUser.redirections,
       secondaryEmail,
+      responder: undefined,
       activeTab: 'account',
       marrainageState,
       formData: {

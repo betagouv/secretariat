@@ -275,7 +275,13 @@
                         Configurer une réponse automatique est utile à programmer lors de vos congés pour informer
                         vos correspondants de votre absence.
                     </p>
-                    <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <% if (!responder) { %>
+                        <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                            <input id="secondaryEmail" name="secondaryEmail" type="email">
+                            <button class="button margin-10-0" type="submit">Supprimer la réponse automatique</button>
+                        </form>
+                    <% } else { %>
+                            <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <div class="form__group">
                             <label for="start">
                                 <strong>Texte de la réponse automatique</strong><br />
@@ -299,6 +305,7 @@
                         </div>
                         <button class="button margin-10-0" type="submit">Save</button>
                     </form>
+                    <% } 
                     <hr />
                 </div>
             </div>
