@@ -3,7 +3,7 @@ import config from "../config";
 import knex from "../db";
 import * as utils from "./utils";
 
-export async function set_email_responder(req, res) {
+export async function setEmailResponder(req, res) {
   const startDate = req.params.startDate
   const endDate = req.params.endDate
   const content = req.params.content
