@@ -279,6 +279,7 @@
                         <form class="no-margin" action="/users/<%= userInfos.id %>/update_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <% } else { %>
                         <form class="no-margin" action="/users/<%= userInfos.id %>/add_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <% } %>       
                             <div class="form__group">
                                 <label for="start">
                                     <strong>Texte de la réponse automatique</strong><br />
@@ -300,13 +301,13 @@
                                 </label>
                                 <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                             </div>
-                            <button class="button margin-10-0" type="submit">Sauvegarder la réponse automatique</button>
-                        </form>
-                    <% } %>
                     <% if (!responder) { %>
                             <button class="button margin-10-0" type="submit">Changer la réponse automatique</button>
                         </form>
                     <% } %>
+                            <button class="button margin-10-0" type="submit">Sauvegarder la réponse automatique</button>
+                        </form>
+                    <% } %> 
                     <hr />
                 </div>
             </div>
