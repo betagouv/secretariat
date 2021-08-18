@@ -70,7 +70,7 @@ export async function removeUsersFromCommunityTeam(optionalUsers) {
         return res;
       } catch (err) {
         throw new Error(
-          `Error while moving user ${user.id} to alumni team : ${err}`
+          `Error while removing user ${user.id} from community team : ${err}`
         );
       }
     })
