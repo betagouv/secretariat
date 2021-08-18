@@ -630,24 +630,6 @@ describe('User', () => {
         })
         .catch(done);
     });
-  });
-
-  describe('POST /users/:username/secondary_email/', () => {
-    it('should return 200 to update secondary email', (done) => {
-      chai
-        .request(app)
-        .post('/users/nouveau.membre/secondary_email')
-        .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
-        .type('form')
-        .send({
-          username: 'nouveau.membre',
-          secondaryEmail: 'nouveau.membre.perso2@example.com',
-        })
-        .end((err, res) => {
-          res.should.have.status(200);
-        });
-      done();
-    });
 
     it('should update secondary email', (done) => {
       const username = 'membre.sansmail';
@@ -662,7 +644,7 @@ describe('User', () => {
         .then(() => {
           knex('users')
             .select()
-            .where({ username: 'membre.sansmail' })
+            .where({ username })
             .first()
             .then((dbRes) => {
               dbRes.secondary_email.should.equal(secondaryEmail);
@@ -677,15 +659,13 @@ describe('User', () => {
                   username,
                   newSecondaryEmail,
                 })
-                .then(() =>
-                  knex('users').select().where({ username: 'membre.sansmail' })
-                )
-                .then((dbNewRes) => {
+                .then(() =>  knex('users').select().where({ username: 'membre.sansmail' }))
+                  .then((dbNewRes) => {
                   dbNewRes.length.should.equal(1);
                   dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
-                })
-                .then(done)
-                .catch(done);
+                  })
+                  .then(done)
+                  .catch(done);
             })
             .catch(done);
         })
