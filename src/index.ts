@@ -140,11 +140,7 @@ app.post(
 app.post('/users/:username/password', usersController.updatePasswordForUser);
 app.post(
   '/users/:username/secondary_email',
-  usersController.createSecondaryEmailForUser
-);
-app.post(
-  '/users/:username/secondary_email/update',
-  usersController.updateSecondaryEmailForUser
+  usersController.manageSecondaryEmailForUser
 );
 app.post('/users/:username/end-date', usersController.updateEndDateForUser);
 app.post(
