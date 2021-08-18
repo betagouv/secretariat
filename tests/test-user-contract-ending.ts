@@ -309,10 +309,10 @@ describe('After quitting', () => {
     .get(/^.*email\/domain\/.*\/mailingList\//)
     .reply(200, ['beta-gouv-fr', 'aides-jeunes']);
     const mailingListBeta = nock(/.*ovh.com/)
-    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant@${config.domain}`))
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant2@${config.domain}`))
     .reply(404)
     const mailingListAideJeune = nock(/.*ovh.com/)
-    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aides-jeunes/subscriber/julien.dauphant@${config.domain}`))
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aides-jeunes/subscriber/julien.dauphant2@${config.domain}`))
     .reply(200, {
       action: "mailinglist/deleteSubscriber",
       id: 14564515,
