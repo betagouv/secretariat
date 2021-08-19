@@ -192,13 +192,7 @@ export async function createUser({ email, username, password }, teamId = null) {
       )
       .then((response) => response.data);
   } catch (err) {
-    console.error(
-      "Erreur d'ajout des utilisateurs à mattermost",
-      err,
-      email,
-      username
-    );
-    return;
+    throw new Error(`Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`)
   }
   console.log("Ajout de l'utilisateur", email, username);
   return res;
