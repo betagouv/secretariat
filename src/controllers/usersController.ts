@@ -275,7 +275,7 @@ export async function deleteEmailForUser(req, res) {
   }
 }
 
-export async function createSecondaryEmailForUser(req, res) {
+export async function manageSecondaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { secondaryEmail } = req.body;
@@ -283,38 +283,21 @@ export async function createSecondaryEmailForUser(req, res) {
 
   try {
     if (user.canChangeSecondaryEmail) {
+
       await knex('users')
-        .insert({
-          secondary_email: secondaryEmail,
-          username
-        });
-      req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
+      .insert({
+        secondary_email: secondaryEmail,
+        username
+      })
+      .onConflict('username')
+      .merge({
+        secondary_email: secondaryEmail,
+        username
+      });
+
+      req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
       res.redirect(`/community/${username}`);
-    }
-  } catch (err) {
-    console.error(err);
-    req.flash('error', err.message);
-    res.redirect(`/community/${username}`);
-  }
-}
-
-export async function updateSecondaryEmailForUser(req, res) {
-  const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
-  const { newSecondaryEmail } = req.body;
-  const user = await utils.userInfos(username, isCurrentUser);
-
-  try {
-    if (user.canChangeSecondaryEmail) {
-      await knex('users')
-        .update({
-          secondary_email: newSecondaryEmail,
-        })
-        .where({ username });
-
-      req.flash('message', 'Ton compte email secondaire a bien été modifié.');
-      res.redirect(`/community/${username}`);
-    }
+    };
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);

@@ -74,6 +74,11 @@ const addGithubUserToOrganization = async () => {
           member.github,
           config.githubOrganizationName
         );
+        await github.addUserToTeam(
+          member.github,
+          config.githubOrganizationName,
+          config.githubBetagouvTeam
+        )
         console.log(`Add user ${member.github} to organization`);
       } catch (err) {
         console.error(
