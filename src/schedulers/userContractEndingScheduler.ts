@@ -6,6 +6,7 @@ import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
+import betagouv from '../betagouv';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (days) => {
@@ -245,3 +246,25 @@ export async function deleteRedirectionsAfterQuitting(
     })
   );
 }
+const removeEmailFromMailingList = async (userId: string, mailingList:string[]) => {
+  return Promise.all(mailingList.map(async (mailing: string) => {
+    try {
+      await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(userId))
+    } catch (err) {
+      console.error(`Erreur lors de la suppression de l'email : ${userId} : ${err}`)
+    }
+  }))
+}
+
+export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[], nbDays=30) {
+  let expiredUsers: Member[] = optionalExpiredUsers;
+  if (!expiredUsers) {
+    const users: Member[] = await BetaGouv.usersInfos();
+    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays)
+  }
+  const mailingList: string[] = await betagouv.getAllMailingList()
+  for (const user of expiredUsers) {
+     await removeEmailFromMailingList(user.id, mailingList)
+  }
+}
+

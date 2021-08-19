@@ -50,6 +50,7 @@ export default {
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   githubRepository: process.env.GITHUB_REPOSITORY,
   githubFork: process.env.GITHUB_FORK,
+  githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || 'beta-gouv-fr',
   defaultLoggedInRedirectUrl: '/account',
   visitRecipientEmail:
     process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
@@ -76,10 +77,12 @@ export default {
   featureOnUserContractEnd: process.env.FEATURE_ON_USER_CONTRACT_END,
   featureAddExpiredUsersToAlumniOnMattermost:
     process.env.FEATURE_ADD_EXPIRED_USERS_TO_ALUMNI_ON_MATTERMOST,
+  featureRemoveExpiredUsersFromCommunityOnMattermost: process.env.FEATURE_REMOVED_EXPIRED_USERS_FROM_COMMUNITY_ON_MATTERMOST,
   featureSendJ1Email: process.env.FEATURE_SEND_J1_EMAIL,
   featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL,
   featureDeleteOVHEmailAccounts: process.env.FEATURE_DELETE_OVH_EMAIL_ACCOUNTS,
   featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL,
   featureDeleteRedirectionsAfterQuitting:
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
+  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST
 };

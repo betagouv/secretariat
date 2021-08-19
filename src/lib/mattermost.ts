@@ -1,6 +1,23 @@
 import axios from 'axios';
 import config from '../config';
 
+export interface MattermostUser {
+  id: string,
+  create_at: number,
+  update_at: number,
+  delete_at: number,
+  username: string,
+  first_name: string,
+  last_name: string,
+  nickname: string,
+  email: string,
+  email_verified: boolean,
+  auth_service: string,
+  roles: string,
+  locale: string,
+}
+
+
 const getMattermostConfig = () => {
   if (!config.mattermostBotToken) {
     const errorMessage =
@@ -185,4 +202,26 @@ export async function createUser({ email, username, password }, teamId = null) {
   }
   console.log("Ajout de l'utilisateur", email, username);
   return res;
+}
+
+export async function changeUserEmail(id: string, email: string) {
+  try {
+    const res: MattermostUser = await axios
+      .put(
+        `https://mattermost.incubateur.net/api/v4/users/${id}/patch`,
+        {
+          email,
+        },
+        getMattermostConfig()
+      )
+      .then((response) => response.data);
+    console.log(`Changement de l'email de l'utilisateur ${res.username}`);
+    return true;
+  } catch (err) {
+    console.error(
+      `Erreur de changement d'email de l'utilisateur mattermost : ${id}`,
+      err,
+    );
+    return false;
+  }
 }

@@ -28,6 +28,7 @@ const githubOrganizationMembers = [
 
 describe('Add user to github organization', () => {
   let inviteUser;
+  let addUserToTeam;
   let pendingInvitations;
   let getGithubMembers;
 
@@ -38,6 +39,9 @@ describe('Add user to github organization', () => {
     inviteUser = sinon
       .stub(github, 'inviteUserByUsernameToOrganization')
       .resolves();
+    addUserToTeam = sinon
+      .stub(github, 'addUserToTeam')
+      .resolves();
     pendingInvitations = sinon
       .stub(github, 'getAllPendingInvitations')
       .resolves([]);
@@ -46,6 +50,7 @@ describe('Add user to github organization', () => {
   afterEach(() => {
     pendingInvitations.restore();
     inviteUser.restore();
+    addUserToTeam.restore();
     getGithubMembers.restore();
   });
 
@@ -58,8 +63,13 @@ describe('Add user to github organization', () => {
 
     await addGithubUserToOrganization();
     inviteUser.calledTwice.should.be.true;
+    addUserToTeam.calledTwice.should.be.true;
+
     inviteUser.firstCall.args[0].should.equal('membre.actif');
+    addUserToTeam.firstCall.args[0].should.equal('membre.actif');
+
     inviteUser.secondCall.args[0].should.equal('test-github');
+    addUserToTeam.secondCall.args[0].should.equal('test-github');
   });
 
   it('should not add new users to organization if invitation exist', async () => {
@@ -72,7 +82,10 @@ describe('Add user to github organization', () => {
 
     await addGithubUserToOrganization();
     inviteUser.calledOnce.should.be.true;
+    addUserToTeam.calledOnce.should.be.true;
+    
     inviteUser.firstCall.args[0].should.equal('test-github');
+    addUserToTeam.firstCall.args[0].should.equal('test-github');
   });
 });
 
