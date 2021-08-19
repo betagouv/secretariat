@@ -247,10 +247,10 @@ describe('Move expired user to team Alumni on mattermost', () => {
           scheme_user: true,
           scheme_admin: true,
           explicit_roles: 'string',
-        },
+        },  
       ])
       .persist();
-    
+
     const patchEmailMock = nock(/.*mattermost.incubateur.net/)
       .put(/^.*api\/v4\/users.*/)
       .reply(200, [])
@@ -293,4 +293,4 @@ describe('Move expired user to team Alumni on mattermost', () => {
     }).delete()
   });
 
-});
+  });

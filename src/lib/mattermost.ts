@@ -1,6 +1,22 @@
 import axios from 'axios';
 import config from '../config';
-import { MattermostUser } from '../models/mattermostUser';
+
+export interface MattermostUser {
+  id: string,
+  create_at: number,
+  update_at: number,
+  delete_at: number,
+  username: string,
+  first_name: string,
+  last_name: string,
+  nickname: string,
+  email: string,
+  email_verified: boolean,
+  auth_service: string,
+  roles: string,
+  locale: string,
+}
+
 
 const getMattermostConfig = () => {
   if (!config.mattermostBotToken) {

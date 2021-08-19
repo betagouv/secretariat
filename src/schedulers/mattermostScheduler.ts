@@ -4,10 +4,10 @@ import BetaGouv from '../betagouv';
 import config from '../config';
 import * as utils from '../controllers/utils';
 import * as mattermost from '../lib/mattermost';
+import { MattermostUser } from '../lib/mattermost';
 import knex from "../db";
 import { Member } from '../models/member';
 import { DBUser } from '../models/dbUser';
-import { MattermostUser } from '../models/mattermostUser';
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   const allMattermostUsers = await mattermost.getUserWithParams();
