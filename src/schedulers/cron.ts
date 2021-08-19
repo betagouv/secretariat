@@ -23,6 +23,7 @@ import {
   sendJ30Email,
   deleteOVHEmailAcounts,
   deleteRedirectionsAfterQuitting,
+  removeEmailsFromMailingList,
 } from './userContractEndingScheduler';
 
 interface Job {
@@ -114,6 +115,12 @@ const jobs: Job[] = [
     onTick: deleteOVHEmailAcounts,
     isActive: !!config.featureDeleteOVHEmailAccounts,
     name: 'deleteOVHEmailAcounts',
+  },
+  {
+    cronTime: '0 8 * * * *',
+    onTick: removeEmailsFromMailingList,
+    isActive: !!config.featureRemoveEmailsFromMailingList,
+    name: 'removeEmailsFromMailingList',
   },
   {
     cronTime: '0 0 14 * * *',
