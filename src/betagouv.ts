@@ -3,10 +3,8 @@
 import axios from 'axios';
 import ovh0 from 'ovh';
 import config from './config';
-
-import { Member } from './models/member';
-
 import { checkUserIsExpired } from './controllers/utils';
+import { Member } from './models/member';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,

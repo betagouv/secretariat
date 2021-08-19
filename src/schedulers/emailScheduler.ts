@@ -46,8 +46,14 @@ export async function createEmailAddresses() {
   }, []);
 
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
-  const unregisteredUsers = _.differenceWith(concernedUsers, allOvhEmails, differenceGithubOVH);
-  console.log(`Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`);
+  const unregisteredUsers = _.differenceWith(
+    concernedUsers,
+    allOvhEmails,
+    differenceGithubOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
 
   // create email and marrainage
   return Promise.all(
