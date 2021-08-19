@@ -114,6 +114,24 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  getAllMailingList: async() => {
+    const url = `/email/domain/${config.domain}/mailingList/`;
+    try {
+      return await ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  removeFromMailingList: async(mailingListName: string, email: string) => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
+    try {
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   // get active users with email registered on ovh
   getActiveRegisteredOVHUsers: async () => {
     const users = await betaGouv.usersInfos();

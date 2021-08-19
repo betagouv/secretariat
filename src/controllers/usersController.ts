@@ -296,6 +296,7 @@ export async function manageSecondaryEmailForUser(req, res) {
       });
 
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
+      console.log(`${req.user.id} a mis à jour son adresse mail secondaire.`);
       res.redirect(`/community/${username}`);
     };
   } catch (err) {
