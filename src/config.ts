@@ -77,6 +77,7 @@ export default {
   featureOnUserContractEnd: process.env.FEATURE_ON_USER_CONTRACT_END,
   featureAddExpiredUsersToAlumniOnMattermost:
     process.env.FEATURE_ADD_EXPIRED_USERS_TO_ALUMNI_ON_MATTERMOST,
+  featureRemoveExpiredUsersFromCommunityOnMattermost: process.env.FEATURE_REMOVED_EXPIRED_USERS_FROM_COMMUNITY_ON_MATTERMOST,
   featureSendJ1Email: process.env.FEATURE_SEND_J1_EMAIL,
   featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL,
   featureDeleteOVHEmailAccounts: process.env.FEATURE_DELETE_OVH_EMAIL_ACCOUNTS,
