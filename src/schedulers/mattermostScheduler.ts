@@ -160,17 +160,23 @@ export async function createUsersByEmail() {
     activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
       const email = utils.buildBetaEmail(user.id);
       const password = crypto.randomBytes(20).toString('base64').slice(0, -2);
-      await mattermost.createUser({
-        email,
-        username: user.id,
-        // mattermost spec : password must contain at least 20 characters
-        password,
-      });
+      try {
+        await mattermost.createUser({
+          email,
+          username: user.id,
+          // mattermost spec : password must contain at least 20 characters
+          password,
+        });
 
-      const html = await ejs.renderFile('./views/emails/mattermost.ejs', {
-        resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
-      });
-      await utils.sendMail(email, 'Inscription à mattermost', html);
+        const html = await ejs.renderFile('./views/emails/mattermost.ejs', {
+          resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
+        });
+        await utils.sendMail(email, 'Inscription à mattermost', html);
+      } catch (err) {
+        console.error(
+          "Erreur d'ajout des utilisateurs à mattermost", err
+        );
+      }
     })
   );
   return results;
