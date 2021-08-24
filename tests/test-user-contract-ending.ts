@@ -10,6 +10,7 @@ import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts,
+  removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
 
@@ -17,7 +18,7 @@ const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
-const fakeDateLess30days = '2019-12-01';
+const fakeDateLess30days = '2019-12-02'
 
 const betaGouvUsers = [
   {
@@ -289,4 +290,42 @@ describe('After quitting', () => {
     const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
     should.equal(test.length, 2);
   });
+
+  it('should remove user from mailingList', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [{
+      "id": "julien.dauphant",
+      "fullname": "Julien Dauphant",
+      "missions": [
+        { 
+          "start": "2016-11-03",
+          "end": fakeDateLess30days,
+          "status": "independent",
+          "employer": "octo"
+        }
+      ]
+    }]).persist()
+    const ovhMailingList = nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/mailingList\//)
+    .reply(200, ['beta-gouv-fr', 'aides-jeunes']);
+    const mailingListBeta = nock(/.*ovh.com/)
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant2@${config.domain}`))
+    .reply(404)
+    const mailingListAideJeune = nock(/.*ovh.com/)
+    .delete(uri => uri.includes(`/email/domain/${config.domain}/mailingList/aides-jeunes/subscriber/julien.dauphant2@${config.domain}`))
+    .reply(200, {
+      action: "mailinglist/deleteSubscriber",
+      id: 14564515,
+      language: "fr",
+      domain: config.domain,
+      account: "aides-jeunes",
+      date: "2021-08-12T15:29:55+02:00"
+    })
+    await removeEmailsFromMailingList()
+    ovhMailingList.isDone().should.be.true;
+    mailingListBeta.isDone().should.be.true;
+    mailingListAideJeune.isDone().should.be.true;
+  }); 
 });
