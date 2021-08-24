@@ -85,17 +85,9 @@ export async function moveUsersToAlumniTeam(optionalUsers?: Member[]) {
     users = await BetaGouv.usersInfos();
     users = utils.getExpiredUsersForXDays(users, 3);
   }
-  const dbUsers: DBUser[] = await knex('users').whereNotNull('secondary_email');
-  const concernedUsers = users.reduce((acc, user) => {
-    const dbUser = dbUsers.find((x) => x.username === user.id);
-    if (dbUser) {
-      acc.push({ ...user, ...{ secondary_email: dbUser.secondary_email } });
-    }
-    return acc;
-  }, []);
 
   const results = await Promise.all(
-    concernedUsers.map(async (user) => {
+    users.map(async (user) => {
       try {
         const mattermostUsers: MattermostUser[] = await mattermost.searchUsers({
           term: user.id
@@ -110,10 +102,6 @@ export async function moveUsersToAlumniTeam(optionalUsers?: Member[]) {
           mattermostUsers[0].id,
           config.mattermostAlumniTeamId
         );
-        await mattermost.changeUserEmail(
-          mattermostUsers[0].id,
-          user.secondary_email
-        )
         console.log(
           `User ${user.id} with mattermost username ${mattermostUsers[0].username} has been moved to alumni`
         );
