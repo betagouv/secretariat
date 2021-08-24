@@ -7,7 +7,6 @@ import * as mattermost from '../lib/mattermost';
 import { MattermostUser } from '../lib/mattermost';
 import knex from "../db";
 import { Member } from '../models/member';
-import { DBUser } from '../models/dbUser';
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   const allMattermostUsers = await mattermost.getUserWithParams();
