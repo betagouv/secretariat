@@ -165,8 +165,8 @@ describe('Account', () => {
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
-          start: '2020-01-01',
-          end: '2021-01-01',
+          from: '2020-01-01',
+          to: '2021-01-01',
           content: 'Je ne serai pas la cette semaine'
         })
         .end((err, res) => {
@@ -185,8 +185,8 @@ describe('Account', () => {
         .type('form')
         .send({
           method: 'update',
-          start: '2020-01-01',
-          end: '2021-01-01',
+          from: '2020-01-01',
+          to: '2021-01-01',
           content: 'Je ne serai pas la cette semaine'
         })
         .end((err, res) => {
