@@ -19,7 +19,6 @@ export interface OvhRedirection {
 }
 
 export interface OvhResponder {
-  domain: string;
   account: string;
   content: string;
   copy: boolean;
@@ -128,7 +127,7 @@ const betaOVH = {
 
     try {
       console.log(`OVH GET ${url} name=${id}`);
-      return await ovh.requestPromised('GET', url)[0];
+      return await ovh.requestPromised('GET', url);
     } catch (err) {
       if (err.error === 404) return null;
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
@@ -140,7 +139,6 @@ const betaOVH = {
       console.log(`OVH POST ${url} name=${id}`);
       const params : OvhResponder = {
         account: id,
-        domain: config.domain,
         content,
         from,
         to,

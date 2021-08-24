@@ -165,7 +165,6 @@ app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post('/account/set_email_responder', accountController.setEmailResponder);
-app.put('/account/set_email_responder', accountController.setEmailResponder)
 
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);

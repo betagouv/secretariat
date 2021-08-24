@@ -202,7 +202,6 @@ export async function userInfos(id, isCurrentUser) {
       BetaGouv.redirectionsForId({ from: id }),
       BetaGouv.getResponder(id)
     ]);
-
     const hasUserInfos = userInfos !== undefined;
 
     const isExpired = checkUserIsExpired(userInfos);

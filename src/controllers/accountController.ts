@@ -18,11 +18,10 @@ export async function setEmailResponder(req, res) {
     return null;
   }
 
-  const { start, end } = req.body;
+  const { from, to } = req.body;
   const content = req.body.content || requiredError('content')
-
-  const startDate = isValidDate('nouvelle date de fin', new Date(start));
-  const endDate = isValidDate('nouvelle date de fin', new Date(end));
+  const startDate = isValidDate('nouvelle date de debut', new Date(from));
+  const endDate = isValidDate('nouvelle date de fin', new Date(to));
 
   if (startDate && endDate) {
     if (endDate < startDate) {
@@ -30,13 +29,13 @@ export async function setEmailResponder(req, res) {
     }
   }
 
-  if (formValidationErrors.length) {
-    req.flash('error', formValidationErrors);
-    throw new Error();
-  }
-
   try {
-    if (req.method === 'POST') {
+    if (formValidationErrors.length) {
+      req.flash('error', formValidationErrors);
+      throw new Error();
+    }
+
+    if (req.body.method !== 'update') {
       await betagouv.setResponder(req.user.id, {
         from: startDate,
         to: endDate,
@@ -51,8 +50,10 @@ export async function setEmailResponder(req, res) {
     }
   } catch(err) {
     console.error(err);
-    req.flash('error', `Erreur lors de la configuration de la réponse automatique`);
-    return res.redirect('/');
+    if (err.message) {
+      const errors = req.flash('error');
+      req.flash('error', [...errors, err.message]);
+    }
   }
   return res.redirect('/account');
 }
@@ -70,7 +71,6 @@ export async function getCurrentAccount(req, res) {
         return rows.length === 1 ? rows[0].secondary_email : null;
       })(),
     ]);
-
     const title = 'Mon compte';
     return res.render('account', {
       title,
@@ -85,15 +85,19 @@ export async function getCurrentAccount(req, res) {
       canChangeSecondaryEmail: currentUser.canChangeSecondaryEmail,
       redirections: currentUser.redirections,
       secondaryEmail,
-      responder: currentUser.responder,
       activeTab: 'account',
       marrainageState,
       formData: {
         newEnd: '',
       },
-      responderFormData: currentUser.responder || {
-        start: '',
-        end: '',
+      hasResponder: Boolean(currentUser.responder),
+      responderFormData: currentUser.responder ? { 
+        from: new Date(currentUser.responder.from).toISOString().split('T')[0],
+        to: new Date(currentUser.responder.to).toISOString().split('T')[0],
+        content: currentUser.responder.content
+      } : {
+        from: '',
+        to: '',
         content: ''
       },
       errors: req.flash('error'),
