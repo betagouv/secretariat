@@ -59,8 +59,6 @@ export async function setEmailResponder(req, res) {
 }
 
 export async function deleteEmailResponder(req, res) {
-  const formValidationErrors = [];
-
   try {
     await betagouv.deleteResponder(req.user.id)
   } catch(err) {
