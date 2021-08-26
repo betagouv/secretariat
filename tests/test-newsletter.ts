@@ -283,6 +283,7 @@ describe('Newsletter', () => {
       utils.mockSlackSecretariat();
       utils.mockOvhTime();
       utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
       const padHeadCall = nock(`${config.padURL}`).persist().head(/.*/).reply(
         200,

@@ -101,6 +101,7 @@ describe('Account', () => {
         .reply(200, { description: '' });
 
       utils.mockUsers();
+      utils.mockOvhUserResponder();
       utils.mockOvhRedirections();
       chai.request(app)
         .get('/account')
@@ -151,6 +152,45 @@ describe('Account', () => {
         .end((err, res) => {
           res.text.should.include('du 03/11/2016');
           res.text.should.include('du 03/11/2016');
+          done();
+        });
+    });
+
+    it('should set email responder', (done) => {
+      const createEmailResponder = nock(/.*ovh.com/)
+      .post(/^.*email\/domain\/.*\/responder.*/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+      .reply(200)
+      chai.request(app)
+        .post('/account/set_email_responder')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          from: '2020-01-01',
+          to: '2021-01-01',
+          content: 'Je ne serai pas la cette semaine'
+        })
+        .end((err, res) => {
+          createEmailResponder.isDone().should.be.true
+          done();
+        });
+    });
+
+    it('should update email responder', (done) => {
+      const updateEmailResponder = nock(/.*ovh.com/)
+      .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+      .reply(200)
+      chai.request(app)
+        .post('/account/set_email_responder')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          method: 'update',
+          from: '2020-01-01',
+          to: '2021-01-01',
+          content: 'Je ne serai pas la cette semaine'
+        })
+        .end((err, res) => {
+          updateEmailResponder.isDone().should.be.true
           done();
         });
     });

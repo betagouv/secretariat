@@ -18,6 +18,14 @@ export interface OvhRedirection {
   id: string;
 }
 
+export interface OvhResponder {
+  account: string;
+  content: string;
+  copy: boolean;
+  from: Date;
+  to: Date;
+}
+
 const betaGouv = {
   sendInfoToChat: async (
     text: string,
@@ -131,6 +139,55 @@ const betaOVH = {
       (user) => !checkUserIsExpired(user) && allOvhEmails.includes(user.id)
     );
     return activeUsers;
+  },
+  getResponder: async (id):Promise<OvhResponder> => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+
+    try {
+      console.log(`OVH GET ${url} name=${id}`);
+      return await ovh.requestPromised('GET', url);
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  setResponder: async (id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder`;
+    try {
+      console.log(`OVH POST ${url} name=${id}`);
+      const params : OvhResponder = {
+        account: id,
+        content,
+        from,
+        to,
+        copy: true
+      }
+      return await ovh.requestPromised('POST', url, params);
+    } catch (err) {
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  updateResponder: async (id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH PUT ${url} name=${id}`);
+      return await ovh.requestPromised('PUT', url, {
+        content,
+        from,
+        to,
+      });
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  deleteResponder: async(id) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH DELETE ${url} name=${id}`);
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
+    }
   },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
