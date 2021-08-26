@@ -188,7 +188,7 @@ const betaOVH = {
     } catch (err) {
       throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
     }
-  }),
+  },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
 
