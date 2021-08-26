@@ -79,10 +79,10 @@ const addGithubUserToOrganization = async () => {
           config.githubOrganizationName,
           config.githubBetagouvTeam
         )
-        console.log(`Add user ${member.github} to organization`);
+        console.log(`github: Add user ${member.github} to organization`);
       } catch (err) {
         console.error(
-          `Cannot add user ${member.github} to organization ${config.githubOrganizationName}. Error : ${err}`
+          `github: Cannot add user ${member.github} to organization ${config.githubOrganizationName}. Error : ${err}`
         );
       }
     })
@@ -105,10 +105,10 @@ const removeGithubUserFromOrganization = async () => {
           member.github,
           config.githubOrganizationName
         );
-        console.log(`Remove user ${member.github} from organization`);
+        console.log(`github: Remove user ${member.github} from organization`);
       } catch (err) {
         console.error(
-          `Cannot remove user ${member.github} from organization ${config.githubOrganizationName}. Error : ${err}`
+          `github: Cannot remove user ${member.github} from organization ${config.githubOrganizationName}. Error : ${err}`
         );
       }
     })
