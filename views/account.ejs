@@ -7,6 +7,11 @@
 
     <div class="row">
         <div class="panel panel-partial-width">
+            <% if (hasActiveResponder) { %>
+                <div class="notification warning">
+                    <strong>Réponse automatique activée.</strong> <a href="/account/delete_email_responder">Désactiver maintenant</a> <a href="/account#responder">Configurer la réponse</a>
+                </div>
+            <% } %>
             <div class="account-split-panel">
                 <div>
                     <h3>
@@ -142,8 +147,57 @@
                     <hr />
                 </div>
             </div>
-
-
+            <div class="collapse" id="responder">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer une réponse automatique
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez.
+                    </p>
+                    <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <% if (hasResponder) { %>
+                        <input type="hidden" name="method" value="update">
+                    <% } %>       
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Message d'absence</strong><br />
+                                </label>
+                                <textarea placeholder="Je ne serais pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
+                            </div>
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Début</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                
+                            <div class="form__group">
+                                <label for="end">
+                                    <strong>Fin</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                    <% if (!hasResponder) { %>
+                            <button class="button margin-10-0" type="submit">Changer la réponse automatique</button>
+                        </form>
+                    <% } else { %>
+                            <button class="button margin-10-0" type="submit">Sauvegarder la réponse automatique</button>
+                        </form>
+                    <% } %> 
+                    <% if (hasResponder) { %>
+                        <form action="/account/delete_email_responder">
+                            <button class="button margin-10-0" type="submit">Supprimer la réponse automatique</button>
+                        </form>
+                    <% } %> 
+                    <hr />
+                </div>
+            </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
@@ -255,52 +309,6 @@
                     <% } %>
                     <hr />
                 </div> 
-            </div>
-            <div class="collapse">
-                <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
-                        Configurer une réponse automatique
-                        <div class="icon fa fa-chevron-down"></div>
-                    </button>
-                </h6>
-                <div hidden class="collapse-content">
-                    <p>
-                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez.
-                    </p>
-                    <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                    <% if (hasResponder) { %>
-                        <input type="hidden" name="method" value="update">
-                    <% } %>       
-                            <div class="form__group">
-                                <label for="start">
-                                    <strong>Message d'absence</strong><br />
-                                </label>
-                                <textarea placeholder="Je ne serais pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
-                            </div>
-                            <div class="form__group">
-                                <label for="start">
-                                    <strong>Début</strong><br />
-                                    <i>Au format JJ/MM/YYYY</i>
-                                </label>
-                                <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                            </div>
-                
-                            <div class="form__group">
-                                <label for="end">
-                                    <strong>Fin</strong><br />
-                                    <i>Au format JJ/MM/YYYY</i>
-                                </label>
-                                <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                            </div>
-                    <% if (!hasResponder) { %>
-                            <button class="button margin-10-0" type="submit">Changer la réponse automatique</button>
-                        </form>
-                    <% } else { %>
-                            <button class="button margin-10-0" type="submit">Sauvegarder la réponse automatique</button>
-                        </form>
-                    <% } %> 
-                    <hr />
-                </div>
             </div>
         </div>
     </div>

@@ -84,6 +84,7 @@ export async function getCurrentAccount(req, res) {
         return rows.length === 1 ? rows[0].secondary_email : null;
       })(),
     ]);
+    const today = new Date()
     const title = 'Mon compte';
     return res.render('account', {
       title,
@@ -103,6 +104,7 @@ export async function getCurrentAccount(req, res) {
       formData: {
         newEnd: '',
       },
+      hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) > today && new Date(currentUser.responder.from) < today,
       hasResponder: Boolean(currentUser.responder),
       responderFormData: currentUser.responder ? { 
         from: new Date(currentUser.responder.from).toISOString().split('T')[0],
