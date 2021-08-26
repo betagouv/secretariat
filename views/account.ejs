@@ -4,14 +4,15 @@
 <script src="/static/collapse/collapse.js"></script>
 
 <div class="module">
-
+    <% if (hasActiveResponder) { %>
+        <div class="notification warning">
+            <strong>Réponse automatique activée.</strong>
+            <a href="/account#responder">Désactiver maintenant</a>
+            <a href="/account#responder">Configurer la réponse</a>
+        </div>
+    <% } %>
     <div class="row">
         <div class="panel panel-partial-width">
-            <% if (hasActiveResponder) { %>
-                <div class="notification warning">
-                    <strong>Réponse automatique activée.</strong> <a href="/account/delete_email_responder">Désactiver maintenant</a> <a href="/account#responder">Configurer la réponse</a>
-                </div>
-            <% } %>
             <div class="account-split-panel">
                 <div>
                     <h3>
@@ -158,7 +159,9 @@
                     <p>
                         Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez.
                     </p>
-                    <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <form class="no-margin"
+                        onsubmit="const proceed = event.submitter.id === 'delete-button' ? confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?') : true; event.submitter && (event.submitter.disabled = proceed); return proceed;"
+                        action="/account/set_email_responder" method="POST" >
                     <% if (hasResponder) { %>
                         <input type="hidden" name="method" value="update">
                     <% } %>       
@@ -166,7 +169,7 @@
                                 <label for="start">
                                     <strong>Message d'absence</strong><br />
                                 </label>
-                                <textarea placeholder="Je ne serais pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
+                                <textarea placeholder="Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
                             </div>
                             <div class="form__group">
                                 <label for="start">
@@ -184,15 +187,17 @@
                                 <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
                             </div>
                     <% if (!hasResponder) { %>
-                            <button class="button margin-10-0" type="submit">Changer la réponse automatique</button>
+                            <button class="button margin-10-0" type="submit">Sauvegarder</button>
                         </form>
                     <% } else { %>
-                            <button class="button margin-10-0" type="submit">Sauvegarder la réponse automatique</button>
-                        </form>
-                    <% } %> 
-                    <% if (hasResponder) { %>
-                        <form action="/account/delete_email_responder">
-                            <button class="button margin-10-0" type="submit">Supprimer la réponse automatique</button>
+                            <div class="row">
+                                <button class="button margin-10-0" type="submit">Changer</button>
+                                <% if (hasResponder) { %>
+                                        <button
+                                            id='delete-button'
+                                            class="button margin-10-0 button-underline" formaction="/account/delete_email_responder" type="submit">Supprimer</button>
+                                <% } %> 
+                            </div>
                         </form>
                     <% } %> 
                     <hr />
