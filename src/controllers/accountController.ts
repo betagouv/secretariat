@@ -102,7 +102,7 @@ export async function getCurrentAccount(req, res) {
       formData: {
         newEnd: '',
       },
-      hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) > today && new Date(currentUser.responder.from) < today,
+      hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
       responderFormData: currentUser.responder ? { 
         from: new Date(currentUser.responder.from).toISOString().split('T')[0],
