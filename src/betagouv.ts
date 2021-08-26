@@ -180,6 +180,15 @@ const betaOVH = {
       throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  deleteResponder: async(id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH DELETE ${url} name=${id}`);
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
+    }
+  }),
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
 

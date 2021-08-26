@@ -58,6 +58,19 @@ export async function setEmailResponder(req, res) {
   return res.redirect('/account');
 }
 
+export async function deleteEmailResponder(req, res) {
+  const formValidationErrors = [];
+
+  try {
+    await betagouv.deleteResponder(req.user.id)
+  } catch(err) {
+    const errorMessage = `Une erreur est intervenue lors de la suppression de la réponse automatique : ${err}`
+    console.error(errorMessage);
+    req.flash('error', errorMessage);
+  }
+  return res.redirect('/account');
+}
+
 export async function getCurrentAccount(req, res) {
   try {
     const [currentUser, marrainageState, secondaryEmail] = await Promise.all([
