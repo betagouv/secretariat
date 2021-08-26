@@ -96,7 +96,7 @@ export async function getCurrentAccount(req, res) {
         to: new Date(currentUser.responder.to).toISOString().split('T')[0],
         content: currentUser.responder.content
       } : {
-        from: '',
+        from: new Date().toISOString().split('T')[0],
         to: '',
         content: ''
       },

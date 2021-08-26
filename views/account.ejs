@@ -265,8 +265,7 @@
                 </h6>
                 <div hidden class="collapse-content">
                     <p>
-                        Configurer une réponse automatique est utile à programmer lors de vos congés pour informer
-                        vos correspondants de votre absence.
+                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez.
                     </p>
                     <form class="no-margin" action="/account/set_email_responder" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <% if (hasResponder) { %>
@@ -274,7 +273,7 @@
                     <% } %>       
                             <div class="form__group">
                                 <label for="start">
-                                    <strong>Texte de la réponse automatique</strong><br />
+                                    <strong>Message d'absence</strong><br />
                                 </label>
                                 <textarea id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
                             </div>
