@@ -1,5 +1,7 @@
 import ejs from 'ejs';
+import jwt from "jsonwebtoken";
 import BetaGouv, { OvhRedirection } from '../betagouv';
+import config from "../config";
 import * as utils from '../controllers/utils';
 import knex from '../db';
 import * as mattermost from '../lib/mattermost';
@@ -62,18 +64,23 @@ const EMAIL_FILES = {
 };
 
 const sendMessageOnChatAndEmail = async (user, messageConfig) => {
+  const token = jwt.sign({
+    userId: user.id,
+  }, config.secret, { expiresIn: 7 * 24 * 3600 });
+  const validateDepartureUrl = `${config.protocol}://${config.host}/departure/validation?details=${encodeURIComponent(token)}`
   const messageContent = await ejs.renderFile(
     `./views/emails/${messageConfig.emailFile}`,
     {
       user,
+      validateDepartureUrl
     }
   );
   try {
-    await BetaGouv.sendInfoToChat(
-      messageContent,
-      'secretariat',
-      user.mattermostUsername
-    );
+    // await BetaGouv.sendInfoToChat(
+    //   messageContent,
+    //   'secretariat',
+    //   user.mattermostUsername
+    // );
     console.log(
       `Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`
     );
@@ -102,15 +109,54 @@ export async function sendContractEndingMessageToUsers(
   console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays;
+  users = [
+    {
+      id:'emeline.merliere',
+      fullname:'rhkehfei',
+      start:'2020-12-30',
+      end:'2022-01-29',
+      employer:'admin/DINUM',
+      github:'rferfe'
+    },
+    {
+      id:'calev.eliacheff',
+      fullname:'freferfe',
+      start:'2020-12-30',
+      end:'2022-01-29',
+      employer:'admin/DINUM',
+      github:'frefr'
+    },
+    {
+      id:'paul.toto',
+      fullname:'rferferf',
+      start:'2020-12-30',
+      end:'2022-01-29',
+      employer:'admin/DINUM',
+      github:'refrfer'
+    }
+  ]
+
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
   } else {
     registeredUsersWithEndingContractInXDays =
       await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
-  console.log(registeredUsersWithEndingContractInXDays);
+  let checkUserHasNotValidateDeparture;
+  if (configName == 'mail2days') {
+    const usersDepartureState = await knex('user_departure_state').select()
+    checkUserHasNotValidateDeparture = registeredUsersWithEndingContractInXDays.filter(
+      user => {
+        const userDepartureState = usersDepartureState.find(u => u.username === user.id);
+        return !userDepartureState || (userDepartureState && userDepartureState.has_validated === false)
+      }
+    )
+  } else {
+    checkUserHasNotValidateDeparture = registeredUsersWithEndingContractInXDays;
+  }
+  console.log(checkUserHasNotValidateDeparture);
   await Promise.all(
-    registeredUsersWithEndingContractInXDays.map(async (user) => {
+    checkUserHasNotValidateDeparture.map(async (user) => {
       await sendMessageOnChatAndEmail(user, messageConfig);
     })
   );
@@ -267,4 +313,3 @@ export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[
      await removeEmailFromMailingList(user.id, mailingList)
   }
 }
-
