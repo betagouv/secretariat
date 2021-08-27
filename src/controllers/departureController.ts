@@ -3,7 +3,6 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import knex from '../db';
 
-
 async function getValidateDepartureTokenData(token) {
   if (!token) {
     throw new Error('Token missing');
@@ -19,21 +18,31 @@ async function getValidateDepartureTokenData(token) {
 
   const { userId } = data;
   const userInfos = await BetaGouv.usersInfos();
-
   return {
     userId: userInfos.find((x) => x.id === userId),
   };
+}
+
+function redirectOutdatedDeparture(req, res) {
+  req.flash('message', "Merci de ta réponse. Cette demande est expirée mais tu recevras à nouveau ce mail deux jours avant ton départ 🙂");
+  return res.redirect('/');
 }
 
 export async function validateDeparture(req, res) {
   try {
     const { userId } = await getValidateDepartureTokenData(req.query.details);
 
-    const marrainageDetailsReponse = await knex('user_departure_state')
-      .insert({ username: userId , has_validated: true })
+    await knex('user_departure_state')
+      .insert({ username: userId.id, has_validated: true })
       .onConflict('username')
-      .merge({ username: userId, has_validated: true });
+      .merge({ username: userId.id, has_validated: true });
+
+    return res.render('departure', { errors: undefined, accepted: true });
   } catch (err){
-    console.log(err);
+    console.error(err);
+    if (err.name === 'TokenExpiredError') {
+      return redirectOutdatedDeparture(req, res);
+    }
+    return res.render('departure', { errors: err.message });
   }
 }

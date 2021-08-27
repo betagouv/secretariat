@@ -94,6 +94,7 @@ app.use(
       '/login',
       '/marrainage/accept',
       '/marrainage/decline',
+      '/departure/validation',
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,

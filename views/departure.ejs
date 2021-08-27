@@ -1,0 +1,33 @@
+<%- include('partials/header'); -%>
+
+<div class="container container-small">
+
+  <% if (errors) { %>
+    <div class="notification error">
+      <strong>Erreur : </strong><%= errors %>
+    </div>
+  <% } else { %>
+    <% if (accepted) { %>
+      <div class="notification">
+        <p>Votre décision a été prise en compte 👌</p>
+        <p>
+          Vous ne recevrez plus de mail de rappel jusqu'à votre départ.
+        </p>
+        <p>Bonne journée.</p>
+      </div>
+    <% } else { %>
+      <div class="notification">
+        <p>Votre décision a été prise en compte 👌</p>
+        <p>
+          Vous recevrez à nouveau ce mail deux jours avant la de fin de contrat.
+        </p>
+        <p>Bonne journée.</p>
+      </div>
+    <% } %>
+  <% } %>
+
+  <a class="button" href="/">Accéder à l'accueil du secrétariat</a>
+
+</div>
+
+<%- include('partials/footer'); -%>
