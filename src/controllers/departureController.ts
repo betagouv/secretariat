@@ -37,7 +37,26 @@ export async function validateDeparture(req, res) {
       .onConflict('username')
       .merge({ username: userId.id, has_validated: true });
 
-    return res.render('departure', { errors: undefined, accepted: true });
+    return res.render('departure', { errors: undefined, validated: true });
+  } catch (err){
+    console.error(err);
+    if (err.name === 'TokenExpiredError') {
+      return redirectOutdatedDeparture(req, res);
+    }
+    return res.render('departure', { errors: err.message });
+  }
+}
+
+export async function unknownDeparture(req, res) {
+  try {
+    const { userId } = await getValidateDepartureTokenData(req.query.details);
+
+    await knex('user_departure_state')
+      .insert({ username: userId.id, has_validated: false })
+      .onConflict('username')
+      .merge({ username: userId.id, has_validated: false });
+
+    return res.render('departure', { errors: undefined, validated: false });
   } catch (err){
     console.error(err);
     if (err.name === 'TokenExpiredError') {
