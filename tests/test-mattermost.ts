@@ -251,11 +251,6 @@ describe('Move expired user to team Alumni on mattermost', () => {
       ])
       .persist();
 
-    const patchEmailMock = nock(/.*mattermost.incubateur.net/)
-      .put(/^.*api\/v4\/users.*/)
-      .reply(200, [])
-      .persist();
-
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -276,21 +271,9 @@ describe('Move expired user to team Alumni on mattermost', () => {
       .persist();
 
     const { moveUsersToAlumniTeam } = mattermostScheduler;
-    let result = await moveUsersToAlumniTeam();
-    addToTeamMock.isDone().should.be.false;
-    patchEmailMock.isDone().should.be.false;
-    result.length.should.be.equal(0);
-    await knex('users').insert({
-      secondary_email: 'uneadressesecondaire@gmail.com',
-      username: 'julien.dauphant'
-    })
-    result = await moveUsersToAlumniTeam();
+    const result = await moveUsersToAlumniTeam();
     addToTeamMock.isDone().should.be.true;
-    patchEmailMock.isDone().should.be.true;
     result.length.should.be.equal(1);
-    await knex('users').where({
-      username: 'julien.dauphant'
-    }).delete()
   });
 
   });
