@@ -81,7 +81,7 @@
     "eslint-config-prettier": "^8.1.0",
     "husky": "^7.0.2",
     "lint-staged": "^11.1.2",
-    "mocha": "^9.1.0",
+    "mocha": "^9.1.1",
     "nock": "^13.1.2",
     "nodemon": "^2.0.12",
     "pg-connection-string": "^2.5.0",
