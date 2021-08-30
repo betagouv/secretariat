@@ -50,6 +50,12 @@ export default {
       .reply(404)
       .persist();
   },
+  mockOvhUserResponder() {
+    return nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+    .reply(404)
+    .persist();
+  },
   mockOvhAllEmailInfos() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)
