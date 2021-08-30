@@ -194,12 +194,14 @@ export function addDays(date, days, week = null) {
 
 export async function userInfos(id, isCurrentUser) {
   try {
-    const [userInfos, emailInfos, redirections] = await Promise.all([
+    const [userInfos, emailInfos, redirections,
+     responder
+    ] = await Promise.all([
       BetaGouv.userInfosById(id),
       BetaGouv.emailInfos(id),
       BetaGouv.redirectionsForId({ from: id }),
+      BetaGouv.getResponder(id)
     ]);
-
     const hasUserInfos = userInfos !== undefined;
 
     const isExpired = checkUserIsExpired(userInfos);
@@ -246,6 +248,7 @@ export async function userInfos(id, isCurrentUser) {
       canCreateRedirection,
       canChangePassword,
       canChangeSecondaryEmail,
+      responder
     };
   } catch (err) {
     console.error(err);

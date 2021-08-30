@@ -97,6 +97,10 @@ POST /email/domain/beta.gouv.fr/mailingList
 POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
 DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
 GET /email/domain/beta.gouv.fr/mailingList/*/subscriber
+GET /email/domain/beta.gouv.fr/responder/*
+POST /email/domain/beta.gouv.fr/responder
+PUT /email/domain/beta.gouv.fr/responder/*
+DELETE /email/domain/beta.gouv.fr/responder/*
 ```
 
 ### Debug avec le serveur SMTP Maildev
