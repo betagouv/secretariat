@@ -95,7 +95,6 @@ app.use(
       '/marrainage/accept',
       '/marrainage/decline',
       '/departure/validation',
-      '/departure/unknown',
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
@@ -157,7 +156,6 @@ app.post('/marrainage/cancel', marrainageController.cancelRequest);
 app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get('/departure/validation', departureController.validateDeparture);
-app.get('/departure/unknown', departureController.unknownDeparture);
 
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
