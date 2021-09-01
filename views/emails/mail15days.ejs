@@ -1,17 +1,26 @@
 Bonjour <%= user.fullname %> !
 
-Ton départ de la communauté beta.gouv.fr est prévu pour dans 15 jours (le <%= user.end %>), tu peux choisir une des options suivantes:
+Ton départ de la communauté beta.gouv.fr est prévu pour dans 15 jours (le <%= user.end %>).
 
-1° Ta date de fin de contrat est toujours la même et tu ne veux plus recevoir de rappel, <a href='<%= validateDepartureUrl %>'> cliques ici</a>
+<p style="margin: 15px 0;">
+  <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md"
+    style="display:inline-block;text-decoration: none; padding: 10px 60px;border: none;border-radius: 3px;color: white;box-shadow: 1px 1px 2px 0px #333;cursor: pointer;background: green;">
+    Corriger ma date
+  </a>
+</p>
 
-2° Si cette date a changée, mets-là à jour pour rester membre de la communauté.
+<p style="margin: 15px 0;">
+  <a href="<%= validateDepartureUrl %>"
+    style="display:inline-block;text-decoration: none; padding: 10px 30px;border: none;color:#333; box-shadow: 1px 1px 2px 0px #333;cursor: pointer;pointer;background: #EEE;">
+    Confirmer mon départ le <%= user.end %>
+  </a>
+</p>
 
 Pour mettre à jour ta date de fin de mission, tu peux :
 - [modifier ta fiche sur Github](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= user.id %>.md)
 - [utiliser l'interface en ligne](https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>)
 - [suivre la documentation](https://pad.incubateur.net/xAj0p9RKTPW00RUGJHtbyA)
 
-3° Tu ne sais pas encore si ta date de fin va changer, <a href='<%= unknownDepartureUrl %>'> cliques ici</a>
 
 Si tu as besoin d'aide, n'hésite pas à répondre [par email à secretariat@incubateur.net](mailto:secretariat@incubateur.net) ou à poser tes questions sur Mattermost dans [~incubateur-secretaria](https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria)
 
