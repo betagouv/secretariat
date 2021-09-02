@@ -32,7 +32,7 @@ interface Job {
   isActive: boolean;
   name: string;
   description?: string;
-  timezone?: string;
+  timeZone?: string;
   start?: boolean;
 }
 
@@ -173,7 +173,7 @@ const jobs: Job[] = [
 
 let activeJobs = 0;
 for (const job of jobs) {
-  const cronjob: Job = { timezone: 'Europe/Paris', start: true, ...job };
+  const cronjob: Job = { timeZone: 'Europe/Paris', start: true, ...job };
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
