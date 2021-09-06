@@ -67,20 +67,17 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
   const token = jwt.sign({
     userId: user.id,
   }, config.secret, { expiresIn: 7 * 24 * 3600 });
-  const validateDepartureUrl = `${config.protocol}://${config.host}/departure/validation?details=${encodeURIComponent(token)}`
-  const messageContent = await ejs.renderFile(
-    `./views/emails/${messageConfig.emailFile}`,
-    {
-      user,
-      validateDepartureUrl
-    }
-  );
+  const validateDepartureUrl = `${config.protocol}://${config.host}/departure/validation?details=${encodeURIComponent(token)}`;
+  const messageContent = await ejs.renderFile(`./views/emails/${messageConfig.emailFile}`, {
+      user, validateDepartureUrl
+  });
+
   try {
-    // await BetaGouv.sendInfoToChat(
-    //   messageContent,
-    //   'secretariat',
-    //   user.mattermostUsername
-    // );
+    await BetaGouv.sendInfoToChat(
+      messageContent,
+      'secretariat',
+      user.mattermostUsername
+    );
     console.log(
       `Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`
     );
@@ -94,9 +91,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
       `Départ dans ${messageConfig.days} jours 🙂`,
       renderHtmlFromMd(messageContent)
     );
-    console.log(
-      `Send ending contract (${messageConfig.days} days) email to ${email}`
-    );
+    console.log(`Send ending contract (${messageConfig.days} days) email to ${email}`);
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
@@ -109,32 +104,6 @@ export async function sendContractEndingMessageToUsers(
   console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays;
-  users = [
-    {
-      id:'emeline.merliere',
-      fullname:'rhkehfei',
-      start:'2020-12-30',
-      end:'2022-01-29',
-      employer:'admin/DINUM',
-      github:'rferfe'
-    },
-    {
-      id:'calev.eliacheff',
-      fullname:'freferfe',
-      start:'2020-12-30',
-      end:'2022-01-29',
-      employer:'admin/DINUM',
-      github:'frefr'
-    },
-    {
-      id:'paul.toto',
-      fullname:'rferferf',
-      start:'2020-12-30',
-      end:'2022-01-29',
-      employer:'admin/DINUM',
-      github:'refrfer'
-    }
-  ]
 
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
@@ -144,11 +113,11 @@ export async function sendContractEndingMessageToUsers(
   }
   let checkUserHasNotValidateDeparture;
   if (configName == 'mail2days') {
-    const usersDepartureState = await knex('user_departure_state').select()
+    const usersDepartureState = await knex('users').select()
     checkUserHasNotValidateDeparture = registeredUsersWithEndingContractInXDays.filter(
       user => {
         const userDepartureState = usersDepartureState.find(u => u.username === user.id);
-        return !userDepartureState || (userDepartureState && userDepartureState.has_validated === false)
+        return !userDepartureState || (userDepartureState && userDepartureState.departure_validated === false)
       }
     )
   } else {
