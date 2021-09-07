@@ -37,7 +37,7 @@
 - Les tâches simples à démarrer sont référencées par le label [good first issue](https://github.com/betagouv/secretariat/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 
 ### Configuration
-- La configuration de l'app se fait uniquement par variables d'environnements dans `src/config.js`
+- La configuration de l'app se fait uniquement par variables d'environnements dans `src/config.ts`
 - Essayez de rendre la configuration optionnelle
     - Mettez une configuration par défaut qui marche pour la production
     - On ne pas de configuration par défaut pour du développement

@@ -272,6 +272,9 @@ button.redirection-remove {
 .font-weight-bold {
   font-weight: bold;
 }
+.font-size-smaller {
+  font-size: smaller;
+}
 
 .text-size-caption {
   font-size: 0.8em;

@@ -4,7 +4,13 @@
 <script src="/static/collapse/collapse.js"></script>
 
 <div class="module">
-
+    <% if (hasActiveResponder) { %>
+        <div class="notification warning">
+            <strong>Réponse automatique activée.</strong>
+            <a href="/account#responder">Désactiver maintenant</a>
+            <a href="/account#responder">Configurer la réponse</a>
+        </div>
+    <% } %>
     <div class="row">
         <div class="panel panel-partial-width">
             <div class="account-split-panel">
@@ -13,29 +19,55 @@
                         Ma fiche
                     </h3>
                     <% if (userInfos) { %>
-                    <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
+                        <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
                     <% } %>
                     <% if (userInfos.start) { %>
-                    <p>
-                        <span class="font-weight-bold">Mission :</span>
-                        du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
-                        <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %>
-                    </p>
+                        <p>
+                            <span class="font-weight-bold">Mission :</span>
+                            du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
+                            <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %><br>
+                            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
+                        </p>
+                        <section id="update-end-date-form" style="display:none" class="panel">
+                            <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <input type="hidden" name="start" value="<%= userInfos.start %>">
+                                <input type="hidden" name="end" value="<%= userInfos.end %>">
+                                <p>
+                                    <strong>Date de fin actuelle :</strong>
+                                    <% if (userInfos.end) { %>
+                                        <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                                    <% } else { %>
+                                        Non renseignée
+                                    <% } %>
+                                </p>
+                                <div class="form__group">
+                                    <label for="end">
+                                        <strong>Nouvelle date de fin</strong>
+                                    </label>
+                                    <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                </div>
+                                <div class="form__group button__group">
+                                    <button class="button" type="submit">Valider</button>
+                                    <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                                </div>
+                            </form>
+                        </section>
                     <% } %>
                     <% if (userInfos.employer) { %>
-                    <p>
-                        <span class="font-weight-bold">Employeur : </span> <%= userInfos.employer %>
-                    </p>
+                        <p>
+                            <strong>Employeur : </strong><%= userInfos.employer %>
+                        </p>
                     <% } %>
                     <% if (userInfos.github) { %>
-                    <p>
-                        <span class="font-weight-bold">Compte Github : </span>
-                        <% if (userInfos.github) { %>
-                        <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
-                        <% } else { %>
-                            Non renseigné
-                        <% } %>
-                    </p>
+                        <p>
+                            <strong>Compte Github :</strong>
+                            <% if (userInfos.github) { %>
+                                <a href="https://github.com/<%= userInfos.github %>"><%= userInfos.github %></a>
+                            <% } else { %>
+                                Non renseigné
+                            <% } %>
+                        </p>
                     <% } %>
                     <p>
                         <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
@@ -116,8 +148,61 @@
                     <hr />
                 </div>
             </div>
-
-
+            <div class="collapse" id="responder">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer une réponse automatique
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez. (la mise en place effective de la réponse automatique peut prendre quelques minutes)
+                    </p>
+                    <form class="no-margin"
+                        onsubmit="const proceed = event.submitter.id === 'delete-button' ? confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?') : true; event.submitter && (event.submitter.disabled = proceed); return proceed;"
+                        action="/account/set_email_responder" method="POST" >
+                    <% if (hasResponder) { %>
+                        <input type="hidden" name="method" value="update">
+                    <% } %>       
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Message d'absence</strong><br />
+                                </label>
+                                <textarea placeholder="Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
+                            </div>
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Début</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                
+                            <div class="form__group">
+                                <label for="end">
+                                    <strong>Fin</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                    <% if (!hasResponder) { %>
+                            <button class="button margin-10-0" type="submit">Sauvegarder</button>
+                        </form>
+                    <% } else { %>
+                            <div class="row">
+                                <button class="button margin-10-0" type="submit">Changer</button>
+                                <% if (hasResponder) { %>
+                                        <button
+                                            id='delete-button'
+                                            class="button margin-10-0 button-underline" formaction="/account/delete_email_responder" type="submit">Supprimer</button>
+                                <% } %> 
+                            </div>
+                        </form>
+                    <% } %> 
+                    <hr />
+                </div>
+            </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
@@ -221,23 +306,15 @@
                     <p>
                         L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     </p>
-                    <% if (!secondaryEmail) { %>
+                    <% if (canChangeSecondaryEmail) { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <input id="secondaryEmail" name="secondaryEmail" type="email">
+                        <input id="secondaryEmail" name="secondaryEmail" value="<%= secondaryEmail %>" type="email">
                         <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
                     </form>
-                    <% } else { %>
-                        <% if (canChangeSecondaryEmail) { %>
-                            <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email/update" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                                <input id="newSecondaryEmail" name="newSecondaryEmail" value="<%= secondaryEmail %>" type="email">
-                                <button class="button margin-10-0" type="submit">Modifier l'email secondaire</button>
-                            </form>
-                        <% } %>
                     <% } %>
                     <hr />
-                </div>
+                </div> 
             </div>
-
         </div>
     </div>
 
@@ -267,3 +344,16 @@
 </div>
 
 <%- include('partials/nav-footer'); -%>
+
+
+<script>
+    const form = document.getElementById("update-end-date-form");
+    const formToggle = document.getElementById("update-end-date-form-toggle");
+    const formCancelButton = document.getElementById("update-end-date-form-cancel-button");
+    formToggle.addEventListener("click", function() {
+        form.style.display = (form.style.display === "block") ? "none" : "block";
+    }, false);
+    formCancelButton.addEventListener("click", function() {
+        form.style.display = "none";
+    }, false);
+</script>

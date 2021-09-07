@@ -166,6 +166,7 @@ describe('Community', () => {
         .reply(200, { description: '' });
 
       utils.mockUsers();
+      utils.mockOvhUserResponder();
       utils.mockOvhRedirections();
       utils.mockOvhTime();
 

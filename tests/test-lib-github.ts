@@ -1,4 +1,4 @@
-const { isValidGithubUserName } = require('../src/lib/github');
+import { isValidGithubUserName } from "../src/lib/github";
 
 describe('Github lib', () => {
   describe('isValidGithubUserName', () => {
