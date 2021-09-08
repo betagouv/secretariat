@@ -8,9 +8,6 @@ const getUnknownGithubUsersInOrganization = async (org) => {
   const users = await BetaGouv.usersInfos();
 
   const activeGithubUsers = users.filter((x) => x.github).map((x) => x.github.toLowerCase());
-  const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
-    (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
-  );
 
   return allGithubOrganizationMembers.filter((user) => {
     const githubUsername = user.login.toLowerCase();
