@@ -74,7 +74,7 @@ const jobs: Job[] = [
     name: 'emailCreationJob',
   },
   {
-    cronTime: '0 */15 * * * 1-5',
+    cronTime: '0 */5 * * * 1-5',
     onTick: addGithubUserToOrganization,
     isActive: !!config.featureAddGithubUserToOrganization,
     name: 'addGithubUserToOrganization',
