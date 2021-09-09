@@ -44,7 +44,7 @@ export async function sendMail(toEmail, subject, html, extraParams = {}) {
     headers: { 
       // 'X-Mailjet-TrackOpen': '0',
       // 'X-Mailjet-TrackClick': '0',
-      // 'X-Account-ID': process.env.MAIL_ACCOUNT_ID
+      'X-Account-ID': process.env.MAIL_ACCOUNT_ID
     },
     ...extraParams,
   };
