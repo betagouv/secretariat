@@ -22,12 +22,12 @@ interface EventParam {
     created_by_username: string
 }
 
-export async function addEvent : Promise<void> (eventCode: EventCode, param: EventParam) {
+export async function addEvent (eventCode: EventCode, param: EventParam) : Promise<void> {
     const event: Event = {
         action_code: eventCode,
         action_description: EventDescriptions.get(eventCode),
         action_on_username: param.action_on_username,
         created_by_username: param.created_by_username
     }
-    return knex('events').insert(event).returning('*').then(db => db[0])
+    knex('events').insert(event)
 }
