@@ -22,7 +22,7 @@ interface EventParam {
     created_by_username: string
 }
 
-export async function addEvent(eventCode: EventCode, param: EventParam) {
+export async function addEvent : Promise<void> (eventCode: EventCode, param: EventParam) {
     const event: Event = {
         action_code: eventCode,
         action_description: EventDescriptions.get(eventCode),
