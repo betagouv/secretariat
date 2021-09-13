@@ -29,5 +29,5 @@ export async function addEvent (eventCode: EventCode, param: EventParam) : Promi
         action_on_username: param.action_on_username,
         created_by_username: param.created_by_username
     }
-    knex('events').insert(event)
+    return knex('events').insert(event)
 }
