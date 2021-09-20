@@ -21,7 +21,7 @@ const EventDescriptions = new Map<EventCode, string>([
     [EventCode.DELETE_REDIRECTION, 'redirection supprimée'],
     [EventCode.CREATE_EMAIL, `email créé`],
     [EventCode.DELETE_EMAIL, `email supprimé`],
-    [EventCode.CHANGE_PASSWORD, `password changé`],
+    [EventCode.UPDATE_PASSWORD, `password changé`],
     [EventCode.CREATE_RESPONDER, `réponse automatique créée`],
     [EventCode.UPDATE_RESPONDER, `réponse automatique mise à jour`],
     [EventCode.DELETE_RESPONDER, `réponse automatique supprimée`],
