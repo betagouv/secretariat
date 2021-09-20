@@ -8,7 +8,7 @@ describe('Add events', () => {
             action_on_username: 'membre.expire',
         });
         const res = await knex('events').select('*').orderBy('created_at', 'desc').then(db => db[0])
-        res.action_description.should.equal(`création d'une redirection`)
+        res.action_description.should.equal(`redirection créée`)
         res.created_by_username.should.equal('membre.actif')
         res.action_on_username.should.equal('membre.expire')
     })
