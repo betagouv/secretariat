@@ -229,8 +229,8 @@ export async function acceptRequest(req, res) {
       .where({ username: newcomer.id })
       .update({ completed: true, last_updated: knex.fn.now() });
     addEvent(EventCode.ACCEPT_MARRAINAGE, {
-      created_by_username: newcomer.id,
-      action_on_username: newcomer.id
+      created_by_username: onboarder.id,
+      action_on_username: onboarder.id
     })
     const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', {
       newcomer,
@@ -281,8 +281,8 @@ export async function declineRequest(req, res) {
         completed: false,
       });
     addEvent(EventCode.DECLINE_MARRAINAGE, {
-      created_by_username: newcomer.id,
-      action_on_username: newcomer.id
+      created_by_username: declinedOnboarder.id,
+      action_on_username: declinedOnboarder.id
     })
     if (marrainageDetailsReponse.length !== 1) {
       console.log(
