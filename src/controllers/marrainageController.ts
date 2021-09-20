@@ -1,9 +1,9 @@
-import ejs from "ejs";
-import jwt from "jsonwebtoken";
-import config from "../config";
-import BetaGouv from "../betagouv";
-import * as utils from "./utils";
-import knex from "../db";
+import ejs from 'ejs';
+import jwt from 'jsonwebtoken';
+import config from '../config';
+import BetaGouv from '../betagouv';
+import * as utils from './utils';
+import knex from '../db';
 
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
@@ -54,27 +54,45 @@ async function getMarrainageTokenData(token) {
 }
 
 async function sendOnboarderRequestEmail(newcomer, onboarder) {
-  const token = jwt.sign({
-    newcomerId: newcomer.id,
-    onboarderId: onboarder.id,
-  }, config.secret, { expiresIn: 7 * 24 * 3600 });
+  const token = jwt.sign(
+    {
+      newcomerId: newcomer.id,
+      onboarderId: onboarder.id,
+    },
+    config.secret,
+    { expiresIn: 7 * 24 * 3600 }
+  );
 
-  const marrainageAcceptUrl = `${config.protocol}://${config.host}/marrainage/accept?details=${encodeURIComponent(token)}`;
-  const marrainageDeclineUrl = `${config.protocol}://${config.host}/marrainage/decline?details=${encodeURIComponent(token)}`;
+  const marrainageAcceptUrl = `${config.protocol}://${
+    config.host
+  }/marrainage/accept?details=${encodeURIComponent(token)}`;
+  const marrainageDeclineUrl = `${config.protocol}://${
+    config.host
+  }/marrainage/decline?details=${encodeURIComponent(token)}`;
 
   const html = await ejs.renderFile('./views/emails/marrainageRequest.ejs', {
-    newcomer, onboarder, marrainageAcceptUrl, marrainageDeclineUrl,
+    newcomer,
+    onboarder,
+    marrainageAcceptUrl,
+    marrainageDeclineUrl,
   });
 
   try {
-    return await utils.sendMail([utils.buildBetaEmail(onboarder.id)], 'Tu as été sélectionné·e comme marrain·e 🙌', html);
+    return await utils.sendMail(
+      [utils.buildBetaEmail(onboarder.id)],
+      'Tu as été sélectionné·e comme marrain·e 🙌',
+      html
+    );
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
 }
 
 function redirectOutdatedMarrainage(req, res) {
-  req.flash('message', "Merci de ta réponse. Cette demande n'est plus d'actualité. Ce sera pour une prochaine fois 🙂");
+  req.flash(
+    'message',
+    "Merci de ta réponse. Cette demande n'est plus d'actualité. Ce sera pour une prochaine fois 🙂"
+  );
   return res.redirect('/');
 }
 
@@ -82,19 +100,26 @@ export async function reloadMarrainage(newcomerId) {
   const newcomer = await BetaGouv.userInfosById(newcomerId);
 
   if (!newcomer) {
-    throw new Error(`${newcomerId} ne fais pas partie de la communauté beta.gouv`);
+    throw new Error(
+      `${newcomerId} ne fais pas partie de la communauté beta.gouv`
+    );
   }
 
-  const marrainageDetailsReponse = await knex('marrainage').select()
+  const marrainageDetailsReponse = await knex('marrainage')
+    .select()
     .where({ username: newcomer.id, completed: false });
 
   if (marrainageDetailsReponse.length !== 1) {
-    throw new Error("Il n'y a pas de demande de marrainage existant pour cette personne.");
+    throw new Error(
+      "Il n'y a pas de demande de marrainage existant pour cette personne."
+    );
   }
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
-    throw new Error(`Erreur lors de la relance de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`);
+    throw new Error(
+      `Erreur lors de la relance de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`
+    );
   }
 
   await knex('marrainage')
@@ -103,7 +128,9 @@ export async function reloadMarrainage(newcomerId) {
     .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
 
   await sendOnboarderRequestEmail(newcomer, onboarder);
-  console.log(`Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`);
+  console.log(
+    `Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`
+  );
   return { newcomer, onboarder };
 }
 
@@ -118,7 +145,11 @@ export async function createRequestForUser(userId) {
       <p>Bonjour,</p>
       <p>Erreur de création de la demande de marrainage pour ${userId} avec l'erreur :</>
       <p>${errorMessage}</p>`;
-    utils.sendMail(recipientEmailList, `La demande de marrainage pour ${userId} n'a pas fonctionné`, emailContent);
+    utils.sendMail(
+      recipientEmailList,
+      `La demande de marrainage pour ${userId} n'a pas fonctionné`,
+      emailContent
+    );
     throw new Error(errorMessage);
   }
 
@@ -138,14 +169,26 @@ export async function createRequest(req, res) {
     const newcomerId = req.sanitize(req.body.newcomerId);
     const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
     if (utils.checkUserIsExpired(loggedUserInfo)) {
-      throw new Error('Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.');
+      throw new Error(
+        'Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.'
+      );
     }
     const { newcomer, onboarder } = await createRequestForUser(newcomerId);
     const { user } = req;
-    console.log(`Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
+    console.log(
+      `Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`
+    );
 
-    if (newcomer.id === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
-    else req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
+    if (newcomer.id === req.user.id)
+      req.flash(
+        'message',
+        `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`
+      );
+    else
+      req.flash(
+        'message',
+        `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`
+      );
 
     res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
@@ -162,11 +205,18 @@ export async function acceptRequest(req, res) {
     const { newcomer } = details;
     const { onboarder } = details;
 
-    const marrainageDetailsReponse = await knex('marrainage').select()
-      .where({ username: newcomer.id, last_onboarder: onboarder.id, completed: false });
+    const marrainageDetailsReponse = await knex('marrainage')
+      .select()
+      .where({
+        username: newcomer.id,
+        last_onboarder: onboarder.id,
+        completed: false,
+      });
 
     if (marrainageDetailsReponse.length !== 1) {
-      console.log(`Marrainage accepté non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${onboarder.id}`);
+      console.log(
+        `Marrainage accepté non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${onboarder.id}`
+      );
       return redirectOutdatedMarrainage(req, res);
     }
 
@@ -174,14 +224,30 @@ export async function acceptRequest(req, res) {
       .where({ username: newcomer.id })
       .update({ completed: true, last_updated: knex.fn.now() });
 
-    const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', { newcomer, onboarder });
+    const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', {
+      newcomer,
+      onboarder,
+    });
     try {
-      await utils.sendMail([utils.buildBetaEmail(onboarder.id), utils.buildBetaEmail(newcomer.id)], 'Mise en contact 👋', html);
+      await utils.sendMail(
+        utils.buildBetaEmail(onboarder.id),
+        'Mise en contact 👋',
+        html,
+        { replyTo: utils.buildBetaEmail(newcomer.id) }
+      );
+      await utils.sendMail(
+        utils.buildBetaEmail(newcomer.id),
+        'Mise en contact 👋',
+        html,
+        { replyTo: utils.buildBetaEmail(onboarder.id) }
+      );
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 
-    console.log(`Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`);
+    console.log(
+      `Marrainage accepté pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`
+    );
 
     return res.render('marrainage', { errors: undefined, accepted: true });
   } catch (err) {
@@ -199,19 +265,31 @@ export async function declineRequest(req, res) {
     const { newcomer } = details;
     const declinedOnboarder = details.onboarder;
 
-    const marrainageDetailsReponse = await knex('marrainage').select()
-      .where({ username: newcomer.id, last_onboarder: declinedOnboarder.id, completed: false });
+    const marrainageDetailsReponse = await knex('marrainage')
+      .select()
+      .where({
+        username: newcomer.id,
+        last_onboarder: declinedOnboarder.id,
+        completed: false,
+      });
 
     if (marrainageDetailsReponse.length !== 1) {
-      console.log(`Marrainage refusé non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${declinedOnboarder.id}`);
+      console.log(
+        `Marrainage refusé non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${declinedOnboarder.id}`
+      );
       return redirectOutdatedMarrainage(req, res);
     }
 
     const onboarder = await selectRandomOnboarder(newcomer.id);
 
     if (!onboarder) {
-      console.log(`Erreur lors du refus de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`);
-      req.flash('error', "Aucun·e autre marrain·e n'est disponible pour le moment");
+      console.log(
+        `Erreur lors du refus de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`
+      );
+      req.flash(
+        'error',
+        "Aucun·e autre marrain·e n'est disponible pour le moment"
+      );
       return res.redirect('/');
     }
 
@@ -222,7 +300,9 @@ export async function declineRequest(req, res) {
 
     await sendOnboarderRequestEmail(newcomer, onboarder);
 
-    console.log(`Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`);
+    console.log(
+      `Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`
+    );
 
     return res.render('marrainage', { errors: undefined, accepted: false });
   } catch (err) {
@@ -238,13 +318,24 @@ export async function reloadRequest(req, res) {
   try {
     const { newcomer, onboarder } = await reloadMarrainage(req.body.newcomerId);
 
-    if (req.body.newcomerId === req.user.id) req.flash('message', `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`);
-    else req.flash('message', `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`);
+    if (req.body.newcomerId === req.user.id)
+      req.flash(
+        'message',
+        `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`
+      );
+    else
+      req.flash(
+        'message',
+        `<b>${onboarder.fullname}</b> a été invité à marrainer ${newcomer.fullname}.`
+      );
 
     return res.redirect(`/community/${newcomer.id}`);
   } catch (err) {
     if (err.message.includes('Marrainage non existant')) {
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne.");
+      req.flash(
+        'error',
+        "Il n'y a pas de demande de marrainage existant pour cette personne."
+      );
     }
     console.error(err);
     return res.redirect(`/community/${req.body.newcomerId}`);
@@ -255,18 +346,20 @@ export async function cancelRequest(req, res) {
   try {
     const newcomer = await BetaGouv.userInfosById(req.body.newcomerId);
 
-    const marrainageDetailsReponse = await knex('marrainage').select()
+    const marrainageDetailsReponse = await knex('marrainage')
+      .select()
       .where({ username: newcomer.id, completed: false });
 
     if (marrainageDetailsReponse.length !== 1) {
       console.log(`Marrainage non existant pour ${newcomer.id}.`);
-      req.flash('error', "Il n'y a pas de demande de marrainage existant pour cette personne.");
+      req.flash(
+        'error',
+        "Il n'y a pas de demande de marrainage existant pour cette personne."
+      );
       return res.redirect(`/community/${newcomer.id}`);
     }
 
-    await knex('marrainage')
-      .where({ username: newcomer.id })
-      .del();
+    await knex('marrainage').where({ username: newcomer.id }).del();
 
     console.log(`Marrainage supprimé pour ${newcomer.id}.`);
 

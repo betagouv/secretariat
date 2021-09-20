@@ -67,13 +67,19 @@ describe('Marrainage', () => {
               res.text.should.include(
                 'Vous allez recevoir un email avec tous les deux en copie'
               );
-              sendEmailStub.calledOnce.should.be.true;
+              sendEmailStub.calledTwice.should.be.true;
 
               const subject = sendEmailStub.args[0][1];
               const emailBody = sendEmailStub.args[0][2];
+              const subject2 = sendEmailStub.args[1][1];
+              const emailBody2 = sendEmailStub.args[1][2];
 
               subject.should.equal('Mise en contact 👋');
               emailBody.should.include(
+                'Membre Actif a accepté de te marrainer'
+              );
+              subject2.should.equal('Mise en contact 👋');
+              emailBody2.should.include(
                 'Membre Actif a accepté de te marrainer'
               );
               done();
