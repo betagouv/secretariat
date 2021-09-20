@@ -4,6 +4,7 @@ import config from '../config';
 import BetaGouv from '../betagouv';
 import * as utils from './utils';
 import knex from '../db';
+import { addEvent, EventCode } from '../lib/events'
 
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
@@ -178,6 +179,10 @@ export async function createRequest(req, res) {
     console.log(
       `Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`
     );
+    addEvent(EventCode.CREATE_MARRAINAGE, {
+      created_by_username: user.id,
+      action_on_username: newcomer.id
+    })
 
     if (newcomer.id === req.user.id)
       req.flash(
@@ -223,7 +228,10 @@ export async function acceptRequest(req, res) {
     await knex('marrainage')
       .where({ username: newcomer.id })
       .update({ completed: true, last_updated: knex.fn.now() });
-
+    addEvent(EventCode.ACCEPT_MARRAINAGE, {
+      created_by_username: newcomer.id,
+      action_on_username: newcomer.id
+    })
     const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', {
       newcomer,
       onboarder,
@@ -272,7 +280,10 @@ export async function declineRequest(req, res) {
         last_onboarder: declinedOnboarder.id,
         completed: false,
       });
-
+    addEvent(EventCode.DECLINE_MARRAINAGE, {
+      created_by_username: newcomer.id,
+      action_on_username: newcomer.id
+    })
     if (marrainageDetailsReponse.length !== 1) {
       console.log(
         `Marrainage refusé non existant pour ${newcomer.id}. Marrain·e indiqué·e : ${declinedOnboarder.id}`

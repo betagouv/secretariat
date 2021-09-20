@@ -2,6 +2,7 @@ import betagouv from "../betagouv";
 import config from "../config";
 import knex from "../db";
 import * as utils from "./utils";
+import { addEvent, EventCode } from '../lib/events'
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors = [];
@@ -41,11 +42,19 @@ export async function setEmailResponder(req, res) {
         to: endDate,
         content
       })
+      addEvent(EventCode.SET_RESPONDER, {
+        created_by_username: req.user.id,
+        action_on_username: req.user.id
+      })
     } else {
       await betagouv.updateResponder(req.user.id, {
         from: startDate,
         to: endDate,
         content
+      })
+      addEvent(EventCode.UPDATE_RESPONDER, {
+        created_by_username: req.user.id,
+        action_on_username: req.user.id
       })
     }
   } catch(err) {
@@ -61,6 +70,10 @@ export async function setEmailResponder(req, res) {
 export async function deleteEmailResponder(req, res) {
   try {
     await betagouv.deleteResponder(req.user.id)
+    addEvent(EventCode.DELETE_RESPONDER, {
+      created_by_username: req.user.id,
+      action_on_username: req.user.id
+    })
   } catch(err) {
     const errorMessage = `Une erreur est intervenue lors de la suppression de la réponse automatique : ${err}`
     console.error(errorMessage);
