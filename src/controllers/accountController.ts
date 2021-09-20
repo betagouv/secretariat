@@ -42,7 +42,7 @@ export async function setEmailResponder(req, res) {
         to: endDate,
         content
       })
-      addEvent(EventCode.SET_RESPONDER, {
+      addEvent(EventCode.CREATE_RESPONDER, {
         created_by_username: req.user.id,
         action_on_username: req.user.id
       })

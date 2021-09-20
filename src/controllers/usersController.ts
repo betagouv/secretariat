@@ -234,7 +234,7 @@ export async function updatePasswordForUser(req, res) {
 
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
 
-    addEvent(EventCode.CHANGE_PASSWORD, {
+    addEvent(EventCode.UPDATE_PASSWORD, {
       created_by_username: req.user.id,
       action_on_username: username
     })
@@ -265,7 +265,10 @@ export async function deleteEmailForUser(req, res) {
     }
 
     await BetaGouv.sendInfoToChat(`Suppression de compte de ${username} (à la demande de ${req.user.id})`);
-
+    addEvent(EventCode.DELETE_EMAIL, {
+      created_by_username: req.user.id,
+      action_on_username: username
+    })
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map((x) => x.id));
       console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
@@ -311,7 +314,10 @@ export async function manageSecondaryEmailForUser(req, res) {
         secondary_email: secondaryEmail,
         username
       });
-
+      addEvent(EventCode.UPDATE_SECONDARY_EMAIL, {
+        created_by_username: req.user.id,
+        action_on_username: username
+      })
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
       console.log(`${req.user.id} a mis à jour son adresse mail secondaire.`);
       res.redirect(`/community/${username}`);
@@ -402,6 +408,10 @@ export async function updateEndDateForUser(req, res) {
 
     const changes = [{ key: 'end', old: end, new: newEnd }];
     await updateAuthorGithubFile(username, changes);
+    addEvent(EventCode.UPDATE_END_DATE, {
+      created_by_username: req.user.id,
+      action_on_username: username
+    })
     // TODO: get actual PR url instead
     const pullRequestsUrl = `https://github.com/${config.githubRepository}/pulls`;
     req.flash('message', `Pull request pour la mise à jour de la fiche de ${username} ouverte <a href="${pullRequestsUrl}" target="_blank">ici</a>. Une fois mergée, votre profil sera mis à jour.`);
