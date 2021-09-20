@@ -4,6 +4,7 @@ export enum EventCode {
     CREATE_REDIRECTION,
     DELETE_REDIRECTION,
     CREATE_EMAIL,
+    DELETE_EMAIL,
     UPDATE_PASSWORD,
     CREATE_RESPONDER,
     UPDATE_RESPONDER,
@@ -19,6 +20,7 @@ const EventDescriptions = new Map<EventCode, string>([
     [EventCode.CREATE_REDIRECTION, `redirection créée`],
     [EventCode.DELETE_REDIRECTION, 'redirection supprimée'],
     [EventCode.CREATE_EMAIL, `email créé`],
+    [EventCode.DELETE_EMAIL, `email supprimé`],
     [EventCode.CHANGE_PASSWORD, `password changé`],
     [EventCode.CREATE_RESPONDER, `réponse automatique créée`],
     [EventCode.UPDATE_RESPONDER, `réponse automatique mise à jour`],
@@ -26,6 +28,8 @@ const EventDescriptions = new Map<EventCode, string>([
     [EventCode.CREATE_MARRAINAGE, `marrainage crée`],
     [EventCode.ACCEPT_MARRAINAGE, `marrainage accepté`],
     [EventCode.DECLINE_MARRAINAGE, `marrainage décliné`],
+    [EventCode.UPDATE_SECONDARY_EMAIL, `email secondaire mis à jour`],
+    [EventCode.UPDATE_END_DATE, `date de fin mise à jour`],
 ]);
 
 interface Event {
