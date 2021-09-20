@@ -8,16 +8,22 @@ export enum EventCode {
     SET_RESPONDER,
     UPDATE_RESPONDER,
     DELETE_RESPONDER,
+    CREATE_MARRAINAGE,
+    ACCEPT_MARRAINAGE,
+    DECLINE_MARRAINAGE,
 }
 
 const EventDescriptions = new Map<EventCode, string>([
-    [EventCode.CREATE_REDIRECTION, `création d'une redirection`],
-    [EventCode.DELETE_REDIRECTION, 'suppression de redirection'],
-    [EventCode.CREATE_EMAIL, `creation de l'email`],
-    [EventCode.CHANGE_PASSWORD, `changement de password`],
-    [EventCode.SET_RESPONDER, `création d'une réponse automatique`],
-    [EventCode.UPDATE_RESPONDER, `mise à jour d'une réponse automatique`],
-    [EventCode.DELETE_RESPONDER, `suppression d'une réponse automatique`],
+    [EventCode.CREATE_REDIRECTION, `redirection créée`],
+    [EventCode.DELETE_REDIRECTION, 'redirection supprimée'],
+    [EventCode.CREATE_EMAIL, `email créé`],
+    [EventCode.CHANGE_PASSWORD, `password changé`],
+    [EventCode.SET_RESPONDER, `réponse automatique créée`],
+    [EventCode.UPDATE_RESPONDER, `réponse automatique mise à jour`],
+    [EventCode.DELETE_RESPONDER, `réponse automatique supprimée`],
+    [EventCode.CREATE_MARRAINAGE, `marrainage crée`],
+    [EventCode.ACCEPT_MARRAINAGE, `marrainage accepté`],
+    [EventCode.DECLINE_MARRAINAGE, `marrainage décliné`],
 ]);
 
 interface Event {
