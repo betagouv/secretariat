@@ -5,6 +5,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db/index";
 import { createRequestForUser } from "./marrainageController";
+import { addEvent, EventCode } from '../lib/events'
 
 export async function createEmail(username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -20,6 +21,10 @@ export async function createEmail(username, creator, toEmail) {
 
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
 
+  addEvent(EventCode.CREATE_EMAIL, {
+    created_by_username: creator,
+    action_on_username: username
+  })
   await BetaGouv.sendInfoToChat(message);
   await BetaGouv.createEmail(username, password);
 
@@ -119,6 +124,10 @@ export async function createRedirectionForUser(req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
     try {
+      addEvent(EventCode.CREATE_REDIRECTION, {
+        created_by_username: req.user.id,
+        action_on_username: username
+      })
       await BetaGouv.sendInfoToChat(message);
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(username),
@@ -161,6 +170,10 @@ export async function deleteRedirectionForUser(req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
     try {
+      addEvent(EventCode.DELETE_REDIRECTION, {
+        created_by_username: req.user.id,
+        action_on_username: username
+      })
       await BetaGouv.sendInfoToChat(message);
       await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), toEmail);
     } catch (err) {
@@ -221,6 +234,10 @@ export async function updatePasswordForUser(req, res) {
 
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
 
+    addEvent(EventCode.CHANGE_PASSWORD, {
+      created_by_username: req.user.id,
+      action_on_username: username
+    })
     await BetaGouv.sendInfoToChat(message);
     await BetaGouv.changePassword(username, password);
 

@@ -3,11 +3,16 @@ import knex from "../db";
 export enum EventCode {
     CREATE_REDIRECTION,
     DELETE_REDIRECTION,
+    CREATE_EMAIL,
+    CHANGE_PASSWORD
 }
 
 const EventDescriptions = new Map<EventCode, string>([
     [EventCode.CREATE_REDIRECTION, `création d'une redirection`],
-    [EventCode.DELETE_REDIRECTION, 'suppression de redirection']
+    [EventCode.DELETE_REDIRECTION, 'suppression de redirection'],
+    [EventCode.CREATE_EMAIL, `creation de l'email`],
+    [EventCode.CHANGE_PASSWORD, `changement de password`],
+
 ]);
 
 interface Event {
@@ -17,7 +22,7 @@ interface Event {
     created_by_username: string
 }
 
-interface EventParam {
+export type EventParam = {
     action_on_username?: string,
     created_by_username: string
 }
