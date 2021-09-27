@@ -179,7 +179,7 @@ export async function createRequest(req, res) {
     console.log(
       `Marrainage crée à la demande de ${user.id} pour ${newcomer.id}. Marrain·e selectionné·e : ${onboarder.id}`
     );
-    addEvent(EventCode.CREATE_MARRAINAGE, {
+    addEvent(EventCode.MARRAINAGE_CREATED, {
       created_by_username: user.id,
       action_on_username: newcomer.id
     })
@@ -228,7 +228,7 @@ export async function acceptRequest(req, res) {
     await knex('marrainage')
       .where({ username: newcomer.id })
       .update({ completed: true, last_updated: knex.fn.now() });
-    addEvent(EventCode.ACCEPT_MARRAINAGE, {
+    addEvent(EventCode.MARRAINAGE_ACCEPTD, {
       created_by_username: onboarder.id,
       action_on_username: onboarder.id
     })
@@ -280,7 +280,7 @@ export async function declineRequest(req, res) {
         last_onboarder: declinedOnboarder.id,
         completed: false,
       });
-    addEvent(EventCode.DECLINE_MARRAINAGE, {
+    addEvent(EventCode.MEMBER_MARRAINAGE_DECLINED, {
       created_by_username: declinedOnboarder.id,
       action_on_username: declinedOnboarder.id
     })

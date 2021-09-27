@@ -42,9 +42,12 @@ export async function setEmailResponder(req, res) {
         to: endDate,
         content
       })
-      addEvent(EventCode.CREATE_RESPONDER, {
+      addEvent(EventCode.MEMBER_RESPONDER_CREATED, {
         created_by_username: req.user.id,
-        action_on_username: req.user.id
+        action_on_username: req.user.id,
+        action_metadata: {
+          value: content
+        }
       })
     } else {
       await betagouv.updateResponder(req.user.id, {
@@ -52,9 +55,13 @@ export async function setEmailResponder(req, res) {
         to: endDate,
         content
       })
-      addEvent(EventCode.UPDATE_RESPONDER, {
+      addEvent(EventCode.MEMBER_RESPONDER_UPDATED, {
         created_by_username: req.user.id,
-        action_on_username: req.user.id
+        action_on_username: req.user.id,
+        action_metadata: {
+          value: content,
+          old_value: old_content,
+        }
       })
     }
   } catch(err) {
@@ -70,7 +77,7 @@ export async function setEmailResponder(req, res) {
 export async function deleteEmailResponder(req, res) {
   try {
     await betagouv.deleteResponder(req.user.id)
-    addEvent(EventCode.DELETE_RESPONDER, {
+    addEvent(EventCode.MEMBER_RESPONDER_DELETED, {
       created_by_username: req.user.id,
       action_on_username: req.user.id
     })
