@@ -1,7 +1,4 @@
-import { Knex } from "knex";
-
-
-export async function up(knex: Knex): Promise<void> {
+export async function up(knex): Promise<void> {
     await knex.raw(`
         CREATE EXTENSION hstore;
         ALTER TABLE events
@@ -14,7 +11,7 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 
-export async function down(knex: Knex): Promise<void> {
+export async function down(knex): Promise<void> {
     await knex.raw(`
         CREATE EXTENSION hstore;
         ALTER TABLE events
