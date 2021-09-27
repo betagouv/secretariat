@@ -228,7 +228,7 @@ export async function acceptRequest(req, res) {
     await knex('marrainage')
       .where({ username: newcomer.id })
       .update({ completed: true, last_updated: knex.fn.now() });
-    addEvent(EventCode.MARRAINAGE_ACCEPTD, {
+    addEvent(EventCode.MARRAINAGE_ACCEPTED, {
       created_by_username: onboarder.id,
       action_on_username: onboarder.id
     })

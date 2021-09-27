@@ -32,7 +32,7 @@ interface Event {
 export type EventParam = {
     action_on_username?: string,
     created_by_username: string,
-    action_metadata: ActionMetadata,
+    action_metadata?: ActionMetadata,
 }
 
 export async function addEvent (eventCode: EventCode, param: EventParam) : Promise<void> {
