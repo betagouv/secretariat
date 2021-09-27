@@ -330,7 +330,7 @@ export async function manageSecondaryEmailForUser(req, res) {
         action_on_username: username,
         action_metadata: {
           value: secondaryEmail,
-          old_value: dbUser.secondaryEmail,
+          old_value: dbUser.secondary_email,
         }
       })
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
