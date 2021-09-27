@@ -312,7 +312,9 @@ export async function manageSecondaryEmailForUser(req, res) {
 
   try {
     if (user.canChangeSecondaryEmail) {
-      const dbUser = await knex('users').where('username').then(db => db[0])
+      const dbUser = await knex('users').where({
+        username,
+      }).then(db => db[0])
       await knex('users')
       .insert({
         secondary_email: secondaryEmail,
