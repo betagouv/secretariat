@@ -1,25 +1,29 @@
-export async function up(knex): Promise<void> {
-    await knex.raw(`
+exports.up = function(knex) {
+    return knex.raw(`
         CREATE EXTENSION hstore;
         ALTER TABLE events
         ADD COLUMN action_metadata hstore;
-    `);
-    return knex.schema
-    .alterTable('events', (table) => {
-        table.dropColumn('action_description');
-    });
+    `).then(() => {
+        return knex.schema
+        .alterTable('events', (table) => {
+            table.dropColumn('action_description');
+        });
+    })
+
 }
 
 
-export async function down(knex): Promise<void> {
-    await knex.raw(`
+exports.down = function(knex) {
+    return knex.raw(`
         CREATE EXTENSION hstore;
         ALTER TABLE events
         DROP COLUMN action_metadata hstore;
-    `);
-    return knex.schema
-    .alterTable('events', async (table) => {
-        table.text('action_description').notNullable();
-    });
+    `).then(() => {
+        return knex.schema
+        .alterTable('events', async (table) => {
+            table.text('action_description').notNullable();
+        });
+    })
+    
 }
 
