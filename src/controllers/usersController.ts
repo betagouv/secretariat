@@ -180,7 +180,7 @@ export async function deleteRedirectionForUser(req, res) {
         created_by_username: req.user.id,
         action_on_username: username,
         action_metadata: {
-          value: to_email
+          value: toEmail
         }
       })
       await BetaGouv.sendInfoToChat(message);
@@ -312,7 +312,7 @@ export async function manageSecondaryEmailForUser(req, res) {
 
   try {
     if (user.canChangeSecondaryEmail) {
-
+      const dbUser = await knex('users').where('username').then(db => db[0])
       await knex('users')
       .insert({
         secondary_email: secondaryEmail,
@@ -328,7 +328,7 @@ export async function manageSecondaryEmailForUser(req, res) {
         action_on_username: username,
         action_metadata: {
           value: secondaryEmail,
-          old_value: previousEmail,
+          old_value: dbUser.secondaryEmail,
         }
       })
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');

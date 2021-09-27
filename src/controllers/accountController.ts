@@ -50,6 +50,7 @@ export async function setEmailResponder(req, res) {
         }
       })
     } else {
+      const responder = await betagouv.getResponder(req.user.id)
       await betagouv.updateResponder(req.user.id, {
         from: startDate,
         to: endDate,
@@ -60,7 +61,7 @@ export async function setEmailResponder(req, res) {
         action_on_username: req.user.id,
         action_metadata: {
           value: content,
-          old_value: old_content,
+          old_value: responder.content,
         }
       })
     }
