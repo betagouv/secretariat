@@ -19,7 +19,6 @@
         "node_modules",
         "static",
         "**/*.d.ts",
-        "knexfile.ts",
         "migrations",
         "dist",
     ]
