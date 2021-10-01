@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "node dist/index.js",
-    "migrate": "knex migrate:latest",
+    "migrate": "TS_NODE_COMPILER_OPTIONS='{ \"module\": \"commonjs\" }' knex migrate:latest",
     "makeMigration": "knex migrate:make",
     "seed": "knex seed:run",
     "rolldown": "knex migrate:down",
