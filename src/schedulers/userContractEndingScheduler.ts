@@ -191,7 +191,9 @@ export async function getActiveSecondaryEmailsForUsers() {
       'username',
       activeUsers.map((user) => user.id)
     );
-  console.log(dbUsers.map(user => user.secondary_email))
+  dbUsers.forEach(user => {
+    console.log(user.secondary_email)
+  })
 }
   
 export async function deleteSecondaryEmailsForUsers(
