@@ -5,6 +5,7 @@
     "static",
     "**/*.d.ts",
     "migrations",
+    "knexfile.js",
     "dist",
     "tests/"
   ]
