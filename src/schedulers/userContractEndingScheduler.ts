@@ -182,6 +182,18 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
   }
 }
 
+export async function getActiveSecondaryEmailsForUsers() {
+  const users: Member[] = await BetaGouv.usersInfos();
+  const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
+  const dbUsers: DBUser[] = await knex('users')
+    .whereNotNull('secondary_email')
+    .whereIn(
+      'username',
+      activeUsers.map((user) => user.id)
+    );
+  console.log(dbUsers.map(user => user.secondary_email))
+}
+  
 export async function deleteSecondaryEmailsForUsers(
   optionalExpiredUsers?: Member[]
 ) {
