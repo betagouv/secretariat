@@ -3,4 +3,4 @@ import {
 } from '../schedulers/userContractEndingScheduler';
   
 // @ts-ignore
-getActiveSecondaryEmailsForUsers(...args);
+getActiveSecondaryEmailsForUsers();
