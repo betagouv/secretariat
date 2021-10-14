@@ -8,7 +8,7 @@ const userStatusOptions = [
   { label: 'Indépendant', value: 'independent' },
   {
     label:
-      'Administration (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI)',
+      'Agent Public (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI avec une structure publique)',
     value: 'admin',
   },
   { label: 'Société de service', value: 'service' },
