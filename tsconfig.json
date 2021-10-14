@@ -19,8 +19,8 @@
         "node_modules",
         "static",
         "**/*.d.ts",
-        "knexfile.ts",
         "migrations",
+        "knexfile.js",
         "dist",
     ]
 }
