@@ -582,7 +582,7 @@ describe('User', () => {
 
     it('should ask OVH to redirect to the departs email', (done) => {
       const expectedRedirectionBody = (body) => {
-        return body.from === `membre.actif@${config.domain}` && body.to === config.leavesEmail
+        return body.from === `membre.actif@${config.domain}` && body.to === config.leavesEmail;
       }
       
       const ovhRedirectionDepartureEmail = nock(/.*ovh.com/)
