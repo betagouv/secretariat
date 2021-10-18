@@ -254,7 +254,7 @@ export async function deleteEmailForUser(req, res) {
       console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
     }
 
-    await BetaGouv.createRedirection(`${username}@${domain}`, config.leavesEmail, false);
+    await BetaGouv.createRedirection(utils.buildBetaEmail(username), config.leavesEmail, false);
     await knex('users')
       .update({ secondary_email: null })
       .where({ username });
