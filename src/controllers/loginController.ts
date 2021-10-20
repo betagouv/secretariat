@@ -74,6 +74,14 @@ export async function postLogin(req, res) {
   const { emailInput } = req.body;
   const emailSplit = emailInput.split('@');
 
+  if (!emailInput) {
+    req.flash(
+      'error',
+      `Aucune adresse renseginée.`
+    );
+    return res.redirect(`/login${nextParam}`);
+  }
+
   let username;
   let secondaryEmail;
 

@@ -44,7 +44,7 @@ describe('Login', () => {
         .post('/login?next=/users')
         .type('form')
         .send({
-          username: undefined,
+          emailInput: '',
         })
         .redirects(0)
         .end((err, res) => {
@@ -55,13 +55,13 @@ describe('Login', () => {
     });
   });
 
-  describe('POST /login with user undefined', () => {
+  describe('POST /login without email', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          username: undefined,
+          emailInput: '',
         })
         .redirects(0)
         .end((err, res) => {
@@ -72,13 +72,13 @@ describe('Login', () => {
     });
   });
 
-  describe('POST /login with user with accent', () => {
+  describe('POST /login with email with accent in username beta', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          username: 'prénom.nom',
+          emailInput: 'prénom.nom@beta.gouv.fr',
         })
         .redirects(0)
         .end((err, res) => {
@@ -89,13 +89,13 @@ describe('Login', () => {
     });
   });
 
-  describe('POST /login with user expiré', () => {
+  describe('POST /login with user expired', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          username: 'membre.expire',
+          emailInput: 'membre.expire@beta.gouv.fr',
         })
         .redirects(0)
         .end((err, res) => {
@@ -106,26 +106,25 @@ describe('Login', () => {
     });
   });
 
-  describe('POST /login without secondaryEmail parameter', () => {
-    it('should email to primary address', (done) => {
+  describe('POST /login with non existent secondary email', () => {
+    it('should redirect to login', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          username: 'membre.actif',
+          emailInput: 'membre.actif@example.com',
         })
-        .then(() => {
-          sendEmailStub.calledOnce.should.be.true;
-          const destinationEmail = sendEmailStub.args[0][0];
-          destinationEmail.should.equal(`membre.actif@${config.domain}`);
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.header.location.should.equal('/login');
           done();
-        })
-        .catch(done);
+        });
     });
   });
 
-  describe('POST /login with useSecondaryEmail parameter', () => {
-    it('should email to primary address', (done) => {
+  describe('POST /login with SecondaryEmail', () => {
+    it('should email to secondary address', (done) => {
       knex('users').insert({
         username: 'membre.actif',
         secondary_email: 'membre.actif.perso@example.com',
@@ -135,8 +134,7 @@ describe('Login', () => {
           .post('/login')
           .type('form')
           .send({
-            username: 'membre.actif',
-            useSecondaryEmail: 'true',
+            emailInput: 'membre.actif.perso@example.com',
           })
           .then(() => {
             sendEmailStub.calledOnce.should.be.true;
@@ -148,13 +146,34 @@ describe('Login', () => {
       });
     });
 
+    it('should email to primary address', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            emailInput: `membre.actif@${config.domain}`,
+          })
+          .then(() => {
+            sendEmailStub.calledOnce.should.be.true;
+            const destinationEmail = sendEmailStub.args[0][0];
+            destinationEmail.should.equal(`membre.actif@${config.domain}`);
+            done();
+          })
+          .catch(done);
+      });
+    });
+
     it('should show error if user is not in the database', (done) => {
       chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          username: 'membre.actif',
-          useSecondaryEmail: 'true',
+          emailInput: `membre.unknown@${config.domain}`
         })
         .redirects(0)
         .end((err, res) => {
@@ -174,8 +193,7 @@ describe('Login', () => {
           .post('/login')
           .type('form')
           .send({
-            username: 'membre.actif',
-            useSecondaryEmail: 'true',
+            emailInput: 'membre.actif@secondaryadress.com',
           })
           .redirects(0)
           .end((err, res) => {
