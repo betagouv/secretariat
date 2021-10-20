@@ -72,6 +72,29 @@ describe('Login', () => {
     });
   });
 
+  describe('POST /login with incorrect input', () => {
+    it('should redirect to /login', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            emailInput: 'membre.actif',
+          })
+          .redirects(0)
+          .end((err, res) => {
+            res.should.have.status(302);
+            res.header.location.should.equal('/login');
+            done();
+          });
+      });
+    });
+  });
+
   describe('POST /login with email with accent in username beta', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
@@ -106,6 +129,7 @@ describe('Login', () => {
     });
   });
 
+
   describe('POST /login with non existent secondary email', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
@@ -120,6 +144,30 @@ describe('Login', () => {
           res.header.location.should.equal('/login');
           done();
         });
+    });
+  });
+
+  describe('POST /login with uppercase input email', () => {
+    it('should email to secondary email', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            emailInput: 'membre.ACTIF.perso@example.com',
+          })
+          .then(() => {
+            const destinationEmail = sendEmailStub.args[0][0];
+            destinationEmail.should.equal('membre.actif.perso@example.com');
+            sendEmailStub.calledOnce.should.be.true;
+            done();
+          })
+          .catch(done);
+      });
     });
   });
 

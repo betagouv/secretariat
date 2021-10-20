@@ -70,21 +70,19 @@ export async function getLogin(req, res) {
 }
 
 export async function postLogin(req, res) {
+  const formValidationErrors = [];
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  const { emailInput } = req.body;
-  const emailSplit = emailInput.split('@');
+  const emailInput = utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
-  if (!emailInput) {
-    req.flash(
-      'error',
-      `Aucune adresse renseginée.`
-    );
+  if (formValidationErrors.length) {
+    req.flash('error', formValidationErrors);
     return res.redirect(`/login${nextParam}`);
   }
 
   let username;
   let secondaryEmail;
 
+  const emailSplit = emailInput.split('@');
   if (emailSplit[1] === config.domain) {
     username = emailSplit[0];
     if (username === undefined || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)) {
