@@ -1,0 +1,9 @@
+{
+    "jobs": [
+      {
+        "command": "*/10 * * * * bash bin/backup-cron.sh",
+        "size": "1S"
+      }
+    ]
+}
+  
