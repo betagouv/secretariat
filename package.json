@@ -82,7 +82,7 @@
     "husky": "^7.0.2",
     "lint-staged": "^11.2.3",
     "mocha": "^9.1.3",
-    "nock": "^13.1.3",
+    "nock": "^13.1.4",
     "nodemon": "^2.0.14",
     "pg-connection-string": "^2.5.0",
     "prettier": "^2.4.1",
