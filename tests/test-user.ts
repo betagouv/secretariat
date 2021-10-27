@@ -579,6 +579,25 @@ describe('User', () => {
         })
         .catch(done);
     });
+
+    it('should ask OVH to redirect to the departs email', (done) => {
+      const expectedRedirectionBody = (body) => {
+        return body.from === `membre.actif@${config.domain}` && body.to === config.leavesEmail;
+      }
+      
+      const ovhRedirectionDepartureEmail = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/, expectedRedirectionBody)
+        .reply(200);
+
+      chai
+        .request(app)
+        .post('/users/membre.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .end((err, res) => {
+          ovhRedirectionDepartureEmail.isDone().should.be.true;
+          done();
+        });
+    });
   });
 
   describe('POST /users/:username/secondary_email', () => {
