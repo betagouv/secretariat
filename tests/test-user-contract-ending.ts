@@ -127,7 +127,6 @@ describe('send message on contract end to user', () => {
       .reply(200, betaGouvUsers);
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     await sendContractEndingMessageToUsers('mail15days');
-    console.log(chat);
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
   });
