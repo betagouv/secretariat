@@ -15,17 +15,16 @@
 
         {
             "args": [
-                "-u",
-                "bdd",
                 "--timeout",
                 "999999",
                 "--colors",
-                "${workspaceFolder}/tests/*.js",
-                "--require ${workspaceFolder}/tests/env-setup.js"
+                "--icu-data-dir=./node_modules/full-icu tests/*.ts",
+                "${workspaceFolder}/tests/*.ts",
+                "--require ${workspaceFolder}/tests/env-setup.ts",
             ],
             "internalConsoleOptions": "openOnSessionStart",
             "name": "Mocha Tests",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/node_modules/ts-mocha/bin/ts-mocha",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
