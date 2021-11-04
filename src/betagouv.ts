@@ -1,5 +1,3 @@
-// betagouv.js
-// ======
 import axios from 'axios';
 import ovh0 from 'ovh';
 import config from './config';

@@ -19,8 +19,10 @@ const getRegisteredUsersWithEndingContractInXDays = async (days) => {
     todayMoreXDays.setHours(0, 0, 0, 0);
     // filter user that have have been created after implementation of this function
     const stillActive = !utils.checkUserIsExpired(user);
+    const userEndDate = new Date(user.end)
+    userEndDate.setHours(0, 0, 0, 0)
     return (
-      stillActive && new Date(user.end).getTime() === todayMoreXDays.getTime()
+      stillActive && userEndDate.getTime() === todayMoreXDays.getTime()
     );
   });
   const allMattermostUsersEmails = allMattermostUsers.map(

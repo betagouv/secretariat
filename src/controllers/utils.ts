@@ -62,15 +62,19 @@ export function checkUserIsExpired(user, minDaysOfExpiration = 1) {
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
 
+  if (!user || user.end === undefined)
+    return false;
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  return (
-    user &&
-    user.end !== undefined &&
-    new Date().toString() !== 'Invalid Date' &&
-    new Date(user.end).getTime() + (minDaysOfExpiration * 24 * 3600 * 1000) <=
-      today.getTime()
-  );
+
+  const userEndDate = new Date(user.end);
+  if (userEndDate.toString() === "Invalid Date")
+    return false;
+  userEndDate.setHours(0, 0, 0, 0);
+
+  return userEndDate.getTime() + (minDaysOfExpiration * 24 * 3600 * 1000) <=
+      today.getTime();
 }
 
 export function getExpiredUsers(users, minDaysOfExpiration = 0) {
