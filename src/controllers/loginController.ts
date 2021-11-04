@@ -96,7 +96,7 @@ export async function postLogin(req, res) {
       try {
         const dbResponse = await knex('users')
         .select()
-        .where({ 'secondary_email': emailInput });
+        .whereRaw('LOWER("secondary_email") = ?', emailInput.toLowerCase());
         secondaryEmail = dbResponse[0].secondary_email;
         username = dbResponse[0].username;
       } catch {

@@ -171,6 +171,30 @@ describe('Login', () => {
     });
   });
 
+  describe('POST /login with uppercase in email store in db', () => {
+    it('should email to secondary email', (done) => {
+      knex('users').insert({
+        username: 'membre.actif',
+        secondary_email: 'membre.ACTIF.perso@example.com',
+      })
+      .then(() => {
+        chai.request(app)
+          .post('/login')
+          .type('form')
+          .send({
+            emailInput: 'membre.actif.perso@example.com',
+          })
+          .then(() => {
+            const destinationEmail = sendEmailStub.args[0][0];
+            destinationEmail.should.equal('membre.ACTIF.perso@example.com');
+            sendEmailStub.calledOnce.should.be.true;
+            done();
+          })
+          .catch(done);
+      });
+    });
+  });
+
   describe('POST /login with SecondaryEmail', () => {
     it('should email to secondary address', (done) => {
       knex('users').insert({
