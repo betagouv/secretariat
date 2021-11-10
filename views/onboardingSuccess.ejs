@@ -7,9 +7,11 @@
 
         <p><b>Ta fiche Github <a href="<%= prUrl %>" target="_blank">a été créée</a>.</b></p>
 
-        <p>Pour que ton adresse email <em>@beta.gouv.fr</em> soit créée, la personne réferente que tu as désigné (ou un autre membre de la communauté) doit merger ta fiche.
-        	
-        <p>Une fois la fiche validée, tu recevras les informations de ta nouvelle adresse mail.</p>
+        <% if (emailBetaAsked) { %>
+          <p>Pour que ton adresse email <em>@beta.gouv.fr</em> soit créée, la personne réferente que tu as désigné (ou un autre membre de la communauté) doit merger ta fiche.
+
+          <p>Une fois la fiche validée, tu recevras les informations de ta nouvelle adresse mail.</p>
+        <% } %>
 
         <p>À bientôt !</p>
     </div>

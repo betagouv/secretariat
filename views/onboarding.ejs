@@ -19,13 +19,6 @@
     <div class="panel margin-top-m">
         <h3>Créer ma fiche Github</h3>
 
-        <p>
-            Bienvenue dans la communauté 👋 !<br>
-            Créer ta fiche Github est la première étape pour avoir accès aux différents outils de la communauté.<br>
-            Ton compte email sera automatiquement créé une fois que la fiche sera mergée par un membre de la communauté et
-            tu recevras les informations de ta nouvelle adresse mail @<%= domain %>.
-        </p>
-
         <div class="beta-banner"></div>
 
         <form action="/onboarding" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
@@ -39,10 +32,16 @@
                     <strong>Prénom (obligatoire)</strong>
                 </label>
                 <input name="firstName" value="<%= formData.firstName %>" required>
+                <% if(formValidationErrors['prénom']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['prénom'] %></p>
+                <% } %>
                 <label for="lastName">
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
                 <input name="lastName" value="<%= formData.lastName %>" required>
+                <% if(formValidationErrors['nom de famille']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['nom de famille'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -60,6 +59,9 @@
                     Commençant avec <em>http://</em> ou <em>https://</em>
                 </label>
                 <input name="website" pattern="^(http|https)://.+" value="<%= formData.website %>" title="Doit commencer par http:// ou https://">
+                <% if(formValidationErrors['Site personnel']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['Site personnel'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -70,6 +72,9 @@
                 <input name="github" pattern="^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$"
                     value="<%= formData.github %>"
                     title="Nom d'utilisateur Github (sans @)">
+                <% if(formValidationErrors['Utilisateur Github']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['Utilisateur Github'] %></p>
+                <% } %>
             </div>
 
             <h4>Ta mission</h4>
@@ -91,6 +96,9 @@
                         <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
                     <% }) %>
                 </select>
+                <% if(formValidationErrors['domaine']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['domaine'] %></p>
+                <% } %>
             </div>
             <div class="form__group">
                 <label for="role">
@@ -98,6 +106,9 @@
                     Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
                 <input name="role" value="<%= formData.role %>" required>
+                <% if(formValidationErrors['role']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['role'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -106,6 +117,12 @@
                     <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <% if(formValidationErrors['début de la mission']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['début de la mission'] %></p>
+                <% } %>
+                <% if(formValidationErrors['date de début']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['date de début'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -115,6 +132,12 @@
                     <i>Au format JJ/MM/YYYY</i>
                 </label>
                 <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <% if(formValidationErrors['fin de la mission']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['fin de la mission'] %></p>
+                <% } %>
+                <% if(formValidationErrors['date de fin']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['date de fin'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -124,6 +147,9 @@
                 <% userConfig.statusOptions.forEach(function(status) { %>
                     <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.label %><br>
                 <% }) %>
+                <% if(formValidationErrors['statut']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['statut'] %></p>
+                <% } %>
             </div>
 
             <div class="form__group">
@@ -137,7 +163,7 @@
                         <option value="<%= user.id %>"> <%= user.fullname %> </option>
                     <% }) %>
                     </select>
-                <% } else { %> 
+                <% } else { %>
                     <input name="referentList" list="user_names" id="referentList" required>
                     <datalist id="user_names">
                     <% users.forEach(function(user) { %>
@@ -145,7 +171,10 @@
                     <% }) %>
                     </datalist>
                     <input type="hidden" name="referent" id="referentInput_hidden" required>
-                <% } %> 
+                <% } %>
+                <% if(formValidationErrors['référent']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['référent'] %></p>
+                <% } %>
 
             <% if(!useSelectList) { %>
             <script>
@@ -199,13 +228,33 @@
                 </select>
             </div>
 
-            <h4>Moyen de contact</h4>
+            <h4>Ton email</h4>
             <label for="email">
                 <strong>Email pro/perso (obligatoire)</strong><br />
                 Ton email nous servira pour t'envoyer les informations relatives à ton compte
             </label>
-            <input name="email" value="<%= formData.email %>" required>
+            <input type="email" name="email" value="<%= formData.email %>" required>
+            <% if(formValidationErrors['email pro/perso']) { %>
+              <p class="text-small text-color-red"><%= formValidationErrors['email pro/perso'] %></p>
+            <% } %>
 
+            <label for="emailBeta" class="padding-10-0">
+              <input type="checkbox" name="emailBeta">
+              <% if(formValidationErrors['email public']) { %>
+                <strong class="text-color-red">
+            <% } else { %>
+                <strong>
+            <% } %>
+                Je souhaite une adresse @beta.gouv.fr
+              </strong><br/>
+              <span>
+                L'adresse @beta.gouv.fr donne accès aux outils officiels.
+                Elle est obligatoire si vous ne possédez pas déjà une adresse email appartenant à une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
+              </span>
+            </label>
+            <% if(formValidationErrors['email public']) { %>
+              <p class="text-small text-color-red"><%= formValidationErrors['email public'] %></p>
+            <% } %>
             <button class="button" type="submit">Soumettre ma demande</button>
         </form>
     </div>

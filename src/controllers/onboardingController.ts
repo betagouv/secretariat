@@ -1,5 +1,6 @@
 import ejs from "ejs";
 import crypto from "crypto";
+import fetch from "node-fetch";
 import config from "../config";
 import * as utils from "./utils";
 import BetaGouv from "../betagouv";
@@ -59,6 +60,7 @@ export async function getForm(req, res) {
       domain: config.domain,
       title,
       errors: req.flash('error'),
+      formValidationErrors: {},
       messages: req.flash('message'),
       userConfig: config.user,
       users,
@@ -78,6 +80,7 @@ export async function getForm(req, res) {
         employer: '',
         badge: '',
         email: '',
+        emailBeta: '',
       },
       useSelectList: isMobileFirefox,
     });
@@ -89,38 +92,37 @@ export async function getForm(req, res) {
 }
 
 export async function postForm(req, res) {
+  const formValidationErrors = {};
   try {
-    const formValidationErrors = [];
-
-    function requiredError(field) {
-      formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+    const requiredError = function (field) {
+      formValidationErrors[field] = 'Le champ n‘est pas renseigné';
     }
 
-    function isValidDate(field, date) {
+    const isValidDate = function (field, date) {
       if (date instanceof Date && !Number.isNaN(date.getTime())) {
         return date;
       }
-      formValidationErrors.push(`${field} : la date n'est pas valide`);
+      formValidationErrors[field] = 'La date n‘est pas valide';
       return null;
     }
 
-    function isValidUrl(field, url) {
+    const isValidUrl = function (field, url) {
       if (!url || url.indexOf('http') === 0) {
         return url;
       }
-      formValidationErrors.push(`${field} : l'URL ne commence pas avec http ou https`);
+      formValidationErrors[field] = 'L‘URL ne commence pas avec http ou https';
       return null;
     }
 
-    function shouldBeOnlyUsername(field, value) {
+    const shouldBeOnlyUsername = function (field, value) {
       if (isValidGithubUserName(value)) {
         return value;
       }
-      formValidationErrors.push(`${field} : la valeur doit être le nom du membre seul et ne doit pas être l'URL du membre ni commencer avec "@"`);
+      formValidationErrors[field] = 'La valeur doit être le nom du membre seul et ne doit pas être l‘URL du membre ni commencer avec "@"';
       return null;
     }
 
-    function isValidEmail(field, email) {
+    const isValidEmail = function (field, email) {
       if (!email) {
         requiredError(field);
         return null;
@@ -129,11 +131,11 @@ export async function postForm(req, res) {
       if (emailRegex.test(email)) {
         return email;
       }
-      formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
+      formValidationErrors[field] = 'L‘adresse email n‘est pas valide';
       return null;
     }
 
-    function isValidDomain(field, domain) {
+    const isValidDomain = function (field, domain) {
       if (!domain) {
         requiredError(field);
         return null;
@@ -148,8 +150,18 @@ export async function postForm(req, res) {
         'Autre'].includes(domain)) {
         return domain;
       }
-      formValidationErrors.push(`${field} : le domaine n'est pas valide`);
+      formValidationErrors[field] = 'Le domaine n‘est pas valide';
       return null;
+    }
+    const isPublicServiceEmail = async function (field, email, emailBetaAsked) {
+      const response = await fetch("https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address=" + String(email).toLowerCase())
+			const data = await response.json();
+        if (data.hs === "agent.externe.tchap.gouv.fr" && !emailBetaAsked) {
+          formValidationErrors[field] = '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
+          return null;
+        } else {
+          return email
+        }
     }
 
     const firstName = req.body.firstName || requiredError('prénom');
@@ -163,8 +175,10 @@ export async function postForm(req, res) {
     const employer = req.body.employer || null;
     const badge = req.body.badge || null;
     const referent = req.body.referent || requiredError('référent');
-    const email = isValidEmail('email pro/perso', req.body.email);
     const domaine = isValidDomain('domaine', req.body.domaine);
+    const email = isValidEmail('email pro/perso', req.body.email);
+    const emailBetaAsked = req.body.emailBeta;
+    const publicServiceEmail = await isPublicServiceEmail('email public', email, emailBetaAsked);
 
     const website = isValidUrl('Site personnel', req.body.website);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
@@ -173,15 +187,15 @@ export async function postForm(req, res) {
     const endDate = isValidDate('date de fin', new Date(end));
     if (startDate && endDate) {
       if (startDate < new Date(config.user.minStartDate)) {
-        formValidationErrors.push(`date de début : la date doit être au moins ${config.user.minStartDate}`);
+        formValidationErrors['date de début'] = `La date doit être au moins ${config.user.minStartDate}`;
       }
       if (endDate < startDate) {
-        formValidationErrors.push('date de fin : la date doit être supérieure à la date de début');
+        formValidationErrors['date de fin'] = 'La date doit être supérieure à la date de début';
       }
     }
 
-    if (formValidationErrors.length) {
-      req.flash('error', formValidationErrors);
+    if (Object.keys(formValidationErrors).length) {
+      req.flash('error', 'Un champs du formulaire est invalide ou manquant.');
       throw new Error();
     }
 
@@ -209,24 +223,31 @@ export async function postForm(req, res) {
         const prUrl = prInfo.data.html_url;
         const userUrl = `${config.protocol}://${config.host}/community/${username}`;
         const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-          referent, prUrl, name, userUrl,
+          referent, prUrl, name, userUrl, emailBetaAsked
         });
         await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
       }
     }
+    // WIP  Null pour savoir si une adresse mail est necessaire pour plus loin dans le code,
+    // Si il y a une adresse publique, c'est qu'il n'y a pas besoin de creer le mail
+    const primaryEmail = emailBetaAsked ? null : publicServiceEmail;
+    const secondaryEmail = emailBetaAsked ? email : null
+
     await knex('users')
       .insert({
         username,
-        secondary_email: email,
+        primary_email: primaryEmail,
+        secondary_email: secondaryEmail
       })
       .onConflict('username')
       .merge();
 
-    res.redirect(`/onboardingSuccess/${prInfo.data.number}`);
+    const prUrl = `https://github.com/${config.githubRepository}/pull/${prInfo.data.number}`;
+    res.render(`onboardingSuccess`, { prUrl , emailBetaAsked })
+
   } catch (err) {
     if (err.message) {
-      const errors = req.flash('error');
-      req.flash('error', [...errors, err.message]);
+      req.flash('error', err.message);
     }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
@@ -234,6 +255,7 @@ export async function postForm(req, res) {
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
       errors: req.flash('error'),
+      formValidationErrors,
       messages: req.flash('message'),
       userConfig: config.user,
       startups,
@@ -242,16 +264,5 @@ export async function postForm(req, res) {
       formData: req.body,
       useSelectList: isMobileFirefox,
     });
-  }
-}
-
-export async function getConfirmation(req, res) {
-  try {
-    const { prNumber } = req.params;
-    const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
-    res.render('onboardingSuccess', { prUrl });
-  } catch (err) {
-    console.error(err);
-    res.redirect('/');
   }
 }

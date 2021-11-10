@@ -1,7 +1,7 @@
 <h1>Hello <%= referent %>,</h1>
 
 <p>
-    <b><%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr</b>. Tu peux : 
+    <b><%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr</b>. Tu peux :
 </p>
 
 <ul>
@@ -9,8 +9,10 @@
 	<li>Ou répondre à cet email pour confirmer que tu connais cette personne. Un membre de la communauté approuvera la demande.</li>
 </ul>
 
-<p>Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
-    <a href="<%= userUrl %>"><%= userUrl %></a>.
-</p>
+<% if (emailBetaAsked) { %>
+  <p>Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
+      <a href="<%= userUrl %>"><%= userUrl %></a>.
+  </p>
+<% } %>
 
 <p>🤖 Le secrétariat</p>
