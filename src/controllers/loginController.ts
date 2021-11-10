@@ -65,37 +65,47 @@ async function saveToken(username, token) {
   }
 }
 
-function censorEmail(email) {
-  const username = email.split('@')[0];
-  const domainSegments = email.split('@')[1].split('.');
-  const topLevelDomain = domainSegments[domainSegments.length - 1];
-  const emailHost = domainSegments.slice(0, -1).join('');
-
-  function censorWord(str) {
-    return str.length <= 5
-      ? str[0] + '*'.repeat(str.length - 1)
-      : str[0] + '*'.repeat(str.length - 2) + str.slice(-1);
-  }
-
-  return `${censorWord(username)}@${censorWord(emailHost)}.${censorWord(
-    topLevelDomain
-  )}`;
-}
-
 export async function getLogin(req, res) {
   renderLogin(req, res, {});
 }
 
 export async function postLogin(req, res) {
+  const formValidationErrors = [];
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  const { username, useSecondaryEmail } = req.body;
+  const emailInput = utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
-  if (username === undefined || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)) {
-    req.flash(
-      'error',
-      "L'email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.'.<br /><i>Exemple : charlotte.duret</i>"
-    );
+  if (formValidationErrors.length) {
+    req.flash('error', formValidationErrors);
     return res.redirect(`/login${nextParam}`);
+  }
+
+  let username;
+  let secondaryEmail;
+
+  const emailSplit = emailInput.split('@');
+  if (emailSplit[1] === config.domain) {
+    username = emailSplit[0];
+    if (username === undefined || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)) {
+      req.flash(
+        'error',
+        `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
+      );
+      return res.redirect(`/login${nextParam}`);
+    }
+  } else {
+      try {
+        const dbResponse = await knex('users')
+        .select()
+        .whereRaw('LOWER("secondary_email") = ?', emailInput.toLowerCase());
+        secondaryEmail = dbResponse[0].secondary_email;
+        username = dbResponse[0].username;
+      } catch {
+        req.flash(
+          'error',
+          `L'adresse email ${emailInput} n'est pas connue.`
+        );
+        return res.redirect(`/login${nextParam}`);
+      }
   }
 
   const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -104,32 +114,15 @@ export async function postLogin(req, res) {
 
   try {
     const token = generateToken();
-
-    let email;
-    if (useSecondaryEmail) {
-      const dbResponse = await knex('users')
-        .select('secondary_email')
-        .where({ username });
-      if (dbResponse.length === 0 || !dbResponse[0].secondary_email) {
-        throw new Error(
-          `Ton compte ${utils.buildBetaEmail(
-            username
-          )} n'a pas d'email secondaire. Si tu ne reçois pas le lien de connexion, tu peux demander de l'aide sur Slack #incubateur-secretariat ou à secretariat@beta.gouv.fr.`
-        );
-      }
-      email = dbResponse[0].secondary_email;
-    } else {
-      email = utils.buildBetaEmail(username);
-    }
+    const email = secondaryEmail ? secondaryEmail : utils.buildBetaEmail(username);
 
     await sendLoginEmail(email, username, loginUrl, token);
     await saveToken(username, token);
 
-    const displayEmail = useSecondaryEmail ? censorEmail(email) : email;
     return renderLogin(req, res, {
       messages: req.flash(
         'message',
-        `Un lien de connexion a été envoyé à l'adresse ${displayEmail}. Il est valable une heure.`
+        `Un lien de connexion a été envoyé à l'adresse ${email}. Il est valable une heure.`
       ),
     });
   } catch (err) {

@@ -123,6 +123,15 @@ export function isValidNumber(formValidationErrors, field, number) {
   return null;
 }
 
+export function isValidEmail(formValidationErrors,  field, email) {
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (emailRegex.test(email.toLowerCase())) {
+    return email;
+  }
+  formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
+  return null;
+}
+
 export function formatDateYearMonthDay(date) {
   let day = date.getDate().toString();
   day = day.length === 1 ? `0${day}` : day;
