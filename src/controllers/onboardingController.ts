@@ -153,15 +153,24 @@ export async function postForm(req, res) {
       formValidationErrors[field] = 'Le domaine n‘est pas valide';
       return null;
     }
-    const isPublicServiceEmail = async function (field, email, emailBetaAsked) {
+
+    const isPublicServiceEmail = async function (email) {
       const response = await fetch("https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address=" + String(email).toLowerCase())
 			const data = await response.json();
-        if (data.hs === "agent.externe.tchap.gouv.fr" && !emailBetaAsked) {
-          formValidationErrors[field] = '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
-          return null;
+        if (data.hs === "agent.externe.tchap.gouv.fr") {
+          return false;
         } else {
-          return email
+          return true
         }
+    }
+
+    const requiredEmail = async function(field, email, emailBetaAsked) {
+      const publicServiceEmail = await isPublicServiceEmail(email);
+      if (!publicServiceEmail && !emailBetaAsked) {
+        formValidationErrors[field] = '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique';
+        return null;
+      }
+      return email;
     }
 
     const firstName = req.body.firstName || requiredError('prénom');
@@ -177,8 +186,8 @@ export async function postForm(req, res) {
     const referent = req.body.referent || requiredError('référent');
     const domaine = isValidDomain('domaine', req.body.domaine);
     const email = isValidEmail('email pro/perso', req.body.email);
-    const emailBetaAsked = req.body.emailBeta;
-    const publicServiceEmail = await isPublicServiceEmail('email public', email, emailBetaAsked);
+    const emailBetaAsked = req.body.emailBeta || false;
+    const publicServiceEmail = await requiredEmail('email public', email, emailBetaAsked);
 
     const website = isValidUrl('Site personnel', req.body.website);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
@@ -230,8 +239,8 @@ export async function postForm(req, res) {
     }
     // WIP  Null pour savoir si une adresse mail est necessaire pour plus loin dans le code,
     // Si il y a une adresse publique, c'est qu'il n'y a pas besoin de creer le mail
-    const primaryEmail = emailBetaAsked ? null : publicServiceEmail;
-    const secondaryEmail = emailBetaAsked ? email : null
+    const primaryEmail = (emailBetaAsked && publicServiceEmail) ? null : email;
+    const secondaryEmail = (emailBetaAsked && publicServiceEmail) ? email : null;
 
     await knex('users')
       .insert({
