@@ -186,7 +186,7 @@ export async function postForm(req, res) {
     const referent = req.body.referent || requiredError('référent');
     const domaine = isValidDomain('domaine', req.body.domaine);
     const email = isValidEmail('email pro/perso', req.body.email);
-    const emailBetaAsked = req.body.emailBeta || false;
+    const emailBetaAsked = req.body.isEmailBetaAsked || false;
     const publicServiceEmail = await requiredEmail('email public', email, emailBetaAsked);
 
     const website = isValidUrl('Site personnel', req.body.website);
