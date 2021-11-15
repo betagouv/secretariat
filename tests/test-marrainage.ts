@@ -207,6 +207,57 @@ describe('Marrainage', () => {
         });
     });
 
+    it('email should include position and startup when available', (done) => {
+      chai
+        .request(app)
+        .post('/marrainage')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          newcomerId: 'membre.actif',
+        })
+        .end((err, res) => {
+          sendEmailStub.calledOnce.should.be.true;
+          const emailBody = sendEmailStub.args[0][2];
+          emailBody.should.include('(Chargé de déploiement chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
+          done();
+        });
+    });
+
+    it('email should include role only when startup not available', (done) => {
+      chai
+        .request(app)
+        .post('/marrainage')
+        .set('Cookie', `token=${utils.getJWT('membre.plusieurs.missions')}`)
+        .type('form')
+        .send({
+          newcomerId: 'membre.plusieurs.missions',
+        })
+        .end((err, res) => {
+          sendEmailStub.calledOnce.should.be.true;
+          const emailBody = sendEmailStub.args[0][2];
+          emailBody.should.include('(Chargé de déploiement)');
+          done();
+        });
+    });
+
+    it('email should include startup only when role not available', (done) => {
+      chai
+        .request(app)
+        .post('/marrainage')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .type('form')
+        .send({
+          newcomerId: 'membre.nouveau',
+        })
+        .end((err, res) => {
+          sendEmailStub.calledOnce.should.be.true;
+          const emailBody = sendEmailStub.args[0][2];
+          emailBody.should.include('(récemment arrivé·e chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
+          done();
+        });
+    });
+
     it('should add info in db when sollicited', (done) => {
       chai
         .request(app)

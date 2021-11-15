@@ -3,6 +3,8 @@
     "id": "membre.actif",
     "fullname": "Membre Actif",
     "github": "membre.actif",
+    "role": "Chargé de déploiement",
+    "startups": ["test-startup"],
     "missions": [
       { 
         "start": "2016-11-03",
@@ -44,11 +46,13 @@
       { 
         "start": "2020-07-03"
       }
-    ]
+    ],
+    "startups": ["test-startup"]
   },
   {
     "id": "membre.plusieurs.missions",
     "fullname": "Membre Plusieurs Missions",
+    "role": "Chargé de déploiement",
     "missions": [
       { 
         "start": "2016-11-03",
