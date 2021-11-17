@@ -205,6 +205,17 @@ export function addDays(date, days, week = null) {
   return result;
 }
 
+export async function isPublicServiceEmail (email) {
+  const response = await fetch("https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address=" + String(email).toLowerCase())
+  const data = await response.json();
+    if (data.hs === "agent.externe.tchap.gouv.fr") {
+      return false;
+    } else {
+      return true
+    }
+}
+
+
 export async function userInfos(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections,

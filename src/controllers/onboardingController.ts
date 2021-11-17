@@ -154,18 +154,8 @@ export async function postForm(req, res) {
       return null;
     }
 
-    const isPublicServiceEmail = async function (email) {
-      const response = await fetch("https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address=" + String(email).toLowerCase())
-			const data = await response.json();
-        if (data.hs === "agent.externe.tchap.gouv.fr") {
-          return false;
-        } else {
-          return true
-        }
-    }
-
     const requiredEmail = async function(field, email, emailBetaAsked) {
-      const publicServiceEmail = await isPublicServiceEmail(email);
+      const publicServiceEmail = await utils.isPublicServiceEmail(email);
       if (!publicServiceEmail && !emailBetaAsked) {
         formValidationErrors[field] = '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique';
         return null;
