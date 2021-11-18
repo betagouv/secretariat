@@ -4,7 +4,7 @@ import config from "../config";
 import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
-import {  requiredError, requiredEmail, isValidDomain, isValidDate, isValidUrl,shouldBeOnlyUsername, isValidEmail } from "./validator"
+import {  requiredError, isValidDomain, isValidDate, isValidUrl,shouldBeOnlyUsername, isValidEmail } from "./validator"
 
 
 function createBranchName(username) {
@@ -111,7 +111,7 @@ export async function postForm(req, res) {
     const domaine = isValidDomain('domaine', req.body.domaine, errorHandler) ? req.body.domaine : null;
     const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
     const isEmailBetaAsked = req.body.isEmailBetaAsked || false;
-    const hasPublicServiceEmail = await utils.isPublicServiceEmail(email);
+    const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     if (!hasPublicServiceEmail && !isEmailBetaAsked) {
       errorHandler(
         'public email',
@@ -185,7 +185,7 @@ export async function postForm(req, res) {
       .merge();
 
     const prUrl = `https://github.com/${config.githubRepository}/pull/${prInfo.data.number}`;
-    res.render(`onboardingSuccess`, { prUrl , emailBetaAsked })
+    res.render(`onboardingSuccess`, { prUrl , isEmailBetaAsked })
 
   } catch (err) {
     if (err.message) {
