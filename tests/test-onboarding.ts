@@ -391,6 +391,7 @@ describe('Onboarding', () => {
     });
 
     it('should call Github API if email is public email', (done) => {
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
       chai.request(app)
         .post('/onboarding')
         .type('form')
