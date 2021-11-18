@@ -390,8 +390,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should not call Github API if email is public email', (done) => {
-      isPublicServiceEmailStub.returns(Promise.resolve(true));
+    it('should call Github API if email is public email', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -408,10 +407,10 @@ describe('Onboarding', () => {
           isEmailBetaAsked: false
         })
         .end((err, res) => {
-          getGithubMasterSha.called.should.be.false;
-          createGithubBranch.called.should.be.false;
-          createGithubFile.called.should.be.false;
-          makeGithubPullRequest.called.should.be.false;
+          getGithubMasterSha.calledOnce.should.be.true;
+          createGithubBranch.calledOnce.should.be.true;
+          createGithubFile.calledOnce.should.be.true;
+          makeGithubPullRequest.calledOnce.should.be.true;
           done();
         });
     });
