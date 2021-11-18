@@ -56,7 +56,7 @@ describe('Onboarding', () => {
         .returns(Promise.resolve(true));
 
       isPublicServiceEmailStub = sinon
-        .stub(controllerUtils, 'isPublicServiceEmailStub')
+        .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(true));
 
       done();
