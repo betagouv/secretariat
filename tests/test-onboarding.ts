@@ -57,7 +57,7 @@ describe('Onboarding', () => {
 
       isPublicServiceEmailStub = sinon
         .stub(controllerUtils, 'isPublicServiceEmail')
-        .returns(Promise.resolve(true));
+        .returns(Promise.resolve(false));
 
       done();
     });
@@ -391,7 +391,7 @@ describe('Onboarding', () => {
     });
 
     it('should not call Github API if email is public email', (done) => {
-      isPublicServiceEmailStub.returns(Promise.resolve(false));
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -431,6 +431,7 @@ describe('Onboarding', () => {
           website: 'https://example.com/me',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const sha = createGithubBranch.args[0][0];
@@ -453,6 +454,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const branch = createGithubBranch.args[0][1];
@@ -475,6 +477,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -497,6 +500,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const branch = createGithubBranch.args[0][1];
@@ -519,6 +523,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const prTitle = makeGithubPullRequest.args[0][1];
@@ -549,6 +554,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           sendEmailStub.calledOnce.should.be.true;
@@ -573,6 +579,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -595,6 +602,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -617,6 +625,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .redirects(0)
         .end((err, res) => {
@@ -640,6 +649,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre actif',
+          isEmailBetaAsked: true,
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
@@ -669,6 +679,7 @@ describe('Onboarding', () => {
               domaine: 'Coaching',
               email: 'updated@example.com',
               referent: 'membre actif',
+              isEmailBetaAsked: true,
             })
             .then(() => knex('users').where({ username: 'john.doe' }))
             .then((dbRes) => {
