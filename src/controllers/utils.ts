@@ -1,5 +1,6 @@
 import { request } from '@octokit/request';
 import _ from 'lodash';
+import fetch from "node-fetch";
 import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
 import config from '../config';

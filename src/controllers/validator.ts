@@ -60,12 +60,3 @@ export const requiredError = function (field, callback) {
     callback('Le domaine n‘est pas valide');
     return null;
   }
-
-  export const requiredEmail = async function(field, email, isEmailBetaAsked, callback) {
-    const publicServiceEmail = await utils.isPublicServiceEmail(email);
-    if (!publicServiceEmail && !isEmailBetaAsked) {
-      callback('⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique');
-      return null;
-    }
-    return email;
-  }
