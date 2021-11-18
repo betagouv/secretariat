@@ -110,7 +110,7 @@ export async function postForm(req, res) {
     const referent = req.body.referent || requiredError('référent', errorHandler);
     const domaine = isValidDomain('domaine', req.body.domaine, errorHandler) ? req.body.domaine : null;
     const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
-    const isEmailBetaAsked = req.body.isEmailBetaAsked || false;
+    const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     if (!hasPublicServiceEmail && !isEmailBetaAsked) {
       errorHandler(
