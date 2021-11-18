@@ -32,6 +32,7 @@ describe('Onboarding', () => {
     let createGithubFile;
     let makeGithubPullRequest;
     let sendEmailStub;
+    let isPublicServiceEmailStub;
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
@@ -67,7 +68,7 @@ describe('Onboarding', () => {
       createGithubFile.restore();
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
-      isPublicServiceEmail.restore();
+      isPublicServiceEmailStub.restore();
       knex('users').truncate()
         .then(() => done());
     });
