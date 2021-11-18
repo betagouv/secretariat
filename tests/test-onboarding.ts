@@ -54,6 +54,10 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'sendMail')
         .returns(Promise.resolve(true));
 
+      isPublicServiceEmailStub = sinon
+        .stub(controllerUtils, 'isPublicServiceEmailStub')
+        .returns(Promise.resolve(true));
+
       done();
     });
 
@@ -63,6 +67,7 @@ describe('Onboarding', () => {
       createGithubFile.restore();
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
+      isPublicServiceEmail.restore();
       knex('users').truncate()
         .then(() => done());
     });
@@ -334,6 +339,31 @@ describe('Onboarding', () => {
         });
     });
 
+    it('should not call Github API if email is not public email and isEmailBetAsked false', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
+          isEmailBetaAsked: false
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
     it('should call Github API if mandatory fields are present', (done) => {
       chai.request(app)
         .post('/onboarding')
@@ -348,12 +378,39 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre actif',
           email: 'test@example.com',
+          isEmailBetaAsked: true
         })
         .end((err, res) => {
           getGithubMasterSha.calledOnce.should.be.true;
           createGithubBranch.calledOnce.should.be.true;
           createGithubFile.calledOnce.should.be.true;
           makeGithubPullRequest.calledOnce.should.be.true;
+          done();
+        });
+    });
+
+    it('should not call Github API if email is public email', (done) => {
+      isPublicServiceEmailStub.returns(Promise.resolve(false));
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre actif',
+          email: 'test@example.com',
+          isEmailBetaAsked: false
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
           done();
         });
     });

@@ -1,11 +1,10 @@
 import ejs from "ejs";
 import crypto from "crypto";
-import fetch from "node-fetch";
 import config from "../config";
 import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
-import { isValidGithubUserName } from "../lib/github";
+import {  requiredError, requiredEmail, isValidDomain, isValidDate, isValidUrl,shouldBeOnlyUsername, isValidEmail } from "./validator"
 
 
 function createBranchName(username) {
@@ -91,99 +90,41 @@ export async function getForm(req, res) {
   }
 }
 
+
 export async function postForm(req, res) {
   const formValidationErrors = {};
+  const errorHandler = (field, message) => {
+    formValidationErrors[field] = message
+  }
   try {
-    const requiredError = function (field) {
-      formValidationErrors[field] = 'Le champ n‘est pas renseigné';
-    }
-
-    const isValidDate = function (field, date) {
-      if (date instanceof Date && !Number.isNaN(date.getTime())) {
-        return date;
-      }
-      formValidationErrors[field] = 'La date n‘est pas valide';
-      return null;
-    }
-
-    const isValidUrl = function (field, url) {
-      if (!url || url.indexOf('http') === 0) {
-        return url;
-      }
-      formValidationErrors[field] = 'L‘URL ne commence pas avec http ou https';
-      return null;
-    }
-
-    const shouldBeOnlyUsername = function (field, value) {
-      if (isValidGithubUserName(value)) {
-        return value;
-      }
-      formValidationErrors[field] = 'La valeur doit être le nom du membre seul et ne doit pas être l‘URL du membre ni commencer avec "@"';
-      return null;
-    }
-
-    const isValidEmail = function (field, email) {
-      if (!email) {
-        requiredError(field);
-        return null;
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (emailRegex.test(email)) {
-        return email;
-      }
-      formValidationErrors[field] = 'L‘adresse email n‘est pas valide';
-      return null;
-    }
-
-    const isValidDomain = function (field, domain) {
-      if (!domain) {
-        requiredError(field);
-        return null;
-      }
-      if (['Animation',
-        'Coaching',
-        'Déploiement',
-        'Design',
-        'Développement',
-        'Intraprenariat',
-        'Produit',
-        'Autre'].includes(domain)) {
-        return domain;
-      }
-      formValidationErrors[field] = 'Le domaine n‘est pas valide';
-      return null;
-    }
-
-    const requiredEmail = async function(field, email, emailBetaAsked) {
-      const publicServiceEmail = await utils.isPublicServiceEmail(email);
-      if (!publicServiceEmail && !emailBetaAsked) {
-        formValidationErrors[field] = '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique';
-        return null;
-      }
-      return email;
-    }
-
-    const firstName = req.body.firstName || requiredError('prénom');
-    const lastName = req.body.lastName || requiredError('nom de famille');
+    const firstName = req.body.firstName || requiredError('prénom', errorHandler);
+    const lastName = req.body.lastName || requiredError('nom de famille', errorHandler);
     const description = req.body.description || null;
-    const role = req.body.role || requiredError('role');
-    const start = req.body.start || requiredError('début de la mission');
-    const end = req.body.end || requiredError('fin de la mission');
-    const status = req.body.status || requiredError('statut');
+    const role = req.body.role || requiredError('role', errorHandler);
+    const start = req.body.start || requiredError('début de la mission', errorHandler);
+    const end = req.body.end || requiredError('fin de la mission', errorHandler);
+    const status = req.body.status || requiredError('statut', errorHandler);
     const startup = req.body.startup || null;
     const employer = req.body.employer || null;
     const badge = req.body.badge || null;
-    const referent = req.body.referent || requiredError('référent');
-    const domaine = isValidDomain('domaine', req.body.domaine);
-    const email = isValidEmail('email pro/perso', req.body.email);
-    const emailBetaAsked = req.body.isEmailBetaAsked || false;
-    const publicServiceEmail = await requiredEmail('email public', email, emailBetaAsked);
+    const referent = req.body.referent || requiredError('référent', errorHandler);
+    const domaine = isValidDomain('domaine', req.body.domaine, errorHandler) ? req.body.domaine : null;
+    const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
+    const isEmailBetaAsked = req.body.isEmailBetaAsked || false;
+    const hasPublicServiceEmail = await utils.isPublicServiceEmail(email);
+    if (!hasPublicServiceEmail && !isEmailBetaAsked) {
+      errorHandler(
+        'public email',
+        '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
+      );
+    }
+    // const publicServiceEmail = await hasPublicServiceEmail('email public', email, isEmailBetaAsked, errorHandler).then;
 
-    const website = isValidUrl('Site personnel', req.body.website);
-    const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github);
+    const website = isValidUrl('Site personnel', req.body.website, errorHandler);
+    const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github, errorHandler);
 
-    const startDate = isValidDate('date de début', new Date(start));
-    const endDate = isValidDate('date de fin', new Date(end));
+    const startDate = isValidDate('date de début', new Date(start), errorHandler);
+    const endDate = isValidDate('date de fin', new Date(end), errorHandler);
     if (startDate && endDate) {
       if (startDate < new Date(config.user.minStartDate)) {
         formValidationErrors['date de début'] = `La date doit être au moins ${config.user.minStartDate}`;
@@ -222,16 +163,18 @@ export async function postForm(req, res) {
         const prUrl = prInfo.data.html_url;
         const userUrl = `${config.protocol}://${config.host}/community/${username}`;
         const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-          referent, prUrl, name, userUrl, emailBetaAsked
+          referent, prUrl, name, userUrl, isEmailBetaAsked
         });
         await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
       }
     }
-    // WIP  Null pour savoir si une adresse mail est necessaire pour plus loin dans le code,
-    // Si il y a une adresse publique, c'est qu'il n'y a pas besoin de creer le mail
-    const primaryEmail = (emailBetaAsked && publicServiceEmail) ? null : email;
-    const secondaryEmail = (emailBetaAsked && publicServiceEmail) ? email : null;
-
+    let primaryEmail, secondaryEmail;
+    if (isEmailBetaAsked) {
+      // primaryEmail sera l'email beta qui sera créé en asynchrone
+      secondaryEmail = inputEmail;
+    } else {
+      primaryEmail = inputEmail;
+    }
     await knex('users')
       .insert({
         username,

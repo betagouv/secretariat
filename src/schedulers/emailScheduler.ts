@@ -6,9 +6,7 @@ import { createEmail } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
 
-export async function createEmailAndMarrainage(user, creator) {
-  await createEmail(user.id, creator, user.toEmail);
-  // once email is created we generate marrainage request
+const createMarrainage = async (user) => {
   const dateInTwoMonth = new Date();
   dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
   const userStartDate = new Date(user.start);
@@ -33,14 +31,15 @@ const getValidUsers = async () => {
 };
 
 export async function createEmailAddresses() {
-  const dbUsers = await knex('users').whereNotNull('secondary_email');
+  const dbUsers = await knex('users')
+    .whereNotNull('secondary_email')
 
   const githubUsers = await getValidUsers();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
-      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
+      acc.push({ ...user, ...{ toEmail: dbUser.primary_email || dbUser.secondary_email } });
     }
     return acc;
   }, []);
@@ -57,9 +56,11 @@ export async function createEmailAddresses() {
 
   // create email and marrainage
   return Promise.all(
-    unregisteredUsers.map((user) =>
-      createEmailAndMarrainage(user, 'Secretariat Cron')
-    )
+    unregisteredUsers.map(async (user) => {
+      await createEmail(user.id, 'Secretariat cron', user.toEmail)
+      // once email created we create marrainage
+      await createMarrainage(user)
+    })
   );
 }
 
