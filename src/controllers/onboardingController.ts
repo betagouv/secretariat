@@ -184,9 +184,7 @@ export async function postForm(req, res) {
       .onConflict('username')
       .merge();
 
-    const prUrl = `https://github.com/${config.githubRepository}/pull/${prInfo.data.number}`;
     res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
-
   } catch (err) {
     if (err.message) {
       req.flash('error', err.message);
