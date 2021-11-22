@@ -1,2 +1,2 @@
 https://github.com/Scalingo/nodejs-buildpack
-https://github.com/betagouv/pg-backup-buildpack
+https://github.com/betagouv/pg-backup-buildpack#jdauphant-patch-1
