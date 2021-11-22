@@ -185,7 +185,7 @@ export async function postForm(req, res) {
       .merge();
 
     const prUrl = `https://github.com/${config.githubRepository}/pull/${prInfo.data.number}`;
-    res.render(`onboardingSuccess`, { prUrl , isEmailBetaAsked })
+    res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
 
   } catch (err) {
     if (err.message) {
@@ -206,5 +206,17 @@ export async function postForm(req, res) {
       formData: req.body,
       useSelectList: isMobileFirefox,
     });
+  }
+}
+
+export async function getConfirmation(req, res) {
+  try {
+    const { prNumber } = req.params;
+    const { isEmailBetaAsked } = req.query
+    const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
+    res.render('onboardingSuccess', { prUrl, isEmailBetaAsked });
+  } catch (err) {
+    console.error(err);
+    res.redirect('/');
   }
 }
