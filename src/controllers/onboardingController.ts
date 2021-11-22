@@ -79,7 +79,6 @@ export async function getForm(req, res) {
         employer: '',
         badge: '',
         email: '',
-        emailBeta: '',
       },
       useSelectList: isMobileFirefox,
     });
