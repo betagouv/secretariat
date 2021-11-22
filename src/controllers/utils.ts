@@ -1,9 +1,9 @@
 import { request } from '@octokit/request';
 import _ from 'lodash';
-import fetch from "node-fetch";
 import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
 import config from '../config';
+import axios from "axios";
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
@@ -207,7 +207,8 @@ export function addDays(date, days, week = null) {
 }
 
 export async function isPublicServiceEmail (email) {
-  const response = await fetch("https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address=" + String(email).toLowerCase())
+  const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
+  const response = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
   const data = await response.json();
     if (data.hs === "agent.externe.tchap.gouv.fr") {
       return false;
