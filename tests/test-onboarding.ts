@@ -340,7 +340,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should not call Github API if email is not public email and isEmailBetAsked false', (done) => {
+    it('should not call Github API if email is not public email and isEmailBetaAsked false', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
