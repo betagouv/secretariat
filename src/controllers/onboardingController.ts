@@ -117,7 +117,6 @@ export async function postForm(req, res) {
         '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
       );
     }
-    // const publicServiceEmail = await hasPublicServiceEmail('email public', email, isEmailBetaAsked, errorHandler).then;
 
     const website = isValidUrl('Site personnel', req.body.website, errorHandler);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github, errorHandler);
