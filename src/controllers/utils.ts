@@ -1,9 +1,9 @@
+import axios from "axios";
 import { request } from '@octokit/request';
 import _ from 'lodash';
 import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
 import config from '../config';
-import axios from "axios";
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
