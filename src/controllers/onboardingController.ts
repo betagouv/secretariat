@@ -113,7 +113,7 @@ export async function postForm(req, res) {
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     if (!hasPublicServiceEmail && !isEmailBetaAsked) {
       errorHandler(
-        'public email',
+        'email public',
         '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
       );
     }
