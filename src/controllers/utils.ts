@@ -208,8 +208,7 @@ export function addDays(date, days, week = null) {
 
 export async function isPublicServiceEmail (email) {
   const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
-  const response = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
-  const data = await response.json();
+  const data = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
     if (data.hs === "agent.externe.tchap.gouv.fr") {
       return false;
     } else {
