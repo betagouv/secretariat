@@ -115,7 +115,7 @@ export async function postLogin(req, res) {
 
   try {
     const token = generateToken();
-    const email = secondaryEmail ? secondaryEmail : utils.buildBetaEmail(username);
+    const email = emailInput;
 
     await sendLoginEmail(email, username, loginUrl, token);
     await saveToken(username, token);
