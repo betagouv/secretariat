@@ -72,7 +72,7 @@ export async function getLogin(req, res) {
 export async function postLogin(req, res) {
   const formValidationErrors = [];
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  const emailInput = utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
+  const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
   if (formValidationErrors.length) {
     req.flash('error', formValidationErrors);
@@ -80,7 +80,6 @@ export async function postLogin(req, res) {
   }
 
   let username;
-  let secondaryEmail;
 
   const emailSplit = emailInput.split('@');
   if (emailSplit[1] === config.domain) {
@@ -96,11 +95,10 @@ export async function postLogin(req, res) {
       try {
         const dbResponse = await knex('users')
         .select()
-        .whereRaw(`secondary_email = ?`, emailInput.toLowerCase())
-        .orWhereRaw('primary_email = ?', emailInput.toLowerCase())
-        secondaryEmail = dbResponse[0].secondary_email;
+        .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+        .orWhereRaw('LOWER(primary_email) = ?', emailInput)
         username = dbResponse[0].username;
-      } catch {
+      } catch (e) {
         req.flash(
           'error',
           `L'adresse email ${emailInput} n'est pas connue.`
@@ -115,15 +113,14 @@ export async function postLogin(req, res) {
 
   try {
     const token = generateToken();
-    const email = emailInput;
 
-    await sendLoginEmail(email, username, loginUrl, token);
+    await sendLoginEmail(emailInput, username, loginUrl, token);
     await saveToken(username, token);
 
     return renderLogin(req, res, {
       messages: req.flash(
         'message',
-        `Un lien de connexion a été envoyé à l'adresse ${email}. Il est valable une heure.`
+        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.`
       ),
     });
   } catch (err) {

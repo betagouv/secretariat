@@ -176,6 +176,7 @@ describe('Login', () => {
       knex('users').insert({
         username: 'membre.actif',
         secondary_email: 'membre.ACTIF.perso@example.com',
+        primary_email: 'membre.ACTIF@beta.gouv.fr'
       })
       .then(() => {
         chai.request(app)
@@ -186,7 +187,7 @@ describe('Login', () => {
           })
           .then(() => {
             const destinationEmail = sendEmailStub.args[0][0];
-            destinationEmail.should.equal('membre.ACTIF.perso@example.com');
+            destinationEmail.should.equal('membre.actif.perso@example.com');
             sendEmailStub.calledOnce.should.be.true;
             done();
           })
