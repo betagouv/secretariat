@@ -71,14 +71,19 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
     config.host
   }/marrainage/decline?details=${encodeURIComponent(token)}`;
 
-  const startup = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
+  const startupId = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
+  const startupUrl = startupId ? `https://beta.gouv.fr/startups/${startupId}.html` : null;
+  const startupInfo = startupId ? (await BetaGouv.startupsInfos()).find((x) => x.id === startupId) : null;
+  const startupName = startupInfo && startupInfo["attributes"] ? startupInfo["attributes"]["name"] : null;
+
 
   const html = await ejs.renderFile('./views/emails/marrainageRequest.ejs', {
     newcomer,
     onboarder,
     marrainageAcceptUrl,
     marrainageDeclineUrl,
-    startup,
+    startupUrl,
+    startupName,
   });
 
   try {

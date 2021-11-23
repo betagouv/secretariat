@@ -219,7 +219,7 @@ describe('Marrainage', () => {
         .end((err, res) => {
           sendEmailStub.calledOnce.should.be.true;
           const emailBody = sendEmailStub.args[0][2];
-          emailBody.should.include('(Chargé de déploiement chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
+          emailBody.should.include('(Chargé de déploiement chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">Test Startup</a>)');
           done();
         });
     });
@@ -253,7 +253,7 @@ describe('Marrainage', () => {
         .end((err, res) => {
           sendEmailStub.calledOnce.should.be.true;
           const emailBody = sendEmailStub.args[0][2];
-          emailBody.should.include('(récemment arrivé·e chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
+          emailBody.should.include('(récemment arrivé·e chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">Test Startup</a>)');
           done();
         });
     });
