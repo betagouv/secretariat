@@ -53,7 +53,7 @@ export async function sendMail(toEmail, subject, html, extraParams = {}) {
   });
 }
 
-export function buildBetaEmail(id) {
+export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
 }
 

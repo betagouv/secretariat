@@ -6,6 +6,7 @@ import { createEmail } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
 import { DBUser } from '../models/dbUser';
+import { Member } from '../models/member';
 
 const createMarrainage = async (user) => {
   const dateInTwoMonth = new Date();
@@ -35,8 +36,7 @@ export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
     .whereNotNull('secondary_email')
-
-  const githubUsers = await getValidUsers();
+  const githubUsers: Member[] = await getValidUsers();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);

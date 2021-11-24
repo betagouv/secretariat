@@ -6,9 +6,10 @@ import * as utils from './utils';
 import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
 import { DBUser } from '../models/dbUser';
+import { Member } from '../models/member';
 
 async function selectRandomOnboarder(newcomerId) {
-  const users = await BetaGouv.usersInfos();
+  const users: Member[] = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
   const existingCandidates = await knex('marrainage')
     .select('last_onboarder')
@@ -55,7 +56,7 @@ async function getMarrainageTokenData(token) {
   };
 }
 
-async function sendOnboarderRequestEmail(newcomer, onboarder) {
+async function sendOnboarderRequestEmail(newcomer: Member, onboarder: Member) {
   const token = jwt.sign(
     {
       newcomerId: newcomer.id,
@@ -81,12 +82,12 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
     marrainageDeclineUrl,
     startup,
   });
-  const dbOnboarder: DBUser = await knex('users').whereIn(
-    'username', onboarder
-  ).first()
+  const dbOnboarder: DBUser = await knex('users').where({
+    username: onboarder.id
+  }).first()
   try {
     return await utils.sendMail(
-      [dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder)],
+      [dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id)],
       'Tu as été sélectionné·e comme marrain·e 🙌',
       html
     );
@@ -104,7 +105,7 @@ function redirectOutdatedMarrainage(req, res) {
 }
 
 export async function reloadMarrainage(newcomerId) {
-  const newcomer = await BetaGouv.userInfosById(newcomerId);
+  const newcomer: Member = await BetaGouv.userInfosById(newcomerId);
 
   if (!newcomer) {
     throw new Error(
@@ -213,8 +214,8 @@ export async function createRequest(req, res) {
 export async function acceptRequest(req, res) {
   try {
     const details = await getMarrainageTokenData(req.query.details);
-    const { newcomer } = details;
-    const { onboarder } = details;
+    const newcomer: Member = details.newcomer;
+    const onboarder: Member = details.onboarder;
 
     const marrainageDetailsReponse = await knex('marrainage')
       .select()
@@ -243,15 +244,15 @@ export async function acceptRequest(req, res) {
       onboarder,
     });
     const dbUsers: DBUser[] = await knex('users').whereIn(
-      'username', [onboarder, newcomer]
+      'username', [onboarder.id, newcomer.id]
     )
-    const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder)
-    const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer)
-
+    const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder.id )
+    const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer.id )
+    console.log(dbOnboarder, dbNewcomer)
     try {
       await utils.sendMail(
         // onboarder may not have primary_email populated, newcomer has for sure
-        dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder),
+        dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id),
         'Mise en contact 👋',
         html,
         { replyTo: dbNewcomer.primary_email }
@@ -260,7 +261,7 @@ export async function acceptRequest(req, res) {
         dbNewcomer.primary_email,
         'Mise en contact 👋',
         html,
-        { replyTo: dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder)}
+        { replyTo: dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id)}
       );
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
@@ -283,8 +284,8 @@ export async function acceptRequest(req, res) {
 export async function declineRequest(req, res) {
   try {
     const details = await getMarrainageTokenData(req.query.details);
-    const { newcomer } = details;
-    const declinedOnboarder = details.onboarder;
+    const newcomer: Member = details.newcomer;
+    const declinedOnboarder: Member = details.onboarder;
 
     const marrainageDetailsReponse = await knex('marrainage')
       .select()

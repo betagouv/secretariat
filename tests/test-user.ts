@@ -873,6 +873,7 @@ describe('User', () => {
       await knex('users').where({
         username: newMember.id,
       }).update({
+        primary_email: null,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -887,6 +888,7 @@ describe('User', () => {
       marrainage[0].last_onboarder.should.not.be.null;
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
+        primary_email: `${newMember.id}@${config.domain}`,
       });
     });
 
@@ -950,6 +952,7 @@ describe('User', () => {
       await knex('users').where({
         username: newMember.id,
       }).update({
+        primary_email: null,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -962,6 +965,7 @@ describe('User', () => {
       marrainage.length.should.equal(0);
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
+        primary_email: `${newMember}@${config.domain}`
       });
     });
 
@@ -1013,6 +1017,7 @@ describe('User', () => {
       await knex('users').where({
         username: newMember.id,
       }).update({
+        primary_email: null,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -1028,6 +1033,7 @@ describe('User', () => {
       marrainage.length.should.equal(0);
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
+        primary_email: `${newMember.id}@${config.domain}`
       });
       consoleSpy.restore();
     });
