@@ -5,6 +5,7 @@ import BetaGouv from '../betagouv';
 import * as utils from './utils';
 import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
+import { DBUser } from '../models/dbUser';
 
 async function selectRandomOnboarder(newcomerId) {
   const users = await BetaGouv.usersInfos();
@@ -80,10 +81,12 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
     marrainageDeclineUrl,
     startup,
   });
-
+  const dbOnboarder: DBUser = await knex('users').whereIn(
+    'username', onboarder
+  ).first()
   try {
     return await utils.sendMail(
-      [onboarder.primary_email],
+      [dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder)],
       'Tu as été sélectionné·e comme marrain·e 🙌',
       html
     );
@@ -239,18 +242,25 @@ export async function acceptRequest(req, res) {
       newcomer,
       onboarder,
     });
+    const dbUsers: DBUser[] = await knex('users').whereIn(
+      'username', [onboarder, newcomer]
+    )
+    const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder)
+    const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer)
+
     try {
       await utils.sendMail(
-        onboarder.primary_email,
+        // onboarder may not have primary_email populated, newcomer has for sure
+        dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder),
         'Mise en contact 👋',
         html,
-        { replyTo: newcomer.primary_email }
+        { replyTo: dbNewcomer.primary_email }
       );
       await utils.sendMail(
-        newcomer.primary_email,
+        dbNewcomer.primary_email,
         'Mise en contact 👋',
         html,
-        { replyTo: onboarder.primary_email }
+        { replyTo: dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder)}
       );
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
