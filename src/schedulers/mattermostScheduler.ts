@@ -15,10 +15,10 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
   const concernedUsers = currentUsers.map(user => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
-    if (dbUser) {
-      return { ...user, ...{ primary_email: dbUser.primary_email }};
-    }
-    return { ...user, primary_email: undefined };
+    return {
+      ...user,
+      primary_email: dbUser ? dbUser.primary_email : undefined
+    };
   });
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email

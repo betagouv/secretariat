@@ -33,19 +33,15 @@ const getRegisteredUsersWithEndingContractInXDays = async (days) => {
     'username',
     activeGithubUsers.map((user) => user.id)
   );
-  console.log(dbUsers)
   const registeredUsersWithEndingContractInXDays = dbUsers.map(
     (user) => {
       const index = allMattermostUsersEmails.indexOf(
         user.primary_email
       );
-      if (index > -1) {
-        return {
-          ...user,
-          mattermostUsername: allMattermostUsers[index].username,
-        };
-      }
-      return user;
+      return {
+        ...user,
+        mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
+      };
     }
   );
   return registeredUsersWithEndingContractInXDays.filter(

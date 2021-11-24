@@ -138,10 +138,10 @@ export async function sendNewsletterAndCreateNewOne() {
     const dbUsers = await knex('users').whereNotNull('primary_email');
     const concernedUsers = users.map((user) => {
       const dbUser = dbUsers.find((x) => x.username === user.id);
-      if (dbUser) {
-        return { ...user, ...{ primary_email: dbUser.primary_email }};
-      }
-      return user;
+      return {
+        ...user,
+        primary_email: dbUser ? dbUser.primary_email : undefined
+      };
     });
 
     const usersEmails = concernedUsers.map(user => user.primary_email)
