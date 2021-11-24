@@ -83,7 +83,7 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
 
   try {
     return await utils.sendMail(
-      [utils.buildBetaEmail(onboarder.id)],
+      [onboarder.primary_email],
       'Tu as été sélectionné·e comme marrain·e 🙌',
       html
     );
@@ -241,16 +241,16 @@ export async function acceptRequest(req, res) {
     });
     try {
       await utils.sendMail(
-        utils.buildBetaEmail(onboarder.id),
+        onboarder.primary_email,
         'Mise en contact 👋',
         html,
-        { replyTo: utils.buildBetaEmail(newcomer.id) }
+        { replyTo: newcomer.primary_email }
       );
       await utils.sendMail(
-        utils.buildBetaEmail(newcomer.id),
+        newcomer.primary_email,
         'Mise en contact 👋',
         html,
-        { replyTo: utils.buildBetaEmail(onboarder.id) }
+        { replyTo: onboarder.primary_email }
       );
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);

@@ -28,10 +28,16 @@ const getRegisteredUsersWithEndingContractInXDays = async (days) => {
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
-  const registeredUsersWithEndingContractInXDays = activeGithubUsers.map(
+  const dbUsers: DBUser[] = await knex('users')
+  .whereIn(
+    'username',
+    activeGithubUsers.map((user) => user.id)
+  );
+  console.log(dbUsers)
+  const registeredUsersWithEndingContractInXDays = dbUsers.map(
     (user) => {
       const index = allMattermostUsersEmails.indexOf(
-        utils.buildBetaEmail(user.id)
+        user.primary_email
       );
       if (index > -1) {
         return {
@@ -83,7 +89,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
   try {
-    const email = utils.buildBetaEmail(user.id);
+    const email = user.primary_email;
     await utils.sendMail(
       email,
       `Départ dans ${messageConfig.days} jours 🙂`,

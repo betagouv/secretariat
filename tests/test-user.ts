@@ -547,37 +547,20 @@ describe('User', () => {
   });
 
   describe('POST /user/:username/email/delete', () => {
-    it('should keep the user in database secretariat', (done) => {
+    it('should keep the user in database secretariat', async() => {
       const addRedirection = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200);
 
-      knex('users')
-        .insert({
-          username: 'membre.actif',
-          secondary_email: 'membre.actif@example.com',
-        })
-        .then(() => knex('users').select().where({ username: 'membre.actif' }))
-        .then((dbRes) => {
-          dbRes.length.should.equal(1);
-        })
-        .then(() => {
-          chai
-            .request(app)
-            .post('/users/membre.actif/email/delete')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .then(() =>
-              knex('users').select().where({ username: 'membre.actif' })
-            )
-            .then((dbNewRes) => {
-              dbNewRes.length.should.equal(1);
-              (dbNewRes[0].secondary_email === null).should.be.true;
-              addRedirection.isDone().should.be.true;
-            })
-            .then(done)
-            .catch(done);
-        })
-        .catch(done);
+      const dbRes = await knex('users').select().where({ username: 'membre.actif' })
+      dbRes.length.should.equal(1);
+      await chai
+        .request(app)
+        .post('/users/membre.actif/email/delete')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+      const dbNewRes = await knex('users').where({ username: 'membre.actif' })
+      dbNewRes.length.should.equal(1);
+      addRedirection.isDone().should.be.true;
     });
 
     it('should ask OVH to redirect to the departs email', (done) => {
@@ -620,78 +603,59 @@ describe('User', () => {
     // fixme: this test test nothing since it fail silently on chai.request
     // because user.canChangeSecondaryEmail is false. It should be tested with
     // a valid BetaGouvUser
-    it('should add secondary email', (done) => {
-      const username = 'nouveau.membre';
-      const secondaryEmail = 'nouveau.membre.perso@example.com';
+    it('should add secondary email', async () => {
+      const username = 'membre.nouveau';
+      const secondaryEmail = 'membre.nouveau.perso@example.com';
 
-      knex('users')
+      await knex('users')
         .select()
-        .where({ username: 'nouveau.membre' })
+        .where({ username: 'membre.nouveau' })
         .first()
-        .then(() => {
-          chai
+      await chai
             .request(app)
             .post(`/users/${username}/secondary_email`)
-            .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
+            .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
             .type('form')
             .send({
               username,
               secondaryEmail,
             })
-            .then(() =>
-              knex('users').select().where({ username: 'nouveau.membre' })
-            )
-            .then((dbNewRes) => {
-              dbNewRes.length.should.equal(1);
-              dbNewRes[0].secondary_email.should.equal(secondaryEmail);
-            })
-            .then(done)
-            .catch(done);
-          done();
-        })
-        .catch(done);
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].secondary_email.should.equal(secondaryEmail);
     });
 
-    it('should update secondary email', (done) => {
-      const username = 'membre.sansmail';
-      const secondaryEmail = 'membre.sansmail.perso@example.com';
-      const newSecondaryEmail = 'membre.sansmail.new@example.com';
+    it('should update secondary email', async() => {
+      const username = 'membre.nouveau';
+      const secondaryEmail = 'membre.nouveau.perso@example.com';
+      const newSecondaryEmail = 'membre.nouveau.new@example.com';
 
-      knex('users')
-        .insert({
+      await knex('users')
+        .where({
           username,
+        })
+        .update({
           secondary_email: secondaryEmail,
         })
-        .then(() => {
-          knex('users')
-            .select()
-            .where({ username })
-            .first()
-            .then((dbRes) => {
-              dbRes.secondary_email.should.equal(secondaryEmail);
-            })
-            .then(() => {
-              chai
-                .request(app)
-                .post(`/users/${username}/secondary_email/`)
-                .set('Cookie', `token=${utils.getJWT('membre.sansmail')}`)
-                .type('form')
-                .send({
-                  username,
-                  newSecondaryEmail,
-                })
-                .then(() =>  knex('users').select().where({ username: 'membre.sansmail' }))
-                  .then((dbNewRes) => {
-                  dbNewRes.length.should.equal(1);
-                  dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
-                  })
-                  .then(done)
-                  .catch(done);
-            })
-            .catch(done);
-        })
-        .then(done)
-        .catch(done);
+      const dbRes = await knex('users')
+        .select()
+        .where({ username })
+        .first()
+      dbRes.secondary_email.should.equal(secondaryEmail);
+      await chai.request(app)
+        .post(`/users/${username}/secondary_email/`)
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .type('form')
+        .send({
+          username,
+          secondaryEmail: newSecondaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
+      await knex('users').where({ username: 'membre.nouveau' }).update({
+        secondary_email: null
+      })
     });
   });
 
@@ -834,7 +798,6 @@ describe('User', () => {
 
   describe('cronjob', () => {
     before(async () => {
-      await knex('users').truncate();
       await knex('marrainage').truncate();
     });
     let sendEmailStub;
@@ -848,7 +811,6 @@ describe('User', () => {
     });
 
     afterEach(async () => {
-      await knex('users').truncate();
       await knex('marrainage').truncate();
       sendEmailStub.restore();
       betagouvCreateEmail.restore();
@@ -908,8 +870,9 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
+      await knex('users').where({
         username: newMember.id,
+      }).update({
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -922,6 +885,9 @@ describe('User', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
+      await knex('users').where({ username: newMember.id }).update({
+        secondary_email: null,
+      });
     });
 
     it('should create missing email accounts but not marrainage request if start date > 2 months', async () => {
@@ -981,8 +947,9 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
+      await knex('users').where({
         username: newMember.id,
+      }).update({
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -993,6 +960,9 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
+      await knex('users').where({ username: newMember.id }).update({
+        secondary_email: null,
+      });
     });
 
     it('should create missing email accounts and not send error even if no marrainage possible', async () => {
@@ -1040,8 +1010,9 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
-      await knex('users').insert({
+      await knex('users').where({
         username: newMember.id,
+      }).update({
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       await createEmailAddresses();
@@ -1055,10 +1026,13 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
+      await knex('users').where({ username: newMember.id }).update({
+        secondary_email: null,
+      });
       consoleSpy.restore();
     });
 
-    it('should not create email accounts if already created', (done) => {
+    it('should not create email accounts if already created', async() => {
       // For this case we need to reset the basic nocks in order to return
       // a different response to indicate that newcomer.test has an
       // email address
@@ -1080,37 +1054,21 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      knex('users')
-        .insert({
-          username: newMember.id,
-          // fixme
-          // secondary_email: newMember.email
-        })
-        .then(async () => {
-          await createEmailAddresses();
-          betagouvCreateEmail.notCalled.should.be.true;
-          ovhEmailCreation.isDone().should.be.false;
-          sendEmailStub.notCalled.should.be.true;
-          done();
-        });
+        await createEmailAddresses();
+        betagouvCreateEmail.notCalled.should.be.true;
+        ovhEmailCreation.isDone().should.be.false;
+        sendEmailStub.notCalled.should.be.true;
     });
 
-    it('should not create email accounts if we dont have the secondary email', (done) => {
+    it('should not create email accounts if we dont have the secondary email', async () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
 
-      knex('users')
-        .insert({
-          username: 'membre.nouveau',
-        })
-        .then(async () => {
-          await createEmailAddresses();
-          betagouvCreateEmail.notCalled.should.be.true;
-          ovhEmailCreation.isDone().should.be.false;
-          sendEmailStub.notCalled.should.be.true;
-          done();
-        });
+      await createEmailAddresses();
+      betagouvCreateEmail.notCalled.should.be.true;
+      ovhEmailCreation.isDone().should.be.false;
+      sendEmailStub.notCalled.should.be.true;
     });
   });
 });

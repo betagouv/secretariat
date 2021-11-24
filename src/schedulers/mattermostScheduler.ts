@@ -10,12 +10,21 @@ import { Member } from '../models/member';
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () => {
   const allMattermostUsers = await mattermost.getUserWithParams();
-  const activeGithubUsers = await BetaGouv.getActiveRegisteredOVHUsers();
+  const dbUsers = await knex('users').select()
+  const users = await BetaGouv.usersInfos();
+  const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
+  const concernedUsers = currentUsers.map(user => {
+    const dbUser = dbUsers.find((x) => x.username === user.id);
+    if (dbUser) {
+      return { ...user, ...{ primary_email: dbUser.primary_email }};
+    }
+    return user;
+  });
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
-  return activeGithubUsers.filter(
-    (user) => !allMattermostUsersEmails.includes(utils.buildBetaEmail(user.id))
+  return concernedUsers.filter(
+    (user) => !allMattermostUsersEmails.includes(user.primary_email)
   );
 };
 
@@ -24,7 +33,7 @@ export async function inviteUsersToTeamByEmail() {
     await getActiveGithubUsersUnregisteredOnMattermost();
   const results = await mattermost.inviteUsersToTeamByEmail(
     activeGithubUsersUnregisteredOnMattermost
-      .map((user) => user.email)
+      .map((user) => user.primary_email)
       .slice(0, 19),
     config.mattermostTeamId
   );
@@ -39,7 +48,7 @@ export async function removeUsersFromCommunityTeam(optionalUsers) {
     users = utils.getExpiredUsersForXDays(users, 3);
   }
   const dbUsers = await knex('users').whereNotNull('secondary_email');
-  const concernedUsers = users.map((acc, user) => {
+  const concernedUsers = users.map((user) => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
       return { ...user, ...{ toEmail: dbUser.secondary_email }};

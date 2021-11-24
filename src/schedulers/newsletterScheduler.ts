@@ -132,11 +132,19 @@ export async function sendNewsletterAndCreateNewOne() {
     );
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
-    const activeRegisteredOVHUsers =
-      await BetaGouv.getActiveRegisteredOVHUsers();
-    const usersEmails = activeRegisteredOVHUsers
-      .map((user) => user.id)
-      .map(utils.buildBetaEmail);
+
+    const usersInfos = await BetaGouv.usersInfos();
+    const users = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
+    const dbUsers = await knex('users').whereNotNull('primary_email');
+    const concernedUsers = users.map((user) => {
+      const dbUser = dbUsers.find((x) => x.username === user.id);
+      if (dbUser) {
+        return { ...user, ...{ primary_email: dbUser.primary_email }};
+      }
+      return user;
+    });
+
+    const usersEmails = concernedUsers.map(user => user.primary_email)
     await utils.sendMail(
       [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
       `${getTitle(newsletterContent)}`,

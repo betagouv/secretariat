@@ -62,19 +62,17 @@ describe('Onboarding', () => {
       done();
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       getGithubMasterSha.restore();
       createGithubBranch.restore();
       createGithubFile.restore();
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
       isPublicServiceEmailStub.restore();
-      knex('users').truncate()
-        .then(() => done());
     });
 
-    it('should not call Github API if a mandatory field is missing', (done) => {
-      chai.request(app)
+    it('should not call Github API if a mandatory field is missing', async () => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -88,13 +86,10 @@ describe('Onboarding', () => {
           referent: 'membre actif',
           email: 'test@example.com',
         })
-        .end((err, res) => {
-          getGithubMasterSha.called.should.be.false;
-          createGithubBranch.called.should.be.false;
-          createGithubFile.called.should.be.false;
-          makeGithubPullRequest.called.should.be.false;
-          done();
-        });
+      getGithubMasterSha.called.should.be.false;
+      createGithubBranch.called.should.be.false;
+      createGithubFile.called.should.be.false;
+      makeGithubPullRequest.called.should.be.false;
     });
 
     it('should not call Github API if a date is wrong', (done) => {
@@ -660,35 +655,37 @@ describe('Onboarding', () => {
         .catch(done);
     });
 
-    it('DB conflicts in newcomer secondary email should be treated as an update', (done) => {
-      knex('users')
-        .insert({
+    it('DB conflicts in newcomer secondary email should be treated as an update', async () => {
+      await knex('users')
+        .where({
           username: 'john.doe',
+        })
+        .update({
           secondary_email: 'test@example.com',
-        }).then(() => {
-          chai.request(app)
-            .post('/onboarding')
-            .type('form')
-            .send({
-              firstName: 'John',
-              lastName: 'Doe',
-              role: 'Dev',
-              start: '2020-01-01',
-              end: '2021-01-01',
-              status: 'Independant',
-              domaine: 'Coaching',
-              email: 'updated@example.com',
-              referent: 'membre actif',
-              isEmailBetaAsked: true,
-            })
-            .then(() => knex('users').where({ username: 'john.doe' }))
-            .then((dbRes) => {
-              dbRes.length.should.equal(1);
-              dbRes[0].secondary_email.should.equal('updated@example.com');
-            })
-            .then(done)
-            .catch(done);
-        });
+        })
+      await chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          email: 'updated@example.com',
+          referent: 'membre actif',
+          isEmailBetaAsked: true,
+        })
+        const dbRes = await knex('users').where({ username: 'john.doe' })
+        dbRes.length.should.equal(1);
+        dbRes[0].secondary_email.should.equal('updated@example.com');
+        await knex('users').where({
+          username: 'john.doe',
+        }).update({
+          secondary_email: null,
+        })
     });
   });
 });

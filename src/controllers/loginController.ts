@@ -47,7 +47,11 @@ async function sendLoginEmail(email, username, loginUrl, token) {
 }
 
 async function saveToken(username, token) {
-  const email = utils.buildBetaEmail(username);
+  const email = await knex('users').where({
+    username
+  }).then(dbResponse => {
+    return dbResponse[0].primary_email
+  });
   try {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
@@ -55,7 +59,7 @@ async function saveToken(username, token) {
     await knex('login_tokens').insert({
       token,
       username,
-      email,
+      email: email,
       expires_at: expirationDate,
     });
     console.log(`Login token créé pour ${email}`);

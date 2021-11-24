@@ -108,6 +108,13 @@ export default {
       .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
       .then(() => client.end())
       .then(() => knex.migrate.latest())
+      .then(() => {
+        const dbUsers = testUsers.map(user => ({
+          username: user.id,
+          primary_email: `${user.id}@${config.domain}`
+        }))
+        return knex('users').insert(dbUsers)
+      })
       .then(() => console.log(`Test database ${testDbName} created successfully`))
       .catch((err) => {
         console.log(err);
