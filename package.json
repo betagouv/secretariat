@@ -71,6 +71,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.22",
+    "@types/marked": "^4.0.1",
     "@types/mocha": "^9.0.0",
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^5.4.0",

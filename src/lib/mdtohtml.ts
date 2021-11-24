@@ -1,5 +1,5 @@
-import marked from "marked";
-import juice from "juice";
+import juice from 'juice';
+import { marked } from 'marked';
 
 const css = `.markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -175,61 +175,46 @@ overflow: visible !important;
 `;
 
 export function getTitle(content) {
-  const renderer = new marked.Renderer();
-
   const toc = [];
 
-  renderer.heading = function (text, level, raw) {
-    const anchor = this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-');
-    toc.push({
-      anchor,
-      level,
-      text,
-      raw,
-    });
-    return `<h${
-      level
-    } id="${
-      anchor
-    }">${
-      text
-    }</h${
-      level
-    }>\n`;
+  const renderer = {
+    heading(text, level, raw) {
+      const anchor =
+        this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-');
+      toc.push({
+        anchor,
+        level,
+        text,
+        raw,
+      });
+      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+    },
   };
-  marked.setOptions({
+  marked.use({
     renderer,
   });
-  marked(content);
+  marked.parse(content);
   return toc[0].raw;
 }
 
 export function renderHtmlFromMd(content) {
   const toc = [];
-  const rendererFunc = (function () {
-    const renderer = new marked.Renderer();
-    renderer.heading = function (text, level, raw) {
-      const anchor = this.options.headerPrefix + raw.toLowerCase().replace(/[^\w\\u4e00-\\u9fa5]]+/g, '-');
+  const renderer = {
+    heading(text, level, raw) {
+      const anchor =
+        this.options.headerPrefix +
+        raw.toLowerCase().replace(/[^\w\\u4e00-\\u9fa5]]+/g, '-');
       toc.push({
         anchor,
         level,
         text,
       });
-      return `<h${
-        level
-      } id="${
-        anchor
-      }">${
-        text
-      }</h${
-        level
-      }>\n`;
-    };
-    return renderer;
-  }());
+      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+    },
+  };
 
-  marked.setOptions({
-    renderer: rendererFunc,
+  marked.use({
+    renderer,
     // gfm: true,
     // tables: true,
     // breaks: false,
@@ -238,9 +223,12 @@ export function renderHtmlFromMd(content) {
     // smartLists: true,
     // smartypants: false,
   });
+
   function build(coll, k, level, ctx) {
     /* eslint-disable no-param-reassign */
-    if (k >= coll.length || coll[k].level <= level) { return k; }
+    if (k >= coll.length || coll[k].level <= level) {
+      return k;
+    }
     const node = coll[k];
     ctx.push(`<li><a href='#${node.anchor}'>${node.text}</a>`);
     k += 1;
@@ -257,13 +245,14 @@ export function renderHtmlFromMd(content) {
     k = build(coll, k, level, ctx);
     return k;
   }
-  let html = marked(content);
+
+  let html = marked.parse(content);
   const ctx = [];
   build(toc, 0, 0, ctx);
   // console.log(toc, ctx);
   html = html.replace('[TOC]', ctx.join(''));
   html = juice(`<style>
     ${css}
-  </style><div id="doc" class="container markdown-body">${html}</div>`);
+  </style><div id='doc' class='container markdown-body'>${html}</div>`);
   return html;
 }
