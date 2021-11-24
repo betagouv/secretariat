@@ -71,11 +71,14 @@ async function sendOnboarderRequestEmail(newcomer, onboarder) {
     config.host
   }/marrainage/decline?details=${encodeURIComponent(token)}`;
 
+  const startup = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
+
   const html = await ejs.renderFile('./views/emails/marrainageRequest.ejs', {
     newcomer,
     onboarder,
     marrainageAcceptUrl,
     marrainageDeclineUrl,
+    startup,
   });
 
   try {
