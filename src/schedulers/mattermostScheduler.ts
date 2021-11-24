@@ -18,7 +18,7 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () => {
     if (dbUser) {
       return { ...user, ...{ primary_email: dbUser.primary_email }};
     }
-    return user;
+    return { ...user, primary_email: undefined };
   });
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
