@@ -255,10 +255,10 @@ export async function acceptRequest(req, res) {
         dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id),
         'Mise en contact 👋',
         html,
-        { replyTo: dbNewcomer.primary_email }
+        { replyTo: dbNewcomer ? dbNewcomer.primary_email :  utils.buildBetaEmail(newcomer.id)}
       );
       await utils.sendMail(
-        dbNewcomer.primary_email,
+        dbNewcomer ? dbNewcomer.primary_email :  utils.buildBetaEmail(newcomer.id),
         'Mise en contact 👋',
         html,
         { replyTo: dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id)}
