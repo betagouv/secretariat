@@ -17,6 +17,7 @@ export interface Member {
   email: string;
   missions: Mission[];
   startups: string[];
+  previously: string[];
   start: string;
   end: string;
   employer: string;
