@@ -4,7 +4,7 @@ import config from "../config";
 import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
-import {  requiredError, isValidDomain, isValidDate, isValidUrl,shouldBeOnlyUsername, isValidEmail } from "./validator"
+import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
 
 
 function createBranchName(username) {
