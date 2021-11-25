@@ -16,6 +16,7 @@ export interface Member {
   github: string;
   email: string;
   missions: Mission[];
+  startups: string[];
   start: string;
   end: string;
   employer: string;
