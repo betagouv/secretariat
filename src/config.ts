@@ -42,7 +42,7 @@ export default {
   slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
   slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
   usersAPI:
-    process.env.USERS_API || 'https://beta.gouv.fr/api/v2.1/authors.json',
+    process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
   startupsAPI:
     process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   githubToken: process.env.GITHUB_TOKEN,
