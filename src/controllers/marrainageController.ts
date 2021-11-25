@@ -251,7 +251,6 @@ export async function acceptRequest(req, res) {
     console.log(dbOnboarder, dbNewcomer)
     try {
       await utils.sendMail(
-        // onboarder may not have primary_email populated, newcomer has for sure
         dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id),
         'Mise en contact 👋',
         html,
