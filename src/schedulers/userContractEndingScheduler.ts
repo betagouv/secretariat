@@ -51,7 +51,7 @@ const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<DBUs
   );
   return registeredUsersWithEndingContractInXDays.filter(
     (user) => user.mattermostUsername
-  ) as DBUserWithMattermostUsername;
+  ) as DBUserWithMattermostUsername[];
 };
 
 const CONFIG_MESSAGE = {
