@@ -24,3 +24,7 @@ export interface Member {
   domaine: Domaine;
   mattermostUsername?: string;
 }
+
+export interface MemberWithPrimaryEmail extends Member {
+  primary_email: string;
+}

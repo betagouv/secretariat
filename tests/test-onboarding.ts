@@ -6,6 +6,7 @@ import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
+import config from '../src/config';
 
 chai.use(chaiHttp);
 
@@ -83,7 +84,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
       getGithubMasterSha.called.should.be.false;
@@ -104,7 +105,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -128,7 +129,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -152,7 +153,7 @@ describe('Onboarding', () => {
           end: '2020-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -176,7 +177,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -199,7 +200,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           // domaine missing
         })
@@ -248,7 +249,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Wrongvalue',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -272,7 +273,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           website: 'example.com/me',
         })
@@ -297,7 +298,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           github: 'https://github.com/betagouv',
         })
@@ -322,7 +323,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           github: 'github.com/betagouv',
         })
@@ -347,7 +348,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           isEmailBetaAsked: false
         })
@@ -372,7 +373,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           isEmailBetaAsked: true
         })
@@ -398,7 +399,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           isEmailBetaAsked: false
         })
@@ -425,7 +426,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           website: 'https://example.com/me',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -448,7 +449,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -471,7 +472,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -494,7 +495,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -530,10 +531,6 @@ describe('Onboarding', () => {
     it('Referent should be notified by email', (done) => {
       nock.cleanAll();
 
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*membre.actif/)
-        .reply(200, { email: 'membre.actif@example.com' });
-
       utils.mockUsers();
 
       chai.request(app)
@@ -555,7 +552,7 @@ describe('Onboarding', () => {
           sendEmailStub.calledOnce.should.be.true;
 
           const toEmail = sendEmailStub.args[0][0];
-          toEmail.should.equal('membre.actif@example.com');
+          toEmail.should.equal(`membre.actif@${config.domain}`);
           done();
         });
     });
@@ -573,7 +570,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -596,7 +593,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -619,7 +616,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .redirects(0)
@@ -643,13 +640,13 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          dbRes[0].secondary_email.should.equal('test@example.com');
+          dbRes[0].secondary_email.should.equal(`test@example.com`);
         })
         .then(done)
         .catch(done);
@@ -675,7 +672,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'updated@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           isEmailBetaAsked: true,
         })
         const dbRes = await knex('users').where({ username: 'john.doe' })

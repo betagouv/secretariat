@@ -155,16 +155,14 @@ export async function postForm(req, res) {
     });
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
-    if (referent && prInfo.status === 201 && prInfo.data.html_url) {
-      const referentEmailInfos = await BetaGouv.emailInfos(referent);
-      if (referentEmailInfos && referentEmailInfos.email) {
-        const prUrl = prInfo.data.html_url;
-        const userUrl = `${config.protocol}://${config.host}/community/${username}`;
-        const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-          referent, prUrl, name, userUrl, isEmailBetaAsked
-        });
-        await utils.sendMail(referentEmailInfos.email, `${name} vient de créer sa fiche Github`, html);
-      }
+    if (prInfo.status === 201 && prInfo.data.html_url) {
+      const dbReferent = await knex('users').where({ username: referent }).first();
+      const prUrl = prInfo.data.html_url;
+      const userUrl = `${config.protocol}://${config.host}/community/${username}`;
+      const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
+        referent, prUrl, name, userUrl, isEmailBetaAsked
+      });
+      await utils.sendMail(dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username), `${name} vient de créer sa fiche Github`, html);
     }
     let primaryEmail, secondaryEmail;
     if (isEmailBetaAsked) {

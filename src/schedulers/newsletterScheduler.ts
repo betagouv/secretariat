@@ -144,7 +144,9 @@ export async function sendNewsletterAndCreateNewOne() {
       };
     });
 
-    const usersEmails = concernedUsers.map(user => user.primary_email)
+    const usersEmails = concernedUsers
+      .filter(user => user.primary_email)
+      .map(user => user.primary_email)
     await utils.sendMail(
       [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
       `${getTitle(newsletterContent)}`,

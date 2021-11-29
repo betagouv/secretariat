@@ -6,20 +6,21 @@ import * as utils from '../controllers/utils';
 import * as mattermost from '../lib/mattermost';
 import { MattermostUser } from '../lib/mattermost';
 import knex from "../db";
-import { Member } from '../models/member';
+import { Member, MemberWithPrimaryEmail } from '../models/member';
+import { DBUser } from '../models/dbUser';
 
-const getActiveGithubUsersUnregisteredOnMattermost = async () => {
-  const allMattermostUsers = await mattermost.getUserWithParams();
-  const dbUsers = await knex('users').select()
-  const users = await BetaGouv.usersInfos();
-  const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
-  const concernedUsers = currentUsers.map(user => {
+const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
+  const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams();
+  const dbUsers : DBUser[] = await knex('users').select()
+  const users : Member[] = await BetaGouv.usersInfos();
+  const currentUsers: Member[] = users.filter((x) => !utils.checkUserIsExpired(x));
+  const concernedUsers: MemberWithPrimaryEmail[] = currentUsers.map(user => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
     return {
       ...user,
       primary_email: dbUser ? dbUser.primary_email : undefined
     };
-  });
+  }).filter(user => user.primary_email);
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
@@ -29,7 +30,7 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () => {
 };
 
 export async function inviteUsersToTeamByEmail() {
-  const activeGithubUsersUnregisteredOnMattermost =
+  const activeGithubUsersUnregisteredOnMattermost: MemberWithPrimaryEmail[] =
     await getActiveGithubUsersUnregisteredOnMattermost();
   const results = await mattermost.inviteUsersToTeamByEmail(
     activeGithubUsersUnregisteredOnMattermost
@@ -144,7 +145,7 @@ export async function reactivateUsers() {
 }
 
 export async function createUsersByEmail() {
-  let activeGithubUsersUnregisteredOnMattermost =
+  let activeGithubUsersUnregisteredOnMattermost : MemberWithPrimaryEmail[] =
     await getActiveGithubUsersUnregisteredOnMattermost();
   activeGithubUsersUnregisteredOnMattermost =
     activeGithubUsersUnregisteredOnMattermost.filter((user) => {
@@ -154,7 +155,7 @@ export async function createUsersByEmail() {
     });
   const results = await Promise.all(
     activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
-      const email = utils.buildBetaEmail(user.id);
+      const email = user.primary_email;
       const password = crypto.randomBytes(20).toString('base64').slice(0, -2);
       try {
         await mattermost.createUser({
