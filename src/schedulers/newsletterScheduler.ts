@@ -5,6 +5,7 @@ import config from '../config';
 import knex from '../db';
 import * as utils from '../controllers/utils';
 import { getTitle, renderHtmlFromMd } from '../lib/mdtohtml';
+import { Member, MemberWithPrimaryEmail } from '../models/member';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -133,19 +134,18 @@ export async function sendNewsletterAndCreateNewOne() {
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
 
-    const usersInfos = await BetaGouv.usersInfos();
-    const users = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
+    const usersInfos : Member[] = await BetaGouv.usersInfos();
+    const users : Member[] = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
     const dbUsers = await knex('users').whereNotNull('primary_email');
-    const concernedUsers = users.map((user) => {
+    const concernedUsers : MemberWithPrimaryEmail[] = users.map((user) => {
       const dbUser = dbUsers.find((x) => x.username === user.id);
       return {
         ...user,
         primary_email: dbUser ? dbUser.primary_email : undefined
       };
-    });
+    }).filter(user => user.primary_email);
 
-    const usersEmails = concernedUsers
-      .filter(user => user.primary_email)
+    const usersEmails : string[] = concernedUsers
       .map(user => user.primary_email)
     await utils.sendMail(
       [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),

@@ -12,5 +12,4 @@ export interface DBUserWithMattermostUsername {
     username: string;
     created_at: Date;
     mattermostUsername: string;
-  }
-  
+}
