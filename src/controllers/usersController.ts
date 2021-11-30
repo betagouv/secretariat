@@ -30,7 +30,11 @@ export async function createEmail(username, creator, toEmail) {
   })
   await BetaGouv.sendInfoToChat(message);
   await BetaGouv.createEmail(username, password);
-
+  await knex('users').where({
+    username,
+  }).update({
+    primary_email: email
+  })
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
     password,

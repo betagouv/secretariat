@@ -1,3 +1,4 @@
+import axios from "axios";
 import { request } from '@octokit/request';
 import _ from 'lodash';
 import nodemailer from 'nodemailer';
@@ -52,7 +53,7 @@ export async function sendMail(toEmail, subject, html, extraParams = {}) {
   });
 }
 
-export function buildBetaEmail(id) {
+export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
 }
 
@@ -204,6 +205,17 @@ export function addDays(date, days, week = null) {
   result.setDate(result.getDate() + days);
   return result;
 }
+
+export async function isPublicServiceEmail (email) {
+  const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
+  const data = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
+    if (data.hs === "agent.externe.tchap.gouv.fr") {
+      return false;
+    } else {
+      return true
+    }
+}
+
 
 export async function userInfos(id, isCurrentUser) {
   try {

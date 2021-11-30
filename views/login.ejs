@@ -21,8 +21,11 @@
       <form action="/login<%= nextParam %>" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <label for="emailInput">Adresse email :</label>
         <div class="input__group">
-          <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr ou prenom.nom@culture.gouv.fr"  autocomplete="username">
+          <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr"  autocomplete="username">
         </div>
+        <p>Tu peux utiliser ton adresse @beta.gouv.fr si tu en as une ou ton adresse d'agent de l'état (@modernisation.gouv.fr, @pole-emploi, ...).
+          Tu peux utiliser ton adresse secondaire si tu n'as plus les accès à ton adresse beta.
+        </p>
         <button class="button" id="primary_email_button">Recevoir le lien de connexion</button>
         <span>Ce lien sera valable 1h.</span>
       </form>
@@ -37,7 +40,7 @@
 
   <div class="panel border-left-primary">
       <h6>⚠️&nbsp;Problème d'accès à ton adresse @<%= domain %> ?</h6>
-      Si tu as <strong>oublié ton mot de passe</strong> : connecte toi avec ton adresse secondaire en cliquant sur "Recevoir le lien de connexion sur mon adresse secondaire". Tu n'as pas adresse secondaire de configuré ? demande de l'aide sur le Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-secretaria</a>, un des administrateurs pourra t'aider.<br />
+      Tu n'as pas adresse secondaire de configuré ? demande de l'aide sur le Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-secretaria</a>, un des administrateurs pourra t'aider.<br />
       Si tu as besoin d'aide pour <strong>configurer ton client webmail</strong> : regarde la <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">documentation de l'incubateur</a>.
   </div>
 </div>

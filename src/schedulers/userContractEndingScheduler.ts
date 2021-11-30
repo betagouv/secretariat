@@ -4,12 +4,17 @@ import * as utils from '../controllers/utils';
 import knex from '../db';
 import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
-import { DBUser } from '../models/dbUser';
+import { DBUser, DBUserWithMattermostUsername } from '../models/dbUser';
 import { Member } from '../models/member';
 import betagouv from '../betagouv';
 
+interface MessageConfig {
+  days: number,
+  emailFile: string
+}
+
 // get users that are member (got a github card) and mattermost account that is not in the team
-const getRegisteredUsersWithEndingContractInXDays = async (days) => {
+const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<DBUserWithMattermostUsername[]> => {
   const allMattermostUsers = await mattermost.getUserWithParams();
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((user) => {
@@ -28,23 +33,25 @@ const getRegisteredUsersWithEndingContractInXDays = async (days) => {
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
-  const registeredUsersWithEndingContractInXDays = activeGithubUsers.map(
+  const dbUsers: DBUser[] = await knex('users')
+  .whereIn(
+    'username',
+    activeGithubUsers.map((user) => user.id)
+  );
+  const registeredUsersWithEndingContractInXDays = dbUsers.map(
     (user) => {
       const index = allMattermostUsersEmails.indexOf(
-        utils.buildBetaEmail(user.id)
+        user.primary_email
       );
-      if (index > -1) {
-        return {
-          ...user,
-          mattermostUsername: allMattermostUsers[index].username,
-        };
-      }
-      return user;
+      return {
+        ...user,
+        mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
+      };
     }
   );
   return registeredUsersWithEndingContractInXDays.filter(
     (user) => user.mattermostUsername
-  );
+  ) as DBUserWithMattermostUsername[];
 };
 
 const CONFIG_MESSAGE = {
@@ -63,7 +70,7 @@ const EMAIL_FILES = {
   'j+30': 'mailExpired30days',
 };
 
-const sendMessageOnChatAndEmail = async (user, messageConfig) => {
+const sendMessageOnChatAndEmail = async (user: DBUserWithMattermostUsername, messageConfig: MessageConfig) => {
   const messageContent = await ejs.renderFile(
     `./views/emails/${messageConfig.emailFile}`,
     {
@@ -83,7 +90,7 @@ const sendMessageOnChatAndEmail = async (user, messageConfig) => {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
   try {
-    const email = utils.buildBetaEmail(user.id);
+    const email = user.primary_email;
     await utils.sendMail(
       email,
       `Départ dans ${messageConfig.days} jours 🙂`,
@@ -103,14 +110,13 @@ export async function sendContractEndingMessageToUsers(
 ) {
   console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
-  let registeredUsersWithEndingContractInXDays;
+  let registeredUsersWithEndingContractInXDays : DBUserWithMattermostUsername[];
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
   } else {
     registeredUsersWithEndingContractInXDays =
       await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
-  console.log(registeredUsersWithEndingContractInXDays);
   await Promise.all(
     registeredUsersWithEndingContractInXDays.map(async (user) => {
       await sendMessageOnChatAndEmail(user, messageConfig);

@@ -72,7 +72,7 @@ const mattermostUsers = [
   },
   {
     id: 'membre.quipart',
-    email: `membre.quipart@${config.domain}`,
+    email: `membre.quipart@modernisation.gouv.fr`,
     username: 'membre.quipart',
   },
   {
@@ -121,6 +121,10 @@ describe('send message on contract end to user', () => {
   });
 
   it('should send message to users', async () => {
+    await knex('users').insert({
+      username: 'membre.quipart',
+      primary_email: 'membre.quipart@modernisation.gouv.fr'
+    })
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -129,6 +133,9 @@ describe('send message on contract end to user', () => {
     await sendContractEndingMessageToUsers('mail15days');
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
+    await knex('users').where({
+      username: 'membre.quipart',
+    }).delete()
   });
 
   it('should send j1 mail to users', async () => {
@@ -153,17 +160,18 @@ describe('send message on contract end to user', () => {
     await sendInfoToSecondaryEmailAfterXDays(1);
     // sendEmail not call because secondary email does not exists for user
     sendEmailStub.calledOnce.should.be.false;
-    await knex('users').insert({
-      secondary_email: 'uneadressesecondaire@gmail.com',
+    await knex('users').where({
       username: 'julien.dauphant',
+    }).update({
+      secondary_email: 'uneadressesecondaire@gmail.com',
     });
     await sendInfoToSecondaryEmailAfterXDays(1);
     sendEmailStub.calledOnce.should.be.true;
-    await knex('users')
-      .where({
-        username: 'julien.dauphant',
-      })
-      .delete();
+    await knex('users').where({
+      username: 'julien.dauphant',
+    }).update({
+      secondary_email: null
+    })
   });
 
   it('should delete user ovh account', async () => {
@@ -210,9 +218,10 @@ describe('send message on contract end to user', () => {
         },
       ])
       .persist();
-    await knex('users').insert({
-      secondary_email: 'uneadressesecondaire@gmail.com',
+    await knex('users').where({
       username: 'julien.dauphant',
+    }).update({
+      secondary_email: 'uneadressesecondaire@gmail.com',
     });
     await deleteSecondaryEmailsForUsers();
     const users = await knex('users').where({
@@ -223,7 +232,9 @@ describe('send message on contract end to user', () => {
       .where({
         username: 'julien.dauphant',
       })
-      .delete();
+      .update({
+        secondary_email: null
+      })
   });
 });
 
