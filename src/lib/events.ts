@@ -44,7 +44,7 @@ export async function addEvent (eventCode: EventCode, param: EventParam) : Promi
     }
     return knex('events').insert({
         ...event,
-        action_metadata: hstore.stringify(param.action_metadata),
+        action_metadata: param.action_metadata ? hstore.stringify(param.action_metadata) : undefined,
     })
 }
 

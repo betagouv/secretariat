@@ -315,15 +315,6 @@ describe('Newsletter', () => {
         .post(/^.*new/)
         .reply(200, '');
 
-      const mockOvhAllEmailInfos = nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account/)
-        .reply(
-          200,
-          testUsers
-            .filter((user) => user.id === 'membre.actif')
-            .map((x) => x.id)
-        );
-
       await knex('newsletters').insert([
         {
           ...mockNewsletter,
@@ -340,7 +331,6 @@ describe('Newsletter', () => {
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
-      mockOvhAllEmailInfos.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
       sendEmailStub.firstCall.args[1].should.equal(
         replaceMacroInContent(NEWSLETTER_TITLE, {
@@ -348,7 +338,7 @@ describe('Newsletter', () => {
         })
       );
       sendEmailStub.firstCall.args[0].should.equal(
-        `secretariat@beta.gouv.fr,membre.actif@${config.domain}`
+        `secretariat@beta.gouv.fr,membre.actif@${config.domain},membre.parti@${config.domain},membre.nouveau@${config.domain},membre.plusieurs.missions@${config.domain},julien.dauphant@${config.domain},laurent.bossavit@${config.domain},loup.wolff@${config.domain},mattermost.newuser@${config.domain}`
       );
       sendEmailStub.firstCall.args[2].should.equal(
         renderHtmlFromMd(contentWithMacro)

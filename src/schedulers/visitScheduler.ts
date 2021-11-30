@@ -8,9 +8,9 @@ import * as utils from "../controllers/utils";
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
 const getReferentEmailList = (usersInfos, visits) => {
-  const emailList = visits.map((visitInfo) => utils.buildBetaEmail(
-    getUserInfoForUsername(usersInfos, visitInfo.referent).id,
-  ));
+  const emailList = visits.map(
+    (visitInfo) => getUserInfoForUsername(usersInfos, visitInfo.referent).primary_email
+  );
   const uniqueEmailList = Array.from(new Set(emailList));
   return uniqueEmailList;
 };

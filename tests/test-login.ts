@@ -16,7 +16,6 @@ describe('Login', () => {
   });
 
   afterEach(async () => {
-    await knex('users').truncate();
     sendEmailStub.restore();
   });
 
@@ -73,25 +72,25 @@ describe('Login', () => {
   });
 
   describe('POST /login with incorrect input', () => {
-    it('should redirect to /login', (done) => {
-      knex('users').insert({
+    it('should redirect to /login', async () => {
+      await knex('users').where({
         username: 'membre.actif',
+      }).update({
         secondary_email: 'membre.actif.perso@example.com',
       })
-      .then(() => {
-        chai.request(app)
+      
+      const res = await chai.request(app)
           .post('/login')
           .type('form')
           .send({
             emailInput: 'membre.actif',
           })
           .redirects(0)
-          .end((err, res) => {
-            res.should.have.status(302);
-            res.header.location.should.equal('/login');
-            done();
-          });
-      });
+      res.should.have.status(302);
+      res.header.location.should.equal('/login');
+      await knex('users').where({ username: 'membre.actif'}).update({
+        secondary_email: null,
+      })
     });
   });
 
@@ -148,96 +147,103 @@ describe('Login', () => {
   });
 
   describe('POST /login with uppercase input email', () => {
-    it('should email to secondary email', (done) => {
-      knex('users').insert({
+    it('should email to secondary email', async () => {
+      await knex('users').where({
         username: 'membre.actif',
+      }).update({
         secondary_email: 'membre.actif.perso@example.com',
       })
-      .then(() => {
-        chai.request(app)
-          .post('/login')
-          .type('form')
-          .send({
-            emailInput: 'membre.ACTIF.perso@example.com',
-          })
-          .then(() => {
-            const destinationEmail = sendEmailStub.args[0][0];
-            destinationEmail.should.equal('membre.actif.perso@example.com');
-            sendEmailStub.calledOnce.should.be.true;
-            done();
-          })
-          .catch(done);
-      });
+      await chai.request(app)
+        .post('/login')
+        .type('form')
+        .send({
+          emailInput: 'membre.ACTIF.perso@example.com',
+        })
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal('membre.actif.perso@example.com');
+      sendEmailStub.calledOnce.should.be.true;
+      await knex('users').where({
+        username: 'membre.actif',
+      }).update({
+        secondary_email: null,
+      })
     });
   });
 
   describe('POST /login with uppercase in email store in db', () => {
-    it('should email to secondary email', (done) => {
-      knex('users').insert({
+    it('should email to secondary email', async () => {
+      await knex('users').where({
         username: 'membre.actif',
+      }).update({
         secondary_email: 'membre.ACTIF.perso@example.com',
+        primary_email: `membre.ACTIF@${config.domain}`
       })
-      .then(() => {
-        chai.request(app)
+      await chai.request(app)
           .post('/login')
           .type('form')
           .send({
             emailInput: 'membre.actif.perso@example.com',
           })
-          .then(() => {
-            const destinationEmail = sendEmailStub.args[0][0];
-            destinationEmail.should.equal('membre.ACTIF.perso@example.com');
-            sendEmailStub.calledOnce.should.be.true;
-            done();
-          })
-          .catch(done);
-      });
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal('membre.actif.perso@example.com');
+      sendEmailStub.calledOnce.should.be.true;
+      await knex('users').where({
+        username: 'membre.actif',
+      }).update({
+        secondary_email: null,
+        primary_email: `membre.actif@${config.domain}`
+      })
     });
   });
 
   describe('POST /login with SecondaryEmail', () => {
-    it('should email to secondary address', (done) => {
-      knex('users').insert({
-        username: 'membre.actif',
+    it('should email to secondary address', async() => {
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
         secondary_email: 'membre.actif.perso@example.com',
       })
-      .then(() => {
-        chai.request(app)
+
+      await chai.request(app)
           .post('/login')
           .type('form')
           .send({
             emailInput: 'membre.actif.perso@example.com',
           })
-          .then(() => {
-            sendEmailStub.calledOnce.should.be.true;
-            const destinationEmail = sendEmailStub.args[0][0];
-            destinationEmail.should.equal('membre.actif.perso@example.com');
-            done();
-          })
-          .catch(done);
+      sendEmailStub.calledOnce.should.be.true;
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal('membre.actif.perso@example.com');
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: null,
+      })
+     
       });
     });
 
-    it('should email to primary address', (done) => {
-      knex('users').insert({
-        username: 'membre.actif',
+    it('should email to primary address', async () => {
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
         secondary_email: 'membre.actif.perso@example.com',
       })
-      .then(() => {
-        chai.request(app)
+
+      await chai.request(app)
           .post('/login')
           .type('form')
           .send({
             emailInput: `membre.actif@${config.domain}`,
           })
-          .then(() => {
-            sendEmailStub.calledOnce.should.be.true;
-            const destinationEmail = sendEmailStub.args[0][0];
-            destinationEmail.should.equal(`membre.actif@${config.domain}`);
-            done();
-          })
-          .catch(done);
-      });
+    
+      sendEmailStub.calledOnce.should.be.true;
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal(`membre.actif@${config.domain}`);
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: null,
+      })
     });
 
     it('should show error if user is not in the database', (done) => {
@@ -256,25 +262,16 @@ describe('Login', () => {
         });
     });
 
-    it('should show error if user does not have a secondary email', (done) => {
-      knex('users').insert({
-        username: 'membre.actif',
-      })
-      .then(() => {
-        chai.request(app)
+    it('should show error if user does not have a secondary email', async() => {
+      const res = await chai.request(app)
           .post('/login')
           .type('form')
           .send({
             emailInput: 'membre.actif@secondaryadress.com',
           })
           .redirects(0)
-          .end((err, res) => {
-            res.should.have.status(302);
-            res.header.location.should.equal('/login');
-            sendEmailStub.notCalled.should.be.true;
-            done();
-          });
-      });
-    });
+        res.should.have.status(302);
+        res.header.location.should.equal('/login');
+        sendEmailStub.notCalled.should.be.true;
   });
 });

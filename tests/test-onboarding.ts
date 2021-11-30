@@ -6,6 +6,7 @@ import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
+import config from '../src/config';
 
 chai.use(chaiHttp);
 
@@ -32,6 +33,7 @@ describe('Onboarding', () => {
     let createGithubFile;
     let makeGithubPullRequest;
     let sendEmailStub;
+    let isPublicServiceEmailStub;
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
@@ -54,21 +56,24 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'sendMail')
         .returns(Promise.resolve(true));
 
+      isPublicServiceEmailStub = sinon
+        .stub(controllerUtils, 'isPublicServiceEmail')
+        .returns(Promise.resolve(false));
+
       done();
     });
 
-    afterEach((done) => {
+    afterEach(() => {
       getGithubMasterSha.restore();
       createGithubBranch.restore();
       createGithubFile.restore();
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
-      knex('users').truncate()
-        .then(() => done());
+      isPublicServiceEmailStub.restore();
     });
 
-    it('should not call Github API if a mandatory field is missing', (done) => {
-      chai.request(app)
+    it('should not call Github API if a mandatory field is missing', async () => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -79,16 +84,13 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
-        .end((err, res) => {
-          getGithubMasterSha.called.should.be.false;
-          createGithubBranch.called.should.be.false;
-          createGithubFile.called.should.be.false;
-          makeGithubPullRequest.called.should.be.false;
-          done();
-        });
+      getGithubMasterSha.called.should.be.false;
+      createGithubBranch.called.should.be.false;
+      createGithubFile.called.should.be.false;
+      makeGithubPullRequest.called.should.be.false;
     });
 
     it('should not call Github API if a date is wrong', (done) => {
@@ -103,7 +105,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -127,7 +129,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -151,7 +153,7 @@ describe('Onboarding', () => {
           end: '2020-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -175,7 +177,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -198,7 +200,7 @@ describe('Onboarding', () => {
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           // domaine missing
         })
@@ -247,7 +249,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Wrongvalue',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
         })
         .end((err, res) => {
@@ -271,7 +273,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           website: 'example.com/me',
         })
@@ -296,7 +298,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           github: 'https://github.com/betagouv',
         })
@@ -321,9 +323,34 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
           github: 'github.com/betagouv',
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should not call Github API if email is not public email and isEmailBetaAsked false', (done) => {
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          isEmailBetaAsked: false
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -346,8 +373,35 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          referent: 'membre actif',
+          referent: 'membre.actif',
           email: 'test@example.com',
+          isEmailBetaAsked: true
+        })
+        .end((err, res) => {
+          getGithubMasterSha.calledOnce.should.be.true;
+          createGithubBranch.calledOnce.should.be.true;
+          createGithubFile.calledOnce.should.be.true;
+          makeGithubPullRequest.calledOnce.should.be.true;
+          done();
+        });
+    });
+
+    it('should call Github API if email is public email', (done) => {
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          isEmailBetaAsked: false
         })
         .end((err, res) => {
           getGithubMasterSha.calledOnce.should.be.true;
@@ -372,7 +426,8 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           website: 'https://example.com/me',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const sha = createGithubBranch.args[0][0];
@@ -394,7 +449,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const branch = createGithubBranch.args[0][1];
@@ -416,7 +472,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -438,7 +495,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const branch = createGithubBranch.args[0][1];
@@ -461,6 +519,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const prTitle = makeGithubPullRequest.args[0][1];
@@ -471,10 +530,6 @@ describe('Onboarding', () => {
 
     it('Referent should be notified by email', (done) => {
       nock.cleanAll();
-
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*membre.actif/)
-        .reply(200, { email: 'membre.actif@example.com' });
 
       utils.mockUsers();
 
@@ -491,12 +546,13 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           sendEmailStub.calledOnce.should.be.true;
 
           const toEmail = sendEmailStub.args[0][0];
-          toEmail.should.equal('membre.actif@example.com');
+          toEmail.should.equal(`membre.actif@${config.domain}`);
           done();
         });
     });
@@ -514,7 +570,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -536,7 +593,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
@@ -558,7 +616,8 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .redirects(0)
         .end((err, res) => {
@@ -581,45 +640,49 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
-          referent: 'membre actif',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          dbRes[0].secondary_email.should.equal('test@example.com');
+          dbRes[0].secondary_email.should.equal(`test@example.com`);
         })
         .then(done)
         .catch(done);
     });
 
-    it('DB conflicts in newcomer secondary email should be treated as an update', (done) => {
-      knex('users')
-        .insert({
+    it('DB conflicts in newcomer secondary email should be treated as an update', async () => {
+      await knex('users')
+        .where({
           username: 'john.doe',
+        })
+        .update({
           secondary_email: 'test@example.com',
-        }).then(() => {
-          chai.request(app)
-            .post('/onboarding')
-            .type('form')
-            .send({
-              firstName: 'John',
-              lastName: 'Doe',
-              role: 'Dev',
-              start: '2020-01-01',
-              end: '2021-01-01',
-              status: 'Independant',
-              domaine: 'Coaching',
-              email: 'updated@example.com',
-              referent: 'membre actif',
-            })
-            .then(() => knex('users').where({ username: 'john.doe' }))
-            .then((dbRes) => {
-              dbRes.length.should.equal(1);
-              dbRes[0].secondary_email.should.equal('updated@example.com');
-            })
-            .then(done)
-            .catch(done);
-        });
+        })
+      await chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          email: 'updated@example.com',
+          referent: 'membre.actif',
+          isEmailBetaAsked: true,
+        })
+        const dbRes = await knex('users').where({ username: 'john.doe' })
+        dbRes.length.should.equal(1);
+        dbRes[0].secondary_email.should.equal('updated@example.com');
+        await knex('users').where({
+          username: 'john.doe',
+        }).update({
+          secondary_email: null,
+        })
     });
   });
 });
