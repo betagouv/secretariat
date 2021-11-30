@@ -19,13 +19,13 @@
       <div class="notification"><%= messages %></div>
     <% } else { %>
       <form action="/login<%= nextParam %>" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
-        <label for="emailInput">Adresse email :</label>
+        <label for="emailInput"><b>Email professionnel :</b></label>
+        <p>Adresse @beta.gouv.fr ou tu service publique (@modernisation.gouv.fr, @pole-emploi, ...).
+        </p>
         <div class="input__group">
           <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr"  autocomplete="username">
         </div>
-        <p>Tu peux utiliser ton adresse @beta.gouv.fr si tu en as une ou ton adresse d'agent de l'état (@modernisation.gouv.fr, @pole-emploi, ...).
-          Tu peux utiliser ton adresse secondaire si tu n'as plus les accès à ton adresse beta.
-        </p>
+        <p>Tu peux utiliser ton adresse secondaire si tu n'as plus les accès à ton adresse beta.</p>
         <button class="button" id="primary_email_button">Recevoir le lien de connexion</button>
         <span>Ce lien sera valable 1h.</span>
       </form>
