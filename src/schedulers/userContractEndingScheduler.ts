@@ -258,6 +258,7 @@ const removeEmailFromMailingList = async (userId: string, mailingList:string[]) 
   return Promise.all(mailingList.map(async (mailing: string) => {
     try {
       await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(userId))
+      console.log(`Suppression de ${utils.buildBetaEmail(userId)} de la mailing ${mailing}`)
     } catch (err) {
       console.error(`Erreur lors de la suppression de l'email : ${userId} : ${err}`)
     }
