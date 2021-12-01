@@ -24,7 +24,7 @@
           <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr"  autocomplete="username">
         </div>
         <button class="button" id="primary_email_button">Recevoir le lien de connexion</button>
-        <span>Ce lien sera valable 1h.</span>
+        <span><a href="#forgot">J'ai oublié mon email</a></span>
       </form>
     <% } %>
   </div>
@@ -35,10 +35,13 @@
     <a class="button" href="/onboarding" role="button">Créer ma fiche Github</a>
   </div>
 
-  <div class="panel border-left-primary">
-      <h6>⚠️&nbsp;Problème d'accès à ton adresse @<%= domain %> ?</h6>
-      Tu n'as pas adresse secondaire de configuré ? demande de l'aide sur le Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-secretaria</a>, un des administrateurs pourra t'aider.<br />
-      Si tu as besoin d'aide pour <strong>configurer ton client webmail</strong> : regarde la <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">documentation de l'incubateur</a>.
+  <div class="panel border-left-primary" id="forgot">
+      <h6>🆘 Besoin d'aide ?</h6>
+
+      <ul>
+        <li><b>J'ai oublié mon email pour me connecter :</b> l'accès au secrétariat se fait avec une adresse du service public (@beta.gouv.fr, @pole-emploi.fr...) ou un email secondaire (celui sur lequel tu as reçu tes accès). En cas d'oubli, demande de l'aide à un··e admin le Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-secretaria</a></li>
+        <li><b>Je n'arrive pas à accéder à mes email :</b> <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">configure ton client webmail</a>.</li>
+      </ul>
   </div>
 </div>
 
