@@ -41,7 +41,7 @@ export async function inviteUsersToTeamByEmail() {
   return results;
 }
 
-export async function removeUsersFromCommunityTeam(optionalUsers?: Member[], checkAll=false) {
+export async function removeUsersFromCommunityTeam(optionalUsers?: Member[], checkAll=true) {
   let users: Member[] = optionalUsers;
   console.log('Start function remove users from community team');
   if (!users) {
