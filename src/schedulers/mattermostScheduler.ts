@@ -41,14 +41,14 @@ export async function inviteUsersToTeamByEmail() {
   return results;
 }
 
-export async function removeUsersFromCommunityTeam(optionalUsers) {
-  let users = optionalUsers;
+export async function removeUsersFromCommunityTeam(optionalUsers?: Member[], checkAll=false) {
+  let users: Member[] = optionalUsers;
   console.log('Start function remove users from community team');
   if (!users) {
     users = await BetaGouv.usersInfos();
-    users = utils.getExpiredUsersForXDays(users, 3);
+    users = checkAll ? utils.getExpiredUsers(users, 3) : utils.getExpiredUsersForXDays(users, 3);
   }
-  const dbUsers = await knex('users').whereNotNull('secondary_email');
+  const dbUsers : DBUser[] = await knex('users').whereNotNull('secondary_email');
   const concernedUsers = users.map((user) => {
     const dbUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
@@ -69,14 +69,14 @@ export async function removeUsersFromCommunityTeam(optionalUsers) {
           );
           return;
         }
-        const res = await mattermost.removeUserFromTeam(
-          mattermostUsers[0].id,
-          config.mattermostTeamId
-        );
+        // const res = await mattermost.removeUserFromTeam(
+        //   mattermostUsers[0].id,
+        //   config.mattermostTeamId
+        // );
         console.log(
           `User ${user.id} with mattermost username ${mattermostUsers[0].username} has been removed from community`
         );
-        return res;
+        return // res;
       } catch (err) {
         throw new Error(
           `Error while removing user ${user.id} from community team : ${err}`
@@ -87,12 +87,12 @@ export async function removeUsersFromCommunityTeam(optionalUsers) {
   return results;
 }
 
-export async function moveUsersToAlumniTeam(optionalUsers?: Member[]) {
+export async function moveUsersToAlumniTeam(optionalUsers?: Member[], checkAll=false) {
   let users: Member[] = optionalUsers;
   console.log('Start function move users to team alumni');
   if (!users) {
     users = await BetaGouv.usersInfos();
-    users = utils.getExpiredUsersForXDays(users, 3);
+    users = checkAll ? utils.getExpiredUsers(users, 3) : utils.getExpiredUsersForXDays(users, 3);
   }
 
   const results = await Promise.all(
