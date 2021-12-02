@@ -69,7 +69,7 @@
                     <strong>Nom d'utilisateur Github (sans @)</strong>
                 </label>
                 <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
-                <input name="github" pattern="^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$"
+                <input name="github" pattern="^[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}$"
                     value="<%= formData.github %>"
                     title="Nom d'utilisateur Github (sans @)">
                 <% if(formValidationErrors['Utilisateur Github']) { %>
