@@ -66,12 +66,12 @@
 
             <div class="form__group">
                 <label for="github">
-                    <strong>Nom d'utilisateur Github (sans @)</strong>
+                    <strong>Nom d'utilisateur Github si tu as un compte (sans @)</strong>
                 </label>
                 <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
                 <input name="github" pattern="^[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}$"
                     value="<%= formData.github %>"
-                    title="Nom d'utilisateur Github (sans @)">
+                    title="Nom d'utilisateur Github si tu as un compte (sans @)">
                 <% if(formValidationErrors['Utilisateur Github']) { %>
                   <p class="text-small text-color-red"><%= formValidationErrors['Utilisateur Github'] %></p>
                 <% } %>
