@@ -38,7 +38,7 @@ interface Job {
 
 const jobs: Job[] = [
   {
-    cronTime: '0 8 * * 1', // every week a 8:00 on monday
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
     onTick: () => newsletterReminder('FIRST_REMINDER'),
     isActive: true,
     name: 'newsletterMondayReminderJob',
@@ -50,7 +50,7 @@ const jobs: Job[] = [
     name: 'newsletterThursdayMorningReminderJob',
   },
   {
-    cronTime: '0 14 * * 4', // every week a 14:00 on thursday
+    cronTime: '0 0 14 * * 4', // every week a 14:00 on thursday
     onTick: () => newsletterReminder('THIRD_REMINDER'),
     isActive: true,
     name: 'newsletterThursdayEveningReminderJob',
@@ -80,25 +80,25 @@ const jobs: Job[] = [
     name: 'addGithubUserToOrganization',
   },
   {
-    cronTime: '0 18 * * *',
+    cronTime: '0 0 18 * * *',
     onTick: removeGithubUserFromOrganization,
     isActive: !!config.featureRemoveGithubUserFromOrganization,
     name: 'removeGithubUserFromOrganization',
   },
   {
-    cronTime: '0 8 * * *',
+    cronTime: '0 0 8 * * *',
     onTick: deleteRedirectionsAfterQuitting,
     isActive: !!config.featureDeleteRedirectionsAfterQuitting,
     name: 'deleteRedirectionsAfterQuitting',
   },
   {
-    cronTime: '0 8 * * *',
+    cronTime: '0 0 8 * * *',
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
     name: 'sendJ1Email',
   },
   {
-    cronTime: '0 8 * * *',
+    cronTime: '0 0 8 * * *',
     onTick: sendJ30Email,
     isActive: !!config.featureSendJ30Email,
     name: 'sendJ30Email',
@@ -117,7 +117,7 @@ const jobs: Job[] = [
     name: 'deleteOVHEmailAcounts',
   },
   {
-    cronTime: '0 8 * * *',
+    cronTime: '0 0 8 * * *',
     onTick: removeEmailsFromMailingList,
     isActive: !!config.featureRemoveEmailsFromMailingList,
     name: 'removeEmailsFromMailingList',
@@ -136,7 +136,7 @@ const jobs: Job[] = [
     description: 'Cron job to create user on mattermost by email',
   },
   {
-    cronTime: '0 8 1 * *',
+    cronTime: '0 0 8 1 * *',
     onTick: reactivateUsers,
     isActive: !!config.featureReactiveMattermostUsers,
     name: 'reactivateUsers',
