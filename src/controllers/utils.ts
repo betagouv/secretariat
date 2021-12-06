@@ -264,6 +264,12 @@ export async function userInfos(id, isCurrentUser) {
       isCurrentUser
     );
 
+    const canChangeEmails = !!(
+      hasUserInfos &&
+      !isExpired &&
+      isCurrentUser
+    );
+
     return {
       emailInfos,
       redirections,
@@ -273,6 +279,7 @@ export async function userInfos(id, isCurrentUser) {
       canCreateRedirection,
       canChangePassword,
       canChangeSecondaryEmail,
+      canChangeEmails,
       responder
     };
   } catch (err) {

@@ -28,3 +28,8 @@ export interface Member {
 export interface MemberWithPrimaryEmail extends Member {
   primary_email: string;
 }
+
+export interface UserInfos {
+  userInfos: Member,
+  canChangeEmails: boolean
+}
