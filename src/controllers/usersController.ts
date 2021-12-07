@@ -6,7 +6,7 @@ import * as utils from "./utils";
 import knex from "../db/index";
 import { createRequestForUser } from "./marrainageController";
 import { addEvent, EventCode } from '../lib/events'
-import { Member, UserInfos } from "../models/member";
+import { UserInfos } from "../models/member";
 import { DBUser } from "../models/dbUser";
 
 export async function createEmail(username, creator, toEmail) {
@@ -317,11 +317,11 @@ export async function managePrimaryEmailForUser(req, res) {
   const user : UserInfos = await utils.userInfos(username, isCurrentUser);
   try {
     if (!user.canChangeEmails) {
-      throw new Error('message', `L'utilisateur n'est pas autorisé à changer l'email primaire`);
+      throw new Error(`L'utilisateur n'est pas autorisé à changer l'email primaire`);
     }
     const isPublicServiceEmail = await utils.isPublicServiceEmail(primaryEmail)
     if (!isPublicServiceEmail) {
-      throw new Error('message', `L'email renseigné n'est pas un email de service public`);
+      throw new Error(`L'email renseigné n'est pas un email de service public`);
     }
     const dbUser: DBUser = await knex('users').where({
       username,

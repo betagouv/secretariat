@@ -294,7 +294,30 @@
                     <hr />
                 </div>
             </div>
-
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer mon email principal
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        L'email principal est utilisé pour toutes les communications en rapport avec Betagouv.
+                        Ce doit être un email d'agent public. Il s'agit par défaut de <%= userInfos.id %>@beta.gouv.fr.
+                        <br>
+                        <br>
+                        En cas d'utilisation d'une adresse autre, l'email <%= userInfos.id %>@beta.gouv.fr sera supprimé.
+                    </p>
+                    <% if (canChangePrimaryEmail) { %>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/primary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <input id="primaryEmail" name="primaryEmail" value="<%= primaryEmail %>" type="email">
+                        <button class="button margin-10-0" type="submit">Sauvegarder l'email principal</button>
+                    </form>
+                    <% } %>
+                    <hr />
+                </div> 
+            </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
