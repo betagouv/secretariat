@@ -29,7 +29,7 @@ export interface MemberWithPrimaryEmail extends Member {
   primary_email: string;
 }
 
-export interface UserInfos {
+export interface MemberWithPermission {
   userInfos: Member,
   canChangeEmails: boolean
 }

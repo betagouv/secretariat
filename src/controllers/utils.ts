@@ -258,12 +258,6 @@ export async function userInfos(id, isCurrentUser) {
       emailInfos
     );
 
-    const canChangeSecondaryEmail = !!(
-      hasUserInfos &&
-      !isExpired &&
-      isCurrentUser
-    );
-
     const canChangeEmails = !!(
       hasUserInfos &&
       !isExpired &&
@@ -278,7 +272,6 @@ export async function userInfos(id, isCurrentUser) {
       canCreateEmail,
       canCreateRedirection,
       canChangePassword,
-      canChangeSecondaryEmail,
       canChangeEmails,
       responder
     };

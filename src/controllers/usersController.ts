@@ -6,7 +6,7 @@ import * as utils from "./utils";
 import knex from "../db/index";
 import { createRequestForUser } from "./marrainageController";
 import { addEvent, EventCode } from '../lib/events'
-import { UserInfos } from "../models/member";
+import { MemberWithPermission } from "../models/member";
 import { DBUser } from "../models/dbUser";
 
 export async function createEmail(username, creator, toEmail) {
@@ -314,7 +314,7 @@ export async function managePrimaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
   const { primaryEmail } = req.body;
-  const user : UserInfos = await utils.userInfos(username, isCurrentUser);
+  const user : MemberWithPermission = await utils.userInfos(username, isCurrentUser);
   try {
     if (!user.canChangeEmails) {
       throw new Error(`L'utilisateur n'est pas autorisé à changer l'email primaire`);
@@ -361,7 +361,7 @@ export async function manageSecondaryEmailForUser(req, res) {
   const user = await utils.userInfos(username, isCurrentUser);
 
   try {
-    if (user.canChangeSecondaryEmail) {
+    if (user.canChangeEmails) {
       const dbUser = await knex('users').where({
         username,
       }).then(db => db[0])

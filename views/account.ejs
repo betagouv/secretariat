@@ -309,7 +309,7 @@
                         <br>
                         En cas d'utilisation d'une adresse autre, l'email <%= userInfos.id %>@beta.gouv.fr sera supprimé.
                     </p>
-                    <% if (canChangePrimaryEmail) { %>
+                    <% if (canChangeEmails) { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/primary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <input id="primaryEmail" name="primaryEmail" value="<%= primaryEmail %>" type="email">
                         <button class="button margin-10-0" type="submit">Sauvegarder l'email principal</button>
@@ -329,7 +329,7 @@
                     <p>
                         L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     </p>
-                    <% if (canChangeSecondaryEmail) { %>
+                    <% if (canChangeEmails) { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <input id="secondaryEmail" name="secondaryEmail" value="<%= secondaryEmail %>" type="email">
                         <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
