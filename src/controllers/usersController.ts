@@ -344,7 +344,7 @@ export async function managePrimaryEmailForUser(req, res) {
         old_value: dbUser ? dbUser.primary_email : null,
       }
     })
-    req.flash('message', 'Ton compte email primaire a bien mis à jour.');
+    req.flash('message', 'Ton compte email primaire a bien été mis à jour.');
     console.log(`${req.user.id} a mis à jour son adresse mail primaire.`);
     res.redirect(`/community/${username}`);
   } catch (err) {
