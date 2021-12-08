@@ -600,9 +600,6 @@ describe('User', () => {
       done();
     });
 
-    // fixme: this test test nothing since it fail silently on chai.request
-    // because user.canChangeSecondaryEmail is false. It should be tested with
-    // a valid BetaGouvUser
     it('should add secondary email', async () => {
       const username = 'membre.nouveau';
       const secondaryEmail = 'membre.nouveau.perso@example.com';
@@ -637,11 +634,6 @@ describe('User', () => {
         .update({
           secondary_email: secondaryEmail,
         })
-      const dbRes = await knex('users')
-        .select()
-        .where({ username })
-        .first()
-      dbRes.secondary_email.should.equal(secondaryEmail);
       await chai.request(app)
         .post(`/users/${username}/secondary_email/`)
         .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
@@ -656,6 +648,72 @@ describe('User', () => {
       await knex('users').where({ username: 'membre.nouveau' }).update({
         secondary_email: null
       })
+    });
+
+    it('should not update primary email if user is not current user', async() => {
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(false));
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
+        .type('form')
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+        isPublicServiceEmailStub.called.should.be.false;
+        isPublicServiceEmailStub.restore();
+    });
+
+    it('should not update primary email if email is not public service email', async() => {
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(false));
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+      isPublicServiceEmailStub.called.should.be.true;
+      isPublicServiceEmailStub.restore()
+    });
+
+    it('should update primary email', async() => {
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(true));
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].primary_email.should.equal(primaryEmail);
+      await knex('users').where({ username: 'membre.nouveau' }).update({
+        primary_email: `${username}@${config.domain}`
+      })
+      isPublicServiceEmailStub.called.should.be.true;
+      isPublicServiceEmailStub.restore()
     });
   });
 

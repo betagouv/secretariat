@@ -142,6 +142,10 @@ app.post(
   '/users/:username/secondary_email',
   usersController.manageSecondaryEmailForUser
 );
+app.post(
+  '/users/:username/primary_email',
+  usersController.managePrimaryEmailForUser
+);
 app.post('/users/:username/end-date', usersController.updateEndDateForUser);
 app.post(
   '/notifications/github',
