@@ -56,7 +56,10 @@ export async function createEmailForUser(req, res) {
   const isCurrentUser = req.user.id === username;
 
   try {
-    const user = await utils.userInfos(username, isCurrentUser);
+    const [user, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+      utils.userInfos(username, isCurrentUser),
+      knex('users').where({ username }).first()
+    ]);
 
     if (!user.userInfos) {
       throw new Error(
@@ -72,6 +75,11 @@ export async function createEmailForUser(req, res) {
 
     if (!user.canCreateEmail) {
       throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
+    }
+
+    const hasPublicServiceEmail = dbUser.primary_email && dbUser.primary_email.includes(config.domain)
+    if (hasPublicServiceEmail) {
+      throw new Error(`Le membre a déjà un email principal autre que ${config.domain}`);
     }
 
     if (!isCurrentUser) {

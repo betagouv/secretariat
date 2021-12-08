@@ -2,6 +2,8 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
+import { MemberWithPermission } from "../models/member";
+import { DBUser } from "../models/dbUser";
 
 export async function getCommunity(req, res) {
   if (req.query.username) {
@@ -38,7 +40,10 @@ export async function getUser(req, res) {
       return;
     }
 
-    const user = await utils.userInfos(username, isCurrentUser);
+    const [user, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+      utils.userInfos(username, isCurrentUser),
+      knex('users').where({ username }).first()
+    ]);
 
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);
@@ -55,6 +60,7 @@ export async function getUser(req, res) {
     const secondaryEmail = dbRes.length === 1 ? dbRes[0].secondary_email : '';
 
     const title = user.userInfos ? user.userInfos.fullname : null;
+    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     res.render('user', {
       title,
       username,
@@ -63,7 +69,7 @@ export async function getUser(req, res) {
       redirections: user.redirections,
       userInfos: user.userInfos,
       isExpired: user.isExpired,
-      canCreateEmail: user.canCreateEmail,
+      canCreateEmail: user.canCreateEmail && !hasPublicServiceEmail,
       errors: req.flash('error'),
       messages: req.flash('message'),
       domain: config.domain,
