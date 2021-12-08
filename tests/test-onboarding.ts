@@ -60,6 +60,13 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(false));
 
+      // reset the test user to avoid duplicates in db
+      knex('users')
+        .where('secondary_email', 'test@example.com')
+        .orWhere('primary_email', 'test@example.com')
+        .del()
+        .then();
+
       done();
     });
 

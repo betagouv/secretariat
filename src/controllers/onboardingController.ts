@@ -1,10 +1,11 @@
-import ejs from 'ejs';
-import crypto from 'crypto';
-import config from '../config';
-import * as utils from './utils';
-import BetaGouv from '../betagouv';
-import knex from '../db';
-import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from './validator';
+import ejs from "ejs";
+import crypto from "crypto";
+import config from "../config";
+import * as utils from "./utils";
+import BetaGouv from "../betagouv";
+import knex from "../db";
+import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
+
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -16,8 +17,7 @@ async function createNewcomerGithubFile(username, content, referent) {
   const branch = createBranchName(username);
   console.log(`Début de la création de fiche pour ${username}...`);
 
-  const prInfo = await utils
-    .getGithubMasterSha()
+  const prInfo = await utils.getGithubMasterSha()
     .then((response) => {
       const { sha } = response.data.object;
       console.log('SHA du master obtenu');
@@ -30,10 +30,7 @@ async function createNewcomerGithubFile(username, content, referent) {
     })
     .then(() => {
       console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
-      return utils.makeGithubPullRequest(
-        branch,
-        `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`
-      );
+      return utils.makeGithubPullRequest(branch, `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`);
     })
     .then((response) => {
       console.log(`Pull request pour la fiche de ${username} ouverte`);
@@ -55,9 +52,7 @@ export async function getForm(req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent')
-      ? req.headers['user-agent']
-      : null;
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
     return res.render('onboarding', {
@@ -94,11 +89,12 @@ export async function getForm(req, res) {
   }
 }
 
+
 export async function postForm(req, res) {
   const formValidationErrors = {};
   const errorHandler = (field, message) => {
-    formValidationErrors[field] = message;
-  };
+    formValidationErrors[field] = message
+  }
   try {
     const firstName = req.body.firstName || requiredError('prénom', errorHandler);
     const lastName = req.body.lastName || requiredError('nom de famille', errorHandler);
@@ -174,17 +170,9 @@ export async function postForm(req, res) {
       const prUrl = prInfo.data.html_url;
       const userUrl = `${config.protocol}://${config.host}/community/${username}`;
       const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-        referent,
-        prUrl,
-        name,
-        userUrl,
-        isEmailBetaAsked,
+        referent, prUrl, name, userUrl, isEmailBetaAsked
       });
-      await utils.sendMail(
-        dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username),
-        `${name} vient de créer sa fiche Github`,
-        html
-      );
+      await utils.sendMail(dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username), `${name} vient de créer sa fiche Github`, html);
     }
     let primaryEmail, secondaryEmail;
     if (isEmailBetaAsked) {
@@ -197,7 +185,7 @@ export async function postForm(req, res) {
       .insert({
         username,
         primary_email: primaryEmail,
-        secondary_email: secondaryEmail,
+        secondary_email: secondaryEmail
       })
       .onConflict('username')
       .merge();
@@ -209,9 +197,7 @@ export async function postForm(req, res) {
     }
     const startups = await BetaGouv.startupsInfos();
     const users = await BetaGouv.usersInfos();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent')
-      ? req.headers['user-agent']
-      : null;
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     res.render('onboarding', {
       errors: req.flash('error'),
@@ -230,7 +216,7 @@ export async function postForm(req, res) {
 export async function getConfirmation(req, res) {
   try {
     const { prNumber } = req.params;
-    const { isEmailBetaAsked } = req.query;
+    const { isEmailBetaAsked } = req.query
     const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
     res.render('onboardingSuccess', { prUrl, isEmailBetaAsked });
   } catch (err) {
