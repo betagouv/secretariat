@@ -22,33 +22,27 @@ describe('Login token', () => {
     done();
   });
 
-  it('should be stored after login request', (done) => {
+  it('should be stored after login request', async () => {
     const userEmail = `membre.nouveau@${config.domain}`;
-
     // Make a login request to generate a token
-    chai.request(app)
+    await chai.request(app)
       .post('/login')
       .type('form')
       .send({
         emailInput: userEmail,
       })
-
-      // Verify the token has been stored in the database
-      .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then((dbRes) => {
-        dbRes.length.should.equal(1);
-        dbRes[0].email.should.equal(userEmail);
-        dbRes[0].username.should.equal('membre.nouveau');
-      })
-      .then(done)
-      .catch(done);
+    
+    await knex('login_tokens').select().where({ email: userEmail }).then((dbRes) => {
+      dbRes.length.should.equal(1);
+      dbRes[0].email.should.equal(userEmail);
+      dbRes[0].username.should.equal('membre.nouveau');
+    })
   });
 
-  it('should be deleted after use', (done) => {
+  it('should be deleted after use', async () => {
     const userEmail = `membre.actif@${config.domain}`;
-
     // Make a login request to generate a token
-    chai.request(app)
+    await chai.request(app)
       .post('/login')
       .type('form')
       .send({
@@ -56,27 +50,23 @@ describe('Login token', () => {
       })
 
       // Extract token from the DB
-      .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then((dbRes) => dbRes[0].token)
+    const token = await knex('login_tokens').select().where({ email: userEmail }).then((dbRes) => dbRes[0].token)
 
       // Use the token making a GET request
-      .then((token) => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`))
-
+    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`)
       // Ensure no tokens for this user remain
       .then(() => knex('login_tokens').select().where({ email: userEmail }))
       .then((dbRes) => {
         dbRes.length.should.equal(0);
       })
-      .then(done)
-      .catch(done);
   });
 
-  it('should only be usable once', (done) => {
+  it('should only be usable once', async () => {
     const userEmail = `membre.actif@${config.domain}`;
     let token = null
 
     // Make a login request to generate a token
-    chai.request(app)
+    await chai.request(app)
       .post('/login')
       .type('form')
       .send({
@@ -84,11 +74,11 @@ describe('Login token', () => {
       })
 
       // Extract token from the DB
-      .then(() => knex('login_tokens').select().where({ email: userEmail }))
+    token = await knex('login_tokens').select().where({ email: userEmail })
       .then((dbRes) => token = dbRes[0].token)
 
       // Use the token to make a first GET request
-      .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
 
       // Ensure the response sets the token auth cookie
       .then((res) => {
@@ -96,35 +86,29 @@ describe('Login token', () => {
       })
 
       // Make the same GET request again (second time)
-      .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
 
       // Ensure the response did NOT set an auth cookie
       .then((res) => {
         res.should.not.have.cookie('token');
       })
-      .then(done)
-      .catch(done);
   });
 
-  it('should not be used if expired', (done) => {
+  it('should not be used if expired', async () => {
     // Create expired token
     const userEmail = `membre.actif@${config.domain}`;
     const token = crypto.randomBytes(256).toString('base64');
     const expirationDate = new Date();
 
-    knex('login_tokens').insert({
+    await knex('login_tokens').insert({
       token,
       username: 'membre.actif',
       email: userEmail,
       expires_at: expirationDate,
     })
     // Try to login using this expired token
-    .then(() => chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0))
+    const res = await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
     // Ensure the response did NOT set an auth cookie
-    .then((res) => {
-      res.should.not.have.cookie('token');
-    })
-    .then(done)
-    .catch(done);
+    res.should.not.have.cookie('token');
   });
 });

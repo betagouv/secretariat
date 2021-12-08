@@ -47,7 +47,11 @@ async function sendLoginEmail(email, username, loginUrl, token) {
 }
 
 async function saveToken(username, token) {
-  const email = utils.buildBetaEmail(username);
+  const email = await knex('users').where({
+    username
+  }).then(dbResponse => {
+    return dbResponse[0].primary_email
+  });
   try {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
@@ -55,7 +59,7 @@ async function saveToken(username, token) {
     await knex('login_tokens').insert({
       token,
       username,
-      email,
+      email: email,
       expires_at: expirationDate,
     });
     console.log(`Login token créé pour ${email}`);
@@ -72,7 +76,7 @@ export async function getLogin(req, res) {
 export async function postLogin(req, res) {
   const formValidationErrors = [];
   const nextParam = req.query.next ? `?next=${req.query.next}` : '';
-  const emailInput = utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
+  const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
   if (formValidationErrors.length) {
     req.flash('error', formValidationErrors);
@@ -80,7 +84,6 @@ export async function postLogin(req, res) {
   }
 
   let username;
-  let secondaryEmail;
 
   const emailSplit = emailInput.split('@');
   if (emailSplit[1] === config.domain) {
@@ -96,10 +99,10 @@ export async function postLogin(req, res) {
       try {
         const dbResponse = await knex('users')
         .select()
-        .whereRaw('LOWER("secondary_email") = ?', emailInput.toLowerCase());
-        secondaryEmail = dbResponse[0].secondary_email;
+        .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+        .orWhereRaw('LOWER(primary_email) = ?', emailInput)
         username = dbResponse[0].username;
-      } catch {
+      } catch (e) {
         req.flash(
           'error',
           `L'adresse email ${emailInput} n'est pas connue.`
@@ -114,15 +117,14 @@ export async function postLogin(req, res) {
 
   try {
     const token = generateToken();
-    const email = secondaryEmail ? secondaryEmail : utils.buildBetaEmail(username);
 
-    await sendLoginEmail(email, username, loginUrl, token);
+    await sendLoginEmail(emailInput, username, loginUrl, token);
     await saveToken(username, token);
 
     return renderLogin(req, res, {
       messages: req.flash(
         'message',
-        `Un lien de connexion a été envoyé à l'adresse ${email}. Il est valable une heure.`
+        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.`
       ),
     });
   } catch (err) {

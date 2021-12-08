@@ -16,9 +16,20 @@ export interface Member {
   github: string;
   email: string;
   missions: Mission[];
+  startups: string[];
+  previously: string[];
   start: string;
   end: string;
   employer: string;
   domaine: Domaine;
   mattermostUsername?: string;
+}
+
+export interface MemberWithPrimaryEmail extends Member {
+  primary_email: string;
+}
+
+export interface MemberWithPermission {
+  userInfos: Member,
+  canChangeEmails: boolean
 }

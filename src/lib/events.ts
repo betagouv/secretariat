@@ -14,6 +14,7 @@ export enum EventCode {
     MARRAINAGE_ACCEPTED="MARRAINAGE_ACCEPTED",
     MEMBER_MARRAINAGE_DECLINED="MEMBER_MARRAINAGE_DECLINED",
     MEMBER_SECONDARY_EMAIL_UPDATED="MEMBER_SECONDARY_EMAIL_UPDATED",
+    MEMBER_PRIMARY_EMAIL_UPDATED="MEMBER_PRIMARY_EMAIL_UPDATED",
     MEMBER_END_DATE_UPDATED="MEMBER_END_DATE_UPDATED",
 }
 
@@ -44,7 +45,7 @@ export async function addEvent (eventCode: EventCode, param: EventParam) : Promi
     }
     return knex('events').insert({
         ...event,
-        action_metadata: hstore.stringify(param.action_metadata),
+        action_metadata: param.action_metadata ? hstore.stringify(param.action_metadata) : undefined,
     })
 }
 
