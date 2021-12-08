@@ -107,7 +107,7 @@ export async function getCurrentAccount(req, res) {
     ]);
     const today = new Date()
     const title = 'Mon compte';
-    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.incudes(config.domain)
+    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     return res.render('account', {
       title,
       currentUserId: req.user.id,
