@@ -82,13 +82,6 @@ export async function createEmailForUser(req, res) {
     }
 
     await createEmail(username, req.user.id, req.body.to_email);
-    try {
-      // create marrainage request
-      await createRequestForUser(username);
-    } catch (e) {
-      // marrainage may fail if no member available
-      console.warn(e);
-    }
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);
