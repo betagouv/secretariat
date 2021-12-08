@@ -3,6 +3,8 @@ import config from "../config";
 import knex from "../db";
 import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
+import { MemberWithPermission } from "../models/member";
+import { DBUser } from "../models/dbUser";
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors = [];
@@ -92,7 +94,7 @@ export async function deleteEmailResponder(req, res) {
 
 export async function getCurrentAccount(req, res) {
   try {
-    const [currentUser, marrainageState, dbUser] = await Promise.all([
+    const [currentUser, marrainageState, dbUser] : [MemberWithPermission, string, DBUser] = await Promise.all([
       (async () => utils.userInfos(req.user.id, true))(),
       (async () => {
         const [state] = await knex('marrainage').where({ username: req.user.id });
@@ -105,6 +107,7 @@ export async function getCurrentAccount(req, res) {
     ]);
     const today = new Date()
     const title = 'Mon compte';
+    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.incudes(config.domain)
     return res.render('account', {
       title,
       currentUserId: req.user.id,
@@ -112,7 +115,8 @@ export async function getCurrentAccount(req, res) {
       userInfos: currentUser.userInfos,
       domain: config.domain,
       isExpired: currentUser.isExpired,
-      canCreateEmail: currentUser.canCreateEmail,
+      // can create email if email is not set, or if email is not @beta.gouv.fr email
+      canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
       canChangeEmails: currentUser.canChangeEmails,

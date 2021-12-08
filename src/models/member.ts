@@ -1,3 +1,4 @@
+import { OvhRedirection, OvhResponder } from '../betagouv';
 import { Mission } from './mission';
 
 type Domaine =
@@ -31,5 +32,12 @@ export interface MemberWithPrimaryEmail extends Member {
 
 export interface MemberWithPermission {
   userInfos: Member,
-  canChangeEmails: boolean
+  emailInfos: any,
+  redirections: OvhRedirection[],
+  canChangeEmails: boolean,
+  isExpired: boolean,
+  responder: OvhResponder,
+  canCreateEmail,
+  canCreateRedirection,
+  canChangePassword
 }
