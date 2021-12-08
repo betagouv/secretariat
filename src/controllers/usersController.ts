@@ -4,7 +4,6 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db/index";
-import { createRequestForUser } from "./marrainageController";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
 import { DBUser } from "../models/dbUser";
