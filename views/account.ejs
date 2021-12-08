@@ -135,7 +135,7 @@
             <% } %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer ton compte email @beta.gouv.fr.</p>
-                <form class="no-margin" action="/users/<%= username %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group  margin-10-0">
                         <label>
                             <span class="text-color-almost-black">Email personnel ou professionnel</span><br />
