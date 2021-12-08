@@ -361,6 +361,50 @@ describe('Onboarding', () => {
         });
     });
 
+    it('should fail if the user is already registered', (done) => {
+      chai
+        .request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          github: 'github.com/betagouv',
+        })
+        .end();
+
+      chai
+        .request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          github: 'github.com/betagouv',
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
     it('should call Github API if mandatory fields are present', (done) => {
       chai.request(app)
         .post('/onboarding')

@@ -136,6 +136,16 @@ export async function postForm(req, res) {
       }
     }
 
+    const userExists = await knex('users')
+      .where('primary_email', inputEmail)
+      .orWhere('secondary_email', inputEmail)
+      .first();
+
+    if (userExists) {
+      formValidationErrors['utilisateur existant'] =
+        'Un compte utilisateur existe déjà avec cet email';
+    }
+
     if (Object.keys(formValidationErrors).length) {
       req.flash('error', 'Un champs du formulaire est invalide ou manquant.');
       throw new Error();
