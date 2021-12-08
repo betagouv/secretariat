@@ -35,7 +35,7 @@ export async function createEmail(username, creator, toEmail) {
     username,
   }).update({
     primary_email: email
-  }).returning('*')
+  }).returning('*')[0]
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
     secondaryEmail: user.secondary_email,
