@@ -48,11 +48,14 @@ describe('User', () => {
       done()
     });
 
-    it('should ask OVH to create an email', (done) => {
+    it('should ask OVH to create an email', async () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-          chai
+          await knex('users').where({ username: 'membre.nouveau'}).update({
+            primary_email: null
+          })
+          await chai
             .request(app)
             .post('/users/membre.nouveau/email')
             .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -60,16 +63,11 @@ describe('User', () => {
             .send({
               to_email: 'test@example.com',
             })
-            .then(async () => {
-              const res = await knex('users').where({ username: 'membre.nouveau'}).first()
-              ovhEmailCreation.isDone().should.be.true;
-              sendEmailStub.calledOnce.should.be.true;
-              done();
-            })
-            .catch(done)
-            .finally(() => {
-              sendEmailStub.restore();
-            });
+          
+          const res = await knex('users').where({ username: 'membre.nouveau'}).first()
+          res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
+          ovhEmailCreation.isDone().should.be.true;
+          sendEmailStub.calledOnce.should.be.true;
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {
