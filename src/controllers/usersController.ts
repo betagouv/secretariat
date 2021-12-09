@@ -32,13 +32,14 @@ export async function createEmail(username, creator, toEmail) {
   })
   await BetaGouv.sendInfoToChat(message);
   await BetaGouv.createEmail(username, password);
-  await knex('users').where({
+  const [user] : DBUser[] = await knex('users').where({
     username,
   }).update({
     primary_email: email
-  })
+  }).returning('*')
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
+    secondaryEmail: user.secondary_email,
     password,
     secretariatUrl,
     mattermostInvitationLink: config.mattermostInvitationLink,
