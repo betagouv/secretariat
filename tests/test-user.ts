@@ -48,7 +48,7 @@ describe('User', () => {
       done()
     });
 
-    it('should ask OVH to create an email and create marrainage', (done) => {
+    it('should ask OVH to create an email', (done) => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
