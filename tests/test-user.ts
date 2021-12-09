@@ -39,21 +39,19 @@ describe('User', () => {
     beforeEach((done) => {
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
-        .returns(Promise.resolve(true));
-      done();
+        .returns(Promise.resolve(true))
+      done()
+    });
+
+    afterEach((done) => {
+      sendEmailStub.restore()
+      done()
     });
 
     it('should ask OVH to create an email and create marrainage', (done) => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-      knex('marrainage')
-        .where({ username: 'membre.nouveau' })
-        .select()
-        .then((marrainage) => {
-          marrainage.length.should.equal(0);
-        })
-        .then(() => {
           chai
             .request(app)
             .post('/users/membre.nouveau/email')
@@ -63,15 +61,15 @@ describe('User', () => {
               to_email: 'test@example.com',
             })
             .then(async () => {
+              const res = await knex('users').where({ username: 'membre.nouveau'}).first()
               ovhEmailCreation.isDone().should.be.true;
-              sendEmailStub.calledTwice.should.be.true;
+              sendEmailStub.calledOnce.should.be.true;
               done();
             })
             .catch(done)
             .finally(() => {
               sendEmailStub.restore();
             });
-        });
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {

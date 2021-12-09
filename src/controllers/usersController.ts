@@ -76,7 +76,7 @@ export async function createEmailForUser(req, res) {
       throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
     }
 
-    const hasPublicServiceEmail = dbUser.primary_email && dbUser.primary_email.includes(config.domain)
+    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     if (hasPublicServiceEmail) {
       throw new Error(`Le membre a déjà un email principal autre que ${config.domain}`);
     }
