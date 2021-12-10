@@ -45,7 +45,7 @@ export async function createEmail(username, creator, toEmail) {
     secondaryEmail: user.secondary_email,
     password,
     secretariatUrl,
-    token,
+    token: encodeURIComponent(token),
     mattermostInvitationLink: config.mattermostInvitationLink,
   });
 
