@@ -944,6 +944,10 @@ describe('User', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
+      const dbRes = await knex('login_tokens').select().where({ email: 'membre.nouveau.perso@example.com' })
+      dbRes.length.should.equal(1);
+      dbRes[0].email.should.equal('membre.nouveau.perso@example.com');
+      dbRes[0].username.should.equal('membre.nouveau');
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
         primary_email: `${newMember.id}@${config.domain}`,
