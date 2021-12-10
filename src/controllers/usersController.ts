@@ -8,6 +8,7 @@ import { createRequestForUser } from "./marrainageController";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
 import { DBUser } from "../models/dbUser";
+import { saveToken, generateToken } from "./loginController";
 
 export async function createEmail(username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -37,11 +38,14 @@ export async function createEmail(username, creator, toEmail) {
   }).update({
     primary_email: email
   }).returning('*')
+  const token = generateToken()
+  await saveToken(username, token)
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
     secondaryEmail: user.secondary_email,
     password,
     secretariatUrl,
+    token,
     mattermostInvitationLink: config.mattermostInvitationLink,
   });
 
