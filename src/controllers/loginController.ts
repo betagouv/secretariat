@@ -17,7 +17,7 @@ function renderLogin(req, res, params) {
   });
 }
 
-function generateToken() {
+export function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
@@ -46,7 +46,7 @@ async function sendLoginEmail(email, username, loginUrl, token) {
   }
 }
 
-async function saveToken(username, token) {
+export async function saveToken(username, token) {
   const email = await knex('users').where({
     username
   }).then(dbResponse => {
