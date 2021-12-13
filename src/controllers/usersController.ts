@@ -155,14 +155,20 @@ export async function createRedirectionForUser(req, res) {
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
     }
-
     req.flash('message', 'La redirection a bien été créé.');
-    res.redirect(`/community/${username}`);
+    if (isCurrentUser) {
+      res.redirect('/account')
+    } else {
+      res.redirect(`/community/${username}`);
+    }
   } catch (err) {
     console.error(err);
-
     req.flash('error', err.message);
-    res.redirect(`/community/${username}`);
+    if (isCurrentUser) {
+      res.redirect('/account')
+    } else {
+      res.redirect(`/community/${username}`);
+    }
   }
 }
 

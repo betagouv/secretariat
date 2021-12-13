@@ -59,7 +59,7 @@ export async function saveToken(username, token) {
     await knex('login_tokens').insert({
       token,
       username,
-      email: email,
+      email,
       expires_at: expirationDate,
     });
     console.log(`Login token créé pour ${email}`);
