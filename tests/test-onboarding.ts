@@ -369,23 +369,18 @@ describe('Onboarding', () => {
     });
 
     it('should fail if the user is already registered', (done) => {
-      chai
-        .request(app)
-        .post('/onboarding')
-        .type('form')
-        .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
-          role: 'Dev',
-          start: '2020-01-01',
-          end: '2021-01-01',
-          status: 'Independant',
-          domaine: 'Coaching',
-          referent: 'membre.actif',
-          email: 'test@example.com',
-          github: 'github.com/betagouv',
-        })
-        .end();
+      knex('users').insert({
+        firstName: 'Férnàndáô',
+        lastName: 'Úñíbe',
+        role: 'Dev',
+        start: '2020-01-01',
+        end: '2021-01-01',
+        status: 'Independant',
+        domaine: 'Coaching',
+        referent: 'membre.actif',
+        email: 'test@example.com',
+        github: 'github.com/betagouv',
+      }).then();
 
       chai
         .request(app)
