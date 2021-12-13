@@ -37,10 +37,10 @@
   "dependencies": {
     "@octokit/core": "^3.5.1",
     "@octokit/request": "^5.6.2",
-    "@sentry/integrations": "^6.15.0",
-    "@sentry/node": "^6.15.0",
+    "@sentry/integrations": "^6.16.1",
+    "@sentry/node": "^6.16.1",
     "axios": "^0.24.0",
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.19.1",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.6",
@@ -58,7 +58,7 @@
     "juice": "^8.0.0",
     "knex": "^0.95.14",
     "lodash": "^4.17.21",
-    "marked": "^3.0.8",
+    "marked": "^4.0.4",
     "nodemailer": "^6.7.2",
     "ovh": "^2.0.1",
     "pg": "^8.7.1",
@@ -70,7 +70,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.22",
+    "@types/chai": "^4.3.0",
+    "@types/marked": "^4.0.1",
     "@types/mocha": "^9.0.0",
     "@types/sinon": "^10.0.6",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
@@ -90,7 +91,7 @@
     "sinon": "^12.0.1",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.5.2"
+    "typescript": "^4.5.3"
   },
   "prettier": {
     "singleQuote": true
