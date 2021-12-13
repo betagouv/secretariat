@@ -847,12 +847,16 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
+      await knex('login_tokens').truncate()
       await knex('users').where({
         username: newMember.id,
       }).update({
         primary_email: null,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
+      const val = await knex('users').where({
+        username: newMember.id,
+      })
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
@@ -863,6 +867,10 @@ describe('User', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
+      const dbRes = await knex('login_tokens').select().where({ email: `${newMember.id}@${config.domain}` })
+      dbRes.length.should.equal(1);
+      dbRes[0].username.should.equal('membre.nouveau');
+      dbRes[0].email.should.equal(`${newMember.id}@${config.domain}`);
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
         primary_email: `${newMember.id}@${config.domain}`,
