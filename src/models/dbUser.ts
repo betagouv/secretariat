@@ -6,10 +6,12 @@ export interface DBUser {
     created_at: Date;
 }
 
-export interface DBUserWithMattermostUsername {
+export interface DBUserExtendedWithGithubAndMattermostInfo {
     secondary_email: string;
     primary_email: string;
     username: string;
     created_at: Date;
     mattermostUsername: string;
+    fullname: string;
+    id: string;
 }
