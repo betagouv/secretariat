@@ -60,6 +60,13 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(false));
 
+      // reset the test user to avoid duplicates in db
+      knex('users')
+        .where('secondary_email', 'test@example.com')
+        .orWhere('primary_email', 'test@example.com')
+        .del()
+        .then();
+
       done();
     });
 
@@ -351,6 +358,45 @@ describe('Onboarding', () => {
           referent: 'membre.actif',
           email: 'test@example.com',
           isEmailBetaAsked: false
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
+    it('should fail if the user is already registered', (done) => {
+      knex('users').insert({
+        firstName: 'Férnàndáô',
+        lastName: 'Úñíbe',
+        role: 'Dev',
+        start: '2020-01-01',
+        end: '2021-01-01',
+        status: 'Independant',
+        domaine: 'Coaching',
+        referent: 'membre.actif',
+        email: 'test@example.com',
+        github: 'github.com/betagouv',
+      }).then();
+
+      chai
+        .request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          github: 'github.com/betagouv',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
