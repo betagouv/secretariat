@@ -158,19 +158,20 @@
                     Personne de la communauté avec qui tu es en contact.
                 </label>
                 <% if(useSelectList) { %>
+                    <label for="username_select"></label>
                     <select name="referent" id="username_select">
                     <% users.forEach(function(user) { %>
-                        <option value="<%= user.id %>"> <%= user.fullname %> </option>
+                        <option value="<%= user.id %>" selected="<%= formData.referent === user.id %>"> <%= user.fullname %> </option>
                     <% }) %>
                     </select>
                 <% } else { %>
-                    <input name="referentList" list="user_names" id="referentList" required>
+                    <input name="referentList" list="user_names" id="referentList" value="<%= formData.referentList %>" required>
                     <datalist id="user_names">
                     <% users.forEach(function(user) { %>
                         <option data-value="<%= user.id %>" value="<%= user.fullname %>">
                     <% }) %>
                     </datalist>
-                    <input type="hidden" name="referent" id="referentInput_hidden" required>
+                    <input type="hidden" name="referent" id="referentInput_hidden" value="<%= formData.referent %>" required>
                 <% } %>
                 <% if(formValidationErrors['référent']) { %>
                   <p class="text-small text-color-red"><%= formValidationErrors['référent'] %></p>
@@ -239,7 +240,7 @@
             <% } %>
 
             <label for="isEmailBetaAsked" class="padding-10-0">
-              <input type="checkbox" name="isEmailBetaAsked" value="true">
+              <input type="checkbox" name="isEmailBetaAsked" value="true" checked="<%= formData.isEmailBetaAsked%>">
               <% if(formValidationErrors['email public']) { %>
                 <strong class="text-color-red">
             <% } else { %>

@@ -22,11 +22,15 @@ export interface Member {
   end: string;
   employer: string;
   domaine: Domaine;
-  mattermostUsername?: string;
 }
 
 export interface MemberWithPrimaryEmail extends Member {
   primary_email: string;
+}
+
+export interface MemberWithPrimaryEmailAndMattermostUsername extends Member {
+  primary_email: string;
+  mattermostUsername: string;
 }
 
 export interface MemberWithPermission {
