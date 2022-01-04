@@ -22,10 +22,6 @@ describe('Community', () => {
   });
 
   describe('GET /community authenticated', () => {
-    afterEach((done) => {
-      knex('users').truncate()
-        .then(() => done());
-    });
 
     it('should return a valid page', (done) => {
       chai.request(app)
@@ -86,20 +82,23 @@ describe('Community', () => {
         });
     });
 
-    it('should show the secondary email if it exists', (done) => {
-      knex('users')
-        .insert({
-          username: 'membre.parti',
-          secondary_email: 'perso@example.com',
-        }).then(() => {
-          chai.request(app)
-            .get('/community/membre.parti')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .end((err, res) => {
-              res.text.should.include('Email secondaire : </span> perso@example.com');
-              done();
-            });
-        });
+    it('should show the secondary email if it exists', async () => {
+      await knex('users').where({
+        username: 'membre.parti',
+      }).update({
+        secondary_email: 'perso@example.com',
+      })
+      
+      const res = await chai.request(app)
+        .get('/community/membre.parti')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+      res.text.should.include('Email secondaire : </span> perso@example.com');
+      await knex('users').where({
+        username: 'membre.parti',
+      })
+      .update({
+        secondary_email: null,
+      })
     });
 
     it('should not show the secondary email if it does not exist', (done) => {
@@ -122,20 +121,21 @@ describe('Community', () => {
         });
     });
 
-    it('should prefill the secondary email for email-less users', (done) => {
-      knex('users')
-        .insert({
-          username: 'membre.parti',
+    it('should prefill the secondary email for email-less users', async() => {
+      await knex('users')
+        .where({ username: 'membre.parti' })
+        .update({
           secondary_email: 'perso@example.com',
-        }).then(() => {
-          chai.request(app)
+        })
+      
+      const res = await chai.request(app)
             .get('/community/membre.parti')
             .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .end((err, res) => {
-              res.text.should.include('<input value="perso@example.com" name="to_email"');
-              done();
-            });
-        });
+
+      res.text.should.include('<input value="perso@example.com" name="to_email"');
+      await knex('users').where({ username: 'membre.parti'}).update({
+        secondary_email: null
+      })
     });
 
     it('should not show the email creation form for users with existing emails', (done) => {
@@ -166,6 +166,7 @@ describe('Community', () => {
         .reply(200, { description: '' });
 
       utils.mockUsers();
+      utils.mockOvhUserResponder();
       utils.mockOvhRedirections();
       utils.mockOvhTime();
 

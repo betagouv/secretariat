@@ -1,12 +1,8 @@
-// betagouv.js
-// ======
 import axios from 'axios';
 import ovh0 from 'ovh';
 import config from './config';
-
-import { Member } from './models/member';
-
 import { checkUserIsExpired } from './controllers/utils';
+import { Member } from './models/member';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
@@ -18,6 +14,14 @@ export interface OvhRedirection {
   from: string;
   to: string;
   id: string;
+}
+
+export interface OvhResponder {
+  account: string;
+  content: string;
+  copy: boolean;
+  from: Date;
+  to: Date;
 }
 
 const betaGouv = {
@@ -107,14 +111,81 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  getAllMailingList: async() => {
+    const url = `/email/domain/${config.domain}/mailingList/`;
+    try {
+      return await ovh.requestPromised('GET', url, {});
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  removeFromMailingList: async(mailingListName: string, email: string) => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
+    try {
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   // get active users with email registered on ovh
   getActiveRegisteredOVHUsers: async () => {
     const users = await betaGouv.usersInfos();
     const allOvhEmails = await betaOVH.getAllEmailInfos();
     const activeUsers = users.filter(
-      (user) => !checkUserIsExpired(user.id) && allOvhEmails.includes(user.id)
+      (user) => !checkUserIsExpired(user) && allOvhEmails.includes(user.id)
     );
     return activeUsers;
+  },
+  getResponder: async (id):Promise<OvhResponder> => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+
+    try {
+      console.log(`OVH GET ${url} name=${id}`);
+      return await ovh.requestPromised('GET', url);
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  setResponder: async (id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder`;
+    try {
+      console.log(`OVH POST ${url} name=${id}`);
+      const params : OvhResponder = {
+        account: id,
+        content,
+        from,
+        to,
+        copy: true
+      }
+      return await ovh.requestPromised('POST', url, params);
+    } catch (err) {
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  updateResponder: async (id, { content, from, to }) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH PUT ${url} name=${id}`);
+      return await ovh.requestPromised('PUT', url, {
+        content,
+        from,
+        to,
+      });
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  deleteResponder: async(id) => {
+    const url = `/email/domain/${config.domain}/responder/${id}`;
+    try {
+      console.log(`OVH DELETE ${url} name=${id}`);
+      return await ovh.requestPromised('DELETE', url);
+    } catch (err) {
+      throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
+    }
   },
   createEmail: async (id, password) => {
     const url = `/email/domain/${config.domain}/account`;
@@ -130,7 +201,7 @@ const betaOVH = {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  deleteEmail: async (id, password) => {
+  deleteEmail: async (id) => {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {

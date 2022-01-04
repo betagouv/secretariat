@@ -1,6 +1,14 @@
 <h1>Hello <%= onboarder.fullname %> 👋,</h1>
 
-<p><%= newcomer.fullname %> vient d’arriver dans la communauté. Comme tu le sais surement, la communauté beta.gouv.fr peut être intimidante aux premiers abords. 
+<p><%= newcomer.fullname %> 
+<% if (newcomer.role && startup) { %>
+  <span>(<%= newcomer.role %> chez <a href="https://beta.gouv.fr/startups/<%= startup %>.html" target="_blank"><%= startup %></a>)</span>
+<% } else if (newcomer.role) { %>
+  <span>(<%= newcomer.role %>)</span>
+<% } else if (startup) { %>
+  <span>(récemment arrivé·e chez <a href="https://beta.gouv.fr/startups/<%= startup %>.html" target="_blank"><%= startup %></a>)</span>
+<% } %>
+vient d’arriver dans la communauté. Comme tu le sais surement, la communauté beta.gouv.fr peut être intimidante au premier abord. 
 Pour limiter cette impression, nous encourageons les nouveaux venus à créer des contacts avec des membres de Beta en dehors de leur équipe, ce que nous appelons le "marrainage" : 
 et pourquoi pas toi ?</p>
 
@@ -28,7 +36,7 @@ Par exemple, pour prendre un café virtuel avec il/elle et lui parler un peu de 
 
 <p style="color: #999;font-size: 0.85em;">
   Cet email t’as été envoyé parce que tu es considéré comme membre de la communauté et qu’un algorithme aléatoire a pensé que tu étais 
-  la meilleure personne pour ça :innocence:. Si tu ne veux plus recevoir ce type de messages, signale-le à <a href="mailto:secretariat@beta.gouv.fr">secretariat@beta.gouv.fr</a>.
+  la meilleure personne pour ça :innocence:. Si tu as des questions, tu peux contacter <a href="mailto:secretariat@beta.gouv.fr">secretariat@beta.gouv.fr</a>.
 </p>
 
 <p>Bonne journée,</p>

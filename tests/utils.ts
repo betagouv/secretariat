@@ -50,6 +50,12 @@ export default {
       .reply(404)
       .persist();
   },
+  mockOvhUserResponder() {
+    return nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+    .reply(404)
+    .persist();
+  },
   mockOvhAllEmailInfos() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)
@@ -102,6 +108,13 @@ export default {
       .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
       .then(() => client.end())
       .then(() => knex.migrate.latest())
+      .then(() => {
+        const dbUsers = testUsers.map(user => ({
+          username: user.id,
+          primary_email: `${user.id}@${config.domain}`
+        }))
+        return knex('users').insert(dbUsers)
+      })
       .then(() => console.log(`Test database ${testDbName} created successfully`))
       .catch((err) => {
         console.log(err);

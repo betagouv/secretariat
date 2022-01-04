@@ -1,3 +1,4 @@
+import axios from "axios";
 import { request } from '@octokit/request';
 import _ from 'lodash';
 import nodemailer from 'nodemailer';
@@ -52,22 +53,33 @@ export async function sendMail(toEmail, subject, html, extraParams = {}) {
   });
 }
 
-export function buildBetaEmail(id) {
+export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
 }
 
-export function checkUserIsExpired(user, daysOfExpiration = 0) {
+export function checkUserIsExpired(user, minDaysOfExpiration = 1) {
   // Le membre est considéré comme expiré si:
   // - il/elle existe
   // - il/elle a une date de fin
   // - son/sa date de fin est passée
-  return (
-    user &&
-    user.end !== undefined &&
-    new Date().toString() !== 'Invalid Date' &&
-    new Date(user.end).getTime() + daysOfExpiration * 24 * 3600 <
-      new Date().getTime()
-  );
+
+  if (!user || user.end === undefined)
+    return false;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const userEndDate = new Date(user.end);
+  if (userEndDate.toString() === "Invalid Date")
+    return false;
+  userEndDate.setHours(0, 0, 0, 0);
+
+  return userEndDate.getTime() + (minDaysOfExpiration * 24 * 3600 * 1000) <=
+      today.getTime();
+}
+
+export function getExpiredUsers(users, minDaysOfExpiration = 0) {
+  return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
 }
 
 export function getExpiredUsersForXDays(users, nbDays) {
@@ -109,6 +121,15 @@ export function isValidNumber(formValidationErrors, field, number) {
     return number;
   }
   formValidationErrors.push(`${field} : le numéro n'est pas valide`);
+  return null;
+}
+
+export function isValidEmail(formValidationErrors,  field, email) {
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (emailRegex.test(email.toLowerCase())) {
+    return email;
+  }
+  formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
   return null;
 }
 
@@ -185,14 +206,27 @@ export function addDays(date, days, week = null) {
   return result;
 }
 
+export async function isPublicServiceEmail (email) {
+  const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
+  const data = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
+    if (data.hs === "agent.externe.tchap.gouv.fr") {
+      return false;
+    } else {
+      return true
+    }
+}
+
+
 export async function userInfos(id, isCurrentUser) {
   try {
-    const [userInfos, emailInfos, redirections] = await Promise.all([
+    const [userInfos, emailInfos, redirections,
+     responder
+    ] = await Promise.all([
       BetaGouv.userInfosById(id),
       BetaGouv.emailInfos(id),
       BetaGouv.redirectionsForId({ from: id }),
+      BetaGouv.getResponder(id)
     ]);
-
     const hasUserInfos = userInfos !== undefined;
 
     const isExpired = checkUserIsExpired(userInfos);
@@ -224,7 +258,7 @@ export async function userInfos(id, isCurrentUser) {
       emailInfos
     );
 
-    const canChangeSecondaryEmail = !!(
+    const canChangeEmails = !!(
       hasUserInfos &&
       !isExpired &&
       isCurrentUser
@@ -238,7 +272,8 @@ export async function userInfos(id, isCurrentUser) {
       canCreateEmail,
       canCreateRedirection,
       canChangePassword,
-      canChangeSecondaryEmail,
+      canChangeEmails,
+      responder
     };
   } catch (err) {
     console.error(err);
@@ -267,11 +302,13 @@ export function getGithubFile(path, branch) {
   const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
 
   return requestWithAuth(`GET ${url}`, { branch });
-};
+}
 
 export function createGithubFile(path, branch, content, sha = undefined) {
   const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
-  const message = `${sha ? 'Mise à jour' : 'Création'} de fichier ${path} sur la branche ${branch}`; 
+  const message = `${
+    sha ? 'Mise à jour' : 'Création'
+  } de fichier ${path} sur la branche ${branch}`;
   const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
 
   return requestWithAuth(`PUT ${url}`, {

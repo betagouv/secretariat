@@ -23,7 +23,7 @@ describe('Home', () => {
         .get('/')
         .end((err, res) => {
           res.text.should.include('<form action="/login" method="POST"');
-          res.text.should.include('<input name="username"');
+          res.text.should.include('<input name="emailInput"');
           res.text.should.include('<button class="button" id="primary_email_button">');
           done();
         });

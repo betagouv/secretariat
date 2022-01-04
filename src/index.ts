@@ -140,11 +140,11 @@ app.post(
 app.post('/users/:username/password', usersController.updatePasswordForUser);
 app.post(
   '/users/:username/secondary_email',
-  usersController.createSecondaryEmailForUser
+  usersController.manageSecondaryEmailForUser
 );
 app.post(
-  '/users/:username/secondary_email/update',
-  usersController.updateSecondaryEmailForUser
+  '/users/:username/primary_email',
+  usersController.managePrimaryEmailForUser
 );
 app.post('/users/:username/end-date', usersController.updateEndDateForUser);
 app.post(
@@ -164,6 +164,8 @@ app.get('/admin', adminController.getEmailLists);
 app.get('/onboarding', onboardingController.getForm);
 app.post('/onboarding', onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
+app.post('/account/set_email_responder', accountController.setEmailResponder);
+app.post('/account/delete_email_responder', accountController.deleteEmailResponder);
 
 app.get('/newsletters', newsletterController.getNewsletter);
 app.get('/validateNewsletter', newsletterController.validateNewsletter);

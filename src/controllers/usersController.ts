@@ -5,6 +5,10 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db/index";
 import { createRequestForUser } from "./marrainageController";
+import { addEvent, EventCode } from '../lib/events'
+import { MemberWithPermission } from "../models/member";
+import { DBUser } from "../models/dbUser";
+import { saveToken, generateToken } from "./loginController";
 
 export async function createEmail(username, creator, toEmail) {
   const email = utils.buildBetaEmail(username);
@@ -20,13 +24,28 @@ export async function createEmail(username, creator, toEmail) {
 
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
 
+  addEvent(EventCode.MEMBER_EMAIL_CREATED, {
+    created_by_username: creator,
+    action_on_username: username,
+    action_metadata: {
+      value: email
+    }
+  })
   await BetaGouv.sendInfoToChat(message);
   await BetaGouv.createEmail(username, password);
-
+  const [user] : DBUser[] = await knex('users').where({
+    username,
+  }).update({
+    primary_email: email
+  }).returning('*')
+  const token = generateToken()
+  await saveToken(username, token)
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
     email,
+    secondaryEmail: user.secondary_email,
     password,
     secretariatUrl,
+    token: encodeURIComponent(token),
     mattermostInvitationLink: config.mattermostInvitationLink,
   });
 
@@ -119,6 +138,13 @@ export async function createRedirectionForUser(req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
     try {
+      addEvent(EventCode.MEMBER_REDIRECTION_CREATED, {
+        created_by_username: req.user.id,
+        action_on_username: username,
+        action_metadata: {
+          value: req.body.to_email
+        }
+      })
       await BetaGouv.sendInfoToChat(message);
       await BetaGouv.createRedirection(
         utils.buildBetaEmail(username),
@@ -161,6 +187,13 @@ export async function deleteRedirectionForUser(req, res) {
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
     try {
+      addEvent(EventCode.MEMBER_REDIRECTION_DELETED, {
+        created_by_username: req.user.id,
+        action_on_username: username,
+        action_metadata: {
+          value: toEmail
+        }
+      })
       await BetaGouv.sendInfoToChat(message);
       await BetaGouv.deleteRedirection(utils.buildBetaEmail(username), toEmail);
     } catch (err) {
@@ -221,6 +254,10 @@ export async function updatePasswordForUser(req, res) {
 
     const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
 
+    addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
+      created_by_username: req.user.id,
+      action_on_username: username
+    })
     await BetaGouv.sendInfoToChat(message);
     await BetaGouv.changePassword(username, password);
 
@@ -248,13 +285,16 @@ export async function deleteEmailForUser(req, res) {
     }
 
     await BetaGouv.sendInfoToChat(`Suppression de compte de ${username} (à la demande de ${req.user.id})`);
-
+    addEvent(EventCode.MEMBER_EMAIL_DELETED, {
+      created_by_username: req.user.id,
+      action_on_username: username
+    })
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map((x) => x.id));
       console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
     }
 
-    await BetaGouv.createRedirection(username, config.leavesEmail, false);
+    await BetaGouv.createRedirection(utils.buildBetaEmail(username), config.leavesEmail, false);
     await knex('users')
       .update({ secondary_email: null })
       .where({ username });
@@ -275,22 +315,43 @@ export async function deleteEmailForUser(req, res) {
   }
 }
 
-export async function createSecondaryEmailForUser(req, res) {
+export async function managePrimaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-  const { secondaryEmail } = req.body;
-  const user = await utils.userInfos(username, isCurrentUser);
-
+  const { primaryEmail } = req.body;
+  const user : MemberWithPermission = await utils.userInfos(username, isCurrentUser);
   try {
-    if (user.canChangeSecondaryEmail) {
-      await knex('users')
-        .insert({
-          secondary_email: secondaryEmail,
-          username
-        });
-      req.flash('message', 'Ton compte email secondaire a bien été ajoutée.');
-      res.redirect(`/community/${username}`);
+    if (!user.canChangeEmails) {
+      throw new Error(`L'utilisateur n'est pas autorisé à changer l'email primaire`);
     }
+    const isPublicServiceEmail = await utils.isPublicServiceEmail(primaryEmail)
+    if (!isPublicServiceEmail) {
+      throw new Error(`L'email renseigné n'est pas un email de service public`);
+    }
+    const dbUser: DBUser = await knex('users').where({
+      username,
+    }).then(db => db[0])
+    await knex('users')
+    .insert({
+      primary_email: primaryEmail,
+      username
+    })
+    .onConflict('username')
+    .merge({
+      primary_email: primaryEmail,
+      username
+    });
+    addEvent(EventCode.MEMBER_PRIMARY_EMAIL_UPDATED, {
+      created_by_username: req.user.id,
+      action_on_username: username,
+      action_metadata: {
+        value: primaryEmail,
+        old_value: dbUser ? dbUser.primary_email : null,
+      }
+    })
+    req.flash('message', 'Ton compte email primaire a bien été mis à jour.');
+    console.log(`${req.user.id} a mis à jour son adresse mail primaire.`);
+    res.redirect(`/community/${username}`);
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);
@@ -298,23 +359,39 @@ export async function createSecondaryEmailForUser(req, res) {
   }
 }
 
-export async function updateSecondaryEmailForUser(req, res) {
+export async function manageSecondaryEmailForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-  const { newSecondaryEmail } = req.body;
+  const { secondaryEmail } = req.body;
   const user = await utils.userInfos(username, isCurrentUser);
 
   try {
-    if (user.canChangeSecondaryEmail) {
+    if (user.canChangeEmails) {
+      const dbUser = await knex('users').where({
+        username,
+      }).then(db => db[0])
       await knex('users')
-        .update({
-          secondary_email: newSecondaryEmail,
-        })
-        .where({ username });
-
-      req.flash('message', 'Ton compte email secondaire a bien été modifié.');
+      .insert({
+        secondary_email: secondaryEmail,
+        username
+      })
+      .onConflict('username')
+      .merge({
+        secondary_email: secondaryEmail,
+        username
+      });
+      addEvent(EventCode.MEMBER_SECONDARY_EMAIL_UPDATED, {
+        created_by_username: req.user.id,
+        action_on_username: username,
+        action_metadata: {
+          value: secondaryEmail,
+          old_value: dbUser ? dbUser.secondary_email : null,
+        }
+      })
+      req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
+      console.log(`${req.user.id} a mis à jour son adresse mail secondaire.`);
       res.redirect(`/community/${username}`);
-    }
+    };
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);
@@ -401,6 +478,14 @@ export async function updateEndDateForUser(req, res) {
 
     const changes = [{ key: 'end', old: end, new: newEnd }];
     await updateAuthorGithubFile(username, changes);
+    addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
+      created_by_username: req.user.id,
+      action_on_username: username,
+      action_metadata: {
+        value: newEnd,
+        old_value: end,
+      }
+    })
     // TODO: get actual PR url instead
     const pullRequestsUrl = `https://github.com/${config.githubRepository}/pulls`;
     req.flash('message', `Pull request pour la mise à jour de la fiche de ${username} ouverte <a href="${pullRequestsUrl}" target="_blank">ici</a>. Une fois mergée, votre profil sera mis à jour.`);

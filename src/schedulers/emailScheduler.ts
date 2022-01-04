@@ -5,10 +5,10 @@ import { createRequestForUser } from '../controllers/marrainageController';
 import { createEmail } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
+import { DBUser } from '../models/dbUser';
+import { Member } from '../models/member';
 
-export async function createEmailAndMarrainage(user, creator) {
-  await createEmail(user.id, creator, user.toEmail);
-  // once email is created we generate marrainage request
+const createMarrainage = async (user) => {
   const dateInTwoMonth = new Date();
   dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
   const userStartDate = new Date(user.start);
@@ -33,12 +33,13 @@ const getValidUsers = async () => {
 };
 
 export async function createEmailAddresses() {
-  const dbUsers = await knex('users').whereNotNull('secondary_email');
-
-  const githubUsers = await getValidUsers();
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNull('primary_email')
+    .whereNotNull('secondary_email')
+  const githubUsers: Member[] = await getValidUsers();
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
-    const dbUser = dbUsers.find((x) => x.username === user.id);
+    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
       acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
     }
@@ -46,14 +47,22 @@ export async function createEmailAddresses() {
   }, []);
 
   const allOvhEmails = await BetaGouv.getAllEmailInfos();
-  const unregisteredUsers = _.differenceWith(concernedUsers, allOvhEmails, differenceGithubOVH);
-  console.log(`Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`);
+  const unregisteredUsers = _.differenceWith(
+    concernedUsers,
+    allOvhEmails,
+    differenceGithubOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
 
   // create email and marrainage
   return Promise.all(
-    unregisteredUsers.map((user) =>
-      createEmailAndMarrainage(user, 'Secretariat Cron')
-    )
+    unregisteredUsers.map(async (user) => {
+      await createEmail(user.id, 'Secretariat cron', user.toEmail)
+      // once email created we create marrainage
+      await createMarrainage(user)
+    })
   );
 }
 

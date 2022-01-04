@@ -4,7 +4,13 @@
 <script src="/static/collapse/collapse.js"></script>
 
 <div class="module">
-
+    <% if (hasActiveResponder) { %>
+        <div class="notification warning">
+            <strong>Réponse automatique activée.</strong>
+            <a href="/account#responder">Désactiver maintenant</a>
+            <a href="/account#responder">Configurer la réponse</a>
+        </div>
+    <% } %>
     <div class="row">
         <div class="panel panel-partial-width">
             <div class="account-split-panel">
@@ -142,10 +148,63 @@
                     <hr />
                 </div>
             </div>
-
-
-            <div class="collapse">
+            <div class="collapse" id="responder">
                 <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer une réponse automatique
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez. (la mise en place effective de la réponse automatique peut prendre quelques minutes)
+                    </p>
+                    <form class="no-margin"
+                        onsubmit="const proceed = event.submitter.id === 'delete-button' ? confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?') : true; event.submitter && (event.submitter.disabled = proceed); return proceed;"
+                        action="/account/set_email_responder" method="POST" >
+                    <% if (hasResponder) { %>
+                        <input type="hidden" name="method" value="update">
+                    <% } %>       
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Message d'absence</strong><br />
+                                </label>
+                                <textarea placeholder="Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
+                            </div>
+                            <div class="form__group">
+                                <label for="start">
+                                    <strong>Début</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                
+                            <div class="form__group">
+                                <label for="end">
+                                    <strong>Fin</strong><br />
+                                    <i>Au format JJ/MM/YYYY</i>
+                                </label>
+                                <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                    <% if (!hasResponder) { %>
+                            <button class="button margin-10-0" type="submit">Sauvegarder</button>
+                        </form>
+                    <% } else { %>
+                            <div class="row">
+                                <button class="button margin-10-0" type="submit">Changer</button>
+                                <% if (hasResponder) { %>
+                                        <button
+                                            id='delete-button'
+                                            class="button margin-10-0 button-underline" formaction="/account/delete_email_responder" type="submit">Supprimer</button>
+                                <% } %> 
+                            </div>
+                        </form>
+                    <% } %> 
+                    <hr />
+                </div>
+            </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header" id="password">
                     <button aria-expanded="false">
                         Changer mon mot de passe
                         <div class="icon fa fa-chevron-down"></div>
@@ -154,7 +213,7 @@
                 <div hidden class="collapse-content">
                     <% if (canChangePassword) { %>
                         <p>
-                            Nouveau mot de passe POP/IMAP/SMTP :<br />
+                            Nouveau mot de passe du compte email :<br />
                             Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
                             d'espace au début ou à la fin.
                         </p>
@@ -235,7 +294,30 @@
                     <hr />
                 </div>
             </div>
-
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false">
+                        Configurer mon email principal
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        L'email principal est utilisé pour toutes les communications en rapport avec Betagouv.
+                        Ce doit être un email d'agent public. Il s'agit par défaut de <%= userInfos.id %>@beta.gouv.fr.
+                        <br>
+                        <br>
+                        En cas d'utilisation d'une adresse autre, l'email <%= userInfos.id %>@beta.gouv.fr sera supprimé.
+                    </p>
+                    <% if (canChangeEmails) { %>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/primary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <input id="primaryEmail" name="primaryEmail" value="<%= primaryEmail %>" type="email">
+                        <button class="button margin-10-0" type="submit">Sauvegarder l'email principal</button>
+                    </form>
+                    <% } %>
+                    <hr />
+                </div> 
+            </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false">
@@ -247,23 +329,15 @@
                     <p>
                         L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     </p>
-                    <% if (!secondaryEmail) { %>
+                    <% if (canChangeEmails) { %>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                        <input id="secondaryEmail" name="secondaryEmail" type="email">
+                        <input id="secondaryEmail" name="secondaryEmail" value="<%= secondaryEmail %>" type="email">
                         <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
                     </form>
-                    <% } else { %>
-                        <% if (canChangeSecondaryEmail) { %>
-                            <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email/update" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
-                                <input id="newSecondaryEmail" name="newSecondaryEmail" value="<%= secondaryEmail %>" type="email">
-                                <button class="button margin-10-0" type="submit">Modifier l'email secondaire</button>
-                            </form>
-                        <% } %>
                     <% } %>
                     <hr />
-                </div>
+                </div> 
             </div>
-
         </div>
     </div>
 

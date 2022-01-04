@@ -15,12 +15,12 @@
 
         <div class="collapse">
             <h6 class="margin-10-0 collapse-header">
-                <button aria-expanded="false">
+                <button aria-expanded="true">
                     Bilans d'investigations
-                    <div class="icon fa fa-chevron-down"></div>
+                    <div class="icon fa fa-chevron-up"></div>
                 </button>
             </h6>
-            <div hidden class="collapse-content">
+            <div class="collapse-content">
                 <% if (investigationReportsIframeURL) { %>
                 <iframe src="<%= investigationReportsIframeURL %>"
                         frameborder="0" onmousewheel="" width="100%" height="533"

@@ -158,6 +158,15 @@ export function inviteUserByUsernameToOrganization(username, org) {
   });
 }
 
+export function addUserToTeam(username, org, team_slug) {
+  const octokit = createOctokitAuth();
+  return octokit.request('PUT /orgs/{org}/teams/{team_slug}/memberships/{username}', {
+    org,
+    team_slug,
+    username,
+  });
+}
+
 export function removeUserByUsernameFromOrganization(username, org) {
   const octokit = createOctokitAuth();
   return octokit.request('DELETE /orgs/{org}/memberships/{username}', {

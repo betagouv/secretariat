@@ -16,6 +16,7 @@ beforeEach(() => {
   utils.mockSlackGeneral();
   utils.mockSlackSecretariat();
   utils.mockOvhTime();
+  utils.mockOvhUserResponder();
   utils.mockOvhUserEmailInfos();
   utils.mockOvhAllEmailInfos();
   utils.mockOvhRedirectionWithQueries();
