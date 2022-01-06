@@ -26,33 +26,35 @@
                             <span class="font-weight-bold">Mission :</span>
                             du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
                             <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %><br>
-                            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
+                        <!-- <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
                         </p>
-                        <section id="update-end-date-form" style="display:none" class="panel">
-                            <form action="/users/<%= userInfos.id %>/end-date" method="POST">
-                                <input type="hidden" name="_method" value="PUT">
-                                <input type="hidden" name="start" value="<%= userInfos.start %>">
-                                <input type="hidden" name="end" value="<%= userInfos.end %>">
-                                <p>
-                                    <strong>Date de fin actuelle :</strong>
-                                    <% if (userInfos.end) { %>
-                                        <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
-                                    <% } else { %>
-                                        Non renseignée
-                                    <% } %>
-                                </p>
-                                <div class="form__group">
-                                    <label for="end">
-                                        <strong>Nouvelle date de fin</strong>
-                                    </label>
-                                    <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                                </div>
-                                <div class="form__group button__group">
-                                    <button class="button" type="submit">Valider</button>
-                                    <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
-                                </div>
-                            </form>
-                        </section>
+            <section id="update-end-date-form" style="display:none" class="panel">
+                <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="start" value="<%= userInfos.start %>">
+                    <input type="hidden" name="end" value="<%= userInfos.end %>">
+                    <p>
+                        <strong>Date de fin actuelle :</strong>
+                        <% if (userInfos.end) { %>
+                            <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                        <% } else { %>
+                            Non renseignée
+                        <% } %>
+                    </p>
+                    <div class="form__group">
+                        <label for="end">
+                            <strong>Nouvelle date de fin</strong>
+                        </label>
+                        <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                    </div>
+                    <div class="form__group button__group">
+                        <button class="button" type="submit">Valider</button>
+                        <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                    </div>
+                </form>
+            </section> -->
+                        </p>
                     <% } %>
                     <% if (userInfos.employer) { %>
                         <p>
@@ -77,7 +79,81 @@
                     <img width="100%" src="/static/images/logo-betagouv.jpg" />
                 </div>
             </div>
-            <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="update-end-date">
+                        Mettre à jour ma date de fin
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <section id="update-end-date-form" class="panel">
+                        <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="hidden" name="start" value="<%= userInfos.start %>">
+                            <input type="hidden" name="end" value="<%= userInfos.end %>">
+                            <p>
+                                <strong>Date de fin actuelle :</strong>
+                                <% if (userInfos.end) { %>
+                                    <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                                <% } else { %>
+                                    Non renseignée
+                                <% } %>
+                            </p>
+                            <div class="form__group">
+                                <label for="end">
+                                    <strong>Nouvelle date de fin</strong>
+                                </label>
+                                <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                            <div class="form__group button__group">
+                                <button class="button" type="submit">Valider</button>
+                                <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                            </div>
+                        </form>
+                    </section>
+                    <hr />
+                </div>
+            </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="webmail">
+                        Mettre à jour ma fiche
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a> 
+                    <hr />
+                </div>
+            </div>
+            <!-- <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
+            <section id="update-end-date-form" style="display:none" class="panel">
+                <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                    <input type="hidden" name="_method" value="PUT">
+                    <input type="hidden" name="start" value="<%= userInfos.start %>">
+                    <input type="hidden" name="end" value="<%= userInfos.end %>">
+                    <p>
+                        <strong>Date de fin actuelle :</strong>
+                        <% if (userInfos.end) { %>
+                            <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                        <% } else { %>
+                            Non renseignée
+                        <% } %>
+                    </p>
+                    <div class="form__group">
+                        <label for="end">
+                            <strong>Nouvelle date de fin</strong>
+                        </label>
+                        <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                    </div>
+                    <div class="form__group button__group">
+                        <button class="button" type="submit">Valider</button>
+                        <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                    </div>
+                </form>
+            </section> -->
         </div>
         <div class="panel margin-top-0">
             <h3>
