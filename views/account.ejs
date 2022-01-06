@@ -133,10 +133,9 @@
             <% if (emailInfos) { %>
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
             <% } %>
-
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="configure-email">
                         Configurer mon client mail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -150,7 +149,7 @@
             </div>
             <div class="collapse" id="responder">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="automatic-response">
                         Configurer une réponse automatique
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -204,8 +203,8 @@
                 </div>
             </div>
             <div class="collapse">
-                <h6 class="margin-10-0 collapse-header" id="password">
-                    <button aria-expanded="false">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="password">
                         Changer mon mot de passe
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -231,7 +230,7 @@
 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="webmail">
                         Accéder au webmail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -249,7 +248,7 @@
 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="redirect-email">
                         Rediriger vers une autre adresse mail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -296,7 +295,7 @@
             </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="change-primary-email">
                         Configurer mon email principal
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -320,7 +319,7 @@
             </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="change-secondary-email">
                         Configurer mon email secondaire
                         <div class="icon fa fa-chevron-down"></div>
                     </button>

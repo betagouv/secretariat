@@ -5,10 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(headings, heading => {
         let btn = heading.querySelector('button')
         let target = heading.nextElementSibling
-
-        btn.onclick = () => {
-            let expanded = btn.getAttribute('aria-expanded') === 'true' || false
-
+        let toggleExpand = (expanded) => {
             if (expanded) {
                 btn.querySelector('div').classList.replace('fa-chevron-up', 'fa-chevron-down');
             } else {
@@ -17,6 +14,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             btn.setAttribute('aria-expanded', !expanded)
             target.hidden = expanded
+        }
+        btn.onclick = () => {
+            let expanded = btn.getAttribute('aria-expanded') === 'true' || false
+            toggleExpand(expanded)
+        }
+
+        let hash = window.location.hash.replace('#', '')
+        if (btn.id === hash) {
+            toggleExpand(false)
         }
     })
 });
