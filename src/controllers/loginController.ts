@@ -10,7 +10,7 @@ function renderLogin(req, res, params) {
     // init params
     currentUser: undefined,
     domain: config.domain,
-    nextParam: req.query.next ? `?next=${req.query.next}` : '',
+    nextParam: req.query.next ? `?next=${req.query.next}&anchor=${req.query.anchor}` : '',
     // enrich params
     errors: req.flash('error'),
     messages: req.flash('message'),
@@ -75,7 +75,7 @@ export async function getLogin(req, res) {
 
 export async function postLogin(req, res) {
   const formValidationErrors = [];
-  const nextParam = req.query.next ? `?next=${req.query.next}` : '';
+  const nextParam = req.query.next ? `?next=${req.query.next}&anchor=${req.query.anchor}` : '';
   const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
   if (formValidationErrors.length) {
@@ -112,7 +112,7 @@ export async function postLogin(req, res) {
   }
 
   const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-  const loginUrl: URL = new URL(secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl));
+  const loginUrl: URL = new URL(secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl) + (req.query.anchor ? `#${req.query.anchor}` : ''));
 
   try {
     const token = generateToken();
