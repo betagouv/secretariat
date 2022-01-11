@@ -63,7 +63,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.header.location.should.equal('/login?next=/users');
+          res.header.location.should.equal('/login?next=/users&anchor=password');
           done();
         });
     });
