@@ -75,8 +75,7 @@ app.use(async (req, res, next) => {
     await knex('login_tokens').where({ email: dbToken.email }).del();
 
     res.cookie('token', getJwtTokenForUser(dbToken.username));
-    let anchor = req.query.anchor ? `#${req.query.anchor}` : ''
-    return res.redirect(`${req.path}${anchor}`);
+    return res.redirect(`${req.path}`);
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     return next(err);
