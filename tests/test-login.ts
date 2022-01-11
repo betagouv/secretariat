@@ -37,10 +37,25 @@ describe('Login', () => {
   //   });
   // });
 
-  describe('POST /login with next query param', () => {
+  describe('POST /login with next query param and anchor', () => {
     it('should keep the next query param', (done) => {
       chai.request(app)
         .post('/login?next=/users')
+        .type('form')
+        .send({
+          emailInput: 'test@',
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.header.location.should.equal('/login?next=/users');
+          done();
+        });
+    });
+
+    it('should keep the anchor query param', (done) => {
+      chai.request(app)
+        .post('/login?next=/users&anchor=password')
         .type('form')
         .send({
           emailInput: '',
@@ -237,6 +252,32 @@ describe('Login', () => {
           })
     
       sendEmailStub.calledOnce.should.be.true;
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal(`membre.actif@${config.domain}`);
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: null,
+      })
+    });
+
+    it('should email with anchor query params has a hash element in url', async () => {
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+
+      await chai.request(app)
+          .post('/login?next=/account&anchor=password')
+          .type('form')
+          .send({
+            emailInput: `membre.actif@${config.domain}`,
+          })
+    
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.args[0][2].should.include('/account')
+      sendEmailStub.args[0][2].should.include('#password')
       const destinationEmail = sendEmailStub.args[0][0];
       destinationEmail.should.equal(`membre.actif@${config.domain}`);
       await knex('users').where({
