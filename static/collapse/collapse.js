@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
             toggleExpand(expanded)
         }
 
-        let hash = window.location.hash.replace('#', '')
+        const search = new URLSearchParams(window.location.search.replace('?', ''))
+        let hash = window.location.hash.replace('#', '') || search.get('anchor')
         if (btn.id === hash) {
             toggleExpand(false)
         }
