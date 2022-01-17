@@ -73,7 +73,50 @@ describe('invite users to mattermost', () => {
     result.length.should.be.equal(2);
   });
 
+  it('does not create users to team by emails if email pending', async () => {
+
+    await knex('users').where({
+      username: 'mattermost.newuser'
+    }).update({
+      primary_email_status: 'EMAIL_PENDING_CREATION',
+      primary_email_status_updated_at: new Date()
+    })
+
+    nock(/.*ovh.com/)
+      .get(/^.*email\/domain\/.*\/account/)
+      .reply(
+        200,
+        testUsers.map((user) => user.id)
+      );
+
+    nock(/.*mattermost.incubateur.net/)
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [...mattermostUsers]);
+    nock(/.*mattermost.incubateur.net/)
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
+    nock(/.*mattermost.incubateur.net/)
+      .post(/^.*api\/v4\/users\?iid=.*/)
+      .reply(200, [])
+      .persist();
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, testUsers)
+      .persist();
+    const { createUsersByEmail } = mattermostScheduler;
+    const result = await createUsersByEmail();
+    result.length.should.be.equal(0);
+  });
+
   it('create users to team by emails', async () => {
+    await knex('users').where({
+      username: 'mattermost.newuser'
+    }).update({
+      primary_email_status: 'EMAIL_ACTIVE',
+      primary_email_status_updated_at: new Date()
+    })
     nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)
       .reply(

@@ -174,7 +174,7 @@ describe('send message on contract end to user', () => {
     })
   });
 
-  it('should delete user ovh account', async () => {
+  it('should delete user ovh account if email status suspended for more than 30 days', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -193,12 +193,30 @@ describe('send message on contract end to user', () => {
         },
       ])
       .persist();
+      await knex('users').where({
+        username: 'membre.expire'
+      }).update({
+        primary_email_status: 'EMAIL_SUSPENDED',
+        primary_email_status_updated_at: new Date()
+      })
     const ovhEmailDeletion = nock(/.*ovh.com/)
       .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
       .reply(200);
     await deleteOVHEmailAcounts();
+    ovhEmailDeletion.isDone().should.be.false;
+    const today = new Date()
+    const todayLess30days = new Date()
+    todayLess30days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'membre.expire'
+    }).update({
+      primary_email_status: 'EMAIL_SUSPENDED',
+      primary_email_status_updated_at: todayLess30days
+    })
+    await deleteOVHEmailAcounts();
     ovhEmailDeletion.isDone().should.be.true;
   });
+
   it('should delete user secondary_email', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
@@ -218,9 +236,14 @@ describe('send message on contract end to user', () => {
         },
       ])
       .persist();
+    const today = new Date()
+    const todayLess60days = new Date()
+    todayLess60days.setDate(today.getDate() - 61)
     await knex('users').where({
       username: 'julien.dauphant',
     }).update({
+      primary_email_status: 'EMAIL_DELETED',
+      primary_email_status_updated_at: todayLess60days,
       secondary_email: 'uneadressesecondaire@gmail.com',
     });
     await deleteSecondaryEmailsForUsers();

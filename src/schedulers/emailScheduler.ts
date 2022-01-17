@@ -1,27 +1,11 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
 import BetaGouv from '../betagouv';
-import { createRequestForUser } from '../controllers/marrainageController';
-import { createEmail } from '../controllers/usersController';
+import { createEmail, setEmailActive, setEmailSuspended } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
 import { DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
-
-const createMarrainage = async (user) => {
-  const dateInTwoMonth = new Date();
-  dateInTwoMonth.setMonth(dateInTwoMonth.getMonth() + 2);
-  const userStartDate = new Date(user.start);
-  if (userStartDate < dateInTwoMonth) {
-    try {
-      // create marrainage request
-      await createRequestForUser(user.id);
-    } catch (e) {
-      // marrainage may fail if no member available
-      console.warn(e);
-    }
-  }
-}
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -32,22 +16,38 @@ const getValidUsers = async () => {
   return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
+export async function setEmailAddressesActive() {
+  const now = Date.now()
+  const dbUsers : DBUser[] = await knex('users')
+    .whereIn('primary_email_status', ['EMAIL_CREATION_PENDING', 'EMAIL_RECRETION_PENDING'])
+  const githubUsers: Member[] = await getValidUsers();
+  const concernedUsers : DBUser[] = dbUsers.filter((user) => {
+    const tenMinutes = 10 * 1000 * 60
+    const dateEmailCreated = new Date(user.primary_email_status_updated_at)
+    const emailCreatedOver10minAgo = now - dateEmailCreated > tenMinutes
+    return githubUsers.find((x) => user.username === x.id) && emailCreatedOver10minAgo;
+  })
+  concernedUsers
+  return Promise.all(
+    concernedUsers.map(async (user) => {
+      await setEmailActive(user.username)
+      // once email created we create marrainage
+    })
+  );
+}
+
 export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
 
-  const concernedUsers = githubUsers.reduce((acc, user) => {
-    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
-    if (dbUser) {
-      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
-    }
-    return acc;
-  }, []);
+  const concernedUsers : Member[] = githubUsers.filter((user) => {
+    return dbUsers.find((x) => x.username === user.id);
+  })
 
-  const allOvhEmails = await BetaGouv.getAllEmailInfos();
-  const unregisteredUsers = _.differenceWith(
+  const allOvhEmails : string[] = await BetaGouv.getAllEmailInfos();
+  const unregisteredUsers : Member[] = _.differenceWith(
     concernedUsers,
     allOvhEmails,
     differenceGithubOVH
@@ -59,31 +59,39 @@ export async function createEmailAddresses() {
   // create email and marrainage
   return Promise.all(
     unregisteredUsers.map(async (user) => {
-      await createEmail(user.id, 'Secretariat cron', user.toEmail)
+        await createEmail(user.id, 'Secretariat cron')
       // once email created we create marrainage
-      await createMarrainage(user)
     })
   );
 }
 
 export async function reinitPasswordEmail() {
-  const users = await BetaGouv.usersInfos();
-  const expiredUsers = utils.getExpiredUsersForXDays(users, 1);
+  const users : Member[] = await BetaGouv.usersInfos();
+  const expiredUsers : Member[] = utils.getExpiredUsers(users, 1);
+  const dbUsers : DBUser[] = await knex('users')
+    .whereIn(
+      'username', expiredUsers.map(user => user.id)
+    )
+    .andWhere({
+      primary_email_status: 'EMAIL_ACTIVE'
+    }
+  )
 
   return Promise.all(
-    expiredUsers.map(async (user) => {
+    dbUsers.map(async (user) => {
       const newPassword = crypto
         .randomBytes(16)
         .toString('base64')
         .slice(0, -2);
       try {
-        await BetaGouv.changePassword(user.id, newPassword);
+        await BetaGouv.changePassword(user.username, newPassword);
+        await setEmailSuspended(user.username)
         console.log(
-          `Le mot de passe de ${user.fullname} a été modifié car son contrat finissait le ${user.end}.`
+          `Le mot de passe de ${user.username} a été modifié car son contrat finissait le ${new Date()}.`
         );
       } catch (err) {
         console.log(
-          `Le mode de passe de ${user.fullname} n'a pas pu être modifié: ${err}`
+          `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`
         );
       }
     })

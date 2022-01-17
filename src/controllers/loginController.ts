@@ -100,7 +100,7 @@ export async function postLogin(req, res) {
         const dbResponse = await knex('users')
         .select()
         .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-        .orWhereRaw('LOWER(primary_email) = ?', emailInput)
+        .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = 'EMAIL_ACTIVE')`, emailInput)
         username = dbResponse[0].username;
       } catch (e) {
         req.flash(

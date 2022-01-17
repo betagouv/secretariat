@@ -1,11 +1,11 @@
 import { CronJob } from 'cron';
 import config from '../config';
-import { createEmailAddresses, reinitPasswordEmail } from './emailScheduler';
+import { createEmailAddresses, reinitPasswordEmail, setEmailAddressesActive } from './emailScheduler';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from './githubScheduler';
-import { reloadMarrainages } from './marrainageScheduler';
+import { reloadMarrainages, createMarrainages } from './marrainageScheduler';
 import {
   createUsersByEmail,
   moveUsersToAlumniTeam,
@@ -66,6 +66,18 @@ const jobs: Job[] = [
     onTick: reloadMarrainages,
     isActive: true,
     name: 'reloadMarrainageJob',
+  },
+  {
+    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    onTick: createMarrainages,
+    isActive: true,
+    name: 'createMarrainages',
+  },
+  {
+    cronTime: '* */8 * * * *',
+    onTick: setEmailAddressesActive,
+    isActive: true,
+    name: 'setEmailAddressesActive'
   },
   {
     cronTime: '0 */4 * * * *',

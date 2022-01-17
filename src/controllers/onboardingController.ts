@@ -185,7 +185,9 @@ export async function postForm(req, res) {
       .insert({
         username,
         primary_email: primaryEmail,
-        secondary_email: secondaryEmail
+        secondary_email: secondaryEmail,
+        primary_email_status: isEmailBetaAsked ? 'EMAIL_PENDING_CREATION' : 'EMAIL_ACTIVE',
+        primary_email_status_updated_at: new Date()
       })
       .onConflict('username')
       .merge();

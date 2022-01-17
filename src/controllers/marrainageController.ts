@@ -248,7 +248,6 @@ export async function acceptRequest(req, res) {
     )
     const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder.id )
     const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer.id )
-    console.log(dbOnboarder, dbNewcomer)
     try {
       await utils.sendMail(
         dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id),

@@ -1,5 +1,9 @@
+import _ from 'lodash/array';
+
 import knex from '../db';
 import { reloadMarrainage } from '../controllers/marrainageController';
+import { createRequestForUser } from '../controllers/marrainageController';
+import { DBUser } from '../models/dbUser';
 
 export async function reloadMarrainages() {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -30,3 +34,27 @@ export async function reloadMarrainages() {
     .then(() => console.log('Cron de marrainage terminé'))
     .catch(console.error);
 }
+
+export async function createMarrainages() {
+  console.log('Demarrage du cron job pour créer les marrainages');
+  const dateFeatureAdded = new Date('12/01/2021');
+  const users : DBUser[] = await knex('users').where({
+    primary_email_status: 'EMAIL_ACTIVE',
+  }).andWhere('created_at', '<', dateFeatureAdded)
+  const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
+  const userWithoutMarrainage = _.differenceWith(users, marrainages, (user, marrainage) => user.id === marrainage.newcomer)
+  const createMarrainagePromises = await userWithoutMarrainage.map(async(user: DBUser) => {
+    try {
+      // create marrainage request
+      await createRequestForUser(user.username);
+    } catch (e) {
+      // marrainage may fail if no member available
+      console.warn(e);
+    }
+  })
+
+  return Promise.all(createMarrainagePromises)
+    .then(() => console.log('Cron de création de marrainage terminé'))
+    .catch(console.error);
+}
+

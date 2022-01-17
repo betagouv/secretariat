@@ -171,6 +171,7 @@ export async function sendJ30Email(users) {
 
 export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
   let expiredUsers: Member[] = optionalExpiredUsers;
+  let dbUsers : DBUser[];
   if (!expiredUsers) {
     const users: Member[] = await BetaGouv.usersInfos();
     const allOvhEmails = await BetaGouv.getAllEmailInfos();
@@ -179,18 +180,64 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
         utils.checkUserIsExpired(user, 30) && allOvhEmails.includes(user.id)
       );
     });
+    const today = new Date();
+    const todayLess30days = new Date()
+    todayLess30days.setDate(today.getDate() - 30)
+    dbUsers = await knex('users')
+      .whereIn('username', expiredUsers.map(user => user.id))
+      .andWhere({ primary_email_status: 'EMAIL_SUSPENDED' })
+      .where('primary_email_status_updated_at', '<', todayLess30days)
   }
-  for (const user of expiredUsers) {
+  for (const user of dbUsers) {
     try {
-      await BetaGouv.deleteEmail(user.id);
-      console.log(`Suppression de l'email ovh pour ${user.id}`);
+      await BetaGouv.deleteEmail(user.username);
+      await knex('users').where({
+        username: user.username
+      }).update({
+        primary_email_status: 'EMAIL_DELETED'
+      })
+      console.log(`Suppression de l'email ovh pour ${user.username}`);
     } catch {
       console.log(
-        `Erreur lors de la suppression de l'email ovh pour ${user.id}`
+        `Erreur lors de la suppression de l'email ovh pour ${user.username}`
       );
     }
   }
 }
+
+export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
+  let expiredUsers: Member[] = optionalExpiredUsers;
+  let dbUsers : DBUser[];
+  if (!expiredUsers) {
+    const users: Member[] = await BetaGouv.usersInfos();
+    const allOvhEmails = await BetaGouv.getAllEmailInfos();
+    expiredUsers = users.filter((user) => {
+      return (
+        utils.checkUserIsExpired(user, 30) && !allOvhEmails.includes(user.id)
+      );
+    });
+    dbUsers = await knex('users')
+      .whereIn('username', expiredUsers.map(user => user.id))
+      .andWhere({ primary_email_status: 'EMAIL_SUSPENDED' })
+      .andWhereRaw(` primary_email_status_updated_at > ${Date.now() + 30}
+        and not primary_email LIKE %@${config.domain}% `)
+  }
+  for (const user of dbUsers) {
+    try {
+      await knex('users').where({
+        username: user.username
+      }).update({
+        primary_email_status: 'EMAIL_EXPIRED'
+      })
+      console.log(`Suppression de l'email ovh pour ${user.username}`);
+    } catch {
+      console.log(
+        `Erreur lors de la suppression de l'email ovh pour ${user.username}`
+      );
+    }
+  }
+}
+
 
 export async function deleteSecondaryEmailsForUsers(
   optionalExpiredUsers?: Member[]
@@ -200,8 +247,13 @@ export async function deleteSecondaryEmailsForUsers(
     const users: Member[] = await BetaGouv.usersInfos();
     expiredUsers = users.filter((user) => utils.checkUserIsExpired(user, 30));
   }
+  const today = new Date();
+  const todayLess30days = new Date()
+  todayLess30days.setDate(today.getDate() - 30)
   const dbUsers: DBUser[] = await knex('users')
     .whereNotNull('secondary_email')
+    .whereIn('primary_email_status', ['EMAIL_DELETED', 'EMAIL_EXPIRED'])
+    .where('primary_email_status_updated_at', '<', todayLess30days)
     .whereIn(
       'username',
       expiredUsers.map((user) => user.id)

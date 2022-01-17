@@ -18,9 +18,10 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWi
     const dbUser = dbUsers.find((x) => x.username === user.id);
     return {
       ...user,
+      primary_email_status: dbUser ? dbUser.primary_email_status : undefined,
       primary_email: dbUser ? dbUser.primary_email : undefined
     };
-  }).filter(user => user.primary_email);
+  }).filter(user => user.primary_email && user.primary_email_status === 'EMAIL_ACTIVE');
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
