@@ -24,7 +24,7 @@ export async function setEmailAddressesActive() {
   const concernedUsers : DBUser[] = dbUsers.filter((user) => {
     const tenMinutes = 10 * 1000 * 60
     const dateEmailCreated = new Date(user.primary_email_status_updated_at)
-    const emailCreatedOver10minAgo = now - dateEmailCreated > tenMinutes
+    const emailCreatedOver10minAgo = ((now - dateEmailCreated.getTime()) > tenMinutes)
     return githubUsers.find((x) => user.username === x.id) && emailCreatedOver10minAgo;
   })
   concernedUsers

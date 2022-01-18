@@ -13,4 +13,5 @@ export interface DBUser {
     username: string;
     created_at: Date;
     primary_email_status: EventCode;
+    primary_email_status_updated_at: Date;
 }
