@@ -17,17 +17,16 @@ const getValidUsers = async () => {
 };
 
 export async function setEmailAddressesActive() {
-  const now = Date.now()
+  const tenMinutesInMs : number = 10 * 1000 * 60
+  const nowLessTenMinutes : Date = new Date(Date.now() - tenMinutesInMs)
   const dbUsers : DBUser[] = await knex('users')
     .whereIn('primary_email_status', [EmailStatusCode.EMAIL_CREATION_PENDING, EmailStatusCode.EMAIL_RECREATION_PENDING])
-  const githubUsers: Member[] = await getValidUsers();
+    .where('primary_email_status_updated_at', '<', nowLessTenMinutes)
+    const githubUsers: Member[] = await getValidUsers();
   const concernedUsers : DBUser[] = dbUsers.filter((user) => {
-    const tenMinutes = 10 * 1000 * 60
-    const dateEmailCreated = new Date(user.primary_email_status_updated_at)
-    const emailCreatedOver10minAgo = ((now - dateEmailCreated.getTime()) > tenMinutes)
-    return githubUsers.find((x) => user.username === x.id) && emailCreatedOver10minAgo;
+    console.log('LCS SET EMAIL ADRESSES', user, githubUsers)
+    return githubUsers.find((x) => user.username === x.id);
   })
-  concernedUsers
   return Promise.all(
     concernedUsers.map(async (user) => {
       await setEmailActive(user.username)

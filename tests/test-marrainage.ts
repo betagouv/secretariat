@@ -463,7 +463,8 @@ describe('Marrainage', () => {
   describe('cronjob', () => {
 
     it('should create marrainage requests', async () => {
-      const [ membreNouveau ] = await knex('users').where({ username:  'membre.nouveau'}).update({
+      const [ membreNouveau ] = await knex('users')
+      .where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         created_at: new Date()
       }).returning('*')
