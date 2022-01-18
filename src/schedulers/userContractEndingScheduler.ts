@@ -4,7 +4,7 @@ import * as utils from '../controllers/utils';
 import knex from '../db';
 import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
-import { DBUser } from '../models/dbUser';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member, MemberWithPrimaryEmailAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
 import config from '../config';
@@ -186,7 +186,7 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
     todayLess30days.setDate(today.getDate() - 30)
     dbUsers = await knex('users')
       .whereIn('username', expiredUsers.map(user => user.id))
-      .andWhere({ primary_email_status: 'EMAIL_SUSPENDED' })
+      .andWhere({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
       .where('primary_email_status_updated_at', '<', todayLess30days)
   }
   for (const user of dbUsers) {
@@ -195,7 +195,7 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
       await knex('users').where({
         username: user.username
       }).update({
-        primary_email_status: 'EMAIL_DELETED'
+        primary_email_status: EmailStatusCode.EMAIL_DELETED
       })
       console.log(`Suppression de l'email ovh pour ${user.username}`);
     } catch {
@@ -219,7 +219,7 @@ export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
     });
     dbUsers = await knex('users')
       .whereIn('username', expiredUsers.map(user => user.id))
-      .andWhere({ primary_email_status: 'EMAIL_SUSPENDED' })
+      .andWhere({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
       .andWhereRaw(` primary_email_status_updated_at > ${Date.now() + 30}
         and not primary_email LIKE %@${config.domain}% `)
   }
@@ -228,7 +228,7 @@ export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
       await knex('users').where({
         username: user.username
       }).update({
-        primary_email_status: 'EMAIL_EXPIRED'
+        primary_email_status: EmailStatusCode.EMAIL_EXPIRED
       })
       console.log(`Suppression de l'email ovh pour ${user.username}`);
     } catch {
@@ -253,7 +253,7 @@ export async function deleteSecondaryEmailsForUsers(
   todayLess30days.setDate(today.getDate() - 30)
   const dbUsers: DBUser[] = await knex('users')
     .whereNotNull('secondary_email')
-    .whereIn('primary_email_status', ['EMAIL_DELETED', 'EMAIL_EXPIRED'])
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_DELETED, EmailStatusCode.EMAIL_EXPIRED])
     .where('primary_email_status_updated_at', '<', todayLess30days)
     .whereIn(
       'username',

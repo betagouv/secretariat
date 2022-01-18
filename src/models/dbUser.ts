@@ -1,4 +1,4 @@
-export enum EventCode {
+export enum EmailStatusCode {
     EMAIL_ACTIVE="EMAIL_ACTIVE",
     EMAIL_SUSPENDED="EMAIL_SUSPENDED",
     EMAIL_DELETED="EMAIL_DELETED",
@@ -12,6 +12,6 @@ export interface DBUser {
     primary_email?: string;
     username: string;
     created_at: Date;
-    primary_email_status: EventCode;
+    primary_email_status: EmailStatusCode;
     primary_email_status_updated_at: Date;
 }

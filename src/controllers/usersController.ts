@@ -6,7 +6,7 @@ import * as utils from "./utils";
 import knex from "../db/index";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
-import { DBUser } from "../models/dbUser";
+import { DBUser, EmailStatusCode } from "../models/dbUser";
 
 export async function createEmail(username, creator) {
   const email = utils.buildBetaEmail(username);
@@ -24,7 +24,7 @@ export async function createEmail(username, creator) {
     username,
   }).update({
     primary_email: email,
-    primary_email_status: 'EMAIL_CREATION_PENDING',
+    primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
     primary_email_status_updated_at: new Date()
   })
 
@@ -44,11 +44,11 @@ export async function setEmailActive(username) {
   const [ user ] : DBUser[] = await knex('users').where({
     username,
   })
-  const shouldSendWelcomeEmail = user.primary_email_status === 'EMAIL_CREATION_PENDING'
+  const shouldSendWelcomeEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
   await knex('users').where({
     username,
   }).update({
-    primary_email_status: 'EMAIL_ACTIVE',
+    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     primary_email_status_updated_at: new Date()
   })
   console.log(
@@ -63,7 +63,7 @@ export async function setEmailSuspended(username) {
   const [ user ] : DBUser[] = await knex('users').where({
     username,
   }).update({
-    primary_email_status: 'EMAIL_ACTIVE',
+    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     primary_email_status_updated_at: new Date()
   }).returning('*')
   console.log(
@@ -291,9 +291,9 @@ export async function updatePasswordForUser(req, res) {
     })
     await BetaGouv.sendInfoToChat(message);
     await BetaGouv.changePassword(username, password);
-    if (dbUser.primary_email_status === 'EMAIL_SUSPENDED') {
+    if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
       knex('users').where({ username }).update({
-        primary_email_status: 'EMAIL_ACTIVE',
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         primary_email_updated_at: Date.now()
       })
     }

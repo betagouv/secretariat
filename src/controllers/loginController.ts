@@ -4,6 +4,7 @@ import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
 import * as utils from './utils';
+import { EmailStatusCode } from '../models/dbUser';
 
 function renderLogin(req, res, params) {
   res.render('login', {
@@ -100,7 +101,7 @@ export async function postLogin(req, res) {
         const dbResponse = await knex('users')
         .select()
         .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-        .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = 'EMAIL_ACTIVE')`, emailInput)
+        .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
         username = dbResponse[0].username;
       } catch (e) {
         req.flash(

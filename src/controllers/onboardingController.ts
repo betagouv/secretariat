@@ -5,6 +5,7 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
+import { EmailStatusCode } from '../models/dbUser';
 
 
 function createBranchName(username) {
@@ -186,7 +187,7 @@ export async function postForm(req, res) {
         username,
         primary_email: primaryEmail,
         secondary_email: secondaryEmail,
-        primary_email_status: isEmailBetaAsked ? 'EMAIL_PENDING_CREATION' : 'EMAIL_ACTIVE',
+        primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_CREATION_PENDING : EmailStatusCode.EMAIL_ACTIVE,
         primary_email_status_updated_at: new Date()
       })
       .onConflict('username')

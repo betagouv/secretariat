@@ -7,6 +7,7 @@ import utils from './utils';
 import * as mattermost from '../src/lib/mattermost';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
+import { EmailStatusCode } from '../src/models/dbUser'
 
 const mattermostUsers = [
   {
@@ -78,7 +79,7 @@ describe('invite users to mattermost', () => {
     await knex('users').where({
       username: 'mattermost.newuser'
     }).update({
-      primary_email_status: 'EMAIL_PENDING_CREATION',
+      primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
       primary_email_status_updated_at: new Date()
     })
 
@@ -114,7 +115,7 @@ describe('invite users to mattermost', () => {
     await knex('users').where({
       username: 'mattermost.newuser'
     }).update({
-      primary_email_status: 'EMAIL_ACTIVE',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
       primary_email_status_updated_at: new Date()
     })
     nock(/.*ovh.com/)

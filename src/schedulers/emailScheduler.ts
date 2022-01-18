@@ -4,7 +4,7 @@ import BetaGouv from '../betagouv';
 import { createEmail, setEmailActive, setEmailSuspended } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
-import { DBUser } from '../models/dbUser';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member } from '../models/member';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
@@ -19,7 +19,7 @@ const getValidUsers = async () => {
 export async function setEmailAddressesActive() {
   const now = Date.now()
   const dbUsers : DBUser[] = await knex('users')
-    .whereIn('primary_email_status', ['EMAIL_CREATION_PENDING', 'EMAIL_RECRETION_PENDING'])
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_CREATION_PENDING, EmailStatusCode.EMAIL_RECREATION_PENDING])
   const githubUsers: Member[] = await getValidUsers();
   const concernedUsers : DBUser[] = dbUsers.filter((user) => {
     const tenMinutes = 10 * 1000 * 60
@@ -73,7 +73,7 @@ export async function reinitPasswordEmail() {
       'username', expiredUsers.map(user => user.id)
     )
     .andWhere({
-      primary_email_status: 'EMAIL_ACTIVE'
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     }
   )
 

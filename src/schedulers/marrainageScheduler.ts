@@ -3,7 +3,7 @@ import _ from 'lodash/array';
 import knex from '../db';
 import { reloadMarrainage } from '../controllers/marrainageController';
 import { createRequestForUser } from '../controllers/marrainageController';
-import { DBUser } from '../models/dbUser';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
 
 export async function reloadMarrainages() {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -39,7 +39,7 @@ export async function createMarrainages() {
   console.log('Demarrage du cron job pour créer les marrainages');
   const dateFeatureAdded = new Date('12/01/2021');
   const users : DBUser[] = await knex('users').where({
-    primary_email_status: 'EMAIL_ACTIVE',
+    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
   }).andWhere('created_at', '<', dateFeatureAdded)
   const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
   const userWithoutMarrainage = _.differenceWith(users, marrainages, (user, marrainage) => user.id === marrainage.newcomer)

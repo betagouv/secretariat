@@ -13,6 +13,7 @@ import {
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
+import { EmailStatusCode } from '../src/models/dbUser';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
@@ -196,7 +197,7 @@ describe('send message on contract end to user', () => {
       await knex('users').where({
         username: 'membre.expire'
       }).update({
-        primary_email_status: 'EMAIL_SUSPENDED',
+        primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
         primary_email_status_updated_at: new Date()
       })
     const ovhEmailDeletion = nock(/.*ovh.com/)
@@ -210,7 +211,7 @@ describe('send message on contract end to user', () => {
     await knex('users').where({
       username: 'membre.expire'
     }).update({
-      primary_email_status: 'EMAIL_SUSPENDED',
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
       primary_email_status_updated_at: todayLess30days
     })
     await deleteOVHEmailAcounts();
@@ -242,7 +243,7 @@ describe('send message on contract end to user', () => {
     await knex('users').where({
       username: 'julien.dauphant',
     }).update({
-      primary_email_status: 'EMAIL_DELETED',
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
       primary_email_status_updated_at: todayLess60days,
       secondary_email: 'uneadressesecondaire@gmail.com',
     });

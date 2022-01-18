@@ -10,6 +10,7 @@ import knex from '../src/db';
 import app from '../src/index';
 import { reloadMarrainages, createMarrainages } from '../src/schedulers/marrainageScheduler';
 import utils from './utils';
+import { EmailStatusCode } from '../src/models/dbUser';
 
 chai.use(chaiHttp);
 
@@ -463,7 +464,7 @@ describe('Marrainage', () => {
 
     it('should create marrainage requests', async () => {
       const [ membreNouveau ] = await knex('users').where({ username:  'membre.nouveau'}).update({
-        primary_email_status: 'EMAIL_ACTIVE',
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         created_at: new Date()
       }).returning('*')
       await createMarrainages()
@@ -483,7 +484,7 @@ describe('Marrainage', () => {
     it('should send a console.warn if no marain.e available', async () => {
       utils.cleanMocks();
       await knex('users').where({ username:  'membre.nouveau'}).update({
-        primary_email_status: 'EMAIL_ACTIVE',
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         created_at: new Date()
       })
       const url = process.env.USERS_API || 'https://beta.gouv.fr';
