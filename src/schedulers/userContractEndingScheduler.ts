@@ -7,7 +7,6 @@ import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member, MemberWithPrimaryEmailAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
-import config from '../config';
 
 interface MessageConfig {
   days: number,
