@@ -476,6 +476,7 @@ describe('Marrainage', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal('membre.nouveau');
       marrainage[0].last_onboarder.should.not.be.null;
+      // run createMarrainage a second time to see if marrainage is created twice
       await createMarrainages()
       sendEmailStub.calledOnce.should.be.true;
       differenceLodashSpy.firstCall.returned([membreNouveau]).should.be.true;

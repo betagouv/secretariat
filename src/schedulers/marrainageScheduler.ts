@@ -37,6 +37,7 @@ export async function reloadMarrainages() {
 
 export async function createMarrainages() {
   console.log('Demarrage du cron job pour créer les marrainages');
+  // before this date not every user had marrainage but we don't need to create for them now
   const dateFeatureAdded = new Date('12/01/2021');
   const users : DBUser[] = await knex('users').where({
     primary_email_status: EmailStatusCode.EMAIL_ACTIVE,

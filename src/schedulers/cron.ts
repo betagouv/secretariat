@@ -68,7 +68,7 @@ const jobs: Job[] = [
     name: 'reloadMarrainageJob',
   },
   {
-    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
     onTick: createMarrainages,
     isActive: true,
     name: 'createMarrainages',

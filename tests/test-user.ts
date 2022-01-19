@@ -10,6 +10,7 @@ import app from '../src/index';
 import { createEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
+import { EmailStatusCode } from '../src/models/dbUser'
 
 chai.use(chaiHttp);
 
@@ -312,7 +313,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:username/password unauthenticated', () => {
+  describe('POST /users/:username/password authenticated', () => {
     it('should redirect to user page', (done) => {
       chai
         .request(app)
@@ -329,36 +330,77 @@ describe('User', () => {
           done();
         });
     });
-    it('should perform a password change if the email exists', (done) => {
-      nock.cleanAll();
-
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(200, { description: '' });
-
+    it('should perform a password change if the email exists', async () => {
+      utils.cleanMocks();
       utils.mockUsers();
       utils.mockOvhUserResponder();
-      utils.mockOvhRedirections();
       utils.mockSlackGeneral();
       utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      const username = 'membre.nouveau'
+      await knex('users')
+        .where({ username })
+        .update({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE })
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: username,
+          email: 'membre.nouveau@example.com',
+        }).persist();
 
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
 
-      chai
+      await chai
         .request(app)
-        .post('/users/membre.actif/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .post(`/users/${username}/password`)
+        .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
         })
-        .end((err, res) => {
-          ovhPasswordNock.isDone().should.be.true;
-          done();
-        });
+      ovhPasswordNock.isDone().should.be.true;
+      const user = await knex('users').where({ username }).first()
+
     });
+    it('should perform a password change and pass status to active if status was suspended', async () => {
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockOvhUserResponder();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      const username = 'membre.nouveau'
+      await knex('users')
+        .where({ username })
+        .update({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: username,
+          email: 'membre.nouveau@example.com',
+        }).persist();
+
+      ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+      
+      await chai
+      .request(app)
+      .post(`/users/${username}/password`)
+      .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
+      .type('form')
+      .send({
+        new_password: 'Test_Password_1234',
+      })
+      ovhPasswordNock.isDone().should.be.true;
+      const user = await knex('users').where({ username }).first()
+      user.primary_email_status.should.be.equal(EmailStatusCode.EMAIL_ACTIVE)
+    });
+
     it('should not allow a password change from delegate', (done) => {
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
@@ -821,6 +863,7 @@ describe('User', () => {
         username: newMember.id,
       }).update({
         primary_email: null,
+        primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       const val = await knex('users').where({

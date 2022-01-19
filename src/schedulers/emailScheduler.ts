@@ -24,7 +24,6 @@ export async function setEmailAddressesActive() {
     .where('primary_email_status_updated_at', '<', nowLessTenMinutes)
     const githubUsers: Member[] = await getValidUsers();
   const concernedUsers : DBUser[] = dbUsers.filter((user) => {
-    console.log('LCS SET EMAIL ADRESSES', user, githubUsers)
     return githubUsers.find((x) => user.username === x.id);
   })
   return Promise.all(
@@ -38,6 +37,7 @@ export async function setEmailAddressesActive() {
 export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_CREATION_PENDING])
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
 
@@ -75,7 +75,6 @@ export async function reinitPasswordEmail() {
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     }
   )
-
   return Promise.all(
     dbUsers.map(async (user) => {
       const newPassword = crypto

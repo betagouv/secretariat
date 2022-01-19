@@ -215,10 +215,14 @@ describe('send message on contract end to user', () => {
       primary_email_status_updated_at: todayLess30days
     })
     await deleteOVHEmailAcounts();
+    const user = await knex('users').where({
+      username: 'membre.expire'
+    }).first()
+    user.primary_email_status.should.be.equal(EmailStatusCode.EMAIL_DELETED)
     ovhEmailDeletion.isDone().should.be.true;
   });
 
-  it('should delete user secondary_email', async () => {
+  it('should not delete user secondary_email if suspended less than 30days', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -238,20 +242,70 @@ describe('send message on contract end to user', () => {
       ])
       .persist();
     const today = new Date()
-    const todayLess60days = new Date()
-    todayLess60days.setDate(today.getDate() - 61)
+    const todayLess29days = new Date()
+    todayLess29days.setDate(today.getDate() - 29)
     await knex('users').where({
       username: 'julien.dauphant',
     }).update({
       primary_email_status: EmailStatusCode.EMAIL_DELETED,
-      primary_email_status_updated_at: todayLess60days,
+      primary_email_status_updated_at: todayLess29days,
+      secondary_email: 'uneadressesecondaire@gmail.com',
+    });
+    const [user1] = await knex('users').where({
+      username: 'julien.dauphant',
+    });
+    should.equal(user1.secondary_email, 'uneadressesecondaire@gmail.com');
+
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'julien.dauphant',
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
+      primary_email_status_updated_at: todayLess31days,
       secondary_email: 'uneadressesecondaire@gmail.com',
     });
     await deleteSecondaryEmailsForUsers();
-    const users = await knex('users').where({
+    const [user2] = await knex('users').where({
       username: 'julien.dauphant',
     });
-    should.equal(users[0].secondary_email, null);
+    should.equal(user2.secondary_email, null);
+  });
+
+  it('should delete user secondary_email if suspended more than 30days', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess30days,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
+    const today = new Date()
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'julien.dauphant',
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
+      primary_email_status_updated_at: todayLess31days,
+      secondary_email: 'uneadressesecondaire@gmail.com',
+    });
+    await deleteSecondaryEmailsForUsers();
+    const [user2] = await knex('users').where({
+      username: 'julien.dauphant',
+    });
+    should.equal(user2.secondary_email, null);
     await knex('users')
       .where({
         username: 'julien.dauphant',

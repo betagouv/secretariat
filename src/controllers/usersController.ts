@@ -44,7 +44,7 @@ export async function setEmailActive(username) {
   const [ user ] : DBUser[] = await knex('users').where({
     username,
   })
-  const shouldSendWelcomeEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
+  const shouldSendEmailCreatedEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
   await knex('users').where({
     username,
   }).update({
@@ -54,8 +54,8 @@ export async function setEmailActive(username) {
   console.log(
     `Email actif pour ${user.username}`,
   );
-  if (shouldSendWelcomeEmail) {
-    sendWelcomeEmail(username)
+  if (shouldSendEmailCreatedEmail) {
+    await sendEmailCreatedEmail(username)
   }
 }
 
@@ -63,7 +63,7 @@ export async function setEmailSuspended(username) {
   const [ user ] : DBUser[] = await knex('users').where({
     username,
   }).update({
-    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
     primary_email_status_updated_at: new Date()
   }).returning('*')
   console.log(
@@ -71,7 +71,7 @@ export async function setEmailSuspended(username) {
   );
 }
 
-export async function sendWelcomeEmail(username) {
+export async function sendEmailCreatedEmail(username) {
   const [user] : DBUser[] = await knex('users').where({
     username,
   })
@@ -85,7 +85,7 @@ export async function sendWelcomeEmail(username) {
   });
 
   try {
-    await utils.sendMail(user.secondary_email || user.primary_email, 'Bienvenue chez BetaGouv 🙂', html);
+    await utils.sendMail(user.secondary_email, 'Bienvenue chez BetaGouv 🙂', html);
     console.log(
       `Email de bienvenue pour ${user.username} envoyé`,
     );
@@ -244,7 +244,6 @@ export async function deleteRedirectionForUser(req, res) {
 export async function updatePasswordForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-
   try {
     const user = await utils.userInfos(username, isCurrentUser);
 
@@ -283,21 +282,19 @@ export async function updatePasswordForUser(req, res) {
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
-
-    addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
+    await BetaGouv.changePassword(username, password);
+    await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
       created_by_username: req.user.id,
       action_on_username: username
     })
-    await BetaGouv.sendInfoToChat(message);
-    await BetaGouv.changePassword(username, password);
     if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
-      knex('users').where({ username }).update({
+      await knex('users').where({ username }).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        primary_email_updated_at: Date.now()
+        primary_email_status_updated_at: new Date()
       })
     }
-
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
+    await BetaGouv.sendInfoToChat(message);
     req.flash('message', 'Le mot de passe a bien été modifié.');
     res.redirect(`/community/${username}`);
   } catch (err) {
