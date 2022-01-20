@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
 import BetaGouv from '../betagouv';
+import config from '../config';
 import { createRequestForUser } from '../controllers/marrainageController';
 import { createEmail } from '../controllers/usersController';
 import * as utils from '../controllers/utils';
@@ -143,7 +144,7 @@ export async function unsubscribeEmailAddresses() {
   return Promise.all(
     emails.map(async (email) => {
       await BetaGouv.unsubscribeFromMailingList(config.incubateurMailingListName, email)
-      console.log(`Unsubscribe ${user.primary_email} from mailing list incubateur`)
+      console.log(`Unsubscribe ${email} from mailing list incubateur`)
     })
   );
 }
