@@ -259,7 +259,7 @@ export async function deleteRedirectionsAfterQuitting(
 const removeEmailFromMailingList = async (userId: string, mailingList:string[]) => {
   return Promise.all(mailingList.map(async (mailing: string) => {
     try {
-      await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(userId))
+      await BetaGouv.unsubscribeFromMailingList(mailing, utils.buildBetaEmail(userId))
       console.log(`Suppression de ${utils.buildBetaEmail(userId)} de la mailing list ${mailing}`)
     } catch (err) {
       console.error(`Erreur lors de la suppression de l'email ${utils.buildBetaEmail(userId)} de la mailing list ${mailing}  : ${err}`)

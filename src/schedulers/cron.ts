@@ -1,6 +1,11 @@
 import { CronJob } from 'cron';
 import config from '../config';
-import { createEmailAddresses, reinitPasswordEmail } from './emailScheduler';
+import {
+  createEmailAddresses,
+  reinitPasswordEmail,
+  subscribeEmailAddresses,
+  unsubscribeEmailAddresses,
+} from './emailScheduler';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
@@ -72,6 +77,18 @@ const jobs: Job[] = [
     onTick: createEmailAddresses,
     isActive: true,
     name: 'emailCreationJob',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: subscribeEmailAddresses,
+    isActive: !!config.featureSubscribeToIncubateurMailingList,
+    name: 'subscribeEmailAddresses',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: unsubscribeEmailAddresses,
+    isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
+    name: 'unsubscribeEmailAddresses',
   },
   {
     cronTime: '0 */5 * * * 1-5',
