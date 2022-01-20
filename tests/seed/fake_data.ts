@@ -1,17 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { buildBetaEmail } from '../../src/controllers/utils';
-import Betagouv from '../../src/betagouv';
-import knex from '../../src/db';
-
-const populatePrimaryEmail = async() => {
-  const allOvhEmails = await Betagouv.getAllEmailInfos();
-  for (const emailId of allOvhEmails) {
-      await knex('users').insert({
-          username: emailId,
-          primary_email: buildBetaEmail(emailId)
-      })
-  }
-}
+import ovh0 from 'ovh';
 
 export async function seed(knex) {
   // A few universities
@@ -59,6 +47,23 @@ export async function seed(knex) {
 
   console.log(`inserted ${newsletterList.length} fake data to newsletters table`);
 
-  populatePrimaryEmail()
+  populatePrimaryEmail(knex)
   console.log('Populate users table with existing emails')
 };
+
+const populatePrimaryEmail = async(knex) => {
+  const ovh = ovh0({
+    appKey: process.env.OVH_APP_KEY,
+    appSecret: process.env.OVH_APP_SECRET,
+    consumerKey: process.env.OVH_CONSUMER_KEY,
+  });
+  
+  const url = `/email/domain/${process.env.domain}/account/`;
+  const allOvhEmails = await ovh.requestPromised('GET', url, {});
+  for (const emailId of allOvhEmails) {
+      await knex('users').insert({
+          username: emailId,
+          primary_email: `${emailId}@${process.env.domain}`
+      })
+  }
+}
