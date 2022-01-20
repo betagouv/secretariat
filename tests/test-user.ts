@@ -7,7 +7,7 @@ import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
-import { createEmailAddresses } from '../src/schedulers/emailScheduler';
+import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
 
@@ -1141,6 +1141,86 @@ describe('User', () => {
       betagouvCreateEmail.notCalled.should.be.true;
       ovhEmailCreation.isDone().should.be.false;
       sendEmailStub.notCalled.should.be.true;
+    });
+
+    it('should subscribe user to incubateur mailing list', async () => {
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
+      utils.cleanMocks();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                start: new Date().toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+        const subscribeSpy = sinon
+            .spy(Betagouv, 'subscribeToMailingList')
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, []);
+      const ovhMailingListSubscription = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200).persist();
+
+      await subscribeEmailAddresses();
+      ovhMailingListSubscription.isDone().should.be.true;
+      subscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
+      subscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
+      subscribeSpy.restore()
+    });
+
+    it('should unsubscribe user from incubateur mailing list', async () => {
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
+      utils.cleanMocks();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                end: new Date('12/01/1991').toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+      const unsubscribeSpy = sinon
+          .spy(Betagouv, 'unsubscribeFromMailingList')
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, [`membre.nouveau@${config.domain}`]);
+      const ovhMailingListUnsubscription = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber.*/)
+        .reply(200).persist();
+
+      await unsubscribeEmailAddresses();
+      ovhMailingListUnsubscription.isDone().should.be.true;
+      unsubscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
+      unsubscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
+      unsubscribeSpy.restore()
     });
   });
 });
