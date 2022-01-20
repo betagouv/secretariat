@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
+import betagouv from '../betagouv';
 import BetaGouv from '../betagouv';
 import { createRequestForUser } from '../controllers/marrainageController';
 import { createEmail } from '../controllers/usersController';
@@ -89,3 +90,68 @@ export async function reinitPasswordEmail() {
     })
   );
 }
+
+export async function subscribeEmailAddresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNotNull('primary_email')
+
+  const githubUsers: Member[] = await getValidUsers();
+
+  const concernedUsers = githubUsers.reduce((acc, user) => {
+    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
+    if (dbUser) {
+      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
+    }
+    return acc;
+  }, []);
+
+  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
+  const unregisteredUsers = _.differenceWith(
+    concernedUsers,
+    allIncubateurSubscribers,
+    differenceGithubOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
+
+  // create email and marrainage
+  return Promise.all(
+    unregisteredUsers.map(async (user) => {
+      await BetaGouv.subscribeToMailingList('incubateur', user.primary_email)
+    })
+  );
+}
+
+export async function unsubscribeEmailAddresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNotNull('primary_email')
+  const githubUsers: Member[] = await getValidUsers();
+
+  const concernedUsers = githubUsers.reduce((acc, user) => {
+    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
+    if (dbUser) {
+      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
+    }
+    return acc;
+  }, []);
+
+  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
+  const unregisteredUsers = _.differenceWith(
+    concernedUsers,
+    allIncubateurSubscribers,
+    differenceGithubOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
+
+  // create email and marrainage
+  return Promise.all(
+    unregisteredUsers.map(async (user) => {
+      await BetaGouv.unsubscribeFromMailingList('incubateur', user.primary_email)
+    })
+  );
+}
+
+

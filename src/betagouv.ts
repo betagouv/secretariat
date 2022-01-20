@@ -286,6 +286,35 @@ const betaOVH = {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  getMailingListSubscribers: async (mailingListName: string): Promise<OvhRedirection[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+
+    try {
+      return await ovh.requestPromised('GET', url);
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhRedirection[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+    try {
+      return await ovh.requestPromised('POST', url, {
+        email
+      });
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  unsubscribeFromMailingList: async (mailingListName: string, email: string): Promise<OvhRedirection[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+    try {
+      return await ovh.requestPromised('DELETE', url, {
+        email
+      });
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   accounts: async () => {
     const url = `/email/domain/${config.domain}/account`;
 

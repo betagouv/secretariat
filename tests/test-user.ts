@@ -7,7 +7,7 @@ import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
-import { createEmailAddresses } from '../src/schedulers/emailScheduler';
+import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
 
@@ -1141,6 +1141,40 @@ describe('User', () => {
       betagouvCreateEmail.notCalled.should.be.true;
       ovhEmailCreation.isDone().should.be.false;
       sendEmailStub.notCalled.should.be.true;
+    });
+
+    it('should subscribe user to incubateur mailing list', async () => {
+
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, []);
+      const ovhMailingListSubscription = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200);
+
+      await subscribeEmailAddresses();
+      ovhMailingListSubscription.isDone().should.be.true;
+    });
+
+    it('should unsubscribe user from incubateur mailing list', async () => {
+
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, []);
+      const ovhMailingListUnsubscription = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200);
+
+      await unsubscribeEmailAddresses();
+      ovhMailingListUnsubscription.isDone().should.be.true;
     });
   });
 });
