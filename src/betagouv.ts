@@ -16,6 +16,10 @@ export interface OvhRedirection {
   id: string;
 }
 
+export interface OvhMailingList {
+  id: string
+}
+
 export interface OvhResponder {
   account: string;
   content: string;
@@ -295,7 +299,7 @@ const betaOVH = {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhRedirection[]> => {
+  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
     try {
       return await ovh.requestPromised('POST', url, {
@@ -305,7 +309,7 @@ const betaOVH = {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  unsubscribeFromMailingList: async (mailingListName: string, email: string): Promise<OvhRedirection[]> => {
+  unsubscribeFromMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
     try {
       return await ovh.requestPromised('DELETE', url, {
