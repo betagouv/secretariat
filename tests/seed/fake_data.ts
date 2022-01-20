@@ -47,7 +47,7 @@ export async function seed(knex) {
 
   console.log(`inserted ${newsletterList.length} fake data to newsletters table`);
 
-  populatePrimaryEmail(knex)
+  await populatePrimaryEmail(knex)
   console.log('Populate users table with existing emails')
 };
 
