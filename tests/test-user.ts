@@ -1178,7 +1178,7 @@ describe('User', () => {
 
       await subscribeEmailAddresses();
       ovhMailingListSubscription.isDone().should.be.true;
-      subscribeSpy.firstCall.args[0].should.equal('incubateur')
+      subscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
       subscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
       subscribeSpy.restore()
     });
@@ -1218,7 +1218,7 @@ describe('User', () => {
 
       await unsubscribeEmailAddresses();
       ovhMailingListUnsubscription.isDone().should.be.true;
-      unsubscribeSpy.firstCall.args[0].should.equal('incubateur')
+      unsubscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
       unsubscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
       unsubscribeSpy.restore()
     });

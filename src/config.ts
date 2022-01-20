@@ -64,6 +64,7 @@ export default {
   mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureReinitPasswordEmail:
     process.env.FEATURE_REINIT_PASSWORD_EMAIL || false,

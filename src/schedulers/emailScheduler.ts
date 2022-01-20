@@ -103,18 +103,19 @@ export async function subscribeEmailAddresses() {
     return acc;
   }, []);
 
-  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
-  const unregisteredUsers = concernedUsers.filter(concernedUser => {
+  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
+  const unsubscribedUsers = concernedUsers.filter(concernedUser => {
     return !allIncubateurSubscribers.find(email => email === concernedUser.primary_email)
   })
   console.log(
-    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+    `Email creation : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
   );
 
   // create email and marrainage
   return Promise.all(
-    unregisteredUsers.map(async (user) => {
-      await BetaGouv.subscribeToMailingList('incubateur', user.primary_email)
+    unsubscribedUsers.map(async (user) => {
+      await BetaGouv.subscribeToMailingList(config.incubateurMailingListName, user.primary_email)
+      console.log(`Subscribe ${user.primary_email} to mailing list incubateur`)
     })
   );
 }
@@ -133,7 +134,7 @@ export async function unsubscribeEmailAddresses() {
     return acc;
   }, []);
 
-  const allIncubateurSubscribers: string[] = await BetaGouv.getMailingListSubscribers('incubateur');
+  const allIncubateurSubscribers: string[] = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
   const emails = allIncubateurSubscribers.filter(email => {
     return concernedUsers.find(concernedUser => email === concernedUser.primary_email)
   })
@@ -141,7 +142,8 @@ export async function unsubscribeEmailAddresses() {
   // create email and marrainage
   return Promise.all(
     emails.map(async (email) => {
-      await BetaGouv.unsubscribeFromMailingList('incubateur', email)
+      await BetaGouv.unsubscribeFromMailingList(config.incubateurMailingListName, email)
+      console.log(`Unsubscribe ${user.primary_email} from mailing list incubateur`)
     })
   );
 }
