@@ -81,7 +81,7 @@ const jobs: Job[] = [
   {
     cronTime: '0 */4 * * * *',
     onTick: subscribeEmailAddresses,
-    isActive: !!config.featureSubscribeFromIncubateurMainlingList,
+    isActive: !!config.featureSubscribeFromIncubateurMailingList,
     name: 'subscribeEmailAddresses',
   },
   {
