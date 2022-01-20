@@ -1,6 +1,11 @@
 import { CronJob } from 'cron';
 import config from '../config';
-import { createEmailAddresses, reinitPasswordEmail } from './emailScheduler';
+import {
+  createEmailAddresses,
+  reinitPasswordEmail,
+  subscribeEmailAddresses,
+  unsubscribeEmailAddresses,
+} from './emailScheduler';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
@@ -38,7 +43,7 @@ interface Job {
 
 const jobs: Job[] = [
   {
-    cronTime: '0 8 * * 1', // every week a 8:00 on monday
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
     onTick: () => newsletterReminder('FIRST_REMINDER'),
     isActive: true,
     name: 'newsletterMondayReminderJob',
@@ -50,7 +55,7 @@ const jobs: Job[] = [
     name: 'newsletterThursdayMorningReminderJob',
   },
   {
-    cronTime: '0 14 * * 4', // every week a 14:00 on thursday
+    cronTime: '0 0 14 * * 4', // every week a 14:00 on thursday
     onTick: () => newsletterReminder('THIRD_REMINDER'),
     isActive: true,
     name: 'newsletterThursdayEveningReminderJob',
@@ -74,31 +79,43 @@ const jobs: Job[] = [
     name: 'emailCreationJob',
   },
   {
+    cronTime: '0 */4 * * * *',
+    onTick: subscribeEmailAddresses,
+    isActive: !!config.featureSubscribeToIncubateurMailingList,
+    name: 'subscribeEmailAddresses',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: unsubscribeEmailAddresses,
+    isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
+    name: 'unsubscribeEmailAddresses',
+  },
+  {
     cronTime: '0 */5 * * * 1-5',
     onTick: addGithubUserToOrganization,
     isActive: !!config.featureAddGithubUserToOrganization,
     name: 'addGithubUserToOrganization',
   },
   {
-    cronTime: '0 18 * * * *',
+    cronTime: '0 0 18 * * *',
     onTick: removeGithubUserFromOrganization,
     isActive: !!config.featureRemoveGithubUserFromOrganization,
     name: 'removeGithubUserFromOrganization',
   },
   {
-    cronTime: '0 8 * * * *',
+    cronTime: '0 0 8 * * *',
     onTick: deleteRedirectionsAfterQuitting,
     isActive: !!config.featureDeleteRedirectionsAfterQuitting,
     name: 'deleteRedirectionsAfterQuitting',
   },
   {
-    cronTime: '0 8 * * * *',
+    cronTime: '0 0 8 * * *',
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
     name: 'sendJ1Email',
   },
   {
-    cronTime: '0 8 * * * *',
+    cronTime: '0 0 8 * * *',
     onTick: sendJ30Email,
     isActive: !!config.featureSendJ30Email,
     name: 'sendJ30Email',
@@ -111,13 +128,13 @@ const jobs: Job[] = [
     description: 'Cron job to delete secondary email',
   },
   {
-    cronTime: '0 15 * * * *',
+    cronTime: '0 0 15 * * *',
     onTick: deleteOVHEmailAcounts,
     isActive: !!config.featureDeleteOVHEmailAccounts,
     name: 'deleteOVHEmailAcounts',
   },
   {
-    cronTime: '0 8 * * * *',
+    cronTime: '0 0 8 * * *',
     onTick: removeEmailsFromMailingList,
     isActive: !!config.featureRemoveEmailsFromMailingList,
     name: 'removeEmailsFromMailingList',
@@ -136,7 +153,7 @@ const jobs: Job[] = [
     description: 'Cron job to create user on mattermost by email',
   },
   {
-    cronTime: '0 8 1 * *',
+    cronTime: '0 0 8 1 * *',
     onTick: reactivateUsers,
     isActive: !!config.featureReactiveMattermostUsers,
     name: 'reactivateUsers',

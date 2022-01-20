@@ -92,7 +92,7 @@ export async function deleteEmailResponder(req, res) {
 
 export async function getCurrentAccount(req, res) {
   try {
-    const [currentUser, marrainageState, secondaryEmail] = await Promise.all([
+    const [currentUser, marrainageState, dbUser] = await Promise.all([
       (async () => utils.userInfos(req.user.id, true))(),
       (async () => {
         const [state] = await knex('marrainage').where({ username: req.user.id });
@@ -100,7 +100,7 @@ export async function getCurrentAccount(req, res) {
       })(),
       (async () => {
         const rows = await knex('users').where({ username: req.user.id });
-        return rows.length === 1 ? rows[0].secondary_email : null;
+        return rows.length === 1 ? rows[0] : null;
       })(),
     ]);
     const today = new Date()
@@ -115,9 +115,10 @@ export async function getCurrentAccount(req, res) {
       canCreateEmail: currentUser.canCreateEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
-      canChangeSecondaryEmail: currentUser.canChangeSecondaryEmail,
+      canChangeEmails: currentUser.canChangeEmails,
       redirections: currentUser.redirections,
-      secondaryEmail,
+      secondaryEmail: dbUser.secondary_email,
+      primaryEmail: dbUser.primary_email,
       activeTab: 'account',
       marrainageState,
       formData: {

@@ -75,7 +75,7 @@ app.use(async (req, res, next) => {
     await knex('login_tokens').where({ email: dbToken.email }).del();
 
     res.cookie('token', getJwtTokenForUser(dbToken.username));
-    return res.redirect(req.path);
+    return res.redirect(`${req.path}`);
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     return next(err);
@@ -141,6 +141,10 @@ app.post('/users/:username/password', usersController.updatePasswordForUser);
 app.post(
   '/users/:username/secondary_email',
   usersController.manageSecondaryEmailForUser
+);
+app.post(
+  '/users/:username/primary_email',
+  usersController.managePrimaryEmailForUser
 );
 app.post('/users/:username/end-date', usersController.updateEndDateForUser);
 app.post(

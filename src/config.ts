@@ -65,6 +65,7 @@ export default {
   mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureReinitPasswordEmail:
     process.env.FEATURE_REINIT_PASSWORD_EMAIL || false,
@@ -85,5 +86,7 @@ export default {
   featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL,
   featureDeleteRedirectionsAfterQuitting:
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
-  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST
+  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST,
+  featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
+  featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
 };

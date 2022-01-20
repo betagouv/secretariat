@@ -7,7 +7,7 @@ import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
-import { createEmailAddresses } from '../src/schedulers/emailScheduler';
+import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
 
@@ -600,9 +600,6 @@ describe('User', () => {
       done();
     });
 
-    // fixme: this test test nothing since it fail silently on chai.request
-    // because user.canChangeSecondaryEmail is false. It should be tested with
-    // a valid BetaGouvUser
     it('should add secondary email', async () => {
       const username = 'membre.nouveau';
       const secondaryEmail = 'membre.nouveau.perso@example.com';
@@ -637,11 +634,6 @@ describe('User', () => {
         .update({
           secondary_email: secondaryEmail,
         })
-      const dbRes = await knex('users')
-        .select()
-        .where({ username })
-        .first()
-      dbRes.secondary_email.should.equal(secondaryEmail);
       await chai.request(app)
         .post(`/users/${username}/secondary_email/`)
         .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
@@ -656,6 +648,72 @@ describe('User', () => {
       await knex('users').where({ username: 'membre.nouveau' }).update({
         secondary_email: null
       })
+    });
+
+    it('should not update primary email if user is not current user', async() => {
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(false));
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
+        .type('form')
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+        isPublicServiceEmailStub.called.should.be.false;
+        isPublicServiceEmailStub.restore();
+    });
+
+    it('should not update primary email if email is not public service email', async() => {
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(false));
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+      isPublicServiceEmailStub.called.should.be.true;
+      isPublicServiceEmailStub.restore()
+    });
+
+    it('should update primary email', async() => {
+      const isPublicServiceEmailStub = sinon
+      .stub(controllerUtils, 'isPublicServiceEmail')
+      .returns(Promise.resolve(true));
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].primary_email.should.equal(primaryEmail);
+      await knex('users').where({ username: 'membre.nouveau' }).update({
+        primary_email: `${username}@${config.domain}`
+      })
+      isPublicServiceEmailStub.called.should.be.true;
+      isPublicServiceEmailStub.restore()
     });
   });
 
@@ -870,12 +928,16 @@ describe('User', () => {
         .where({ username: newMember.id })
         .select();
       marrainage.length.should.equal(0);
+      await knex('login_tokens').truncate()
       await knex('users').where({
         username: newMember.id,
       }).update({
         primary_email: null,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
+      const val = await knex('users').where({
+        username: newMember.id,
+      })
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
@@ -886,6 +948,10 @@ describe('User', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal(newMember.id);
       marrainage[0].last_onboarder.should.not.be.null;
+      const dbRes = await knex('login_tokens').select().where({ email: `${newMember.id}@${config.domain}` })
+      dbRes.length.should.equal(1);
+      dbRes[0].username.should.equal('membre.nouveau');
+      dbRes[0].email.should.equal(`${newMember.id}@${config.domain}`);
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
         primary_email: `${newMember.id}@${config.domain}`,
@@ -1075,6 +1141,86 @@ describe('User', () => {
       betagouvCreateEmail.notCalled.should.be.true;
       ovhEmailCreation.isDone().should.be.false;
       sendEmailStub.notCalled.should.be.true;
+    });
+
+    it('should subscribe user to incubateur mailing list', async () => {
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
+      utils.cleanMocks();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                start: new Date().toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+        const subscribeSpy = sinon
+            .spy(Betagouv, 'subscribeToMailingList')
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, []);
+      const ovhMailingListSubscription = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200).persist();
+
+      await subscribeEmailAddresses();
+      ovhMailingListSubscription.isDone().should.be.true;
+      subscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
+      subscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
+      subscribeSpy.restore()
+    });
+
+    it('should unsubscribe user from incubateur mailing list', async () => {
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
+      utils.cleanMocks();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                end: new Date('12/01/1991').toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+      const unsubscribeSpy = sinon
+          .spy(Betagouv, 'unsubscribeFromMailingList')
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(200, [newMember]);
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+        .reply(200, [`membre.nouveau@${config.domain}`]);
+      const ovhMailingListUnsubscription = nock(/.*ovh.com/)
+        .delete(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber.*/)
+        .reply(200).persist();
+
+      await unsubscribeEmailAddresses();
+      ovhMailingListUnsubscription.isDone().should.be.true;
+      unsubscribeSpy.firstCall.args[0].should.equal(config.incubateurMailingListName)
+      unsubscribeSpy.firstCall.args[1].should.equal(`membre.nouveau@${config.domain}`)
+      unsubscribeSpy.restore()
     });
   });
 });

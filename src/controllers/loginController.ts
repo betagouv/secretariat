@@ -10,18 +10,18 @@ function renderLogin(req, res, params) {
     // init params
     currentUser: undefined,
     domain: config.domain,
-    nextParam: req.query.next ? `?next=${req.query.next}` : '',
+    nextParam: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
     // enrich params
     errors: req.flash('error'),
     messages: req.flash('message'),
   });
 }
 
-function generateToken() {
+export function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
-async function sendLoginEmail(email, username, loginUrl, token) {
+async function sendLoginEmail(email: string, username: string, loginUrlWithToken: string) {
   const user = await BetaGouv.userInfosById(username);
 
   if (!user) {
@@ -35,7 +35,7 @@ async function sendLoginEmail(email, username, loginUrl, token) {
   }
 
   const html = await ejs.renderFile('./views/emails/login.ejs', {
-    loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`,
+    loginUrlWithToken,
   });
 
   try {
@@ -46,7 +46,7 @@ async function sendLoginEmail(email, username, loginUrl, token) {
   }
 }
 
-async function saveToken(username, token) {
+export async function saveToken(username, token) {
   const email = await knex('users').where({
     username
   }).then(dbResponse => {
@@ -75,7 +75,7 @@ export async function getLogin(req, res) {
 
 export async function postLogin(req, res) {
   const formValidationErrors = [];
-  const nextParam = req.query.next ? `?next=${req.query.next}` : '';
+  const nextParam = req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : ''
   const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
   if (formValidationErrors.length) {
@@ -112,13 +112,12 @@ export async function postLogin(req, res) {
   }
 
   const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-  const loginUrl =
-    secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl);
+  const loginUrl: URL = new URL(secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl) + (req.query.anchor ? `#${req.query.anchor}` : ''));
 
   try {
     const token = generateToken();
-
-    await sendLoginEmail(emailInput, username, loginUrl, token);
+    loginUrl.searchParams.append('token', token)
+    await sendLoginEmail(emailInput, username, loginUrl.toString());
     await saveToken(username, token);
 
     return renderLogin(req, res, {
