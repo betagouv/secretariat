@@ -1,7 +1,10 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
+
 import BetaGouv from '../betagouv';
+import config from '../config';
 import { createEmail, setEmailActive, setEmailSuspended } from '../controllers/usersController';
+import { createRequestForUser } from '../controllers/marrainageController';
 import * as utils from '../controllers/utils';
 import knex from '../db';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
@@ -95,3 +98,67 @@ export async function reinitPasswordEmail() {
     })
   );
 }
+
+export async function subscribeEmailAddresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNotNull('primary_email')
+
+  const githubUsers: Member[] = await getValidUsers();
+  const concernedUsers = githubUsers.reduce((acc, user) => {
+    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
+    if (dbUser) {
+      acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
+    }
+    return acc;
+  }, []);
+
+  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
+  const unsubscribedUsers = concernedUsers.filter(concernedUser => {
+    return !allIncubateurSubscribers.find(email => email.toLowerCase() === concernedUser.primary_email.toLowerCase())
+  })
+  console.log(
+    `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
+  );
+
+  // create email and marrainage
+  return Promise.all(
+    unsubscribedUsers.map(async (user) => {
+      await BetaGouv.subscribeToMailingList(config.incubateurMailingListName, user.primary_email)
+      console.log(`Subscribe ${user.primary_email} to mailing list incubateur`)
+    })
+  );
+}
+
+export async function unsubscribeEmailAddresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNotNull('primary_email')
+  const githubUsers = await BetaGouv.usersInfos()
+    .then(users => users.filter((x) => utils.checkUserIsExpired(x)));
+
+  const concernedUsers = githubUsers.reduce((acc, user) => {
+    const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
+    if (dbUser) {
+      acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
+    }
+    return acc;
+  }, []);
+
+  const allIncubateurSubscribers: string[] = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
+  const emails = allIncubateurSubscribers.filter(email => {
+    return concernedUsers.find(concernedUser => email.toLowerCase() === concernedUser.primary_email.toLowerCase())
+  })
+
+  console.log(
+    `Email unsubscription : ${emails.length} subscribed user(s) in incubateur mailing list.`
+  );
+
+  // create email and marrainage
+  return Promise.all(
+    emails.map(async (email) => {
+      await BetaGouv.unsubscribeFromMailingList(config.incubateurMailingListName, email)
+      console.log(`Unsubscribe ${email} from mailing list incubateur`)
+    })
+  );
+}
+
+
