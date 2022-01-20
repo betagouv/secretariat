@@ -5,6 +5,7 @@ import {
   reinitPasswordEmail,
   subscribeEmailAddresses,
   unsubscribeEmailAddresses,
+  setEmailAddressesActive,
 } from './emailScheduler';
 import {
   addGithubUserToOrganization,
