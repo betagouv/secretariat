@@ -106,10 +106,10 @@ export async function subscribeEmailAddresses() {
 
   const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
   const unsubscribedUsers = concernedUsers.filter(concernedUser => {
-    return !allIncubateurSubscribers.find(email => email === concernedUser.primary_email)
+    return !allIncubateurSubscribers.find(email => email.toLowerCase() === concernedUser.primary_email.toLowerCase())
   })
   console.log(
-    `Email creation : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
+    `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
   );
 
   // create email and marrainage
@@ -137,8 +137,12 @@ export async function unsubscribeEmailAddresses() {
 
   const allIncubateurSubscribers: string[] = await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
   const emails = allIncubateurSubscribers.filter(email => {
-    return concernedUsers.find(concernedUser => email === concernedUser.primary_email)
+    return concernedUsers.find(concernedUser => email.toLowerCase() === concernedUser.primary_email.toLowerCase())
   })
+
+  console.log(
+    `Email unsubscription : ${emails.length} subscribed user(s) in incubateur mailing list.`
+  );
 
   // create email and marrainage
   return Promise.all(
