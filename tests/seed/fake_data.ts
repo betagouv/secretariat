@@ -58,12 +58,13 @@ const populatePrimaryEmail = async(knex) => {
     consumerKey: process.env.OVH_CONSUMER_KEY,
   });
   
-  const url = `/email/domain/${process.env.domain}/account/`;
+  const url = `/email/domain/${process.env.SECRETARIAT_DOMAIN}/account/`;
   const allOvhEmails = await ovh.requestPromised('GET', url, {});
+  
   for (const emailId of allOvhEmails) {
       await knex('users').insert({
           username: emailId,
-          primary_email: `${emailId}@${process.env.domain}`
+          primary_email: `${emailId}@${process.env.SECRETARIAT_DOMAIN}`
       })
   }
 }
