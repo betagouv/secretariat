@@ -69,14 +69,14 @@ export async function removeUsersFromCommunityTeam(optionalUsers?: Member[], che
           );
           return;
         }
-        // const res = await mattermost.removeUserFromTeam(
-        //   mattermostUsers[0].id,
-        //   config.mattermostTeamId
-        // );
+        const res = await mattermost.removeUserFromTeam(
+          mattermostUsers[0].id,
+          config.mattermostTeamId
+        );
         console.log(
           `User ${user.id} with mattermost username ${mattermostUsers[0].username} has been removed from community`
         );
-        return // res;
+        return res;
       } catch (err) {
         throw new Error(
           `Error while removing user ${user.id} from community team : ${err}`
