@@ -95,21 +95,20 @@ export async function subscribeEmailAddresses() {
     .whereNotNull('primary_email')
 
   const githubUsers: Member[] = await getValidUsers();
-
+  console.log('EMAIL SCHEDULER')
+  console.log(githubUsers)
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
-      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
+      acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
     }
     return acc;
   }, []);
 
   const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
-  const unregisteredUsers = _.differenceWith(
-    concernedUsers,
-    allIncubateurSubscribers,
-    differenceGithubOVH
-  );
+  const unregisteredUsers = concernedUsers.filter(concernedUser => {
+    return !allIncubateurSubscribers.find(email => email === concernedUser.primary_email)
+  })
   console.log(
     `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
   );
@@ -125,22 +124,21 @@ export async function subscribeEmailAddresses() {
 export async function unsubscribeEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNotNull('primary_email')
-  const githubUsers: Member[] = await getValidUsers();
+  const githubUsers = await BetaGouv.usersInfos()
+    .then(users => users.filter((x) => utils.checkUserIsExpired(x)));
 
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
-      acc.push({ ...user, ...{ toEmail: dbUser.secondary_email } });
+      acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
     }
     return acc;
   }, []);
 
   const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
-  const unregisteredUsers = _.differenceWith(
-    concernedUsers,
-    allIncubateurSubscribers,
-    differenceGithubOVH
-  );
+  const unregisteredUsers = concernedUsers.filter(concernedUser => {
+    return allIncubateurSubscribers.find(email => email === concernedUser.primary_email)
+  })
   console.log(
     `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
   );
