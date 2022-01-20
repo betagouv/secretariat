@@ -286,7 +286,7 @@ const betaOVH = {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  getMailingListSubscribers: async (mailingListName: string): Promise<OvhRedirection[]> => {
+  getMailingListSubscribers: async (mailingListName: string): Promise<string[]> => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
 
     try {

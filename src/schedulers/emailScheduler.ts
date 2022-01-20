@@ -135,18 +135,15 @@ export async function unsubscribeEmailAddresses() {
     return acc;
   }, []);
 
-  const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers('incubateur');
-  const unregisteredUsers = concernedUsers.filter(concernedUser => {
-    return allIncubateurSubscribers.find(email => email === concernedUser.primary_email)
+  const allIncubateurSubscribers: string[] = await BetaGouv.getMailingListSubscribers('incubateur');
+  const emails = allIncubateurSubscribers.filter(email => {
+    return concernedUsers.find(concernedUser => email === concernedUser.primary_email)
   })
-  console.log(
-    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allIncubateurSubscribers.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
-  );
 
   // create email and marrainage
   return Promise.all(
-    unregisteredUsers.map(async (user) => {
-      await BetaGouv.unsubscribeFromMailingList('incubateur', user.primary_email)
+    emails.map(async (email) => {
+      await BetaGouv.unsubscribeFromMailingList('incubateur', email)
     })
   );
 }
