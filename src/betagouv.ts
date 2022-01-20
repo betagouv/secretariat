@@ -124,13 +124,23 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  removeFromMailingList: async(mailingListName: string, email: string) => {
+  unsubscribeFromMailingList: async(mailingListName: string, email: string) => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
     try {
       return await ovh.requestPromised('DELETE', url);
     } catch (err) {
       if (err.error === 404) return null;
       throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+    try {
+      return await ovh.requestPromised('POST', url, {
+        email
+      });
+    } catch (err) {
+      throw new Error(`OVH Error subscribe on ${url} : ${JSON.stringify(err)}`);
     }
   },
   // get active users with email registered on ovh
@@ -295,26 +305,6 @@ const betaOVH = {
 
     try {
       return await ovh.requestPromised('GET', url);
-    } catch (err) {
-      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
-    }
-  },
-  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
-    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
-    try {
-      return await ovh.requestPromised('POST', url, {
-        email
-      });
-    } catch (err) {
-      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
-    }
-  },
-  unsubscribeFromMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
-    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
-    try {
-      return await ovh.requestPromised('DELETE', url, {
-        email
-      });
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }
