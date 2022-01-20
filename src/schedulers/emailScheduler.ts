@@ -1,6 +1,5 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
-import betagouv from '../betagouv';
 import BetaGouv from '../betagouv';
 import { createRequestForUser } from '../controllers/marrainageController';
 import { createEmail } from '../controllers/usersController';
