@@ -95,8 +95,6 @@ export async function subscribeEmailAddresses() {
     .whereNotNull('primary_email')
 
   const githubUsers: Member[] = await getValidUsers();
-  console.log('EMAIL SCHEDULER')
-  console.log(githubUsers)
   const concernedUsers = githubUsers.reduce((acc, user) => {
     const dbUser : DBUser = dbUsers.find((x) => x.username === user.id);
     if (dbUser) {
