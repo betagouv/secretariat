@@ -1,6 +1,6 @@
 # secretariat
 
-Le secrétariat de l’incubateur
+Le secrétariat de l’incubateur test
 
 ## Dev de l'app de secrétariat
 
