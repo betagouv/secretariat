@@ -141,7 +141,7 @@ const jobs: Job[] = [
     description: 'Cron job to delete secondary email',
   },
   {
-    cronTime: '0 0 15 * * *',
+    cronTime: '0 */8 * * * *',
     onTick: deleteOVHEmailAcounts,
     isActive: !!config.featureDeleteOVHEmailAccounts,
     name: 'deleteOVHEmailAcounts',
@@ -153,7 +153,7 @@ const jobs: Job[] = [
     name: 'removeEmailsFromMailingList',
   },
   {
-    cronTime: '0 0 14 * * *',
+    cronTime: '0 */8 * * * *',
     onTick: reinitPasswordEmail,
     isActive: !!config.featureReinitPasswordEmail,
     name: 'reinitPasswordEmail',
