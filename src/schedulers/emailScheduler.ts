@@ -46,8 +46,7 @@ export async function createEmailAddresses() {
   const concernedUsers : Member[] = githubUsers.filter((user) => {
     return dbUsers.find((x) => x.username === user.id);
   })
-  console.log(dbUsers)
-  console.log(concernedUsers)
+
   const allOvhEmails : string[] = await BetaGouv.getAllEmailInfos();
   const unregisteredUsers : Member[] = _.differenceWith(
     concernedUsers,
