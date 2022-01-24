@@ -10,6 +10,7 @@ import app from '../src/index';
 import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
+import { EmailStatusCode } from '../src/models/dbUser'
 
 chai.use(chaiHttp);
 
@@ -48,107 +49,6 @@ describe('User', () => {
     afterEach(async () => {
       await knex('marrainage').truncate();
       sendEmailStub.restore();
-    });
-
-    it('should ask OVH to create an email and create marrainage', (done) => {
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      knex('marrainage')
-        .where({ username: 'membre.nouveau' })
-        .select()
-        .then((marrainage) => {
-          marrainage.length.should.equal(0);
-        })
-        .then(() => {
-          chai
-            .request(app)
-            .post('/users/membre.nouveau/email')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .type('form')
-            .send({
-              to_email: 'test@example.com',
-            })
-            .then(async () => {
-              ovhEmailCreation.isDone().should.be.true;
-              sendEmailStub.calledTwice.should.be.true;
-              const marrainage = await knex('marrainage')
-                .where({ username: 'membre.nouveau' })
-                .select();
-              marrainage.length.should.equal(1);
-              marrainage[0].username.should.equal('membre.nouveau');
-              marrainage[0].last_onboarder.should.not.be.null;
-              done();
-            })
-            .catch(done)
-            .finally(() => {
-              sendEmailStub.restore();
-            });
-        });
-    });
-
-    it('should ask OVH to create an email and should send a console.warn if no marain.e available', (done) => {
-      utils.cleanMocks();
-      const url = process.env.USERS_API || 'https://beta.gouv.fr';
-      nock(url)
-        .get((uri) => uri.includes('authors.json'))
-        .reply(200, [
-          {
-            id: 'membre.nouveau',
-            fullname: 'membre Nouveau',
-            missions: [
-              {
-                start: new Date().toISOString().split('T')[0],
-              },
-            ],
-          },
-        ])
-        .persist();
-      utils.mockSlackGeneral();
-      utils.mockSlackSecretariat();
-      utils.mockOvhTime();
-      utils.mockOvhRedirections();
-      utils.mockOvhUserResponder();
-      utils.mockOvhUserEmailInfos();
-      utils.mockOvhAllEmailInfos();
-      const consoleSpy = sinon.spy(console, 'warn');
-
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      knex('marrainage')
-        .where({ username: 'membre.nouveau' })
-        .select()
-        .then((marrainage) => {
-          marrainage.length.should.equal(0);
-        })
-        .then(() => {
-          chai
-            .request(app)
-            .post('/users/membre.nouveau/email')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-            .type('form')
-            .send({
-              to_email: 'test@example.com',
-            })
-            .then(async () => {
-              ovhEmailCreation.isDone().should.be.true;
-              sendEmailStub.calledTwice.should.be.true;
-              consoleSpy.firstCall.args[0].message.should.equal(
-                "Aucun·e marrain·e n'est disponible pour le moment"
-              );
-              const marrainage = await knex('marrainage')
-                .where({ username: 'membre.nouveau' })
-                .select();
-              marrainage.length.should.equal(0);
-              done();
-            })
-            .catch(done)
-            .finally(() => {
-              consoleSpy.restore();
-              sendEmailStub.restore();
-            });
-        });
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {
@@ -413,7 +313,7 @@ describe('User', () => {
     });
   });
 
-  describe('POST /users/:username/password unauthenticated', () => {
+  describe('POST /users/:username/password authenticated', () => {
     it('should redirect to user page', (done) => {
       chai
         .request(app)
@@ -430,36 +330,77 @@ describe('User', () => {
           done();
         });
     });
-    it('should perform a password change if the email exists', (done) => {
-      nock.cleanAll();
-
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(200, { description: '' });
-
+    it('should perform a password change if the email exists', async () => {
+      utils.cleanMocks();
       utils.mockUsers();
       utils.mockOvhUserResponder();
-      utils.mockOvhRedirections();
       utils.mockSlackGeneral();
       utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      const username = 'membre.nouveau'
+      await knex('users')
+        .where({ username })
+        .update({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE })
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: username,
+          email: 'membre.nouveau@example.com',
+        }).persist();
 
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
 
-      chai
+      await chai
         .request(app)
-        .post('/users/membre.actif/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .post(`/users/${username}/password`)
+        .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
         })
-        .end((err, res) => {
-          ovhPasswordNock.isDone().should.be.true;
-          done();
-        });
+      ovhPasswordNock.isDone().should.be.true;
+      const user = await knex('users').where({ username }).first()
+
     });
+    it('should perform a password change and pass status to active if status was suspended', async () => {
+      utils.cleanMocks();
+      utils.mockUsers();
+      utils.mockOvhUserResponder();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      const username = 'membre.nouveau'
+      await knex('users')
+        .where({ username })
+        .update({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account\/.*/)
+        .reply(200, {
+          accountName: username,
+          email: 'membre.nouveau@example.com',
+        }).persist();
+
+      ovhPasswordNock = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+        .reply(200);
+      
+      await chai
+      .request(app)
+      .post(`/users/${username}/password`)
+      .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
+      .type('form')
+      .send({
+        new_password: 'Test_Password_1234',
+      })
+      ovhPasswordNock.isDone().should.be.true;
+      const user = await knex('users').where({ username }).first()
+      user.primary_email_status.should.be.equal(EmailStatusCode.EMAIL_ACTIVE)
+    });
+
     it('should not allow a password change from delegate', (done) => {
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
@@ -858,23 +799,17 @@ describe('User', () => {
     before(async () => {
       await knex('marrainage').truncate();
     });
-    let sendEmailStub;
     let betagouvCreateEmail;
     beforeEach((done) => {
-      sendEmailStub = sinon
-        .stub(controllerUtils, 'sendMail')
-        .returns(Promise.resolve(true));
       betagouvCreateEmail = sinon.spy(Betagouv, 'createEmail');
       done();
     });
 
     afterEach(async () => {
-      await knex('marrainage').truncate();
-      sendEmailStub.restore();
       betagouvCreateEmail.restore();
     });
 
-    it('should create missing email accounts and marrainage request if start date < 2 months', async () => {
+    it('should create missing email accounts', async () => {
       utils.cleanMocks();
       const url = process.env.USERS_API || 'https://beta.gouv.fr';
       nock(url)
@@ -920,19 +855,15 @@ describe('User', () => {
           200,
           allAccountsExceptANewMember.map((user) => user.id)
         );
-
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-      let marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(0);
       await knex('login_tokens').truncate()
       await knex('users').where({
         username: newMember.id,
       }).update({
         primary_email: null,
+        primary_email_status: EmailStatusCode.EMAIL_UNSET,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       const val = await knex('users').where({
@@ -941,168 +872,12 @@ describe('User', () => {
       await createEmailAddresses();
       ovhEmailCreation.isDone().should.be.true;
       betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-      sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(1);
-      marrainage[0].username.should.equal(newMember.id);
-      marrainage[0].last_onboarder.should.not.be.null;
-      const dbRes = await knex('login_tokens').select().where({ email: `${newMember.id}@${config.domain}` })
-      dbRes.length.should.equal(1);
-      dbRes[0].username.should.equal('membre.nouveau');
-      dbRes[0].email.should.equal(`${newMember.id}@${config.domain}`);
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
         primary_email: `${newMember.id}@${config.domain}`,
       });
     });
 
-    it('should create missing email accounts but not marrainage request if start date > 2 months', async () => {
-      utils.cleanMocks();
-      const today = new Date();
-      const startDate = new Date(today.setMonth(today.getMonth() + 3));
-      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
-      nock(url)
-        .get((uri) => uri.includes('authors.json'))
-        .reply(200, [
-          {
-            id: 'membre.actif',
-            fullname: 'membre Actif',
-            missions: [
-              {
-                start: '2016-11-03',
-                status: 'independent',
-                employer: 'octo',
-              },
-            ],
-          },
-          {
-            id: 'membre.nouveau',
-            fullname: 'membre Nouveau',
-            missions: [
-              {
-                start: startDate.toISOString().split('T')[0],
-              },
-            ],
-          },
-        ])
-        .persist();
-      utils.mockSlackGeneral();
-      utils.mockSlackSecretariat();
-      utils.mockOvhTime();
-      utils.mockOvhRedirections();
-      utils.mockOvhUserResponder();
-      utils.mockOvhUserEmailInfos();
-
-      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
-      const allAccountsExceptANewMember = testUsers.filter(
-        (user) => user.id !== newMember.id
-      );
-
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account/)
-        .reply(
-          200,
-          allAccountsExceptANewMember.map((user) => user.id)
-        );
-
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-
-      let marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(0);
-      await knex('users').where({
-        username: newMember.id,
-      }).update({
-        primary_email: null,
-        secondary_email: 'membre.nouveau.perso@example.com',
-      });
-      await createEmailAddresses();
-      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-      ovhEmailCreation.isDone().should.be.true;
-      sendEmailStub.calledOnce.should.be.true;
-      marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(0);
-      await knex('users').where({ username: newMember.id }).update({
-        secondary_email: null,
-        primary_email: `${newMember}@${config.domain}`
-      });
-    });
-
-    it('should create missing email accounts and not send error even if no marrainage possible', async () => {
-      utils.cleanMocks();
-      const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
-      nock(url)
-        .get((uri) => uri.includes('authors.json'))
-        .reply(200, [
-          {
-            id: 'membre.nouveau',
-            fullname: 'membre Nouveau',
-            missions: [
-              {
-                start: new Date().toISOString().split('T')[0],
-              },
-            ],
-          },
-        ])
-        .persist();
-      utils.mockSlackGeneral();
-      utils.mockSlackSecretariat();
-      utils.mockOvhTime();
-      utils.mockOvhRedirections();
-      utils.mockOvhUserResponder();
-      utils.mockOvhUserEmailInfos();
-
-      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
-      const allAccountsExceptANewMember = testUsers.filter(
-        (user) => user.id !== newMember.id
-      );
-
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account/)
-        .reply(
-          200,
-          allAccountsExceptANewMember.map((user) => user.id)
-        );
-
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      const consoleSpy = sinon.spy(console, 'warn');
-
-      let marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(0);
-      await knex('users').where({
-        username: newMember.id,
-      }).update({
-        primary_email: null,
-        secondary_email: 'membre.nouveau.perso@example.com',
-      });
-      await createEmailAddresses();
-      ovhEmailCreation.isDone().should.be.true;
-      betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-      consoleSpy.firstCall.args[0].message.should.equal(
-        "Aucun·e marrain·e n'est disponible pour le moment"
-      );
-      sendEmailStub.calledTwice.should.be.true;
-      marrainage = await knex('marrainage')
-        .where({ username: newMember.id })
-        .select();
-      marrainage.length.should.equal(0);
-      await knex('users').where({ username: newMember.id }).update({
-        secondary_email: null,
-        primary_email: `${newMember.id}@${config.domain}`
-      });
-      consoleSpy.restore();
-    });
 
     it('should not create email accounts if already created', async() => {
       // For this case we need to reset the basic nocks in order to return
@@ -1129,7 +904,6 @@ describe('User', () => {
         await createEmailAddresses();
         betagouvCreateEmail.notCalled.should.be.true;
         ovhEmailCreation.isDone().should.be.false;
-        sendEmailStub.notCalled.should.be.true;
     });
 
     it('should not create email accounts if we dont have the secondary email', async () => {
@@ -1140,7 +914,6 @@ describe('User', () => {
       await createEmailAddresses();
       betagouvCreateEmail.notCalled.should.be.true;
       ovhEmailCreation.isDone().should.be.false;
-      sendEmailStub.notCalled.should.be.true;
     });
 
     it('should subscribe user to incubateur mailing list', async () => {

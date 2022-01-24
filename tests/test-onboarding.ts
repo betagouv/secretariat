@@ -7,6 +7,7 @@ import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
 import config from '../src/config';
+import { EmailStatusCode } from '../src/models/dbUser';
 
 chai.use(chaiHttp);
 
@@ -673,7 +674,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should store in database the secondary email', (done) => {
+    it('should store in database the secondary email, primary_email and status', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -693,6 +694,35 @@ describe('Onboarding', () => {
         .then((dbRes) => {
           dbRes.length.should.equal(1);
           dbRes[0].secondary_email.should.equal(`test@example.com`);
+          // dbRes[0].primary_email.should.equal(`john.doe@${config.domain}`);
+          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_UNSET);
+        })
+        .then(done)
+        .catch(done);
+    });
+
+    it('should store the primary_email_status as active if no beta email and email is public service', (done) => {
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          email: 'test@example.com',
+          referent: 'membre.actif',
+          isEmailBetaAsked: false,
+        })
+        .then(() => knex('users').where({ username: 'john.doe' }))
+        .then((dbRes) => {
+          dbRes.length.should.equal(1);
+          dbRes[0].primary_email.should.equal(`test@example.com`);
+          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_ACTIVE);
         })
         .then(done)
         .catch(done);

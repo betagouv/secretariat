@@ -7,7 +7,7 @@ import * as mattermost from '../lib/mattermost';
 import { MattermostUser } from '../lib/mattermost';
 import knex from "../db";
 import { Member, MemberWithPrimaryEmail } from '../models/member';
-import { DBUser } from '../models/dbUser';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
   const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams();
@@ -18,9 +18,10 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWi
     const dbUser = dbUsers.find((x) => x.username === user.id);
     return {
       ...user,
+      primary_email_status: dbUser ? dbUser.primary_email_status : undefined,
       primary_email: dbUser ? dbUser.primary_email : undefined
     };
-  }).filter(user => user.primary_email);
+  }).filter(user => user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE);
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );

@@ -4,25 +4,29 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db/index";
-import { createRequestForUser } from "./marrainageController";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
-import { DBUser } from "../models/dbUser";
-import { saveToken, generateToken } from "./loginController";
+import { DBUser, EmailStatusCode } from "../models/dbUser";
 
-export async function createEmail(username, creator, toEmail) {
+export async function createEmail(username, creator) {
   const email = utils.buildBetaEmail(username);
   const password = crypto.randomBytes(16)
     .toString('base64')
     .slice(0, -2);
 
-  console.log(
-    `Création de compte by=${creator}&email=${email}&to_email=${toEmail}`,
-  );
-
   const secretariatUrl = `${config.protocol}://${config.host}`;
 
   const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
+
+  await BetaGouv.sendInfoToChat(message);
+  await BetaGouv.createEmail(username, password);
+  await knex('users').where({
+    username,
+  }).update({
+    primary_email: email,
+    primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+    primary_email_status_updated_at: new Date()
+  })
 
   addEvent(EventCode.MEMBER_EMAIL_CREATED, {
     created_by_username: creator,
@@ -31,26 +35,60 @@ export async function createEmail(username, creator, toEmail) {
       value: email
     }
   })
-  await BetaGouv.sendInfoToChat(message);
-  await BetaGouv.createEmail(username, password);
-  const [user] : DBUser[] = await knex('users').where({
+  console.log(
+    `Création de compte by=${creator}&email=${email}`,
+  );
+}
+
+export async function setEmailActive(username) {  
+  const [ user ] : DBUser[] = await knex('users').where({
+    username,
+  })
+  const shouldSendEmailCreatedEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
+  await knex('users').where({
     username,
   }).update({
-    primary_email: email
+    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    primary_email_status_updated_at: new Date()
+  })
+  console.log(
+    `Email actif pour ${user.username}`,
+  );
+  if (shouldSendEmailCreatedEmail) {
+    await sendEmailCreatedEmail(username)
+  }
+}
+
+export async function setEmailSuspended(username) {  
+  const [ user ] : DBUser[] = await knex('users').where({
+    username,
+  }).update({
+    primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+    primary_email_status_updated_at: new Date()
   }).returning('*')
-  const token = generateToken()
-  await saveToken(username, token)
+  console.log(
+    `Email suspendu pour ${user.username}`,
+  );
+}
+
+export async function sendEmailCreatedEmail(username) {
+  const [user] : DBUser[] = await knex('users').where({
+    username,
+  })
+  const secretariatUrl = `${config.protocol}://${config.host}`;
+
   const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
-    email,
+    email: user.primary_email,
     secondaryEmail: user.secondary_email,
-    password,
     secretariatUrl,
-    token: encodeURIComponent(token),
     mattermostInvitationLink: config.mattermostInvitationLink,
   });
 
   try {
-    await utils.sendMail(toEmail, 'Bienvenue chez BetaGouv 🙂', html);
+    await utils.sendMail(user.secondary_email, 'Bienvenue chez BetaGouv 🙂', html);
+    console.log(
+      `Email de bienvenue pour ${user.username} envoyé`,
+    );
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -86,14 +124,7 @@ export async function createEmailForUser(req, res) {
       }
     }
 
-    await createEmail(username, req.user.id, req.body.to_email);
-    try {
-      // create marrainage request
-      await createRequestForUser(username);
-    } catch (e) {
-      // marrainage may fail if no member available
-      console.warn(e);
-    }
+    await createEmail(username, req.user.id);
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);
@@ -213,7 +244,6 @@ export async function deleteRedirectionForUser(req, res) {
 export async function updatePasswordForUser(req, res) {
   const { username } = req.params;
   const isCurrentUser = req.user.id === username;
-
   try {
     const user = await utils.userInfos(username, isCurrentUser);
 
@@ -245,22 +275,26 @@ export async function updatePasswordForUser(req, res) {
         'Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d\'accents ni d\'espace au début ou à la fin.',
       );
     }
-
+    const dbUser: DBUser = await knex('users').where({ username }).first()
     const email = utils.buildBetaEmail(username);
 
     console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
-
-    addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
+    await BetaGouv.changePassword(username, password);
+    await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
       created_by_username: req.user.id,
       action_on_username: username
     })
+    if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
+      await knex('users').where({ username }).update({
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        primary_email_status_updated_at: new Date()
+      })
+    }
+    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
     await BetaGouv.sendInfoToChat(message);
-    await BetaGouv.changePassword(username, password);
-
     req.flash('message', 'Le mot de passe a bien été modifié.');
     res.redirect(`/community/${username}`);
   } catch (err) {
