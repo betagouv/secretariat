@@ -469,7 +469,7 @@ describe('Marrainage', () => {
       const [membreNouveau] = await knex('users')
       .where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        created_at: new Date('01/01/2022')
+        created_at: new Date('01/24/2022')
       }).returning('*')
       await createMarrainages()
       sendEmailStub.calledOnce.should.be.true;
@@ -494,7 +494,7 @@ describe('Marrainage', () => {
       })
       await knex('users').where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        created_at: new Date('01/01/2022')
+        created_at: new Date('01/24/2022')
       })
       const url = process.env.USERS_API || 'https://beta.gouv.fr';
       nock(url)
