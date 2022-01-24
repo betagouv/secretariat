@@ -39,7 +39,7 @@ export async function setEmailAddressesActive() {
 export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
-    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_CREATION_PENDING])
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
 

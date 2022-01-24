@@ -187,7 +187,7 @@ export async function postForm(req, res) {
         username,
         primary_email: primaryEmail,
         secondary_email: secondaryEmail,
-        primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_CREATION_PENDING : EmailStatusCode.EMAIL_ACTIVE,
+        primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
         primary_email_status_updated_at: new Date()
       })
       .onConflict('username')
