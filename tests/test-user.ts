@@ -863,7 +863,7 @@ describe('User', () => {
         username: newMember.id,
       }).update({
         primary_email: null,
-        primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+        primary_email_status: EmailStatusCode.EMAIL_UNSET,
         secondary_email: 'membre.nouveau.perso@example.com',
       });
       const val = await knex('users').where({

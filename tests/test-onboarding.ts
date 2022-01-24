@@ -695,7 +695,7 @@ describe('Onboarding', () => {
           dbRes.length.should.equal(1);
           dbRes[0].secondary_email.should.equal(`test@example.com`);
           // dbRes[0].primary_email.should.equal(`john.doe@${config.domain}`);
-          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_CREATION_PENDING);
+          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_UNSET);
         })
         .then(done)
         .catch(done);
