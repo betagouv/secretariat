@@ -463,10 +463,13 @@ describe('Marrainage', () => {
   describe('cronjob', () => {
 
     it('should create marrainage requests', async () => {
-      const [ membreNouveau ] = await knex('users')
+      await knex('users').update({
+        created_at: new Date('11/01/2021')
+      })
+      const [membreNouveau] = await knex('users')
       .where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        created_at: new Date()
+        created_at: new Date('01/01/2022')
       }).returning('*')
       await createMarrainages()
       sendEmailStub.calledOnce.should.be.true;
@@ -481,13 +484,17 @@ describe('Marrainage', () => {
       sendEmailStub.calledOnce.should.be.true;
       differenceLodashSpy.firstCall.returned([membreNouveau]).should.be.true;
       differenceLodashSpy.secondCall.returned([]).should.be.true;
+      await knex('users').update({ created_at: new Date()})
     })
 
     it('should send a console.warn if no marain.e available', async () => {
       utils.cleanMocks();
+      await knex('users').update({
+        created_at: new Date('11/01/2021')
+      })
       await knex('users').where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        created_at: new Date()
+        created_at: new Date('01/01/2022')
       })
       const url = process.env.USERS_API || 'https://beta.gouv.fr';
       nock(url)
@@ -529,6 +536,7 @@ describe('Marrainage', () => {
         .select();
       marrainage.length.should.equal(0);
       consoleSpy.restore();
+      await knex('users').update({ created_at: new Date()})
     });
   
     it('should reload stale marrainage requests', (done) => {

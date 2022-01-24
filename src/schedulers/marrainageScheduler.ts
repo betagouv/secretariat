@@ -41,7 +41,7 @@ export async function createMarrainages() {
   const dateFeatureAdded = new Date('12/01/2021');
   const users : DBUser[] = await knex('users').where({
     primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-  }).andWhere('created_at', '<', dateFeatureAdded)
+  }).andWhere('created_at', '>', dateFeatureAdded)
   const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
   const userWithoutMarrainage = _.differenceWith(users, marrainages, (user, marrainage) => user.id === marrainage.newcomer)
   const createMarrainagePromises = await userWithoutMarrainage.map(async(user: DBUser) => {
