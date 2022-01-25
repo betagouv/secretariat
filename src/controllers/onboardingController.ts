@@ -52,7 +52,7 @@ async function createNewcomerGithubFile(username, content, referent) {
 export async function getForm(req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.usersInfos();
+    const users = await BetaGouv.getActiveRegisteredOVHUsers();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
