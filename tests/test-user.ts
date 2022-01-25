@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import Betagouv from '../src/betagouv';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
+import * as mattermost from '../src/lib/mattermost';
 import knex from '../src/db';
 import app from '../src/index';
 import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
@@ -525,6 +526,15 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/secondary_email', () => {
+    let mattermostStub
+    beforeEach(() => {
+      mattermostStub = sinon
+        .stub(mattermost, 'getUserByEmail')
+        .returns(Promise.resolve(true));
+    })
+    afterEach(() => {
+      mattermostStub.restore();
+    })
     it('should return 200 to add secondary email', (done) => {
       chai
         .request(app)
