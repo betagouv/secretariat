@@ -527,14 +527,6 @@ describe('User', () => {
 
   describe('POST /users/:username/secondary_email', () => {
     let mattermostStub
-    beforeEach(() => {
-      mattermostStub = sinon
-        .stub(mattermost, 'getUserByEmail')
-        .returns(Promise.resolve(true));
-    })
-    afterEach(() => {
-      mattermostStub.restore();
-    })
     it('should return 200 to add secondary email', (done) => {
       chai
         .request(app)
@@ -600,13 +592,27 @@ describe('User', () => {
         secondary_email: null
       })
     });
+  });
+
+  describe('POST /users/:username/primary_email', () => {
+    let mattermostGetUserByEmailStub
+    let isPublicServiceEmailStub
+    beforeEach(() => {
+      mattermostGetUserByEmailStub = sinon
+        .stub(mattermost, 'getUserByEmail')
+        .returns(Promise.resolve(true));
+      isPublicServiceEmailStub = sinon
+        .stub(controllerUtils, 'isPublicServiceEmail')
+        .returns(Promise.resolve(true));
+    })
+    afterEach(() => {
+      mattermostGetUserByEmailStub.restore();
+      isPublicServiceEmailStub.restore();
+    })
 
     it('should not update primary email if user is not current user', async() => {
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
-      const isPublicServiceEmailStub = sinon
-      .stub(controllerUtils, 'isPublicServiceEmail')
-      .returns(Promise.resolve(false));
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
@@ -617,13 +623,32 @@ describe('User', () => {
           primaryEmail: primaryEmail,
         });
         isPublicServiceEmailStub.called.should.be.false;
-        isPublicServiceEmailStub.restore();
-    });
+        mattermostGetUserByEmailStub.called.should.be.false;
+      });
 
     it('should not update primary email if email is not public service email', async() => {
-      const isPublicServiceEmailStub = sinon
-      .stub(controllerUtils, 'isPublicServiceEmail')
-      .returns(Promise.resolve(false));
+      const username = 'membre.nouveau';
+      const primaryEmail = 'membre.nouveau.new@example.com';
+      isPublicServiceEmailStub.returns(Promise.resolve(false));
+
+      await chai.request(app)
+        .post(`/users/${username}/primary_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
+        .send({
+          username,
+          primaryEmail: primaryEmail,
+        });
+      const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+      isPublicServiceEmailStub.called.should.be.true;
+      mattermostGetUserByEmailStub.called.should.be.false;
+    });
+
+    it('should not update primary email if email does not exist on mattermost', async() => {
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
+      mattermostGetUserByEmailStub.returns(Promise.reject('404 error'));
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
 
@@ -638,14 +663,12 @@ describe('User', () => {
       const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
       dbNewRes.length.should.equal(1);
       dbNewRes[0].primary_email.should.not.equal(primaryEmail);
-      isPublicServiceEmailStub.called.should.be.true;
-      isPublicServiceEmailStub.restore()
+      mattermostGetUserByEmailStub.called.should.be.true;
     });
 
     it('should update primary email', async() => {
-      const isPublicServiceEmailStub = sinon
-      .stub(controllerUtils, 'isPublicServiceEmail')
-      .returns(Promise.resolve(true));
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
+      mattermostGetUserByEmailStub.returns(Promise.resolve(true));
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
 
@@ -664,7 +687,7 @@ describe('User', () => {
         primary_email: `${username}@${config.domain}`
       })
       isPublicServiceEmailStub.called.should.be.true;
-      isPublicServiceEmailStub.restore()
+      mattermostGetUserByEmailStub.called.should.be.true;
     });
   });
 
