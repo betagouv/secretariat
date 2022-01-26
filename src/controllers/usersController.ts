@@ -4,6 +4,7 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db/index";
+import * as mattermost from "../lib/mattermost"
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
 import { DBUser, EmailStatusCode } from "../models/dbUser";
@@ -361,6 +362,11 @@ export async function managePrimaryEmailForUser(req, res) {
     const isPublicServiceEmail = await utils.isPublicServiceEmail(primaryEmail)
     if (!isPublicServiceEmail) {
       throw new Error(`L'email renseigné n'est pas un email de service public`);
+    }
+    const existsOnMattermost = await mattermost.getUserByEmail(primaryEmail)
+    if (!existsOnMattermost) {
+      throw new Error(`L'email n'existe pas dans mattermost,
+        pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`);
     }
     const dbUser: DBUser = await knex('users').where({
       username,
