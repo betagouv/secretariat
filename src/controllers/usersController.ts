@@ -363,10 +363,10 @@ export async function managePrimaryEmailForUser(req, res) {
     if (!isPublicServiceEmail) {
       throw new Error(`L'email renseigné n'est pas un email de service public`);
     }
-    const existsOnMattermost = await mattermost.getUserByEmail(primaryEmail)
-    if (!existsOnMattermost) {
-      throw new Error(`L'email n'existe pas dans mattermost,
-        pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`);
+    try {
+      await mattermost.getUserByEmail(primaryEmail)
+    } catch {
+      throw new Error(`L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`);
     }
     const dbUser: DBUser = await knex('users').where({
       username,
