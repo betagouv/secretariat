@@ -1,6 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
+
+import Betagouv from '../src/betagouv';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
@@ -143,9 +145,49 @@ describe('Login', () => {
     });
   });
 
+  describe('POST /login with user expired for less than 5 days', () => {
+    it('should email to secondary email', async () => {
+      const today = new Date();
+      const todayLess4days = new Date()
+      todayLess4days.setDate(today.getDate() - 4)
+      const userInfosByIdStub = sinon.stub(Betagouv, 'userInfosById').returns(
+        Promise.resolve({
+          id: 'membre.expiredfourdays',
+          fullname: '',
+          github: '',
+          employer: '',
+          domaine: 'Animation',
+          missions: [],
+          start: '',
+          startups: [],
+          end: todayLess4days.toUTCString()
+        }
+      ))
+      await knex('users').insert({
+        username: 'membre.expiredfourdays',
+        primary_email: 'membre.expiredfourdays@beta.gouv.fr',
+        secondary_email: 'membre.expiredfourdays@gmail.com'
+      })
+      await chai.request(app)
+        .post('/login')
+        .type('form')
+        .send({
+          emailInput: 'membre.expiredfourdays@beta.gouv.fr',
+        })
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal('membre.expiredfourdays@beta.gouv.fr');
+      sendEmailStub.calledOnce.should.be.true;
+      await knex('users').where({
+        username: 'membre.expiredfourdays',
+      }).delete()
+      userInfosByIdStub.restore()
+    });
+  });
+
 
   describe('POST /login with non existent secondary email', () => {
     it('should redirect to login', (done) => {
+      
       chai.request(app)
         .post('/login')
         .type('form')

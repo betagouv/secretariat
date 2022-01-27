@@ -31,7 +31,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     );
   }
 
-  if (utils.checkUserIsExpired(user)) {
+  if (utils.checkUserIsExpired(user, 5)) {
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 

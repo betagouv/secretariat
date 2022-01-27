@@ -13,11 +13,11 @@ type Domaine =
 export interface Member {
   id: string;
   fullname: string;
-  github: string;
-  email: string;
+  github?: string;
+  email?: string;
   missions: Mission[];
   startups: string[];
-  previously: string[];
+  previously?: string[];
   start: string;
   end: string;
   employer: string;

@@ -242,6 +242,8 @@
                             <input name="new_password" type="password" minlength="9" required>
                             <button class="button margin-10-0" type="submit">Changer</button>
                         </form>
+                    <% } else if (emailSuspended) { %>
+                        <p>Il faut mettre à jour votre date de fin de mission et merger la pull request avant de pouvoir changer votre mot de passe</p>
                     <% } else { %>
                         <p>Sans compte email, vous n'avez pas la possibilité de changer de mot de passe.</p>
                     <% } %>
