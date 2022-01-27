@@ -164,21 +164,21 @@ describe('Login', () => {
         }
       ))
       await knex('users').insert({
-        username: 'membre.expired4days',
-        primary_email: 'membre.expired4days@beta.gouv.fr',
-        secondary_email: 'membre.expired4days@gmail.com'
+        username: 'membre.expiredfourdays',
+        primary_email: 'membre.expiredfourdays@beta.gouv.fr',
+        secondary_email: 'membre.expiredfourdays@gmail.com'
       })
       await chai.request(app)
         .post('/login')
         .type('form')
         .send({
-          emailInput: 'membre.expired4days@beta.gouv.fr',
+          emailInput: 'membre.expiredfourdays@beta.gouv.fr',
         })
       const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal('membre.expired4days@beta.gouv.fr');
+      destinationEmail.should.equal('membre.expiredfourdays@beta.gouv.fr');
       sendEmailStub.calledOnce.should.be.true;
       await knex('users').where({
-        username: 'membre.expired4days',
+        username: 'membre.expiredfourdays',
       }).delete()
       userInfosByIdStub.restore()
     });
