@@ -152,7 +152,7 @@ describe('Login', () => {
       todayLess4days.setDate(today.getDate() - 4)
       const userInfosByIdStub = sinon.stub(Betagouv, 'userInfosById').returns(
         Promise.resolve({
-          id: 'membre.expired4days',
+          id: 'membre.expiredfourdays',
           fullname: '',
           github: '',
           employer: '',
