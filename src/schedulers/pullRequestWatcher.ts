@@ -1,12 +1,13 @@
 import ejs from 'ejs';
-
+import Betagouv from '../betagouv';
+import config from '../config';
+import knex from '../db';
 import * as github from '../lib/github'
 import * as mattermost from '../lib/mattermost'
-import { EmailStatusCode } from '../models/dbUser';
-import Betagouv from '../betagouv';
-import * as utils from '../controllers/utils';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
-import knex from '../db';
+import { EmailStatusCode } from '../models/dbUser';
+import * as utils from '../controllers/utils';
+
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
@@ -62,8 +63,10 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestId) => 
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
-        // await sendMattermostMessageToAuthorsIfExists(author)
-        // await sendEmailToAuthorsIfExists(author)
+        if (config.featureShouldSendMessageToAuthor) {
+            await sendMattermostMessageToAuthorsIfExists(author)
+            await sendEmailToAuthorsIfExists(author)
+        }
     }
 }
 
