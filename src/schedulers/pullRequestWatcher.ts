@@ -59,7 +59,8 @@ const sendMattermostMessageToAuthorsIfExists = async (author) => {
 }
 
 const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestId) => {
-    const { data: files } = await github.getPullRequestFiles('betagouv','beta.gouv.fr', pullRequestId)
+    const { data: files } = await github.getPullRequestFiles(
+        config.githubOrganizationName, config.githubRepository, pullRequestId)
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
@@ -71,7 +72,8 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestId) => 
 }
 
 const pullRequestWatcher = async () => {
-    const { data: pullRequests }  = await github.getPullRequests('betagouv','beta.gouv.fr', 'open')
+    const { data: pullRequests }  = await github.getPullRequests(
+        config.githubOrganizationName, config.githubRepository, 'open')
     const pullRequestCheckPromises = pullRequests.map(pr => sendMessageToAuthorsIfAuthorFilesInPullRequest(pr.id))
     Promise.all(pullRequestCheckPromises)
 }
