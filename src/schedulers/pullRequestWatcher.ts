@@ -17,7 +17,7 @@ const findAuthorsInFiles = async (files) => {
     return authors;
 }
 
-const sendEmailToAuthorsIfExists = async (author) => {
+const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
     const user: DBUser = await knex('users').where({
         username: author,
     }).andWhere({
@@ -27,9 +27,13 @@ const sendEmailToAuthorsIfExists = async (author) => {
     if (!user) {
         console.log(`L'utilisateur n'existe pas, ou n'a ni email actif, ni d'email secondaire`)
     } else {
+        const user: Member = await BetaGouv.userInfosById(username)
         const messageContent = await ejs.renderFile(
             `./views/emails/pendingGithubAuthorPR.ejs`,
-            {}
+            {
+              username: user.fullname,
+              pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
+            }
         );
         const primary_email_active = user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
         await utils.sendMail(
@@ -41,16 +45,19 @@ const sendEmailToAuthorsIfExists = async (author) => {
     }
 }
 
-const sendMattermostMessageToAuthorsIfExists = async (author) => {
+const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber) => {
     const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
         term: author
     })
-    const messageContent = await ejs.renderFile(
-        `./views/emails/pendingGithubAuthorPR.ejs`,
-        {}
-    );
 
     if (mattermostUser) {
+        const messageContent = await ejs.renderFile(
+            `./views/emails/pendingGithubAuthorPR.ejs`,
+            {
+              username: mattermostUser.username,
+              pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
+            }
+        );
         await Betagouv.sendInfoToChat(
             messageContent,
             'secretariat',
@@ -68,12 +75,12 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
         console.log('Should send message to author', author)
         if (config.featureShouldSendMessageToAuthor) {
             try {
-                await sendMattermostMessageToAuthorsIfExists(author)
+                await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
             } catch (e) {
                 console.error(`Erreur lors de l'envoie d'un message via mattermost à ${author}`, e)
             }
             try {
-                await sendEmailToAuthorsIfExists(author)
+                await sendEmailToAuthorsIfExists(author, pullRequestNumber)
             } catch (e) {
                 console.error(`Erreur lors de l'envoie d'un email à ${author}`, e)
             }
