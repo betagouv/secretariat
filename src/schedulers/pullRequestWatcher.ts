@@ -12,7 +12,7 @@ const findAuthorsInFiles = async (files) => {
     const authors = [];
     for (const file of files) {
         if (file.contents_url.includes('content/_authors')) {
-            authors.push(file.filename.replace('.md', ''));
+            authors.push(file.filename.replace('content/_authors/', '').replace('.md', ''));
         }
     }
     return authors;
