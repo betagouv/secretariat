@@ -11,7 +11,6 @@ import knex from '../src/db';
 import app from '../src/index';
 import { renderHtmlFromMd } from '../src/lib/mdtohtml';
 import { createNewsletter } from '../src/schedulers/newsletterScheduler';
-import testUsers from './users.json';
 import utils from './utils';
 
 chai.use(chaiHttp);
