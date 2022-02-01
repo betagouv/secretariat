@@ -2,15 +2,18 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
+
+import Betagouv from '../src/betagouv'
 import pullRequestWatcher from '../src/schedulers/pullRequestWatcher'
 import * as controllerUtils from '../src/controllers/utils';
 import * as github from '../src/lib/github'
 chai.use(chaiHttp);
 
-describe('Login token', () => {
+describe('Pull requests watchers', () => {
   let getPullRequestsStub;
   let getPullRequestFilesStub;
-  let sendEmailStub
+  let sendEmailStub;
+  let mattermostMessageStub;
 
   beforeEach((done) => {
     getPullRequestsStub = sinon.stub(github, 'getPullRequests').returns(Promise.resolve({
@@ -24,6 +27,8 @@ describe('Login token', () => {
         }]
     }));
     sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+    mattermostMessageStub = sinon.stub(Betagouv, 'sendInfoToChat').returns(Promise.resolve({}));;
+
     done();
   });
 
@@ -34,7 +39,7 @@ describe('Login token', () => {
     done();
   });
 
-  it('should pull pending requests', async () => {
+  it('should get pending requests and inspect file with authors', async () => {
     nock(
       'https://mattermost.incubateur.net/api/v4/users/search'
     )
@@ -60,6 +65,7 @@ describe('Login token', () => {
     await pullRequestWatcher()
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
+    mattermostMessageStub.calledOnce.should.be.true;
     sendEmailStub.calledOnce.should.be.true;
   });
 });

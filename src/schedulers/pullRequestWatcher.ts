@@ -4,7 +4,6 @@ import config from '../config';
 import knex from '../db';
 import * as github from '../lib/github'
 import * as mattermost from '../lib/mattermost'
-import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from '../controllers/utils';
 
@@ -37,7 +36,7 @@ const sendEmailToAuthorsIfExists = async (author) => {
         await utils.sendMail(
             primary_email_active ? user.primary_email : user.secondary_email,
             `PR en attente`,
-            renderHtmlFromMd(messageContent)
+            messageContent
         );
         console.log(`Message de rappel de pr envoyé par email à ${user.username}`)
     }
