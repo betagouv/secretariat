@@ -14,7 +14,7 @@ interface Marrainage {
   count: number,
   completed: boolean,
   created_at: string,
-  last_udpated: string
+  last_updated: string
 }
 
 async function selectRandomOnboarder(newcomerId) {
@@ -24,7 +24,7 @@ async function selectRandomOnboarder(newcomerId) {
     .select('last_onboarder')
     .where({ completed: false })
     .distinct()
-    .then((results) => results.map((x) => x.last_onboarder));
+    .then((marrainages: Marrainage[]) => marrainages.map((x) => x.last_onboarder));
 
   const onboarders = users.filter((x) => {
     const existingCandidate = existingCandidates.includes(x.id);
@@ -33,9 +33,6 @@ async function selectRandomOnboarder(newcomerId) {
     const isRequester = x.id === newcomerId;
     return !existingCandidate && senior && stillActive && !isRequester;
   });
-  if (!onboarders.length) {
-    throw new Error(`Il n'y a pas d'onboarder disponible pour le marrainage`)
-  }
   return onboarders[Math.floor(Math.random() * onboarders.length)];
 }
 
