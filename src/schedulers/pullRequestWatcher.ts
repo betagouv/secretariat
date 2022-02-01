@@ -5,7 +5,7 @@ import knex from '../db';
 import * as github from '../lib/github'
 import * as mattermost from '../lib/mattermost'
 import { DBUser, EmailStatusCode } from '../models/dbUser';
-import * as utils from '../controllers/utils';
+import * as utils from "../controllers/utils";
 
 
 const findAuthorsInFiles = async (files) => {

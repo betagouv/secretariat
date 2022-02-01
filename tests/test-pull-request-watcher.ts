@@ -2,11 +2,10 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-
-import Betagouv from '../src/betagouv'
-import pullRequestWatcher from '../src/schedulers/pullRequestWatcher'
+import betagouv from '../src/betagouv';
+import pullRequestWatcher from '../src/schedulers/pullRequestWatcher';
 import * as controllerUtils from '../src/controllers/utils';
-import * as github from '../src/lib/github'
+import * as github from '../src/lib/github';
 chai.use(chaiHttp);
 
 describe('Pull requests watchers', () => {
@@ -27,8 +26,7 @@ describe('Pull requests watchers', () => {
         }]
     }));
     sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
-    mattermostMessageStub = sinon.stub(Betagouv, 'sendInfoToChat').returns(Promise.resolve({}));;
-
+    mattermostMessageStub = sinon.spy(betagouv, 'sendInfoToChat')
     done();
   });
 
