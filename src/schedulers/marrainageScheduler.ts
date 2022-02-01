@@ -49,6 +49,7 @@ export async function createMarrainages() {
       // create marrainage request
       await createRequestForUser(user.username);
     } catch (e) {
+      console.error(`Impossible de créer un marrainage pour ${user.username}`)
       // marrainage may fail if no member available
       console.warn(e);
     }
