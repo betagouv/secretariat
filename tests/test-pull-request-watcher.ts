@@ -1,43 +1,79 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import nock from 'nock';
 import sinon from 'sinon';
 import pullRequestWatcher from '../src/schedulers/pullRequestWatcher'
+import * as controllerUtils from '../src/controllers/utils';
 import * as github from '../src/lib/github'
 chai.use(chaiHttp);
 
 describe('Login token', () => {
   let getPullRequestsStub;
   let getPullRequestFilesStub;
+  let sendEmailStub
 
   beforeEach((done) => {
     getPullRequestsStub = sinon.stub(github, 'getPullRequests').returns(Promise.resolve({
-        data: [PRexample],
+        data: PRexamples,
         url: '',
     }));
     getPullRequestFilesStub = sinon.stub(github, 'getPullRequestFiles').returns(Promise.resolve({
         data: [{
-          filename: 'jean.pascale.md',
-          contents_url: 'https://api.github.com/repos/octocat/content/_authors/jean.pascale.md'
+          filename: 'membre.actif.md',
+          contents_url: 'https://api.github.com/repos/octocat/content/_authors/membre.actif.md'
         }]
     }));
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
     done();
   });
 
   afterEach((done) => {
     getPullRequestsStub.restore();
     getPullRequestFilesStub.restore();
+    sendEmailStub.restore();
     done();
   });
 
   it('should pull pending requests', async () => {
+    nock(
+      'https://mattermost.incubateur.net/api/v4/users/search'
+    )
+      .post(/.*/)
+      .reply(200, [
+          {
+            "id": "string",
+            "create_at": 0,
+            "update_at": 0,
+            "delete_at": 0,
+            "username": "string",
+            "first_name": "string",
+            "last_name": "string",
+            "nickname": "string",
+            "email": "string",
+            "email_verified": true,
+            "auth_service": "string",
+            "roles": "string",
+            "locale": "string",
+          }
+        ]
+      );
     await pullRequestWatcher()
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
+    sendEmailStub.calledOnce.should.be.true;
   });
 });
 
-const PRexample =   {
+const PRexamples = [{
   "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
   "id": 1,
-  "number": 1347
-};
+  "number": 1347,
+  "updated_at": new Date().toISOString()
+},
+{
+  "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
+  "id": 1,
+  "number": 1347,
+  "updated_at": "2011-01-26T19:01:12Z"
+},
+];

@@ -87,7 +87,7 @@ export default {
   featureDeleteRedirectionsAfterQuitting:
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
   featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST,
-  featureShouldSendMessageToAuthor: false,
+  featureShouldSendMessageToAuthor: process.env.FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR,
   featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
   featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
 };
