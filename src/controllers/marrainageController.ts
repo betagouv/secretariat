@@ -8,10 +8,19 @@ import { addEvent, EventCode } from '../lib/events'
 import { DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
 
+interface Marrainage {
+  username: string,
+  last_onboarder: string,
+  count: number,
+  completed: boolean,
+  created_at: string,
+  last_udpated: string
+}
+
 async function selectRandomOnboarder(newcomerId) {
   const users: Member[] = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
-  const existingCandidates = await knex('marrainage')
+  const existingCandidates: string[] = await knex('marrainage')
     .select('last_onboarder')
     .where({ completed: false })
     .distinct()
@@ -24,6 +33,9 @@ async function selectRandomOnboarder(newcomerId) {
     const isRequester = x.id === newcomerId;
     return !existingCandidate && senior && stillActive && !isRequester;
   });
+  if (!onboarders.length) {
+    throw new Error(`Il n'y a pas d'onboarder disponible pour le marrainage`)
+  }
   return onboarders[Math.floor(Math.random() * onboarders.length)];
 }
 
@@ -143,7 +155,8 @@ export async function reloadMarrainage(newcomerId) {
 }
 
 export async function createRequestForUser(userId) {
-  const newcomer = await BetaGouv.userInfosById(userId);
+  console.log('Creating marrainage request for', userId)
+  const newcomer: Member = await BetaGouv.userInfosById(userId);
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
