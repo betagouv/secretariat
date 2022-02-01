@@ -1,18 +1,30 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
 import betagouv from '../src/betagouv';
 import pullRequestWatcher from '../src/schedulers/pullRequestWatcher';
 import * as controllerUtils from '../src/controllers/utils';
 import * as github from '../src/lib/github';
-chai.use(chaiHttp);
+import nock from 'nock';
 
 describe('Pull requests watchers', () => {
   let getPullRequestsStub;
   let getPullRequestFilesStub;
   let sendEmailStub;
   let mattermostMessageStub;
+
+  const PRexamples = [{
+    "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
+    "id": 1,
+    "number": 1347,
+    "updated_at": new Date().toISOString()
+  },
+  {
+    "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
+    "id": 1,
+    "number": 1347,
+    "updated_at": "2011-01-26T19:01:12Z"
+  },
+  ];
 
   beforeEach((done) => {
     getPullRequestsStub = sinon.stub(github, 'getPullRequests').returns(Promise.resolve({
@@ -26,7 +38,7 @@ describe('Pull requests watchers', () => {
         }]
     }));
     sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
-    mattermostMessageStub = sinon.spy(betagouv, 'sendInfoToChat')
+    mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
     done();
   });
 
@@ -64,21 +76,7 @@ describe('Pull requests watchers', () => {
     await pullRequestWatcher()
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
-    mattermostMessageStub.calledOnce.should.be.true;
     sendEmailStub.calledOnce.should.be.true;
+    mattermostMessageStub.calledOnce.should.be.true;
   });
 });
-
-const PRexamples = [{
-  "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
-  "id": 1,
-  "number": 1347,
-  "updated_at": new Date().toISOString()
-},
-{
-  "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
-  "id": 1,
-  "number": 1347,
-  "updated_at": "2011-01-26T19:01:12Z"
-},
-];
