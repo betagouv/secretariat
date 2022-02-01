@@ -6,6 +6,7 @@ import * as github from '../lib/github';
 import * as mattermost from '../lib/mattermost';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from "../controllers/utils";
+import { Member } from '../models/member';
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
@@ -27,11 +28,11 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
     if (!user) {
         console.log(`L'utilisateur n'existe pas, ou n'a ni email actif, ni d'email secondaire`)
     } else {
-        const user: Member = await BetaGouv.userInfosById(username)
+        const member: Member = await Betagouv.userInfosById(author)
         const messageContent = await ejs.renderFile(
             `./views/emails/pendingGithubAuthorPR.ejs`,
             {
-              username: user.fullname,
+              username: member.fullname,
               pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
             }
         );
@@ -105,9 +106,11 @@ const pullRequestWatcher = async () => {
     })
     const pullRequestCheckPromises = filteredPullRequests.map(
         pr => sendMessageToAuthorsIfAuthorFilesInPullRequest(pr.number))
-    Promise.all(pullRequestCheckPromises)
+    return Promise.all(pullRequestCheckPromises)
 }
 
-export default pullRequestWatcher
+export {
+    pullRequestWatcher
+}
 
 

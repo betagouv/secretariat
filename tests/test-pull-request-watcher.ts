@@ -3,8 +3,7 @@ import sinon from 'sinon';
 import betagouv from '../src/betagouv';
 import * as controllerUtils from '../src/controllers/utils';
 import * as github from '../src/lib/github';
-import pullRequestWatcher from '../src/schedulers/pullRequestWatcher';
-
+import { pullRequestWatcher } from '../src/schedulers/pullRequestWatcher';
 
 describe('Pull requests watchers', () => {
   let getPullRequestsStub;
@@ -78,5 +77,7 @@ describe('Pull requests watchers', () => {
     await pullRequestWatcher()
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
+    sendEmailStub.calledOnce.should.be.true;
+    mattermostMessageStub.calledOnce.should.be.true;
   });
 });
