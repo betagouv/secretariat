@@ -8,14 +8,23 @@ import { addEvent, EventCode } from '../lib/events'
 import { DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
 
+interface Marrainage {
+  username: string,
+  last_onboarder: string,
+  count: number,
+  completed: boolean,
+  created_at: string,
+  last_updated: string
+}
+
 async function selectRandomOnboarder(newcomerId) {
   const users: Member[] = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
-  const existingCandidates = await knex('marrainage')
+  const existingCandidates: string[] = await knex('marrainage')
     .select('last_onboarder')
     .where({ completed: false })
     .distinct()
-    .then((results) => results.map((x) => x.last_onboarder));
+    .then((marrainages: Marrainage[]) => marrainages.map((x) => x.last_onboarder));
 
   const onboarders = users.filter((x) => {
     const existingCandidate = existingCandidates.includes(x.id);
@@ -143,7 +152,8 @@ export async function reloadMarrainage(newcomerId) {
 }
 
 export async function createRequestForUser(userId) {
-  const newcomer = await BetaGouv.userInfosById(userId);
+  console.log('Creating marrainage request for', userId)
+  const newcomer: Member = await BetaGouv.userInfosById(userId);
   const onboarder = await selectRandomOnboarder(newcomer.id);
 
   if (!onboarder) {
