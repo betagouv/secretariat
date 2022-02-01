@@ -36,6 +36,7 @@ describe('Pull requests watchers', () => {
     getPullRequestsStub.restore();
     getPullRequestFilesStub.restore();
     sendEmailStub.restore();
+    mattermostMessageStub.restore();
     done();
   });
 
