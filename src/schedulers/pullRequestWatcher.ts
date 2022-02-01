@@ -7,6 +7,7 @@ import * as mattermost from '../lib/mattermost';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from "../controllers/utils";
 import { Member } from '../models/member';
+import { renderHtmlFromMd } from '../lib/mdtohtml';
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
@@ -40,7 +41,7 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
         await utils.sendMail(
             primary_email_active ? user.primary_email : user.secondary_email,
             `PR en attente`,
-            messageContent
+            renderHtmlFromMd(messageContent)
         );
         console.log(`Message de rappel de pr envoyé par email à ${user.username}`)
     }
