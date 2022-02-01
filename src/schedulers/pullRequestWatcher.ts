@@ -2,11 +2,10 @@ import ejs from 'ejs';
 import Betagouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
-import * as github from '../lib/github'
-import * as mattermost from '../lib/mattermost'
+import * as github from '../lib/github';
+import * as mattermost from '../lib/mattermost';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from "../controllers/utils";
-
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
