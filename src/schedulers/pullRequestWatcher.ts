@@ -22,9 +22,10 @@ const findAuthorsInFiles = async (files) => {
 const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
     const user: DBUser = await knex('users').where({
         username: author,
-    }).andWhere({
-        primary_email_status: EmailStatusCode.EMAIL_ACTIVE
-    }).orWhereNotNull('secondary_email')
+    }).andWhere(function() {
+        this.where({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE })
+        .orWhereNotNull('secondary_email')
+    })
     .first()
     if (!user) {
         console.log(`L'utilisateur n'existe pas, ou n'a ni email actif, ni d'email secondaire`)
