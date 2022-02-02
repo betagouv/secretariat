@@ -21,7 +21,7 @@ const findDBUser = (dbUsers: DBUser[], user: Member) => {
   return dbUsers.find((x) => x.username === user.id);
 }
 
-const filterActiveUser = (user ) => {
+const filterActiveUser = (user) => {
   return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
 }
 
