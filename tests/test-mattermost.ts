@@ -90,7 +90,7 @@ describe('invite users to mattermost', () => {
       .reply(200, []);
 
     nock(/.*mattermost.incubateur.net/)
-      .post(/^.*api\/v4\/teams\/testteam\/invite\/email.*/)
+      .post(/^.*api\/v4\/teams\/testteam\/.*/)
       .reply(200, [{}, {}])
       .persist();
 
@@ -101,7 +101,7 @@ describe('invite users to mattermost', () => {
       .persist();
     const { addUsersNotInCommunityToCommunityTeam } = mattermostScheduler;
     const result = await addUsersNotInCommunityToCommunityTeam();
-    result.length.should.be.equal(2);
+    result.should.be.equal(1);
   });
 
   it('does not create users to team by emails if email pending', async () => {

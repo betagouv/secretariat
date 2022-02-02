@@ -21,21 +21,19 @@ const findDBUser = (dbUsers: DBUser[], user: Member) => {
   return dbUsers.find((x) => x.username === user.id);
 }
 
-const getDBActiveUsers = () => {
-  return knex('users').where({
-    primary_email_status: EmailStatusCode.EMAIL_ACTIVE
-  }).whereNotNull('primary_email')
+const filterActiveUser = (user ) => {
+  return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
 }
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
   const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams();
-  const dbActiveUsers : DBUser[] = await getDBActiveUsers();
+  const dbUsers : DBUser[] = await knex('users').select();
   const githubUsers : Member[] = await BetaGouv.usersInfos();
   const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
   const concernedUsers: MemberWithPrimaryEmail[] = activeGithubUsers.map((user: Member) => {
-    const dbUser = findDBUser(dbActiveUsers, user)
+    const dbUser = findDBUser(dbUsers, user)
     return mergedMemberAndDBUser(user, dbUser);
-  })
+  }).filter(filterActiveUser)
   const allMattermostUsersEmails = allMattermostUsers.map(
     (mattermostUser) => mattermostUser.email
   );
@@ -46,13 +44,13 @@ const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWi
 
 const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: string) : Promise<MattermostUser[]> => {
   const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({ not_in_team: teamId });
-  const dbActiveUsers : DBUser[] = await getDBActiveUsers();
+  const dbUsers : DBUser[] = await knex('users').select();
   const githubUsers : Member[] = await BetaGouv.usersInfos();
   const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
   const concernedUsers: MemberWithPrimaryEmail[] = activeGithubUsers.map((user: Member) => {
-    const dbUser = findDBUser(dbActiveUsers, user)
+    const dbUser = findDBUser(dbUsers, user)
     return mergedMemberAndDBUser(user, dbUser);
-  })
+  }).filter(filterActiveUser)
   const concernedUsersEmails = concernedUsers.map(user => user.primary_email)
   return allMattermostUsers.filter(
     (user) => concernedUsersEmails.includes(user.email)
@@ -66,7 +64,10 @@ export async function addUsersNotInCommunityToCommunityTeam() {
   let userAdded = 0
   for (const mattermostUser of mattermostUsersActiveGithubUsersNotInCommunityTeam) {
     try {
-      await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
+      console.log(`Should add user ${mattermostUser.id} to team community`)
+      if (config.featureAddUserToCommunityTeam) {
+        await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
+      }
       userAdded =+ 1
     } catch (e) {
       console.error(`Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté`, e)
