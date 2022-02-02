@@ -51,7 +51,7 @@ describe('Pull requests watchers', () => {
     done()
   });
 
-  it('should get pending requests and inspect file with authors', async () => {
+  it('should get pending requests and inspect file with authors and send mattermost', async () => {
     nock(
       'https://mattermost.incubateur.net/api/v4/users/search'
     )
@@ -77,7 +77,22 @@ describe('Pull requests watchers', () => {
     await pullRequestWatcher()
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
-    sendEmailStub.calledOnce.should.be.true;
     mattermostMessageStub.calledOnce.should.be.true;
+    sendEmailStub.calledOnce.should.be.false;
   });
+
+  it('should get pending requests and send email to users', async () => {
+    nock(
+      'https://mattermost.incubateur.net/api/v4/users/search'
+    )
+      .post(/.*/)
+      .reply(200, [
+        ]
+      );
+    await pullRequestWatcher()
+    getPullRequestsStub.calledOnce.should.be.true;
+    getPullRequestFilesStub.calledOnce.should.be.true;
+    mattermostMessageStub.calledOnce.should.be.false;
+    sendEmailStub.calledOnce.should.be.true;
+  })
 });
