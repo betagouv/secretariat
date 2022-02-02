@@ -67,7 +67,9 @@ const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber)
             mattermostUser.username
         );
         console.log(`Message de rappel de pr envoyé par mattermost à ${mattermostUser.username}`)
+        return true
     }
+    return false;
 }
 
 const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber: number) => {
@@ -76,12 +78,16 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
-        if (config.featureShouldSendMessageToAuthor) {
-            try {
-                await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
-            } catch (e) {
-                console.error(`Erreur lors de l'envoie d'un message via mattermost à ${author}`, e)
-            }
+        if (!config.featureShouldSendMessageToAuthor) {
+            return
+        }
+        let mattermostSent
+        try {
+            mattermostSent = await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
+        } catch (e) {
+            console.error(`Erreur lors de l'envoie d'un message via mattermost à ${author}`, e)
+        }
+        if (!mattermostSent) {
             try {
                 await sendEmailToAuthorsIfExists(author, pullRequestNumber)
             } catch (e) {
