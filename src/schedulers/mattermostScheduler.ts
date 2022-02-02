@@ -28,7 +28,7 @@ const getDBActiveUsers = () => {
 }
 
 const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
-  const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams(params);
+  const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams();
   const dbActiveUsers : DBUser[] = await getDBActiveUsers();
   const githubUsers : Member[] = await BetaGouv.usersInfos();
   const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
