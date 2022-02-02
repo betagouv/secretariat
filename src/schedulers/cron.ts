@@ -31,6 +31,9 @@ import {
   deleteRedirectionsAfterQuitting,
   removeEmailsFromMailingList,
 } from './userContractEndingScheduler';
+import {
+  pullRequestWatcher
+} from './pullRequestWatcher'
 
 interface Job {
   cronTime: string;
@@ -198,6 +201,13 @@ const jobs: Job[] = [
     isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
     name: 'moveUsersToAlumniTeam',
     description: 'Cron job to add user to alumni on mattermost',
+  },
+  {
+    cronTime: '0 0 * * * *',
+    onTick: pullRequestWatcher,
+    isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
+    name: 'pullRequestWatcher',
+    description: 'Cron job to remind user with pending pull request on author file',
   },
 ];
 
