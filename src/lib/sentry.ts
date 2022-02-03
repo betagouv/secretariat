@@ -1,5 +1,5 @@
-import { CaptureConsole } from '@sentry/integrations';
 import * as Sentry from '@sentry/node';
+import { CaptureConsole as CaptureConsoleIntegration } from "@sentry/integrations";
 import config from '../config';
 
 export function initCaptureConsole() {
@@ -10,7 +10,7 @@ export function initCaptureConsole() {
   Sentry.init({
     dsn: config.sentryDNS as string,
     // https://docs.sentry.io/platforms/javascript/configuration/integrations/plugin/#captureconsole
-    integrations: [new CaptureConsole({ levels: logLevel })],
+    integrations: [new CaptureConsoleIntegration({ levels: logLevel })],
   });
 }
 
