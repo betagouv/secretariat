@@ -207,7 +207,7 @@ export function addDays(date, days, week = null) {
 }
 
 export async function isPublicServiceEmail (email) {
-  if (email.toLowerCase().includes('@pole-emploi.fr')) {
+  if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
     return true
   }
   const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
