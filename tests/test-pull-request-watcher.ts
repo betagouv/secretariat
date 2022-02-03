@@ -10,18 +10,21 @@ describe('Pull requests watchers', () => {
   let getPullRequestFilesStub;
   let sendEmailStub;
   let mattermostMessageStub;
-
+  const date = new Date()
+  date.setDate(date.getDate() - 1)
   const PRexamples = [{
     "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
     "id": 1,
     "number": 1347,
-    "updated_at": new Date().toISOString()
+    "updated_at": date.toISOString(),
+    "created_at": date.toISOString()
   },
   {
     "url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347",
     "id": 1,
     "number": 1347,
-    "updated_at": "2011-01-26T19:01:12Z"
+    "updated_at": "2011-01-26T19:01:12Z",
+    "created_at": "2011-01-26T19:01:12Z"
   },
   ];
 
