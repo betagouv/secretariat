@@ -17,6 +17,7 @@ import {
   moveUsersToAlumniTeam,
   reactivateUsers,
   removeUsersFromCommunityTeam,
+  addUsersNotInCommunityToCommunityTeam,
 } from './mattermostScheduler';
 import {
   newsletterReminder,
@@ -167,6 +168,13 @@ const jobs: Job[] = [
     isActive: !!config.featureCreateUserOnMattermost,
     name: 'createUsersByEmail',
     description: 'Cron job to create user on mattermost by email',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: addUsersNotInCommunityToCommunityTeam,
+    isActive: !!config.featureAddUserToCommunityTeam,
+    name: 'addUsersNotInCommunityToCommunityTeam',
+    description: 'Cron job to add user existing on mattermost to community team if there not in'
   },
   {
     cronTime: '0 0 8 1 * *',

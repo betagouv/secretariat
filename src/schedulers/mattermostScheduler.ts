@@ -59,15 +59,13 @@ const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: string) : Pr
 
 
 export async function addUsersNotInCommunityToCommunityTeam() {
+  console.log(`Ajout des utilisateurs existant à l'espace communauté`)
   const mattermostUsersActiveGithubUsersNotInCommunityTeam: MattermostUser[] =
     await getMattermostUsersActiveGithubUsersNotInTeam(config.mattermostTeamId);
   let userCount = 0
   for (const mattermostUser of mattermostUsersActiveGithubUsersNotInCommunityTeam) {
     try {
-      console.log(`Should add user ${mattermostUser.username} to team community`)
-      if (config.featureAddUserToCommunityTeam) {
-        await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
-      }
+      await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
       userCount += 1
     } catch (e) {
       console.error(`Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté`, e)
