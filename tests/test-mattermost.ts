@@ -101,7 +101,7 @@ describe('invite users to mattermost', () => {
       .persist();
     const { addUsersNotInCommunityToCommunityTeam } = mattermostScheduler;
     const result = await addUsersNotInCommunityToCommunityTeam();
-    result.should.be.equal(1);
+    result.should.be.equal(2);
   });
 
   it('does not create users to team by emails if email pending', async () => {
