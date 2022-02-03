@@ -97,20 +97,21 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
     }
 }
 
-const filterUpdateDateXdaysAgo = (updatedDate, nbOfDays) => {
+const filterUpdateDateXdaysAgo = (createdDate, nbOfDays) => {
     const thresholdDate = new Date()
-    thresholdDate.setDate(thresholdDate.getDate() + nbOfDays)
-    const thresholdDateLessOneDay = new Date()
-    thresholdDateLessOneDay.setHours(thresholdDate.getHours() - 1)
-    return updatedDate < thresholdDate && updatedDate > thresholdDateLessOneDay
+    thresholdDate.setDate(thresholdDate.getDate() - nbOfDays)
+    const thresholdDateLessOneHour = new Date()
+    thresholdDateLessOneHour.setDate(thresholdDate.getDate())
+    thresholdDateLessOneHour.setHours(thresholdDate.getHours() - 1)
+    return createdDate < thresholdDate && createdDate > thresholdDateLessOneHour
 }
 
 const pullRequestWatcher = async () => {
     const { data: pullRequests }  = await github.getPullRequests(
         config.githubOrganizationName, 'beta.gouv.fr', 'open')
     const filteredPullRequests = pullRequests.filter(pr => {
-        const updatedDate = new Date(pr.updated_at)
-        return filterUpdateDateXdaysAgo(updatedDate, 0) || filterUpdateDateXdaysAgo(updatedDate, 5)
+        const createdDate = new Date(pr.created_at)
+        return filterUpdateDateXdaysAgo(createdDate, 1) || filterUpdateDateXdaysAgo(createdDate, 5)
     })
     const pullRequestCheckPromises = filteredPullRequests.map(
         pr => sendMessageToAuthorsIfAuthorFilesInPullRequest(pr.number))
