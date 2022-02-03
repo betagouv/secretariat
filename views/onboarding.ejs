@@ -240,7 +240,7 @@
             <% } %>
 
             <label for="isEmailBetaAsked" class="padding-10-0">
-              <input type="checkbox" name="isEmailBetaAsked" value="false" checked="<%= formData.isEmailBetaAsked%>">
+              <input type="checkbox" name="isEmailBetaAsked" value="true" <% if(formData.isEmailBetaAsked) {%>checked<% } %>>
               <% if(formValidationErrors['email public']) { %>
                 <strong class="text-color-red">
             <% } else { %>
