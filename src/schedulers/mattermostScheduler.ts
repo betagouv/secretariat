@@ -66,7 +66,7 @@ export async function addUsersNotInCommunityToCommunityTeam() {
   for (const mattermostUser of mattermostUsersActiveGithubUsersNotInCommunityTeam) {
     try {
       await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
-      userCount =+ 1
+      userCount += 1
     } catch (e) {
       console.error(`Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté`, e)
     }
