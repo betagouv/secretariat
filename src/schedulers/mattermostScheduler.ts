@@ -60,7 +60,7 @@ const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: string) : Pr
 
 export async function addUsersNotInCommunityToCommunityTeam() {
   const mattermostUsersActiveGithubUsersNotInCommunityTeam: MattermostUser[] =
-    await getMattermostUsersActiveGithubUsersNotInTeam(config.mattermostAlumniTeamId);
+    await getMattermostUsersActiveGithubUsersNotInTeam(config.mattermostTeamId);
   let userCount = 0
   for (const mattermostUser of mattermostUsersActiveGithubUsersNotInCommunityTeam) {
     try {
