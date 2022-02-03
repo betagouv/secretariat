@@ -73,6 +73,7 @@ export default {
     process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
   featureAddGithubUserToOrganization:
     process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
+  featureAddUserToCommunityTeam: process.env.FEATURE_ADD_USER_TO_COMMUNITY_ON_MATTERMOST,
   featureCreateUserOnMattermost: process.env.FEATURE_CREATE_USER_ON_MATTERMOST,
   featureRemoveGithubUserFromOrganization:
     process.env.FEATURE_REMOVE_GITHUB_USER_FROM_ORGANIZATION,
