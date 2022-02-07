@@ -314,6 +314,10 @@ button.redirection-remove {
   display: flex;
 }
 
+table.startup-members th {
+  text-align: left;
+}
+
 /* media */
 
 @media (max-width: 749px) {

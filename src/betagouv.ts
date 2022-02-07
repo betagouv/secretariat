@@ -3,6 +3,7 @@ import ovh0 from 'ovh';
 import config from './config';
 import { checkUserIsExpired } from './controllers/utils';
 import { Member } from './models/member';
+import { Startup } from './models/startup';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
@@ -81,7 +82,18 @@ const betaGouv = {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
   },
-
+  startupInfos: async (): Promise<Startup[]> => {
+    return axios
+      .get<Startup[]>(config.startupsDetailsAPI)
+      .then((response) => Object.keys(response.data).map(key => response.data[key]))
+      .catch((err) => {
+        throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+      })
+  },
+  startupInfosById: async (id: string): Promise<Startup> => {
+    const startups = await betaGouv.startupInfos();
+    return startups.find(startup => startup.id === id);
+  },
   startupsInfos: async () =>
     axios
       .get(config.startupsAPI)

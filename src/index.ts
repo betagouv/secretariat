@@ -20,6 +20,7 @@ import * as marrainageController from './controllers/marrainageController';
 import * as newsletterController from './controllers/newsletterController';
 import * as onboardingController from './controllers/onboardingController';
 import * as resourceController from './controllers/resourceController';
+import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import knex from './db';
 import * as sentry from './lib/sentry';
@@ -157,6 +158,8 @@ app.get('/marrainage/decline', marrainageController.declineRequest);
 app.post('/marrainage/cancel', marrainageController.cancelRequest);
 app.post('/marrainage/reload', marrainageController.reloadRequest);
 
+app.get('/startups', startupController.getStartupList);
+app.get('/startups/:startup', startupController.getStartup);
 app.get('/account', accountController.getCurrentAccount);
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
