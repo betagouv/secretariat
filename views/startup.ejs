@@ -1,0 +1,131 @@
+<%- include('partials/nav-header'); -%>
+
+<link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<script src="/static/collapse/collapse.js"></script>
+
+<div class="module">
+    <div class="row">
+        <div class="panel panel-partial-width">
+            <div class="account-split-panel">
+                <div>
+                    <h3>
+                        Startup
+                    </h3>
+                    <p>
+                        <strong>Nom : </strong>
+                        <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/<%= startupInfos.id %>.md">
+                            <%= startupInfos.name %></a>
+                    </p>
+                    <p>
+                        <strong>Repository : </strong><%= startupInfos.repository %>
+                    </p>
+                    <p>
+                        <strong>Contact : </strong><%= startupInfos.contact %>
+                    </p>
+                </div>
+                <div class="account-split-panel-shrink">
+                    <img width="100%" src="/static/images/logo-betagouv.jpg" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-full-width">
+            <h3>
+                Membres
+            </h3>
+            <div>
+                <table class="sortable startup-members">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Role</th>
+                            <th>Date de fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% members.active_members.forEach(function(member) { %>
+                            <tr>
+                                <td>
+                                    <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= member.id %>.md">
+                                        <%= member.fullname %>
+                                    </a>
+                                </td>
+                                <td><%= member.role %></td>
+                                <td><%= member.end %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <hr />
+            </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="expired_members">
+                       Membres expirés
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <table class="sortable startup-members">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Role</th>
+                                <th>Date de fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% members.expired_members.forEach(function(member) { %>
+                                <tr>
+                                    <td>
+                                        <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= member.id %>.md">
+                                            <%= member.fullname %>
+                                        </a>
+                                    </td>
+                                    <td><%= member.role %></td>
+                                    <td><%= member.end %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                    <hr />
+                </div>
+            </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="previous_members">
+                       Membres précédents
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <table class="sortable startup-members">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Role</th>
+                                <th>Date de fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% members.previous_members.forEach(function(member) { %>
+                                <tr>
+                                    <td>
+                                        <a href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= member.id %>.md">
+                                            <%= member.fullname %>
+                                        </a>
+                                    </td>
+                                    <td><%= member.role %></td>
+                                    <td><%= member.end %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/nav-footer'); -%>
