@@ -46,6 +46,8 @@ export default {
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
   startupsAPI:
     process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
+  startupsDetailsAPI:
+    process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr/api/v2.3/startups_details.json',
   githubToken: process.env.GITHUB_TOKEN,
   githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || 'betagouv',
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
