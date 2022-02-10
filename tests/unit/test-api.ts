@@ -3,7 +3,7 @@ import { MemberWithPrimaryEmailStatus } from "../../src/models/member";
 import { IMemberRepository } from "../../src/repositories/MemberRepository";
 import { IUserRepository } from "../../src/repositories/UserRepository";
 import makeUserService, { IUserService } from "../../src/services/UserService";
-import FakeMemberRepository, { createSeedRegisterMemberDto } from "../fakeRepository/FakeMemberRepository";
+import FakeMemberRepository, { createMember } from "../fakeRepository/FakeMemberRepository";
 import FakeUserRepository, { createDBUser } from "../fakeRepository/FakeUserRepository";
 import { expect } from 'chai'
 
@@ -23,7 +23,7 @@ describe('Api public user infos', () => {
     });
 
     it('should response with array of members', async () => {
-        const dto = createSeedRegisterMemberDto({
+        const dto = createMember({
             id: 'user.actif'
         });
         await fakeMemberRepository.addMember(dto);

@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import { EmailStatusCode } from '../../src/models/dbUser';
 import app, { fakeMemberRepository, fakeUserRepository } from '../env-test-server'
-import { createSeedRegisterMemberDto } from '../fakeRepository/FakeMemberRepository';
+import { createMember } from '../fakeRepository/FakeMemberRepository';
 import { createDBUser } from '../fakeRepository/FakeUserRepository';
 
 chai.use(chaiHttp);
@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 describe('API', () => {
   describe('GET /api', () => {
     it('should get api info', async () => {
-        const dto = createSeedRegisterMemberDto({
+        const dto = createMember({
             id: 'user.actif'
         });
         await fakeMemberRepository.addMember(dto);

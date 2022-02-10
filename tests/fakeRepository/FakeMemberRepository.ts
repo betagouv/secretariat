@@ -23,7 +23,7 @@ class FakeMemberRepository implements IMemberRepository{
     } 
 }
 
-export function createSeedRegisterMemberDto (opts: PartialMember={}): Member {
+export function createMember (opts: PartialMember={}): Member {
     return {
         id: '124558',
         fullname: '',
