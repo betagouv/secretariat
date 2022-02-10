@@ -218,7 +218,6 @@ export async function isPublicServiceEmail (email) {
     }
 }
 
-
 export async function userInfos(id, isCurrentUser) {
   try {
     const [userInfos, emailInfos, redirections,
