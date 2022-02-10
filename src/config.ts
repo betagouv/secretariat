@@ -20,6 +20,7 @@ export default {
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',
+  node_env: process.env.NODE_ENV || 'production',
   host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',

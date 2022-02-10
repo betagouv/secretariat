@@ -4,7 +4,7 @@ import nock from 'nock';
 import { Response } from 'superagent';
 import config from '../src/config';
 import knex from '../src/db';
-import app from '../src/index';
+import app from './env-test-server'
 import utils from './utils';
 
 chai.use(chaiHttp);

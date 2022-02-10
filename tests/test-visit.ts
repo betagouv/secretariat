@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
-import app from '../src/index';
+import app from './env-test-server'
 import utils from './utils';
 
 chai.use(chaiHttp);

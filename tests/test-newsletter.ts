@@ -8,7 +8,7 @@ import BetaGouv from '../src/betagouv';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
-import app from '../src/index';
+import app from './env-test-server'
 import { renderHtmlFromMd } from '../src/lib/mdtohtml';
 import { createNewsletter } from '../src/schedulers/newsletterScheduler';
 import utils from './utils';

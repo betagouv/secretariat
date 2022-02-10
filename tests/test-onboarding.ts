@@ -4,7 +4,7 @@ import nock from 'nock';
 import sinon from 'sinon';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
-import app from '../src/index';
+import app from './env-test-server'
 import utils from './utils';
 import config from '../src/config';
 import { EmailStatusCode } from '../src/models/dbUser';

@@ -7,7 +7,7 @@ import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import * as mattermost from '../src/lib/mattermost';
 import knex from '../src/db';
-import app from '../src/index';
+import app from './env-test-server'
 import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';

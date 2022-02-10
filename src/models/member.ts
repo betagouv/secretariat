@@ -1,3 +1,4 @@
+import { EmailStatusCode } from './dbUser';
 import { Mission } from './mission';
 
 type Domaine =
@@ -22,6 +23,25 @@ export interface Member {
   end: string;
   employer: string;
   domaine: Domaine;
+}
+
+export interface PartialMember {
+  id?: string;
+  fullname?: string;
+  github?: string;
+  email?: string;
+  missions?: Mission[];
+  startups?: string[];
+  previously?: string[];
+  start?: string;
+  end?: string;
+  employer?: string;
+  domaine?: Domaine;
+}
+
+
+export interface MemberWithPrimaryEmailStatus extends Member {
+  primary_email_status: EmailStatusCode
 }
 
 export interface MemberWithPrimaryEmail extends Member {
