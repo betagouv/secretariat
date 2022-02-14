@@ -78,9 +78,6 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
-        if (!config.featureShouldSendMessageToAuthor) {
-            return
-        }
         let mattermostSent
         try {
             mattermostSent = await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
