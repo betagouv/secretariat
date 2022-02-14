@@ -1,8 +1,7 @@
 import betagouv from "../betagouv";
 import knex from "../db";
-import { DBUser, EmailStatusCode } from "../models/dbUser";
+import { EmailStatusCode } from "../models/dbUser";
 import { Member } from "../models/member";
-import { getExpiredUsers } from '../controllers/utils';
 
 const syncDatabaseWithOvhEmailAccount = async () => {
     const users : Member[] = await betagouv.usersInfos();
