@@ -14,6 +14,8 @@ import {
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
 import { EmailStatusCode } from '../src/models/dbUser';
+import { setEmailExpired } from '../src/schedulers/setEmailExpired';
+import betagouv from '../src/betagouv';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
@@ -378,6 +380,43 @@ describe('After quitting', () => {
     const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
     should.equal(test.length, 2);
   });
+
+  it('could delete redirections even for past users', async () => {
+    const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
+    should.equal(test.length, 2);
+  });
+
+  it('should set email as expired', async() => {
+    const today = new Date(fakeDate);
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    const userinfos = sinon
+      .stub(betagouv, 'usersInfos')
+      .returns(Promise.resolve([{
+        id: 'membre.actif',
+        fullname: 'membre actif',
+        employer: 'Dinum',
+        startups: [],
+        domaine: 'Animation',
+        start: '2020-01-01',
+        end: todayLess31days.toISOString().split('T')[0],
+        missions: []
+      }]));
+
+    await knex('users').where({
+      username: 'membre.actif',
+    }).update({
+      primary_email: 'membre.actif@modernisation.gouv.fr',
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+      primary_email_status_updated_at: todayLess31days
+    })
+    await setEmailExpired()
+    const [ user ] = await knex('users').where({
+      username: 'membre.actif'
+    })
+    user.primary_email_status.should.equal(EmailStatusCode.EMAIL_EXPIRED)
+    userinfos.restore()
+  })
 
   it('should remove user from mailingList', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
