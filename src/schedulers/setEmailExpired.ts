@@ -40,4 +40,3 @@ export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
       }
     }
   }
-  
