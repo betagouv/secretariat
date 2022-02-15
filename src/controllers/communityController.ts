@@ -3,6 +3,16 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
 
+const EMAIL_STATUS_READABLE_FORMAT = {
+  EMAIL_ACTIVE: 'Actif',
+  EMAIL_SUSPENDED: 'Suspendu',
+  EMAIL_DELETED: 'Supprimé',
+  EMAIL_EXPIRED: 'Expiré',
+  EMAIL_CREATION_PENDING: 'Création en cours',
+  EMAIL_RECREATION_PENDING: 'Recréation en cours',
+  EMAIL_UNSET: 'Non défini'
+}
+
 export async function getCommunity(req, res) {
   if (req.query.username) {
     return res.redirect(`/community/${req.query.username}`);
@@ -63,6 +73,7 @@ export async function getUser(req, res) {
       redirections: user.redirections,
       userInfos: user.userInfos,
       isExpired: user.isExpired,
+      primaryEmailStatus: dbRes.length === 1 ? EMAIL_STATUS_READABLE_FORMAT[dbRes[0].primary_email_status] : '',
       canCreateEmail: user.canCreateEmail,
       errors: req.flash('error'),
       messages: req.flash('message'),
