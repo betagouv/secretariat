@@ -60,6 +60,11 @@
                 </h6>
                 <div hidden class="collapse-content">
                     <section id="update-end-date-form" class="panel">
+                        <div class="notification">
+                            Pour que ton changement de date soit pris en compte,
+                            demande à un membre de ton équipe de
+                            "merger" le changement sur <a href="https://github.com/betagouv/beta.gouv.fr/pulls" target="_blank">github</a>.
+                        </div>
                         <form action="/users/<%= userInfos.id %>/end-date" method="POST">
                             <input type="hidden" name="_method" value="PUT">
                             <input type="hidden" name="start" value="<%= userInfos.start %>">
