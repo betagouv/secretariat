@@ -35,6 +35,7 @@ import {
 import {
   pullRequestWatcher
 } from './pullRequestWatcher'
+import { setEmailExpired } from "../schedulers/setEmailExpired";
 
 interface Job {
   cronTime: string;
@@ -149,6 +150,12 @@ const jobs: Job[] = [
     onTick: deleteOVHEmailAcounts,
     isActive: !!config.featureDeleteOVHEmailAccounts,
     name: 'deleteOVHEmailAcounts',
+  },
+  {
+    cronTime: '0 0 15 * * *',
+    onTick: setEmailExpired,
+    isActive: !!config.featureSetEmailExpired,
+    name: 'setEmailExpired',
   },
   {
     cronTime: '0 0 8 * * *',

@@ -91,6 +91,7 @@ export default {
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
   featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST,
   featureRemindUserWithPendingPullRequestOnAuthorFile: process.env.FEATURE_REMIND_USER_WITH_PENDING_PULL_REQUEST_ON_AUTHOR_FILE,
+  featureSetEmailExpired: process.env.FEATURE_SET_EMAIL_EXPIRED,
   featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
   featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
 };
