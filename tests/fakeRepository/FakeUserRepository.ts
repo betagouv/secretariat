@@ -34,7 +34,7 @@ class FakeUserRepository implements IUserRepository {
     }
 }
 
-export function createDBUser(opts: Omit<DBUser, 'primary_email_status' | 'created_at' | 'primary_email_status_updated_at'>): DBUser {
+export function createDBUser(opts: Partial<DBUser>): DBUser {
     return {
         secondary_email: '',
         primary_email: '',

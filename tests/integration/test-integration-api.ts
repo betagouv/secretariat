@@ -10,10 +10,10 @@ chai.use(chaiHttp);
 describe('API', () => {
   describe('GET /api', () => {
     it('should get api info', async () => {
-        const dto = createMember({
+        const member = createMember({
             id: 'user.actif'
         });
-        await fakeMemberRepository.addMember(dto);
+        await fakeMemberRepository.addMember(member);
         const user = createDBUser({
             username: 'user.actif',
             primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING
