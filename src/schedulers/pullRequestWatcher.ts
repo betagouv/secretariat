@@ -97,7 +97,7 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
 const filterUpdateDateXdaysAgo = (createdDate, nbOfDays) => {
     const thresholdDate = new Date()
     thresholdDate.setDate(thresholdDate.getDate() - nbOfDays)
-    const thresholdDateLessOneHour = new Date()
+    const thresholdDateLessOneHour = new Date(thresholdDate)
     thresholdDateLessOneHour.setDate(thresholdDate.getDate())
     thresholdDateLessOneHour.setHours(thresholdDate.getHours() - 1)
     return createdDate < thresholdDate && createdDate > thresholdDateLessOneHour
