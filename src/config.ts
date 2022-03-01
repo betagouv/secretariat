@@ -94,4 +94,5 @@ export default {
   featureSetEmailExpired: process.env.FEATURE_SET_EMAIL_EXPIRED,
   featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
   featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
+  tchap_api: process.env.TCHAP_API,
 };

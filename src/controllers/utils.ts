@@ -210,8 +210,7 @@ export async function isPublicServiceEmail (email) {
   if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
     return true
   }
-  const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
-  const data = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
+  const data = await axios.get(config.tchap_api + String(email).toLowerCase()).then((x) => x.data);
     if (data.hs === "agent.externe.tchap.gouv.fr") {
       return false;
     } else {
