@@ -25,21 +25,6 @@ export interface Member {
   domaine: Domaine;
 }
 
-export interface PartialMember {
-  id?: string;
-  fullname?: string;
-  github?: string;
-  email?: string;
-  missions?: Mission[];
-  startups?: string[];
-  previously?: string[];
-  start?: string;
-  end?: string;
-  employer?: string;
-  domaine?: Domaine;
-}
-
-
 export interface MemberWithPrimaryEmailStatus extends Member {
   primary_email_status: EmailStatusCode
 }

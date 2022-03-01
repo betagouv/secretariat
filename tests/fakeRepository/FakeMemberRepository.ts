@@ -1,4 +1,4 @@
-import { Member, PartialMember } from "../../src/models/member";
+import { Member } from "../../src/models/member";
 import { IMemberRepository } from "../../src/repositories/MemberRepository";
 
 class FakeMemberRepository implements IMemberRepository{
@@ -23,7 +23,7 @@ class FakeMemberRepository implements IMemberRepository{
     } 
 }
 
-export function createMember (opts: PartialMember={}): Member {
+export function createMember (opts: Partial<Member>={}): Member {
     return {
         id: '124558',
         fullname: '',

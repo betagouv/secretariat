@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../src/repositories/UserRepository";
-import { DBUser, PartialUser, EmailStatusCode } from "../../src/models/dbUser";
+import { DBUser, EmailStatusCode } from "../../src/models/dbUser";
 
 class FakeUserRepository implements IUserRepository {
 
@@ -34,7 +34,7 @@ class FakeUserRepository implements IUserRepository {
     }
 }
 
-export function createDBUser(opts: PartialUser={}): DBUser {
+export function createDBUser(opts: Partial<DBUser>={}): DBUser {
     return {
         secondary_email: '',
         primary_email: '',
