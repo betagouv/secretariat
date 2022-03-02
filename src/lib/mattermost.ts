@@ -16,6 +16,7 @@ export interface MattermostUser {
   roles: string,
   locale: string,
   mfa_active: boolean,
+  last_activity_at: string,
 }
 
 
