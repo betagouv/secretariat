@@ -160,4 +160,24 @@ export async function unsubscribeEmailAddresses() {
   );
 }
 
+export async function setEmailStatusActiveForUsers() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNull('primary_email')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
+    .whereNotNull('secondary_email')
+  const activeUsers: Member[] = await BetaGouv.getActiveRegisteredOVHUsers();
+
+  const concernedUsers : Member[] = activeUsers.filter((user) => {
+    return dbUsers.find((x) => x.username === user.id);
+  })
+
+  // create email and marrainage
+  return Promise.all(
+    concernedUsers.map(async (user) => {
+        console.log('This user has active email', user.id)
+      // once email created we create marrainage
+    })
+  );
+}
+
 
