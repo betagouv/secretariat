@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import ejs from 'ejs';
+import jwt from 'jsonwebtoken';
 import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
@@ -17,6 +18,9 @@ function renderLogin(req, res, params) {
     messages: req.flash('message'),
   });
 }
+
+const getJwtTokenForUser = (id) =>
+  jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
 export function generateToken() {
   return crypto.randomBytes(256).toString('base64');
@@ -134,3 +138,50 @@ export async function postLogin(req, res) {
     return res.redirect(`/login${nextParam}`);
   }
 }
+
+export function getSignIn(req, res) {
+  if (!req.query.token) {
+    req.flash('error', `Ce lien de connexion n'est pas valide.`);
+    res.redirect('/')
+  }
+  return res.render('signin', {
+    // init params
+    token: req.query.token,
+    // enrich params
+    errors: req.flash('error'),
+    messages: req.flash('message'),
+  });
+}
+
+export async function postSignIn(req, res) {
+  if (!req.query.token) {
+    req.flash('error', `Ce lien de connexion n'est pas valide.`);
+    return res.redirect('/');
+  }
+  
+  try {
+    const tokenDbResponse = await knex('login_tokens')
+      .select()
+      .where({ token: req.query.token })
+      .andWhere('expires_at', '>', new Date());
+
+    if (tokenDbResponse.length !== 1) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.redirect('/');
+    }
+
+    const dbToken = tokenDbResponse[0];
+    if (dbToken.token !== req.query.token) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.redirect('/');
+    }
+
+    await knex('login_tokens').where({ email: dbToken.email }).del();
+
+    res.cookie('token', getJwtTokenForUser(dbToken.username));
+    return res.redirect(`${req.path}`);
+  } catch (err) {
+    console.log(`Erreur dans l'utilisation du login token : ${err}`);
+    return res.redirect('/');
+  }
+};
