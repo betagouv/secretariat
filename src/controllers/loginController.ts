@@ -117,11 +117,12 @@ export async function postLogin(req, res) {
   }
 
   const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-  const loginUrl: URL = new URL(secretariatUrl + '/login' + (req.query.next || config.defaultLoggedInRedirectUrl) + (req.query.anchor ? `#${req.query.anchor}` : ''));
+  const loginUrl: URL = new URL(secretariatUrl + '/signin' + (req.query.anchor ? `#${req.query.anchor}` : ''));
 
   try {
     const token = generateToken();
     loginUrl.searchParams.append('token', token)
+    loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
     await sendLoginEmail(emailInput, username, loginUrl.toString());
     await saveToken(username, token);
 
