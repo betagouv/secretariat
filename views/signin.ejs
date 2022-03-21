@@ -13,15 +13,13 @@
   <% } %>
 
   <div class="panel margin-top-m">
-    <h4>Me connecter</h4>
-
     <% if (messages.length) { %>
       <div class="notification"><%= messages %></div>
     <% } else { %>
       <form action="/signin" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <input type="hidden" name="token" value="<%= token %>">
         <input type="hidden" name="next" value="<%= next %>">
-        <button class="button" id="primary_email_button">Recevoir le lien de connexion</button>
+        <button class="button" id="primary_email_button">Me connecter</button>
       </form>
     <% } %>
   </div>
