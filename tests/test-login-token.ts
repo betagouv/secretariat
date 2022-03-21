@@ -87,6 +87,7 @@ describe('Login token', () => {
       next: '/community',
       token: encodeURIComponent(token)
     })
+    .redirects(0)
     res1.should.have.cookie('token');
 
     // Make the same GET request again (second time)
@@ -96,6 +97,8 @@ describe('Login token', () => {
       next: '/community',
       token: encodeURIComponent(token)
     })
+    .redirects(0)
+
     // Ensure the response did NOT set an auth cookie
     res2.should.not.have.cookie('token');
   });
