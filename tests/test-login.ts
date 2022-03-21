@@ -319,7 +319,7 @@ describe('Login', () => {
     
       sendEmailStub.calledOnce.should.be.true;
       sendEmailStub.args[0][2].should.include('account')
-      sendEmailStub.args[0][2].should.include('#password')
+      sendEmailStub.args[0][2].should.include('anchor=password')
       const destinationEmail = sendEmailStub.args[0][0];
       destinationEmail.should.equal(`membre.actif@${config.domain}`);
       await knex('users').where({

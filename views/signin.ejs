@@ -17,8 +17,8 @@
     <% if (messages.length) { %>
       <div class="notification"><%= messages %></div>
     <% } else { %>
-      <form action="/signin" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
-        <input type="hidden" name="token" value="<%= token %>">
+      <form action="/signin" method="POST" id="signin_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
+        <input type="hidden" name="token" value="" id="inputToken">
         <input type="hidden" name="next" value="<%= next %>">
         <center><button class="button" id="primary_email_button">Me connecter</button></center>
       </form>
