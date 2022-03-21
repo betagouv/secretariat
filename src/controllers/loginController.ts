@@ -121,7 +121,9 @@ export async function postLogin(req, res) {
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
     const token = generateToken();
     const loginUrl: URL = new URL(secretariatUrl + '/signin' + `#${token}`);
-    loginUrl.searchParams.append('anchor', req.query.anchor)
+    if (req.query.anchor) {
+      loginUrl.searchParams.append('anchor', req.query.anchor)
+    }
     loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
     await sendLoginEmail(emailInput, username, loginUrl.toString());
     await saveToken(username, token);
