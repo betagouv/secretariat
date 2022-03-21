@@ -51,14 +51,16 @@ describe('Login token', () => {
 
       // Extract token from the DB
     const token = await knex('login_tokens').select().where({ email: userEmail }).then((dbRes) => dbRes[0].token)
-
       // Use the token making a GET request
-    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`)
-      // Ensure no tokens for this user remain
-      .then(() => knex('login_tokens').select().where({ email: userEmail }))
-      .then((dbRes) => {
-        dbRes.length.should.equal(0);
-      })
+    await chai.request(app).get(`/signin?next=users&token=${encodeURIComponent(token)}`)
+    await chai.request(app).post(`/signin`)
+    .type('form')
+    .send({
+      next: '/community',
+      token: encodeURIComponent(token)
+    })
+    const dbRes = await knex('login_tokens').select().where({ email: userEmail })
+    dbRes.length.should.equal(0);
   });
 
   it('should only be usable once', async () => {
@@ -78,20 +80,24 @@ describe('Login token', () => {
       .then((dbRes) => token = dbRes[0].token)
 
       // Use the token to make a first GET request
-    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
+    await chai.request(app).get(`/signin?next=${'/community'}&token=${encodeURIComponent(token)}`)
+    const res1 = await chai.request(app).post(`/signin`)
+    .type('form')
+    .send({
+      next: '/community',
+      token: encodeURIComponent(token)
+    })
+    res1.should.have.cookie('token');
 
-      // Ensure the response sets the token auth cookie
-      .then((res) => {
-        res.should.have.cookie('token');
-      })
-
-      // Make the same GET request again (second time)
-    await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
-
-      // Ensure the response did NOT set an auth cookie
-      .then((res) => {
-        res.should.not.have.cookie('token');
-      })
+    // Make the same GET request again (second time)
+    const res2 = await chai.request(app).post(`/signin`)
+    .type('form')
+    .send({
+      next: '/community',
+      token: encodeURIComponent(token)
+    })
+    // Ensure the response did NOT set an auth cookie
+    res2.should.not.have.cookie('token');
   });
 
   it('should not be used if expired', async () => {
@@ -107,7 +113,7 @@ describe('Login token', () => {
       expires_at: expirationDate,
     })
     // Try to login using this expired token
-    const res = await chai.request(app).get(`/users?token=${encodeURIComponent(token)}`).redirects(0)
+    const res = await chai.request(app).get(`/community?token=${encodeURIComponent(token)}`).redirects(0)
     // Ensure the response did NOT set an auth cookie
     res.should.not.have.cookie('token');
   });
