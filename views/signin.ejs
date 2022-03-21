@@ -1,0 +1,32 @@
+<%- include('partials/header'); -%>
+
+<div class="container container-small">
+
+  <p>
+    Gère ton compte email (mot de passe, redirections, etc) et les membres de la communauté (arrivées et départs).
+  </p>
+
+  <% if (errors.length) { %>
+    <div class="notification error">
+      <strong>Erreur : </strong><%= errors %>
+    </div>
+  <% } %>
+
+  <div class="panel margin-top-m">
+    <h4><center>Connexion au secretariat</center></h4>
+    <% if (messages.length) { %>
+      <div class="notification"><%= messages %></div>
+    <% } else { %>
+      <form action="/signin" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
+        <input type="hidden" name="token" value="<%= token %>">
+        <input type="hidden" name="next" value="<%= next %>">
+        <center><button class="button" id="primary_email_button">Me connecter</button></center>
+      </form>
+    <% } %>
+  </div>
+
+</div>
+
+<%- include('partials/footer'); -%>
+<script src="/static/scripts/hashtoparam.js"></script>
+

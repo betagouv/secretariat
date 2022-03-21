@@ -22,7 +22,6 @@ import * as onboardingController from './controllers/onboardingController';
 import * as resourceController from './controllers/resourceController';
 import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
-import knex from './db';
 import * as sentry from './lib/sentry';
 
 const app = express();
@@ -53,36 +52,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
-app.use(async (req, res, next) => {
-  if (!req.query.token) return next();
-
-  try {
-    const tokenDbResponse = await knex('login_tokens')
-      .select()
-      .where({ token: req.query.token })
-      .andWhere('expires_at', '>', new Date());
-
-    if (tokenDbResponse.length !== 1) {
-      req.flash('error', 'Ce lien de connexion a expiré.');
-      return res.redirect('/');
-    }
-
-    const dbToken = tokenDbResponse[0];
-    if (dbToken.token !== req.query.token) {
-      req.flash('error', 'Ce lien de connexion a expiré.');
-      return res.redirect('/');
-    }
-
-    await knex('login_tokens').where({ email: dbToken.email }).del();
-
-    res.cookie('token', getJwtTokenForUser(dbToken.username));
-    return res.redirect(`${req.path}`);
-  } catch (err) {
-    console.log(`Erreur dans l'utilisation du login token : ${err}`);
-    return next(err);
-  }
-});
-
 app.use(
   expressJWT({
     secret: config.secret,
@@ -92,6 +61,7 @@ app.use(
     path: [
       '/',
       '/login',
+      '/signin',
       '/marrainage/accept',
       '/marrainage/decline',
       '/notifications/github',
@@ -127,6 +97,8 @@ app.use((err, req, res, next) => {
 app.get('/', indexController.getIndex);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
+app.get('/signin', loginController.getSignIn);
+app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
 app.post('/users/:username/email', usersController.createEmailForUser);
 app.post('/users/:username/email/delete', usersController.deleteEmailForUser);
