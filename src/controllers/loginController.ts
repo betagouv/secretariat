@@ -116,12 +116,12 @@ export async function postLogin(req, res) {
       }
   }
 
-  const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-  const loginUrl: URL = new URL(secretariatUrl + '/signin' + (req.query.anchor ? `#${req.query.anchor}` : ''));
 
   try {
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
     const token = generateToken();
-    loginUrl.searchParams.append('token', token)
+    const loginUrl: URL = new URL(secretariatUrl + '/signin' + `#${token}`);
+    loginUrl.searchParams.append('anchor', req.query.anchor)
     loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
     await sendLoginEmail(emailInput, username, loginUrl.toString());
     await saveToken(username, token);
@@ -141,13 +141,12 @@ export async function postLogin(req, res) {
 }
 
 export function getSignIn(req, res) {
-  if (!req.query.token) {
-    req.flash('error', `Ce lien de connexion n'est pas valide.`);
-    res.redirect('/')
-  }
+  // if (!req.query.token) {
+  //   req.flash('error', `Ce lien de connexion n'est pas valide.`);
+  //   res.redirect('/')
+  // }
   return res.render('signin', {
     // init params
-    token: req.query.token,
     next: req.query.next,
     // enrich params
     errors: req.flash('error'),

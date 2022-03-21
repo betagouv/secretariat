@@ -5,6 +5,10 @@
     const hash = window.location.hash.replace('#', '')
     // scroll main view to anchors, wish does not work otherwise because scroll must be done in
     // main container not on window.
+    if (hash && window.location.pathname === '/signin') {
+        var tokenInput = document.getElementById('inputToken')
+        tokenInput.setAttribute('value', hash)
+    }
     if (hash && window.location.pathname === '/login' && search.get('next') && !search.get('anchor')) {
         search.set('anchor', hash)
         if (history.pushState) {
