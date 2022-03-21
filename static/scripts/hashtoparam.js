@@ -8,6 +8,8 @@
     if (hash && window.location.pathname === '/signin') {
         var tokenInput = document.getElementById('inputToken')
         tokenInput.setAttribute('value', hash)
+        const $elm = document.getElementById('signin_form')
+        $elm.action = window.location.pathname + '?' + search.toString();
     }
     if (hash && window.location.pathname === '/login' && search.get('next') && !search.get('anchor')) {
         search.set('anchor', hash)
