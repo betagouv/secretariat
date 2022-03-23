@@ -8,6 +8,7 @@ import app from '../src/index';
 import utils from './utils';
 import config from '../src/config';
 import { EmailStatusCode } from '../src/models/dbUser';
+import betagouv from '../src/betagouv';
 
 chai.use(chaiHttp);
 
@@ -35,6 +36,14 @@ describe('Onboarding', () => {
     let makeGithubPullRequest;
     let sendEmailStub;
     let isPublicServiceEmailStub;
+    let mattermostMessageStub;
+    nock(
+      'https://mattermost.incubateur.net/api/v4/users/search'
+    )
+    .post(/.*/)
+    .reply(200, [{
+      username: 'toto'
+    }]).persist;
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
@@ -61,6 +70,8 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(false));
 
+      mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
+
       // reset the test user to avoid duplicates in db
       knex('users')
         .where('secondary_email', 'test@example.com')
@@ -78,6 +89,7 @@ describe('Onboarding', () => {
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
       isPublicServiceEmailStub.restore();
+      mattermostMessageStub.restore()
     });
 
     it('should not call Github API if a mandatory field is missing', async () => {
