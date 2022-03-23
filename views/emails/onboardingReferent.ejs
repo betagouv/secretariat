@@ -2,12 +2,12 @@ Hello <%= referent %>,
 
 **<%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr**. Tu peux :
 
-- Approuver (sa fiche)[<%= prUrl %>] (en cliquant sur "Squash and merge") si tu as un compte GitHub. d
+- Approuver [<%= prUrl %>](sa fiche) (en cliquant sur "Squash and merge") si tu as un compte GitHub. d
 - Ou répondre à cet email pour confirmer que tu connais cette personne. Un membre de la communauté approuvera la demande.
 
 <% if (isEmailBetaAsked) { %>
   Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
-  (<%= userUrl %>)[<%= userUrl %>].
+  [<%= userUrl %>](<%= userUrl %>).
 <% } %>
 
 🤖 Le secrétariat
