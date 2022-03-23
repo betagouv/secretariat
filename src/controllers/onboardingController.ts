@@ -6,12 +6,47 @@ import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
 import { EmailStatusCode } from '../models/dbUser';
-
+import { renderHtmlFromMd } from "../lib/mdtohtml";
+import * as mattermost from '../lib/mattermost';
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
   const randomSuffix = crypto.randomBytes(3).toString('hex');
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
+}
+
+interface IMessageInfo {
+  prInfo,
+  referent: string,
+  username: string,
+  isEmailBetaAsked: boolean,
+  name: string
+}
+
+async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAsked, name }: IMessageInfo) {
+  const dbReferent = await knex('users').where({ username: referent }).first();
+  const prUrl = prInfo.data.html_url;
+  const userUrl = `${config.protocol}://${config.host}/community/${username}`;
+  const messageContent = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
+    referent: referent, prUrl, name, userUrl, isEmailBetaAsked
+  });
+  await utils.sendMail(
+    dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username),
+    `${name} vient de créer sa fiche Github`,
+    renderHtmlFromMd(messageContent)
+  );
+  try {
+    const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
+      term: referent
+    })
+    await BetaGouv.sendInfoToChat(
+      messageContent,
+      'secretariat',
+      mattermostUser.username
+    );
+  } catch (e) {
+    console.error('It was not able to send message to referent on mattermost', e)
+  }
 }
 
 async function createNewcomerGithubFile(username, content, referent) {
@@ -167,13 +202,13 @@ export async function postForm(req, res) {
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
     if (prInfo.status === 201 && prInfo.data.html_url) {
-      const dbReferent = await knex('users').where({ username: referent }).first();
-      const prUrl = prInfo.data.html_url;
-      const userUrl = `${config.protocol}://${config.host}/community/${username}`;
-      const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-        referent, prUrl, name, userUrl, isEmailBetaAsked
-      });
-      await utils.sendMail(dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username), `${name} vient de créer sa fiche Github`, html);
+      await sendMessageToReferent({
+        prInfo,
+        referent,
+        isEmailBetaAsked,
+        username,
+        name
+      })
     }
     let primaryEmail, secondaryEmail;
     if (isEmailBetaAsked) {
