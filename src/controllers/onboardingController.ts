@@ -42,7 +42,7 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
     await BetaGouv.sendInfoToChat(
       messageContent,
       'secretariat',
-      mattermostUser.username
+      'lucas.charrier' || mattermostUser.username
     );
   } catch (e) {
     console.error('It was not able to send message to referent on mattermost', e)

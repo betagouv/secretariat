@@ -1,18 +1,13 @@
-<h1>Hello <%= referent %>,</h1>
+Hello <%= referent %>,
 
-<p>
-    <b><%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr</b>. Tu peux :
-</p>
+**<%= name %> a besoin de toi pour obtenir son email @beta.gouv.fr**. Tu peux :
 
-<ul>
-	<li>Approuver <a href="<%= prUrl %>">sa fiche</a> (en cliquant sur "Squash and merge") si tu as un compte GitHub.</li>
-	<li>Ou répondre à cet email pour confirmer que tu connais cette personne. Un membre de la communauté approuvera la demande.</li>
-</ul>
+- Approuver (sa fiche)[<%= prUrl %>] (en cliquant sur "Squash and merge") si tu as un compte GitHub. d
+- Ou répondre à cet email pour confirmer que tu connais cette personne. Un membre de la communauté approuvera la demande.
 
 <% if (isEmailBetaAsked) { %>
-  <p>Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
-      <a href="<%= userUrl %>"><%= userUrl %></a>.
-  </p>
+  Le compte email de <%= name %> sera automatiquement créé une fois que la fiche sera mergée.
+  (<%= userUrl %>)[<%= userUrl %>].
 <% } %>
 
-<p>🤖 Le secrétariat</p>
+🤖 Le secrétariat
