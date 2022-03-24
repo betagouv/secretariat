@@ -4,7 +4,7 @@ import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
 import * as utils from '../controllers/utils';
-import { getTitle, renderHtmlFromMd, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
+import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
 import { Member, MemberWithPrimaryEmail } from '../models/member';
 
 const {
