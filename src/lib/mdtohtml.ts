@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import juice from 'juice';
 import { marked } from 'marked';
 
@@ -174,12 +173,6 @@ overflow: visible !important;
   background-color: transparent;
 }
 `;
-
-// async function getBase64(url) {
-//   const image = await axios.get(url, {responseType: 'arraybuffer'});
-//   const raw = Buffer.from(image.data).toString('base64');
-//   return "data:" + image.headers["content-type"] + ";base64,"+raw;
-// }
 
 function generateId() {
   return Math.random().toString(16).slice(2)
