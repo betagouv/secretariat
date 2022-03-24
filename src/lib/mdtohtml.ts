@@ -1,3 +1,4 @@
+// import axios from 'axios';
 import juice from 'juice';
 import { marked } from 'marked';
 
@@ -174,6 +175,16 @@ overflow: visible !important;
 }
 `;
 
+// async function getBase64(url) {
+//   const image = await axios.get(url, {responseType: 'arraybuffer'});
+//   const raw = Buffer.from(image.data).toString('base64');
+//   return "data:" + image.headers["content-type"] + ";base64,"+raw;
+// }
+
+function generateId() {
+  return Math.random().toString(16).slice(2)
+}
+
 export function getTitle(content) {
   const toc = [];
 
@@ -188,8 +199,9 @@ export function getTitle(content) {
         raw,
       });
       return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
-    },
-  };
+    }
+  }
+
   marked.use({
     renderer,
   });
@@ -197,7 +209,49 @@ export function getTitle(content) {
   return toc[0].raw;
 }
 
-export function renderHtmlFromMd(content) {
+export function renderHtmlFromMdWithAttachements(content) {
+  const images = [];
+
+  const rendererImage = function(href, title, text) {
+    images.push(href)
+    if (href === null) {
+      return text;
+    }
+
+    let out = '<img src="' + href + '" alt="' + text + '"';
+
+    if (title) {
+      out += ' title="' + title + '"';
+    }
+
+    out += this.options.xhtml ? '/>' : '>';
+    return out;
+  }
+
+  let html = renderHtmlFromMd(content, { image: rendererImage })
+  console.log(images)
+  const imagesDict = {}
+  for (const image of images) {
+    // const base64Image = await getBase64(image)
+    imagesDict[image] = `cid:${generateId()}` //base64Image
+  }
+  images.forEach(image => {
+    html = html.replace(image, imagesDict[image])
+  })
+  console.log(images, imagesDict)
+  return {
+    html,
+    attachments: Object.keys(imagesDict).map(key => {
+      return {
+        filename: 'image.png',
+        path: key,
+        cid: imagesDict[key] //same cid value as in the html img src
+      }
+    })
+  }
+}
+
+export function renderHtmlFromMd(content, rendererConfig={}) {
   const toc = [];
   const renderer = {
     heading(text, level, raw) {
@@ -211,7 +265,8 @@ export function renderHtmlFromMd(content) {
       });
       return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
     },
-  };
+    ...rendererConfig
+  }
 
   marked.use({
     renderer,
@@ -254,5 +309,6 @@ export function renderHtmlFromMd(content) {
   html = juice(`<style>
     ${css}
   </style><div id='doc' class='container markdown-body'>${html}</div>`);
-  return html;
+  
+  return html
 }

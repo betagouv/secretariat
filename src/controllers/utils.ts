@@ -35,13 +35,14 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-export async function sendMail(toEmail, subject, html, extraParams = {}) {
+export async function sendMail(toEmail, subject, html, extraParams = {}, attachments=[]) {
   const mail = {
     to: toEmail,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
     subject,
     html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
+    attachments,
     headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
     ...extraParams,
   };
