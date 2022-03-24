@@ -4,7 +4,7 @@ import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
 import * as utils from '../controllers/utils';
-import { getTitle, renderHtmlFromMd } from '../lib/mdtohtml';
+import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
 import { Member, MemberWithPrimaryEmail } from '../models/member';
 
 const {
@@ -132,7 +132,7 @@ export async function sendNewsletterAndCreateNewOne() {
       ''
     );
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
-    const html = renderHtmlFromMd(newsletterContent);
+    const { html, attachments } = renderHtmlFromMdWithAttachements(newsletterContent);
 
     const usersInfos : Member[] = await BetaGouv.usersInfos();
     const users : Member[] = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
@@ -157,7 +157,8 @@ export async function sendNewsletterAndCreateNewOne() {
           'X-Mailjet-TrackOpen': '1',
           'X-Mailjet-TrackClick': '1',
         },
-      }
+      },
+      attachments
     );
     await knex('newsletters')
       .where({
