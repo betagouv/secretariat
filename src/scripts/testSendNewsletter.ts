@@ -13,6 +13,7 @@ async function testSendNewsletter() {
       );
     const newsletterContent = await pad.getNoteWithId(args[0]);
     const { html, attachments } = await renderHtmlFromMdWithAttachements(newsletterContent);
+     console.log(attachments)
     await sendMail(
     args[1],
       `Test`,
@@ -26,7 +27,6 @@ async function testSendNewsletter() {
       },
       attachments
     );
-    console.log(html, attachments)
 }
 
 testSendNewsletter()
