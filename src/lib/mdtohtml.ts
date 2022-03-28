@@ -238,7 +238,7 @@ export function renderHtmlFromMdWithAttachements(content) {
       return {
         filename: 'image.png',
         path: key,
-        cid: imagesDict[key] //same cid value as in the html img src
+        cid: imagesDict[key].replace('cid', '') //same cid value as in the html img src
       }
     })
   }
