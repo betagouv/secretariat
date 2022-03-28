@@ -226,10 +226,10 @@ export function renderHtmlFromMdWithAttachements(content) {
   const imagesDict = {}
   for (const image of images) {
     // const base64Image = await getBase64(image)
-    imagesDict[image] = `cid:${generateId()}` //base64Image
+    imagesDict[image] = `${generateId()}` //base64Image
   }
   images.forEach(image => {
-    html = html.replace(image, imagesDict[image])
+    html = html.replace(image, `cid:${imagesDict[image]}`)
   })
   console.log(images, imagesDict)
   return {
@@ -238,7 +238,7 @@ export function renderHtmlFromMdWithAttachements(content) {
       return {
         filename: 'image.png',
         path: key,
-        cid: imagesDict[key].replace('cid', '') //same cid value as in the html img src
+        cid: imagesDict[key] //same cid value as in the html img src
       }
     })
   }
