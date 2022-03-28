@@ -60,7 +60,7 @@
     "knex": "^1.0.4",
     "lodash": "^4.17.21",
     "marked": "^4.0.12",
-    "nodemailer": "^6.7.2",
+    "nodemailer": "^6.7.3",
     "ovh": "^2.0.1",
     "pg": "^8.7.3",
     "promise-memoize": "^1.2.1",
