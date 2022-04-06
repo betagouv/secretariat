@@ -133,7 +133,7 @@ export async function createEmailForUser(req, res) {
       }
     }
 
-    await updateSecondaryEmail(username, req.params.to_email)
+    await updateSecondaryEmail(username, req.body.to_email)
     await createEmail(username, req.user.id);
 
     req.flash('message', 'Le compte email a bien été créé.');
