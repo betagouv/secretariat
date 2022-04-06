@@ -238,12 +238,10 @@ export async function userInfos(id, isCurrentUser) {
     // - la page fiche Github existe
     // - le membre n'est pas expiré·e
     // - et le compte n'existe pas
-    // - et qu'il n'y a aucun redirection (sauf le membre connecté qui peut créer son propre compte)
     const canCreateEmail =
       hasUserInfos &&
       !isExpired &&
-      emailInfos === null &&
-      (isCurrentUser || redirections.length === 0);
+      emailInfos === null;
 
     // On peut créer une redirection & changer un password si:
     // - la page fiche Github existe
