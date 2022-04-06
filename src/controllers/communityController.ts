@@ -70,7 +70,6 @@ export async function getUser(req, res) {
     const secondaryEmail = dbRes.length === 1 ? dbRes[0].secondary_email : '';
 
     const title = user.userInfos ? user.userInfos.fullname : null;
-    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     res.render('user', {
       title,
       username,
