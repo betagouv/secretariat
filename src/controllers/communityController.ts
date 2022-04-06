@@ -3,6 +3,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
 import { MemberWithPermission } from "../models/member";
+import { DBUser } from "../models/dbUser";
 
 const EMAIL_STATUS_READABLE_FORMAT = {
   EMAIL_ACTIVE: 'Actif',
