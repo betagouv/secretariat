@@ -76,7 +76,6 @@ export default {
       .persist();
   },
   mockOvhChangePassword() {
-    console.log('MOCK');
     return nock(/.*ovh.com/)
     .post(/^.*email\/domain\/.*\/account\/+.+\/changePassword/)
     .reply(200, [])

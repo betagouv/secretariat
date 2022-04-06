@@ -111,6 +111,10 @@
 
         <% if (emailInfos) { %>
             <p class="text-color-blue font-weight-bold"><%= emailInfos.email %></p>
+            <ul>
+                <li>statut de l'email : <%= primaryEmailStatus %></li>
+                <li>en spam : <%= emailInfos.isBlocked ? 'oui' : 'non' %></li>
+            </ul>
         <% } else { %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>

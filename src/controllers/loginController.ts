@@ -1,27 +1,32 @@
 import crypto from 'crypto';
 import ejs from 'ejs';
+import jwt from 'jsonwebtoken';
 import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
 import * as utils from './utils';
+import { EmailStatusCode } from '../models/dbUser';
 
 function renderLogin(req, res, params) {
   res.render('login', {
     // init params
     currentUser: undefined,
     domain: config.domain,
-    nextParam: req.query.next ? `?next=${req.query.next}` : '',
+    next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
     // enrich params
     errors: req.flash('error'),
     messages: req.flash('message'),
   });
 }
 
+const getJwtTokenForUser = (id) =>
+  jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
+
 export function generateToken() {
   return crypto.randomBytes(256).toString('base64');
 }
 
-async function sendLoginEmail(email, username, loginUrl, token) {
+async function sendLoginEmail(email: string, username: string, loginUrlWithToken: string) {
   const user = await BetaGouv.userInfosById(username);
 
   if (!user) {
@@ -30,12 +35,12 @@ async function sendLoginEmail(email, username, loginUrl, token) {
     );
   }
 
-  if (utils.checkUserIsExpired(user)) {
+  if (utils.checkUserIsExpired(user, 5)) {
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 
   const html = await ejs.renderFile('./views/emails/login.ejs', {
-    loginUrlWithToken: `${loginUrl}?token=${encodeURIComponent(token)}`,
+    loginUrlWithToken,
   });
 
   try {
@@ -75,12 +80,12 @@ export async function getLogin(req, res) {
 
 export async function postLogin(req, res) {
   const formValidationErrors = [];
-  const nextParam = req.query.next ? `?next=${req.query.next}` : '';
+  const next = req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : ''
   const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 
   if (formValidationErrors.length) {
     req.flash('error', formValidationErrors);
-    return res.redirect(`/login${nextParam}`);
+    return res.redirect(`/login${next}`);
   }
 
   let username;
@@ -93,32 +98,34 @@ export async function postLogin(req, res) {
         'error',
         `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
       );
-      return res.redirect(`/login${nextParam}`);
+      return res.redirect(`/login${next}`);
     }
   } else {
       try {
         const dbResponse = await knex('users')
         .select()
         .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-        .orWhereRaw('LOWER(primary_email) = ?', emailInput)
+        .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
         username = dbResponse[0].username;
       } catch (e) {
         req.flash(
           'error',
           `L'adresse email ${emailInput} n'est pas connue.`
         );
-        return res.redirect(`/login${nextParam}`);
+        return res.redirect(`/login${next}`);
       }
   }
 
-  const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-  const loginUrl =
-    secretariatUrl + (req.query.next || config.defaultLoggedInRedirectUrl);
 
   try {
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
     const token = generateToken();
-
-    await sendLoginEmail(emailInput, username, loginUrl, token);
+    const loginUrl: URL = new URL(secretariatUrl + '/signin' + `#${token}`);
+    if (req.query.anchor) {
+      loginUrl.searchParams.append('anchor', req.query.anchor)
+    }
+    loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
+    await sendLoginEmail(emailInput, username, loginUrl.toString());
     await saveToken(username, token);
 
     return renderLogin(req, res, {
@@ -131,6 +138,53 @@ export async function postLogin(req, res) {
     console.error(err);
 
     req.flash('error', err.message);
-    return res.redirect(`/login${nextParam}`);
+    return res.redirect(`/login${next}`);
   }
 }
+
+export function getSignIn(req, res) {
+  // if (!req.query.token) {
+  //   req.flash('error', `Ce lien de connexion n'est pas valide.`);
+  //   res.redirect('/')
+  // }
+  return res.render('signin', {
+    // init params
+    next: req.query.next,
+    // enrich params
+    errors: req.flash('error'),
+    messages: req.flash('message'),
+  });
+}
+
+export async function postSignIn(req, res) {
+  if (!req.body.token) {
+    req.flash('error', `Ce lien de connexion n'est pas valide.`);
+    return res.redirect('/');
+  }
+  const token = decodeURIComponent(req.body.token)
+  try {
+    const tokenDbResponse = await knex('login_tokens')
+      .select()
+      .where({ token })
+      .andWhere('expires_at', '>', new Date());
+
+    if (tokenDbResponse.length !== 1) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.redirect('/');
+    }
+
+    const dbToken = tokenDbResponse[0];
+    if (dbToken.token !== token) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.redirect('/');
+    }
+
+    await knex('login_tokens').where({ email: dbToken.email }).del();
+
+    res.cookie('token', getJwtTokenForUser(dbToken.username));
+    return res.redirect(`${decodeURIComponent(req.body.next) || '/account'}` + `${req.query.anchor ? `#` + req.query.anchor : ''}`);
+  } catch (err) {
+    console.log(`Erreur dans l'utilisation du login token : ${err}`);
+    return res.redirect('/');
+  }
+};

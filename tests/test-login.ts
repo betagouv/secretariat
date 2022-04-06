@@ -1,6 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
+
+import Betagouv from '../src/betagouv';
 import config from '../src/config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
@@ -37,10 +39,25 @@ describe('Login', () => {
   //   });
   // });
 
-  describe('POST /login with next query param', () => {
+  describe('POST /login with next query param and anchor', () => {
     it('should keep the next query param', (done) => {
       chai.request(app)
         .post('/login?next=/users')
+        .type('form')
+        .send({
+          emailInput: 'test@',
+        })
+        .redirects(0)
+        .end((err, res) => {
+          res.should.have.status(302);
+          res.header.location.should.equal('/login?next=/users');
+          done();
+        });
+    });
+
+    it('should keep the anchor query param', (done) => {
+      chai.request(app)
+        .post('/login?next=/users&anchor=password')
         .type('form')
         .send({
           emailInput: '',
@@ -48,7 +65,7 @@ describe('Login', () => {
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
-          res.header.location.should.equal('/login?next=/users');
+          res.header.location.should.equal('/login?next=/users&anchor=password');
           done();
         });
     });
@@ -128,9 +145,49 @@ describe('Login', () => {
     });
   });
 
+  describe('POST /login with user expired for less than 5 days', () => {
+    it('should email to secondary email', async () => {
+      const today = new Date();
+      const todayLess4days = new Date()
+      todayLess4days.setDate(today.getDate() - 4)
+      const userInfosByIdStub = sinon.stub(Betagouv, 'userInfosById').returns(
+        Promise.resolve({
+          id: 'membre.expiredfourdays',
+          fullname: '',
+          github: '',
+          employer: '',
+          domaine: 'Animation',
+          missions: [],
+          start: '',
+          startups: [],
+          end: todayLess4days.toUTCString()
+        }
+      ))
+      await knex('users').insert({
+        username: 'membre.expiredfourdays',
+        primary_email: 'membre.expiredfourdays@beta.gouv.fr',
+        secondary_email: 'membre.expiredfourdays@gmail.com'
+      })
+      await chai.request(app)
+        .post('/login')
+        .type('form')
+        .send({
+          emailInput: 'membre.expiredfourdays@beta.gouv.fr',
+        })
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal('membre.expiredfourdays@beta.gouv.fr');
+      sendEmailStub.calledOnce.should.be.true;
+      await knex('users').where({
+        username: 'membre.expiredfourdays',
+      }).delete()
+      userInfosByIdStub.restore()
+    });
+  });
+
 
   describe('POST /login with non existent secondary email', () => {
     it('should redirect to login', (done) => {
+      
       chai.request(app)
         .post('/login')
         .type('form')
@@ -237,6 +294,32 @@ describe('Login', () => {
           })
     
       sendEmailStub.calledOnce.should.be.true;
+      const destinationEmail = sendEmailStub.args[0][0];
+      destinationEmail.should.equal(`membre.actif@${config.domain}`);
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: null,
+      })
+    });
+
+    it('should email with anchor query params has a hash element in url', async () => {
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+
+      await chai.request(app)
+          .post('/login?next=/account&anchor=password')
+          .type('form')
+          .send({
+            emailInput: `membre.actif@${config.domain}`,
+          })
+    
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.args[0][2].should.include('account')
+      sendEmailStub.args[0][2].should.include('anchor=password')
       const destinationEmail = sendEmailStub.args[0][0];
       destinationEmail.should.equal(`membre.actif@${config.domain}`);
       await knex('users').where({

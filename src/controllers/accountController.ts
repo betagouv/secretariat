@@ -5,6 +5,7 @@ import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
 import { DBUser } from "../models/dbUser";
+import { EmailStatusCode } from "../models/dbUser";
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors = [];
@@ -119,6 +120,7 @@ export async function getCurrentAccount(req, res) {
       canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
+      emailSuspended: dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED,
       canChangeEmails: currentUser.canChangeEmails,
       redirections: currentUser.redirections,
       secondaryEmail: dbUser.secondary_email,

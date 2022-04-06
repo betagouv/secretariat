@@ -15,6 +15,8 @@ export interface MattermostUser {
   auth_service: string,
   roles: string,
   locale: string,
+  mfa_active: boolean,
+  last_activity_at: string,
 }
 
 
@@ -34,7 +36,7 @@ const getMattermostConfig = () => {
 
 export async function getUserWithParams(params = {}, i = 0) {
   const mattermostUsers = await axios
-    .get('https://mattermost.incubateur.net/api/v4/users', {
+    .get(`${config.mattermostURL}/api/v4/users`, {
       params: {
         ...params,
         per_page: 200,
@@ -53,7 +55,7 @@ export async function getUserWithParams(params = {}, i = 0) {
 export async function searchUsers(params = {}) {
   return await axios
     .post(
-      'https://mattermost.incubateur.net/api/v4/users/search',
+      `${config.mattermostURL}/api/v4/users/search`,
       params,
       getMattermostConfig()
     )
@@ -62,7 +64,7 @@ export async function searchUsers(params = {}) {
 
 export async function getUserByEmail(email) {
   return await axios
-    .get(`https://mattermost.incubateur.net/api/v4/users/email/${email}`, {
+    .get(`${config.mattermostURL}/api/v4/users/email/${email}`, {
       ...getMattermostConfig(),
     })
     .then((response) => response.data);
@@ -73,7 +75,7 @@ export async function addUserToTeam(userId, teamId) {
   try {
     res = await axios
       .post(
-        `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members`,
+        `${config.mattermostURL}/api/v4/teams/${teamId}/members`,
         {
           team_id: teamId,
           user_id: userId,
@@ -96,7 +98,7 @@ export async function removeUserFromTeam(userId, teamId) {
   try {
     res = await axios
       .delete(
-        `https://mattermost.incubateur.net/api/v4/teams/${teamId}/members/${userId}`,
+        `${config.mattermostURL}/api/v4/teams/${teamId}/members/${userId}`,
         {
           ...getMattermostConfig(),
         }
@@ -117,7 +119,7 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
   try {
     res = await axios
       .post(
-        `https://mattermost.incubateur.net/api/v4/teams/${teamId}/invite/email`,
+        `${config.mattermostURL}/api/v4/teams/${teamId}/invite/email`,
         userEmails,
         getMattermostConfig()
       )
@@ -136,7 +138,7 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
 
 export async function getInactiveMattermostUsers(params = {}, i = 0) {
   const mattermostUsers = await axios
-    .get('https://mattermost.incubateur.net/api/v4/users', {
+    .get(`${config.mattermostURL}/api/v4/users`, {
       params: {
         ...params,
         per_page: 200,
@@ -160,7 +162,7 @@ export async function activeUsers(userId) {
   try {
     const payload = { active: true };
     const response = await axios.put(
-      `https://mattermost.incubateur.net/api/v4/users/${userId}/active`,
+      `${config.mattermostURL}/api/v4/users/${userId}/active`,
       payload,
       getMattermostConfig()
     );
@@ -182,7 +184,7 @@ export async function createUser({ email, username, password }, teamId = null) {
   try {
     res = await axios
       .post(
-        `https://mattermost.incubateur.net/api/v4/users?iid=${config.mattermostInviteId}`,
+        `${config.mattermostURL}/api/v4/users?iid=${config.mattermostInviteId}`,
         {
           email,
           username,
@@ -202,7 +204,7 @@ export async function changeUserEmail(id: string, email: string) {
   try {
     const res: MattermostUser = await axios
       .put(
-        `https://mattermost.incubateur.net/api/v4/users/${id}/patch`,
+        `${config.mattermostURL}/api/v4/users/${id}/patch`,
         {
           email,
         },

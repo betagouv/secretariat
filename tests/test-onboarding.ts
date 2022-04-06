@@ -7,6 +7,8 @@ import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
 import config from '../src/config';
+import { EmailStatusCode } from '../src/models/dbUser';
+import betagouv from '../src/betagouv';
 
 chai.use(chaiHttp);
 
@@ -34,6 +36,14 @@ describe('Onboarding', () => {
     let makeGithubPullRequest;
     let sendEmailStub;
     let isPublicServiceEmailStub;
+    let mattermostMessageStub;
+    nock(
+      'https://mattermost.incubateur.net/api/v4/users/search'
+    )
+    .post(/.*/)
+    .reply(200, [{
+      username: 'toto'
+    }]).persist;
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
@@ -60,6 +70,15 @@ describe('Onboarding', () => {
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(false));
 
+      mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
+
+      // reset the test user to avoid duplicates in db
+      knex('users')
+        .where('secondary_email', 'test@example.com')
+        .orWhere('primary_email', 'test@example.com')
+        .del()
+        .then();
+
       done();
     });
 
@@ -70,6 +89,7 @@ describe('Onboarding', () => {
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
       isPublicServiceEmailStub.restore();
+      mattermostMessageStub.restore()
     });
 
     it('should not call Github API if a mandatory field is missing', async () => {
@@ -361,6 +381,45 @@ describe('Onboarding', () => {
         });
     });
 
+    it('should fail if the user is already registered', (done) => {
+      knex('users').insert({
+        firstName: 'Férnàndáô',
+        lastName: 'Úñíbe',
+        role: 'Dev',
+        start: '2020-01-01',
+        end: '2021-01-01',
+        status: 'Independant',
+        domaine: 'Coaching',
+        referent: 'membre.actif',
+        email: 'test@example.com',
+        github: 'github.com/betagouv',
+      }).then();
+
+      chai
+        .request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'Férnàndáô',
+          lastName: 'Úñíbe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          referent: 'membre.actif',
+          email: 'test@example.com',
+          github: 'github.com/betagouv',
+        })
+        .end((err, res) => {
+          getGithubMasterSha.called.should.be.false;
+          createGithubBranch.called.should.be.false;
+          createGithubFile.called.should.be.false;
+          makeGithubPullRequest.called.should.be.false;
+          done();
+        });
+    });
+
     it('should call Github API if mandatory fields are present', (done) => {
       chai.request(app)
         .post('/onboarding')
@@ -627,7 +686,7 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should store in database the secondary email', (done) => {
+    it('should store in database the secondary email, primary_email and status', (done) => {
       chai.request(app)
         .post('/onboarding')
         .type('form')
@@ -647,6 +706,35 @@ describe('Onboarding', () => {
         .then((dbRes) => {
           dbRes.length.should.equal(1);
           dbRes[0].secondary_email.should.equal(`test@example.com`);
+          // dbRes[0].primary_email.should.equal(`john.doe@${config.domain}`);
+          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_UNSET);
+        })
+        .then(done)
+        .catch(done);
+    });
+
+    it('should store the primary_email_status as active if no beta email and email is public service', (done) => {
+      isPublicServiceEmailStub.returns(Promise.resolve(true));
+      chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: 'John',
+          lastName: 'Doe',
+          role: 'Dev',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          email: 'test@example.com',
+          referent: 'membre.actif',
+          isEmailBetaAsked: false,
+        })
+        .then(() => knex('users').where({ username: 'john.doe' }))
+        .then((dbRes) => {
+          dbRes.length.should.equal(1);
+          dbRes[0].primary_email.should.equal(`test@example.com`);
+          dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_ACTIVE);
         })
         .then(done)
         .catch(done);

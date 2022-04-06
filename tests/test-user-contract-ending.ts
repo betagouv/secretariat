@@ -13,6 +13,9 @@ import {
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
+import { EmailStatusCode } from '../src/models/dbUser';
+import { setEmailExpired } from '../src/schedulers/setEmailExpired';
+import betagouv from '../src/betagouv';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
@@ -174,7 +177,7 @@ describe('send message on contract end to user', () => {
     })
   });
 
-  it('should delete user ovh account', async () => {
+  it('should delete user ovh account if email status suspended for more than 30 days', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -193,13 +196,35 @@ describe('send message on contract end to user', () => {
         },
       ])
       .persist();
+      await knex('users').where({
+        username: 'membre.expire'
+      }).update({
+        primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+        primary_email_status_updated_at: new Date()
+      })
     const ovhEmailDeletion = nock(/.*ovh.com/)
       .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
       .reply(200);
     await deleteOVHEmailAcounts();
+    ovhEmailDeletion.isDone().should.be.false;
+    const today = new Date()
+    const todayLess30days = new Date()
+    todayLess30days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'membre.expire'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+      primary_email_status_updated_at: todayLess30days
+    })
+    await deleteOVHEmailAcounts();
+    const user = await knex('users').where({
+      username: 'membre.expire'
+    }).first()
+    user.primary_email_status.should.be.equal(EmailStatusCode.EMAIL_DELETED)
     ovhEmailDeletion.isDone().should.be.true;
   });
-  it('should delete user secondary_email', async () => {
+
+  it('should not delete user secondary_email if suspended less than 30days', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
@@ -218,16 +243,71 @@ describe('send message on contract end to user', () => {
         },
       ])
       .persist();
+    const today = new Date()
+    const todayLess29days = new Date()
+    todayLess29days.setDate(today.getDate() - 29)
     await knex('users').where({
       username: 'julien.dauphant',
     }).update({
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
+      primary_email_status_updated_at: todayLess29days,
+      secondary_email: 'uneadressesecondaire@gmail.com',
+    });
+    const [user1] = await knex('users').where({
+      username: 'julien.dauphant',
+    });
+    should.equal(user1.secondary_email, 'uneadressesecondaire@gmail.com');
+
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'julien.dauphant',
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
+      primary_email_status_updated_at: todayLess31days,
       secondary_email: 'uneadressesecondaire@gmail.com',
     });
     await deleteSecondaryEmailsForUsers();
-    const users = await knex('users').where({
+    const [user2] = await knex('users').where({
       username: 'julien.dauphant',
     });
-    should.equal(users[0].secondary_email, null);
+    should.equal(user2.secondary_email, null);
+  });
+
+  it('should delete user secondary_email if suspended more than 30days', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: fakeDateLess30days,
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
+    const today = new Date()
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    await knex('users').where({
+      username: 'julien.dauphant',
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_DELETED,
+      primary_email_status_updated_at: todayLess31days,
+      secondary_email: 'uneadressesecondaire@gmail.com',
+    });
+    await deleteSecondaryEmailsForUsers();
+    const [user2] = await knex('users').where({
+      username: 'julien.dauphant',
+    });
+    should.equal(user2.secondary_email, null);
     await knex('users')
       .where({
         username: 'julien.dauphant',
@@ -300,6 +380,43 @@ describe('After quitting', () => {
     const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
     should.equal(test.length, 2);
   });
+
+  it('could delete redirections even for past users', async () => {
+    const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
+    should.equal(test.length, 2);
+  });
+
+  it('should set email as expired', async() => {
+    const today = new Date(fakeDate);
+    const todayLess31days = new Date()
+    todayLess31days.setDate(today.getDate() - 31)
+    const userinfos = sinon
+      .stub(betagouv, 'usersInfos')
+      .returns(Promise.resolve([{
+        id: 'membre.actif',
+        fullname: 'membre actif',
+        employer: 'Dinum',
+        startups: [],
+        domaine: 'Animation',
+        start: '2020-01-01',
+        end: todayLess31days.toISOString().split('T')[0],
+        missions: []
+      }]));
+
+    await knex('users').where({
+      username: 'membre.actif',
+    }).update({
+      primary_email: 'membre.actif@modernisation.gouv.fr',
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+      primary_email_status_updated_at: todayLess31days
+    })
+    await setEmailExpired()
+    const [ user ] = await knex('users').where({
+      username: 'membre.actif'
+    })
+    user.primary_email_status.should.equal(EmailStatusCode.EMAIL_EXPIRED)
+    userinfos.restore()
+  })
 
   it('should remove user from mailingList', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';

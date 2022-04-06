@@ -18,7 +18,7 @@
     <% if (messages.length) { %>
       <div class="notification"><%= messages %></div>
     <% } else { %>
-      <form action="/login<%= nextParam %>" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
+      <form action="/login<%= next %>" method="POST" id="login_form" onsubmit="event.submitter && (event.submitter.disabled = true);">
         <label for="emailInput"><b>Mon email</b></label>
         <div class="input__group">
           <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr"  autocomplete="username">
@@ -40,9 +40,11 @@
 
       <ul>
         <li><b>J'ai oublié mon email pour me connecter :</b> l'accès au secrétariat se fait avec une adresse du service public (@beta.gouv.fr, @pole-emploi.fr...) ou un email secondaire (celui sur lequel tu as reçu tes accès). En cas d'oubli, demande de l'aide à un··e admin le Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-secretaria" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-secretaria</a></li>
-        <li><b>Je n'arrive pas à accéder à mes emails :</b> <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">configure ton client webmail</a>.</li>
+        <li><b>Je n'arrive pas à accéder à mes emails :</b> <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#2.-configurer-la-reception-et-lenvoi-demails" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">configure ton client webmail</a>.</li>
       </ul>
   </div>
 </div>
 
 <%- include('partials/footer'); -%>
+<script src="/static/scripts/hashtoparam.js"></script>
+

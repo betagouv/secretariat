@@ -1,6 +1,5 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import _ from 'lodash/array';
 import nock from 'nock';
 import sinon from 'sinon';
 import rewire from 'rewire';
@@ -8,6 +7,9 @@ import testUsers from './users.json';
 import utilsTest from './utils';
 import * as utils from '../src/controllers/utils';
 import betagouv from '../src/betagouv';
+import knex from '../src/db';
+import * as controllerUtils from '../src/controllers/utils';
+import { EmailStatusCode } from '../src/models/dbUser';
 
 chai.use(chaiHttp);
 
@@ -63,10 +65,134 @@ describe('Reinit password for expired users', () => {
       .get((uri) => uri.includes('authors.json'))
       .reply(200, users)
       .persist();
-
+    await knex('users').where({ username: 'membre.expire' }).update({
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    })
     const funcCalled = sinon.spy(betagouv, 'changePassword');
     utilsTest.mockOvhChangePassword();
     await emailScheduler.reinitPasswordEmail();
+    const dbUsers = await knex('users').where({ username: 'membre.expire'})
+    dbUsers.length.should.be.equal(1)
+    dbUsers[0].primary_email_status.should.be.equal(EmailStatusCode.EMAIL_SUSPENDED)
     funcCalled.calledOnce;
+  });
+});
+
+describe('Set email active', () => {
+ 
+  let sendEmailStub;
+
+  beforeEach((done) => {
+    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+    utilsTest.cleanMocks();
+    utilsTest.mockOvhTime();
+    done();
+  });
+
+  afterEach((done) => {
+    sendEmailStub.restore()
+    done()
+  })
+
+  it('should set status to EMAIL_ACTIVE and sendEmailCreatedEmail if status is EMAIL_CRATION_PENDING', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [
+      {
+        id: 'membre.nouveau',
+        fullname: 'membre.nouveau',
+        role: 'Chargé de déploiement',
+        start: '2020-09-01',
+        end: '2090-01-30',
+        employer: 'admin/',
+      },
+    ])
+    .persist();
+  
+    const now = new Date()
+    const nowLess10Minutes = now.getTime() - (11 * 60 * 1000) 
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email_status_updated_at: new Date(now)
+    })
+    await emailScheduler.setEmailAddressesActive();
+    let users = await knex('users').where({
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).returning('*')
+    users.length.should.be.equal(0)
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+      primary_email_status_updated_at: new Date(nowLess10Minutes)
+    })
+    await emailScheduler.setEmailAddressesActive();
+    users = await knex('users').where({
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).returning('*')
+    users[0].username.should.be.equal('membre.nouveau')
+    sendEmailStub.calledOnce.should.be.true;
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email_status_updated_at: new Date(now)
+    })
+  });
+
+  it('should set status to EMAIL_ACTIVE and if status is EMAIL_RECREATION_PENDING', async () => {
+    const url = process.env.USERS_API || 'https://beta.gouv.fr'; // can't replace with config.usersApi ?
+    nock(url)
+    .get((uri) => uri.includes('authors.json'))
+    .reply(200, [
+      {
+        id: 'membre.nouveau',
+        fullname: 'membre.nouveau',
+        role: 'Chargé de déploiement',
+        start: '2020-09-01',
+        end: '2090-01-30',
+        employer: 'admin/',
+      },
+    ])
+    .persist();
+  
+    const now = new Date()
+    const nowLess10Minutes = now.getTime() - (11 * 60 * 1000) 
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email_status_updated_at: new Date(now)
+    })
+    await emailScheduler.setEmailAddressesActive();
+    let users = await knex('users').where({
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).returning('*')
+    users.length.should.be.equal(0)
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_RECREATION_PENDING,
+      primary_email_status_updated_at: new Date(nowLess10Minutes)
+    })
+    await emailScheduler.setEmailAddressesActive();
+    users = await knex('users').where({
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).returning('*')
+    sendEmailStub.calledOnce.should.be.false;
+    users[0].username.should.be.equal('membre.nouveau')
+    await knex('users').where({
+      username: 'membre.nouveau'
+    }).update({
+      primary_email_status: EmailStatusCode.EMAIL_UNSET,
+      primary_email_status_updated_at: new Date(now)
+    })
   });
 });

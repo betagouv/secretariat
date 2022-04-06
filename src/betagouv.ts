@@ -3,6 +3,7 @@ import ovh0 from 'ovh';
 import config from './config';
 import { checkUserIsExpired } from './controllers/utils';
 import { Member } from './models/member';
+import { Startup } from './models/startup';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
@@ -14,6 +15,10 @@ export interface OvhRedirection {
   from: string;
   to: string;
   id: string;
+}
+
+export interface OvhMailingList {
+  id: string
 }
 
 export interface OvhResponder {
@@ -77,7 +82,18 @@ const betaGouv = {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
   },
-
+  startupInfos: async (): Promise<Startup[]> => {
+    return axios
+      .get<Startup[]>(config.startupsDetailsAPI)
+      .then((response) => Object.keys(response.data).map(key => response.data[key]))
+      .catch((err) => {
+        throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+      })
+  },
+  startupInfosById: async (id: string): Promise<Startup> => {
+    const startups = await betaGouv.startupInfos();
+    return startups.find(startup => startup.id === id);
+  },
   startupsInfos: async () =>
     axios
       .get(config.startupsAPI)
@@ -120,13 +136,23 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  removeFromMailingList: async(mailingListName: string, email: string) => {
+  unsubscribeFromMailingList: async(mailingListName: string, email: string) => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
     try {
       return await ovh.requestPromised('DELETE', url);
     } catch (err) {
       if (err.error === 404) return null;
       throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  subscribeToMailingList: async (mailingListName: string, email: string): Promise<OvhMailingList[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+    try {
+      return await ovh.requestPromised('POST', url, {
+        email
+      });
+    } catch (err) {
+      throw new Error(`OVH Error subscribe on ${url} : ${JSON.stringify(err)}`);
     }
   },
   // get active users with email registered on ovh
@@ -282,6 +308,15 @@ const betaOVH = {
       const redirectionIds = await ovh.requestPromised('GET', url);
 
       return await betaOVH.requestRedirections('GET', redirectionIds);
+    } catch (err) {
+      throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  getMailingListSubscribers: async (mailingListName: string): Promise<string[]> => {
+    const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
+
+    try {
+      return await ovh.requestPromised('GET', url);
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
     }

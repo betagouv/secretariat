@@ -1,16 +1,23 @@
 import { CronJob } from 'cron';
 import config from '../config';
-import { createEmailAddresses, reinitPasswordEmail } from './emailScheduler';
+import {
+  createEmailAddresses,
+  reinitPasswordEmail,
+  subscribeEmailAddresses,
+  unsubscribeEmailAddresses,
+  setEmailAddressesActive,
+} from './emailScheduler';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from './githubScheduler';
-import { reloadMarrainages } from './marrainageScheduler';
+import { reloadMarrainages, createMarrainages } from './marrainageScheduler';
 import {
   createUsersByEmail,
   moveUsersToAlumniTeam,
   reactivateUsers,
   removeUsersFromCommunityTeam,
+  addUsersNotInCommunityToCommunityTeam,
 } from './mattermostScheduler';
 import {
   newsletterReminder,
@@ -25,6 +32,10 @@ import {
   deleteRedirectionsAfterQuitting,
   removeEmailsFromMailingList,
 } from './userContractEndingScheduler';
+import {
+  pullRequestWatcher
+} from './pullRequestWatcher'
+import { setEmailExpired } from "../schedulers/setEmailExpired";
 
 interface Job {
   cronTime: string;
@@ -68,10 +79,34 @@ const jobs: Job[] = [
     name: 'reloadMarrainageJob',
   },
   {
+    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
+    onTick: createMarrainages,
+    isActive: true,
+    name: 'createMarrainages',
+  },
+  {
+    cronTime: '* */8 * * * *',
+    onTick: setEmailAddressesActive,
+    isActive: true,
+    name: 'setEmailAddressesActive'
+  },
+  {
     cronTime: '0 */4 * * * *',
     onTick: createEmailAddresses,
     isActive: true,
     name: 'emailCreationJob',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: subscribeEmailAddresses,
+    isActive: !!config.featureSubscribeToIncubateurMailingList,
+    name: 'subscribeEmailAddresses',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: unsubscribeEmailAddresses,
+    isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
+    name: 'unsubscribeEmailAddresses',
   },
   {
     cronTime: '0 */5 * * * 1-5',
@@ -117,6 +152,12 @@ const jobs: Job[] = [
     name: 'deleteOVHEmailAcounts',
   },
   {
+    cronTime: '0 0 15 * * *',
+    onTick: setEmailExpired,
+    isActive: !!config.featureSetEmailExpired,
+    name: 'setEmailExpired',
+  },
+  {
     cronTime: '0 0 8 * * *',
     onTick: removeEmailsFromMailingList,
     isActive: !!config.featureRemoveEmailsFromMailingList,
@@ -134,6 +175,13 @@ const jobs: Job[] = [
     isActive: !!config.featureCreateUserOnMattermost,
     name: 'createUsersByEmail',
     description: 'Cron job to create user on mattermost by email',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: addUsersNotInCommunityToCommunityTeam,
+    isActive: !!config.featureAddUserToCommunityTeam,
+    name: 'addUsersNotInCommunityToCommunityTeam',
+    description: 'Cron job to add user existing on mattermost to community team if there not in'
   },
   {
     cronTime: '0 0 8 1 * *',
@@ -168,6 +216,13 @@ const jobs: Job[] = [
     isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
     name: 'moveUsersToAlumniTeam',
     description: 'Cron job to add user to alumni on mattermost',
+  },
+  {
+    cronTime: '0 0 * * * *',
+    onTick: pullRequestWatcher,
+    isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
+    name: 'pullRequestWatcher',
+    description: 'Cron job to remind user with pending pull request on author file',
   },
 ];
 

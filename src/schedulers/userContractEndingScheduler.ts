@@ -4,8 +4,8 @@ import * as utils from '../controllers/utils';
 import knex from '../db';
 import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
-import { DBUser, DBUserWithMattermostUsername } from '../models/dbUser';
-import { Member } from '../models/member';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
+import { Member, MemberWithPrimaryEmailAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
 
 interface MessageConfig {
@@ -14,7 +14,7 @@ interface MessageConfig {
 }
 
 // get users that are member (got a github card) and mattermost account that is not in the team
-const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<DBUserWithMattermostUsername[]> => {
+const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<MemberWithPrimaryEmailAndMattermostUsername[]> => {
   const allMattermostUsers = await mattermost.getUserWithParams();
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((user) => {
@@ -43,15 +43,17 @@ const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<DBUs
       const index = allMattermostUsersEmails.indexOf(
         user.primary_email
       );
+      const githubUser = activeGithubUsers.find(ghUser => ghUser.id === user.username)
       return {
-        ...user,
+        ...githubUser,
+        primary_email: user.primary_email,
         mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
       };
     }
   );
   return registeredUsersWithEndingContractInXDays.filter(
     (user) => user.mattermostUsername
-  ) as DBUserWithMattermostUsername[];
+  ) as MemberWithPrimaryEmailAndMattermostUsername[];
 };
 
 const CONFIG_MESSAGE = {
@@ -70,7 +72,7 @@ const EMAIL_FILES = {
   'j+30': 'mailExpired30days',
 };
 
-const sendMessageOnChatAndEmail = async (user: DBUserWithMattermostUsername, messageConfig: MessageConfig) => {
+const sendMessageOnChatAndEmail = async (user: MemberWithPrimaryEmailAndMattermostUsername, messageConfig: MessageConfig) => {
   const messageContent = await ejs.renderFile(
     `./views/emails/${messageConfig.emailFile}`,
     {
@@ -110,7 +112,7 @@ export async function sendContractEndingMessageToUsers(
 ) {
   console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
-  let registeredUsersWithEndingContractInXDays : DBUserWithMattermostUsername[];
+  let registeredUsersWithEndingContractInXDays : MemberWithPrimaryEmailAndMattermostUsername[];
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
   } else {
@@ -169,6 +171,7 @@ export async function sendJ30Email(users) {
 
 export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
   let expiredUsers: Member[] = optionalExpiredUsers;
+  let dbUsers : DBUser[];
   if (!expiredUsers) {
     const users: Member[] = await BetaGouv.usersInfos();
     const allOvhEmails = await BetaGouv.getAllEmailInfos();
@@ -177,14 +180,26 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
         utils.checkUserIsExpired(user, 30) && allOvhEmails.includes(user.id)
       );
     });
+    const today = new Date();
+    const todayLess30days = new Date()
+    todayLess30days.setDate(today.getDate() - 30)
+    dbUsers = await knex('users')
+      .whereIn('username', expiredUsers.map(user => user.id))
+      .andWhere({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
+      .where('primary_email_status_updated_at', '<', todayLess30days)
   }
-  for (const user of expiredUsers) {
+  for (const user of dbUsers) {
     try {
-      await BetaGouv.deleteEmail(user.id);
-      console.log(`Suppression de l'email ovh pour ${user.id}`);
+      await BetaGouv.deleteEmail(user.username);
+      await knex('users').where({
+        username: user.username
+      }).update({
+        primary_email_status: EmailStatusCode.EMAIL_DELETED
+      })
+      console.log(`Suppression de l'email ovh pour ${user.username}`);
     } catch {
       console.log(
-        `Erreur lors de la suppression de l'email ovh pour ${user.id}`
+        `Erreur lors de la suppression de l'email ovh pour ${user.username}`
       );
     }
   }
@@ -198,8 +213,13 @@ export async function deleteSecondaryEmailsForUsers(
     const users: Member[] = await BetaGouv.usersInfos();
     expiredUsers = users.filter((user) => utils.checkUserIsExpired(user, 30));
   }
+  const today = new Date();
+  const todayLess30days = new Date()
+  todayLess30days.setDate(today.getDate() - 30)
   const dbUsers: DBUser[] = await knex('users')
     .whereNotNull('secondary_email')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_DELETED, EmailStatusCode.EMAIL_EXPIRED])
+    .where('primary_email_status_updated_at', '<', todayLess30days)
     .whereIn(
       'username',
       expiredUsers.map((user) => user.id)
@@ -257,7 +277,7 @@ export async function deleteRedirectionsAfterQuitting(
 const removeEmailFromMailingList = async (userId: string, mailingList:string[]) => {
   return Promise.all(mailingList.map(async (mailing: string) => {
     try {
-      await BetaGouv.removeFromMailingList(mailing, utils.buildBetaEmail(userId))
+      await BetaGouv.unsubscribeFromMailingList(mailing, utils.buildBetaEmail(userId))
       console.log(`Suppression de ${utils.buildBetaEmail(userId)} de la mailing list ${mailing}`)
     } catch (err) {
       console.error(`Erreur lors de la suppression de l'email ${utils.buildBetaEmail(userId)} de la mailing list ${mailing}  : ${err}`)

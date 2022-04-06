@@ -38,6 +38,7 @@ export default {
   newsletterCronTime: process.env.NEWSLETTER_CRON_TIME || '0 4 * * 5',
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
   newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
+  mattermostURL: process.env.MATTERMOST_URL || 'https://mattermost.incubateur.net',
   senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
   slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
   slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
@@ -45,6 +46,8 @@ export default {
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
   startupsAPI:
     process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
+  startupsDetailsAPI:
+    process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr/api/v2.3/startups_details.json',
   githubToken: process.env.GITHUB_TOKEN,
   githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || 'betagouv',
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
@@ -64,6 +67,7 @@ export default {
   mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
+  incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureReinitPasswordEmail:
     process.env.FEATURE_REINIT_PASSWORD_EMAIL || false,
@@ -71,6 +75,7 @@ export default {
     process.env.FEATURE_REACTIVE_MATTERMOST_USERS || false,
   featureAddGithubUserToOrganization:
     process.env.FEATURE_ADD_GITHUB_USER_TO_ORGANIZATION,
+  featureAddUserToCommunityTeam: process.env.FEATURE_ADD_USER_TO_COMMUNITY_ON_MATTERMOST,
   featureCreateUserOnMattermost: process.env.FEATURE_CREATE_USER_ON_MATTERMOST,
   featureRemoveGithubUserFromOrganization:
     process.env.FEATURE_REMOVE_GITHUB_USER_FROM_ORGANIZATION,
@@ -84,5 +89,10 @@ export default {
   featureDeleteSecondaryEmail: process.env.FEATURE_DELETE_SECONDARY_EMAIL,
   featureDeleteRedirectionsAfterQuitting:
     process.env.FEATURE_DELETE_REDIRECTIONS_AFTER_QUITTING,
-  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST
+  featureRemoveEmailsFromMailingList: process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST,
+  featureRemindUserWithPendingPullRequestOnAuthorFile: process.env.FEATURE_REMIND_USER_WITH_PENDING_PULL_REQUEST_ON_AUTHOR_FILE,
+  featureSetEmailExpired: process.env.FEATURE_SET_EMAIL_EXPIRED,
+  featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
+  featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
+  tchap_api: process.env.TCHAP_API,
 };

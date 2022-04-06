@@ -35,13 +35,14 @@ function replaceSpecialCharacters(str) {
   return str.replace(/( |'|\.)/gi, ' ');
 }
 
-export async function sendMail(toEmail, subject, html, extraParams = {}) {
+export async function sendMail(toEmail, subject, html, extraParams = {}, attachments=[]) {
   const mail = {
     to: toEmail,
     from: `Secrétariat BetaGouv <${config.senderEmail}>`,
     subject,
     html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
+    attachments,
     headers: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
     ...extraParams,
   };
@@ -207,8 +208,10 @@ export function addDays(date, days, week = null) {
 }
 
 export async function isPublicServiceEmail (email) {
-  const TCHAP_API = "https://matrix.agent.tchap.gouv.fr/_matrix/identity/api/v1/info?medium=email&address="
-  const data = await axios.get(TCHAP_API + String(email).toLowerCase()).then((x) => x.data);
+  if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
+    return true
+  }
+  const data = await axios.get(config.tchap_api + String(email).toLowerCase()).then((x) => x.data);
     if (data.hs === "agent.externe.tchap.gouv.fr") {
       return false;
     } else {

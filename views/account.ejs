@@ -26,33 +26,7 @@
                             <span class="font-weight-bold">Mission :</span>
                             du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
                             <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %><br>
-                            <a id="update-end-date-form-toggle" class="font-size-smaller" title="Mettre à jour ma date de fin">Mettre à jour ma date de fin ✍️</a>
                         </p>
-                        <section id="update-end-date-form" style="display:none" class="panel">
-                            <form action="/users/<%= userInfos.id %>/end-date" method="POST">
-                                <input type="hidden" name="_method" value="PUT">
-                                <input type="hidden" name="start" value="<%= userInfos.start %>">
-                                <input type="hidden" name="end" value="<%= userInfos.end %>">
-                                <p>
-                                    <strong>Date de fin actuelle :</strong>
-                                    <% if (userInfos.end) { %>
-                                        <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
-                                    <% } else { %>
-                                        Non renseignée
-                                    <% } %>
-                                </p>
-                                <div class="form__group">
-                                    <label for="end">
-                                        <strong>Nouvelle date de fin</strong>
-                                    </label>
-                                    <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                                </div>
-                                <div class="form__group button__group">
-                                    <button class="button" type="submit">Valider</button>
-                                    <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
-                                </div>
-                            </form>
-                        </section>
                     <% } %>
                     <% if (userInfos.employer) { %>
                         <p>
@@ -77,7 +51,59 @@
                     <img width="100%" src="/static/images/logo-betagouv.jpg" />
                 </div>
             </div>
-            <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="update-end-date">
+                        Mettre à jour ma date de fin
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <section id="update-end-date-form" class="panel">
+                        <div class="notification">
+                            Pour que ton changement de date soit pris en compte,
+                            demande à un membre de ton équipe de
+                            "merger" le changement sur <a href="https://github.com/betagouv/beta.gouv.fr/pulls" target="_blank">github</a>.
+                        </div>
+                        <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                            <input type="hidden" name="_method" value="PUT">
+                            <input type="hidden" name="start" value="<%= userInfos.start %>">
+                            <input type="hidden" name="end" value="<%= userInfos.end %>">
+                            <p>
+                                <strong>Date de fin actuelle :</strong>
+                                <% if (userInfos.end) { %>
+                                    <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                                <% } else { %>
+                                    Non renseignée
+                                <% } %>
+                            </p>
+                            <div class="form__group">
+                                <label for="end">
+                                    <strong>Nouvelle date de fin</strong>
+                                </label>
+                                <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                            </div>
+                            <div class="form__group button__group">
+                                <button class="button" type="submit">Valider</button>
+                                <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                            </div>
+                        </form>
+                    </section>
+                    <hr />
+                </div>
+            </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="webmail">
+                        Mettre à jour ma fiche
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a> 
+                    <hr />
+                </div>
+            </div>
         </div>
         <div class="panel margin-top-0">
             <h3>
@@ -150,7 +176,7 @@
             <% }%>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="configure-email">
                         Configurer mon client mail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -158,13 +184,13 @@
                 <div hidden class="collapse-content">
                     <p>Configure ton client mail préféré (Mail, Thunderbird, Mailspring, Microsoft Courier, Gmail, etc) pour recevoir et envoyer des emails :</p>
 
-                    <a href="https://doc.incubateur.net/communaute/outils/emails#jai-un-email-beta-comment-me-connecter" target="_blank" class="button no-margin">Documentation de configuration du webmail</a>
+                    <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#envoyer-et-recevoir-des-mails-beta.gouv.fr" target="_blank" class="button no-margin">Documentation de configuration du webmail</a>
                     <hr />
                 </div>
             </div>
             <div class="collapse" id="responder">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="automatic-response">
                         Configurer une réponse automatique
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -218,8 +244,8 @@
                 </div>
             </div>
             <div class="collapse">
-                <h6 class="margin-10-0 collapse-header" id="password">
-                    <button aria-expanded="false">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="password">
                         Changer mon mot de passe
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -236,6 +262,8 @@
                             <input name="new_password" type="password" minlength="9" required>
                             <button class="button margin-10-0" type="submit">Changer</button>
                         </form>
+                    <% } else if (emailSuspended) { %>
+                        <p>Il faut mettre à jour votre date de fin de mission et merger la pull request avant de pouvoir changer votre mot de passe</p>
                     <% } else { %>
                         <p>Sans compte email, vous n'avez pas la possibilité de changer de mot de passe.</p>
                     <% } %>
@@ -245,7 +273,7 @@
 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="webmail">
                         Accéder au webmail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -263,7 +291,7 @@
 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="redirect-email">
                         Rediriger vers une autre adresse mail
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -310,7 +338,7 @@
             </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="change-primary-email">
                         Configurer mon email principal
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
@@ -334,7 +362,7 @@
             </div>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false">
+                    <button aria-expanded="false" id="change-secondary-email">
                         Configurer mon email secondaire
                         <div class="icon fa fa-chevron-down"></div>
                     </button>

@@ -5,12 +5,48 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
-
+import { EmailStatusCode } from '../models/dbUser';
+import { renderHtmlFromMd } from "../lib/mdtohtml";
+import * as mattermost from '../lib/mattermost';
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
   const randomSuffix = crypto.randomBytes(3).toString('hex');
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
+}
+
+interface IMessageInfo {
+  prInfo,
+  referent: string,
+  username: string,
+  isEmailBetaAsked: boolean,
+  name: string
+}
+
+async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAsked, name }: IMessageInfo) {
+  const dbReferent = await knex('users').where({ username: referent }).first();
+  const prUrl = prInfo.data.html_url;
+  const userUrl = `${config.protocol}://${config.host}/community/${username}`;
+  const messageContent = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
+    referent: referent, prUrl, name, userUrl, isEmailBetaAsked
+  });
+  await utils.sendMail(
+    dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username),
+    `${name} vient de créer sa fiche Github`,
+    renderHtmlFromMd(messageContent)
+  );
+  try {
+    const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
+      term: referent
+    })
+    await BetaGouv.sendInfoToChat(
+      messageContent,
+      'secretariat',
+      mattermostUser.username
+    );
+  } catch (e) {
+    console.error('It was not able to send message to referent on mattermost', e)
+  }
 }
 
 async function createNewcomerGithubFile(username, content, referent) {
@@ -51,7 +87,7 @@ async function createNewcomerGithubFile(username, content, referent) {
 export async function getForm(req, res) {
   try {
     const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.usersInfos();
+    const users = await BetaGouv.getActiveRegisteredOVHUsers();
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
@@ -132,6 +168,16 @@ export async function postForm(req, res) {
       }
     }
 
+    const userExists = await knex('users')
+      .where('primary_email', inputEmail)
+      .orWhere('secondary_email', inputEmail)
+      .first();
+
+    if (userExists) {
+      formValidationErrors['utilisateur existant'] =
+        'Un compte utilisateur existe déjà avec cet email';
+    }
+
     if (Object.keys(formValidationErrors).length) {
       req.flash('error', 'Un champs du formulaire est invalide ou manquant.');
       throw new Error();
@@ -156,13 +202,13 @@ export async function postForm(req, res) {
     const prInfo = await createNewcomerGithubFile(username, content, referent);
 
     if (prInfo.status === 201 && prInfo.data.html_url) {
-      const dbReferent = await knex('users').where({ username: referent }).first();
-      const prUrl = prInfo.data.html_url;
-      const userUrl = `${config.protocol}://${config.host}/community/${username}`;
-      const html = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
-        referent, prUrl, name, userUrl, isEmailBetaAsked
-      });
-      await utils.sendMail(dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username), `${name} vient de créer sa fiche Github`, html);
+      await sendMessageToReferent({
+        prInfo,
+        referent,
+        isEmailBetaAsked,
+        username,
+        name
+      })
     }
     let primaryEmail, secondaryEmail;
     if (isEmailBetaAsked) {
@@ -175,7 +221,9 @@ export async function postForm(req, res) {
       .insert({
         username,
         primary_email: primaryEmail,
-        secondary_email: secondaryEmail
+        secondary_email: secondaryEmail,
+        primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
+        primary_email_status_updated_at: new Date()
       })
       .onConflict('username')
       .merge();

@@ -1,4 +1,4 @@
-import { Octokit } from "@octokit/core";
+import { Octokit } from "@octokit/rest";
 import config from "../config";
 import fm from "front-matter";
 import axios from "axios";
@@ -173,4 +173,22 @@ export function removeUserByUsernameFromOrganization(username, org) {
     org,
     username,
   });
+}
+
+export function getPullRequestFiles(owner: string, repo: string, pull_number: number) {
+  const octokit = createOctokitAuth();
+  return octokit.rest.pulls.listFiles({
+    owner,
+    repo,
+    pull_number,
+  })
+}
+
+export function getPullRequests(owner: string, repo: string, state: 'all' | 'open' | 'closed') {
+  const octokit = createOctokitAuth();
+  return octokit.rest.pulls.list({
+      owner,
+      repo,
+      state
+  })
 }
