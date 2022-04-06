@@ -95,6 +95,14 @@ export async function sendEmailCreatedEmail(username) {
   }
 }
 
+async function updateSecondaryEmail(username, secondary_email) {
+  return knex('users').where({
+    username
+  }).update({
+    secondary_email
+  })
+}
+
 export async function createEmailForUser(req, res) {
   const username = req.sanitize(req.params.username);
   const isCurrentUser = req.user.id === username;
@@ -125,6 +133,7 @@ export async function createEmailForUser(req, res) {
       }
     }
 
+    await updateSecondaryEmail(username, req.params.to_email)
     await createEmail(username, req.user.id);
 
     req.flash('message', 'Le compte email a bien été créé.');
