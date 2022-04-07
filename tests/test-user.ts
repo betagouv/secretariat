@@ -35,21 +35,40 @@ describe('User', () => {
     });
   });
   describe('POST /users/:username/email authenticated', () => {
-    before(async () => {
-      await knex('marrainage').truncate();
-    });
+
 
     let sendEmailStub;
     beforeEach((done) => {
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
-        .returns(Promise.resolve(true));
-      done();
+        .returns(Promise.resolve(true))
+      done()
     });
 
-    afterEach(async () => {
-      await knex('marrainage').truncate();
-      sendEmailStub.restore();
+    afterEach((done) => {
+      sendEmailStub.restore()
+      done()
+    });
+
+    it('should ask OVH to create an email', async () => {
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+          await knex('users').where({ username: 'membre.nouveau'}).update({
+            primary_email: null
+          })
+          await chai
+            .request(app)
+            .post('/users/membre.nouveau/email')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .type('form')
+            .send({
+              to_email: 'test@example.com',
+            })
+          
+          const res = await knex('users').where({ username: 'membre.nouveau'}).first()
+          res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
+          ovhEmailCreation.isDone().should.be.true;
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {
@@ -150,7 +169,9 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-
+      await knex('users').where({ username: 'membre.actif'}).update({
+        primary_email: null
+      })
       await chai
         .request(app)
         .post('/users/membre.actif/email')

@@ -2,6 +2,7 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
+import { MemberWithPermission } from "../models/member";
 
 const EMAIL_STATUS_READABLE_FORMAT = {
   EMAIL_ACTIVE: 'Actif',
@@ -48,7 +49,9 @@ export async function getUser(req, res) {
       return;
     }
 
-    const user = await utils.userInfos(username, isCurrentUser);
+    const [user] : [MemberWithPermission] = await Promise.all([
+      utils.userInfos(username, isCurrentUser),
+    ]);
 
     const hasGithubFile = user.userInfos;
     const hasEmailAddress = (user.emailInfos || user.redirections.length > 0);

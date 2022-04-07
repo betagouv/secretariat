@@ -108,7 +108,10 @@ export async function createEmailForUser(req, res) {
   const isCurrentUser = req.user.id === username;
 
   try {
-    const user = await utils.userInfos(username, isCurrentUser);
+    const [user, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+      utils.userInfos(username, isCurrentUser),
+      knex('users').where({ username }).first()
+    ]);
 
     if (!user.userInfos) {
       throw new Error(
@@ -126,13 +129,17 @@ export async function createEmailForUser(req, res) {
       throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
     }
 
+    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
+    if (hasPublicServiceEmail) {
+      throw new Error(`Le membre a déjà un email principal autre que ${config.domain}`);
+    }
+
     if (!isCurrentUser) {
       const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
       if (utils.checkUserIsExpired(loggedUserInfo)) {
         throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
       }
     }
-
     await updateSecondaryEmail(username, req.body.to_email)
     await createEmail(username, req.user.id);
 
@@ -195,14 +202,20 @@ export async function createRedirectionForUser(req, res) {
     } catch (err) {
       throw new Error(`Erreur pour créer la redirection: ${err}`);
     }
-
     req.flash('message', 'La redirection a bien été créé.');
-    res.redirect(`/community/${username}`);
+    if (isCurrentUser) {
+      res.redirect('/account')
+    } else {
+      res.redirect(`/community/${username}`);
+    }
   } catch (err) {
     console.error(err);
-
     req.flash('error', err.message);
-    res.redirect(`/community/${username}`);
+    if (isCurrentUser) {
+      res.redirect('/account')
+    } else {
+      res.redirect(`/community/${username}`);
+    }
   }
 }
 
