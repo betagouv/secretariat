@@ -69,7 +69,6 @@ describe('User', () => {
           const res = await knex('users').where({ username: 'membre.nouveau'}).first()
           res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
           ovhEmailCreation.isDone().should.be.true;
-          sendEmailStub.calledOnce.should.be.true;
     });
 
     it('should not allow email creation from delegate if email already exists', (done) => {
@@ -170,7 +169,9 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
-
+      await knex('users').where({ username: 'membre.actif'}).update({
+        primary_email: null
+      })
       await chai
         .request(app)
         .post('/users/membre.actif/email')
