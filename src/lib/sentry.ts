@@ -3,7 +3,7 @@ import { CaptureConsole as CaptureConsoleIntegration } from "@sentry/integration
 import config from '../config';
 
 export function initCaptureConsole() {
-  const logLevel = ['log', 'info', 'warn', 'error', 'debug', 'assert'];
+  const logLevel = ['error'];
   console.log(
     `Initializing Sentry for log level "${logLevel}" and config: ${config.sentryDNS}`
   );
