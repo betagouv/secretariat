@@ -10,7 +10,9 @@ import knex from '../src/db';
 import app from '../src/index';
 import { reloadMarrainages, createMarrainages } from '../src/schedulers/marrainageScheduler';
 import utils from './utils';
-import { EmailStatusCode } from '../src/models/dbUser';
+import { DBUser, EmailStatusCode } from '../src/models/dbUser';
+import betagouv from '../src/betagouv';
+import { Member } from '../src/models/member';
 
 chai.use(chaiHttp);
 
@@ -466,7 +468,7 @@ describe('Marrainage', () => {
       await knex('users').update({
         created_at: new Date('11/01/2021')
       })
-      const [membreNouveau] = await knex('users')
+      const [membreNouveau] : DBUser[] = await knex('users')
       .where({ username:  'membre.nouveau'}).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         created_at: new Date('01/24/2022')
@@ -479,6 +481,9 @@ describe('Marrainage', () => {
       marrainage.length.should.equal(1);
       marrainage[0].username.should.equal('membre.nouveau');
       marrainage[0].last_onboarder.should.not.be.null;
+      const onboarderInfo : Member = await betagouv.userInfosById(marrainage[0].last_onboarder)
+      const membreNouveauInfo : Member = await betagouv.userInfosById(membreNouveau.username)
+      onboarderInfo.domaine.should.equal(membreNouveauInfo.domaine)
       // run createMarrainage a second time to see if marrainage is created twice
       await createMarrainages()
       sendEmailStub.calledOnce.should.be.true;

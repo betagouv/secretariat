@@ -35,7 +35,7 @@ async function selectRandomOnboarder(newcomerId, domaine) {
   });
   const onboardersFromDomaine = onboarders.filter(onboarder => onboarder.domaine === domaine)
   const onboarderPool = domaine === Domaine.AUTRE || !onboardersFromDomaine.length ? onboarders : onboardersFromDomaine
-  return onboarderPool[Math.floor(Math.random() * onboarders.length)];
+  return onboarderPool[Math.floor(Math.random() * onboarderPool.length)];
 }
 
 async function getMarrainageTokenData(token) {
