@@ -4,6 +4,7 @@
     "fullname": "Membre Actif",
     "github": "membre.actif",
     "role": "Chargé de déploiement",
+    "domaine": "Développement",
     "startups": ["test-startup"],
     "missions": [
       { 
@@ -17,6 +18,7 @@
     "id": "membre.expire",
     "fullname": "Membre Expiré",
     "github": "membre.expire",
+    "domaine": "Déploiement",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -30,6 +32,7 @@
     "id": "membre.parti",
     "fullname": "Membre Parti",
     "github": "test-github",
+    "domaine": "Autre",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -42,6 +45,7 @@
   {
     "id": "membre.nouveau",
     "fullname": "Membre Nouveau",
+    "domaine": "Animation",
     "missions": [
       { 
         "start": "2020-07-03"
@@ -53,6 +57,7 @@
     "id": "membre.plusieurs.missions",
     "fullname": "Membre Plusieurs Missions",
     "role": "Chargé de déploiement",
+    "domaine": "Coaching",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -71,7 +76,7 @@
   {
     "id": "julien.dauphant",
     "fullname": "Julien Dauphant",
-
+    "domaine": "Produit",
     "missions": [
       { 
         "start": "2016-11-03",
@@ -84,6 +89,7 @@
   {
     "id": "hela.ghariani",
     "fullname": "Hela Ghariani",
+    "domaine": "Développement",
     "missions": [
       { 
         "start": "2014-11-01",
@@ -95,6 +101,7 @@
   {
     "id": "nicolas.bouilleaud",
     "fullname": "Nicolas Bouilleaud",
+    "domaine": "Autre",
     "github": "n-b",
     "missions": [
       { 
@@ -108,6 +115,7 @@
   {
     "id": "laurent.bossavit",
     "fullname": "Laurent Bossavit",
+    "domaine": "Intraprenariat",
     "missions": [
       { 
         "start": "2016-03-01",
@@ -120,6 +128,7 @@
     "id": "stephane.legouffe",
     "fullname": "Stéphane Legouffe",
     "github": "slegouffe",
+    "domaine": "Design",
     "missions": [
       { 
         "start": "2018-03-08",
@@ -131,6 +140,7 @@
   {
     "id": "sandra.chakroun",
     "fullname": "Sandra Chakroun",
+    "domaine": "Design",
     "missions": [
       { 
         "start": "2017-05-10",
@@ -143,6 +153,7 @@
   {
     "id": "loup.wolff",
     "fullname": "Loup Wolff",
+    "domaine": "Intraprenariat",
     "missions": [
       { 
         "start": "2018-03-27",
@@ -155,6 +166,7 @@
     "id": "ishan.bhojwani",
     "fullname": "Ishan Bhojwani",
     "github": "IshanB",
+    "domaine": "Animation",
     "missions": [
       { 
         "start": "2017-05-23",
@@ -167,6 +179,7 @@
   {
     "id": "pierre.de_la_morinerie",
     "fullname": "Pierre de La Morinerie",
+    "domaine": "Produit",
     "missions": [
       { 
         "start": "2017-01-24",
@@ -179,6 +192,7 @@
   {
     "id": "thomas.guillet",
     "fullname": "Thomas Guillet",
+    "domaine": "Coaching",
     "missions": [
       { 
         "start": "2017-03-06",
@@ -190,6 +204,7 @@
   {
     "id": "mattermost.newuser",
     "fullname": "Mattermost Newuser",
+    "domaine": "Déploiement",
     "missions": [
       { 
         "start": "2021-07-09",

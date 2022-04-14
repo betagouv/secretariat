@@ -1,15 +1,18 @@
 import { OvhRedirection, OvhResponder } from '../betagouv';
 import { Mission } from './mission';
 
-type Domaine =
-  | 'Animation'
-  | 'Coaching'
-  | 'Déploiement'
-  | 'Design'
-  | 'Développement'
-  | 'Intraprenariat'
-  | 'Produit'
-  | 'Autre';
+
+export enum Domaine {
+  ANIMATION='Animation',
+  COACHING = 'Coaching',
+  DEPLOIEMENT = 'Déploiement',
+  DESIGN = 'Design',
+  DEVELOPPEMENT = 'Développement',
+  INTRAPRENARIAT = 'Intraprenariat',
+  PRODUIT = 'Produit',
+  AUTRE = 'Autre',
+}
+
 
 export interface Member {
   id: string;

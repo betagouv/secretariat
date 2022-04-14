@@ -6,7 +6,7 @@ import * as utils from './utils';
 import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
 import { DBUser } from '../models/dbUser';
-import { Member } from '../models/member';
+import { Domaine, Member } from '../models/member';
 
 interface Marrainage {
   username: string,
@@ -17,7 +17,7 @@ interface Marrainage {
   last_updated: string
 }
 
-async function selectRandomOnboarder(newcomerId) {
+async function selectRandomOnboarder(newcomerId, domaine) {
   const users: Member[] = await BetaGouv.usersInfos();
   const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
   const existingCandidates: string[] = await knex('marrainage')
@@ -33,7 +33,9 @@ async function selectRandomOnboarder(newcomerId) {
     const isRequester = x.id === newcomerId;
     return !existingCandidate && senior && stillActive && !isRequester;
   });
-  return onboarders[Math.floor(Math.random() * onboarders.length)];
+  const onboardersFromDomaine = onboarders.filter(onboarder => onboarder.domaine === domaine)
+  const onboarderPool = domaine === Domaine.AUTRE || !onboardersFromDomaine.length ? onboarders : onboardersFromDomaine
+  return onboarderPool[Math.floor(Math.random() * onboarders.length)];
 }
 
 async function getMarrainageTokenData(token) {
@@ -131,7 +133,7 @@ export async function reloadMarrainage(newcomerId) {
       "Il n'y a pas de demande de marrainage existant pour cette personne."
     );
   }
-  const onboarder = await selectRandomOnboarder(newcomer.id);
+  const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
   if (!onboarder) {
     throw new Error(
@@ -154,7 +156,7 @@ export async function reloadMarrainage(newcomerId) {
 export async function createRequestForUser(userId) {
   console.log('Creating marrainage request for', userId)
   const newcomer: Member = await BetaGouv.userInfosById(userId);
-  const onboarder = await selectRandomOnboarder(newcomer.id);
+  const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
   if (!onboarder) {
     const recipientEmailList = [config.senderEmail];
@@ -313,7 +315,7 @@ export async function declineRequest(req, res) {
       return redirectOutdatedMarrainage(req, res);
     }
 
-    const onboarder = await selectRandomOnboarder(newcomer.id);
+    const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
     if (!onboarder) {
       console.log(
