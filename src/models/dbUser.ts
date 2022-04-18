@@ -38,3 +38,60 @@ export interface DBUser {
     gender: GenderCode;
     legal_status: LegalStatus;
 }
+
+export const genderOptions = [{
+    key: 'female',
+    name: "Feminin"
+  },{
+    key: 'male',
+    name: "Masculin"
+  },{
+    key: 'nb',
+    name: "Non-binaire"
+  }, {
+    key: 'nps',
+    name: "Ne se prononce pas"
+  }]
+
+export const statusOptions = [
+  {
+    key: 'AE',
+    name: 'Auto-entreprise/micro-entreprise'
+  },
+  {
+    key: 'EIRL',
+    name: 'EIRL'
+  },
+  {
+    key: 'SARL',
+    name: 'SARL'
+  },
+  {
+    key: 'EURL',
+    name: 'EURL'
+  },
+  {
+    key: 'SAS',
+    name: 'SAS'
+  },
+  {
+    key: 'SASU',
+    name: 'SASU'
+  },
+  {
+    key: 'SA',
+    name: 'SA'
+  },
+  {
+    key: 'SNC',
+    name: 'snc'
+  },
+  {
+    key: 'contractuel',
+    name: 'Contractuel-elle'
+  },
+  {
+    key: 'fonctionnaire',
+    name: 'Fonctionnaire'
+  }
+]

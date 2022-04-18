@@ -4,8 +4,9 @@ import knex from "../db";
 import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
-import { DBUser } from "../models/dbUser";
+import { DBUser, statusOptions, genderOptions } from "../models/dbUser";
 import { EmailStatusCode } from "../models/dbUser";
+import { fetchCommuneDetails } from "../lib/searchCommune";
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors = [];
@@ -156,16 +157,9 @@ export async function getCurrentAccount(req, res) {
 
 export async function updateCurrentInfo(req, res) {
   const formValidationErrors = {};
-  // const errorHandler = (field, message) => {
-  //   formValidationErrors[field] = message
-  // }
   const title = 'Mon compte';
-  const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+  const [currentUser] : [MemberWithPermission] = await Promise.all([
     (async () => utils.userInfos(req.user.id, true))(),
-    (async () => {
-      const rows = await knex('users').where({ username: req.user.id });
-      return rows.length === 1 ? rows[0] : null;
-    })(),
   ]);
   try {
     const username = req.user.id
@@ -173,7 +167,16 @@ export async function updateCurrentInfo(req, res) {
     const workplace_insee_code = req.body.workplace_insee_code
     const tjm = parseInt(req.body.tjm, 10);
     const legal_status = req.body.legal_status
-    console.log(gender, workplace_insee_code, tjm, legal_status)
+
+    if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
+      formValidationErrors['legal_status'] = `Le statut legal n'a pas une valeur autorisé`
+    }
+    if (gender && !genderOptions.map(genderOption => genderOption.key).includes(gender)) {
+      formValidationErrors['gender'] = `Le genre n'a pas une valeur autorisé`
+    }
+    if (req.body.workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
+      formValidationErrors['workplace_insee_code'] = `La lieu de travail principal n'as pas été trouvé`
+    }
 
     if (Object.keys(formValidationErrors).length) {
       req.flash('error', 'Un champs du formulaire est invalide ou manquant.');
@@ -200,25 +203,13 @@ export async function updateCurrentInfo(req, res) {
       formValidationErrors,
       currentUserId: req.user.id,
       startups,
-      statusOptions: [
-        'AE',
-        'EIRL',
-        'SARL',
-        'EURL',
-        'SAS',
-        'SASU',
-        'SA',
-        'SNC',
-        'Contractuel-elle',
-        'Fonctionnaire'
-      ],
+      statusOptions,
+      genderOptions,
       currentUser,
-      gender: dbUser.gender,
-      legal_status: dbUser.legal_status,
-      workplace_insee_code: dbUser.workplace_insee_code,
       activeTab: 'account',
+      communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
       formData: {
-        ...req.body
+        ...req.body,
       },
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -249,20 +240,13 @@ export async function getCurrentInfo(req, res) {
       formValidationErrors,
       currentUserId: req.user.id,
       startups,
-      statusOptions: [
-        'AE',
-        'EIRL',
-        'SARL',
-        'EURL',
-        'SAS',
-        'SASU',
-        'SA',
-        'SNC',
-      ],
+      genderOptions,
+      statusOptions,
       gender: dbUser.gender,
       legal_status: dbUser.legal_status,
       workplace_insee_code: dbUser.workplace_insee_code,
       activeTab: 'account',
+      communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
       formData: {
         gender: dbUser.gender,
         workplace_insee_code: dbUser.workplace_insee_code,

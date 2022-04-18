@@ -196,10 +196,7 @@ describe('Account', () => {
     });
 
     it('should update user info', async () => {
-      const updateEmailResponder = nock(/.*ovh.com/)
-      .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
-      .reply(200)
-      const res = await chai.request(app)
+      await chai.request(app)
         .post('/account/info')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
