@@ -1,27 +1,13 @@
-<%- include('partials/header'); -%>
+<%- include('partials/nav-header'); -%>
 
-<div class="container container-small">
-
-    <% if (errors.length) { %>
-    <div class="notification error">
-        <% errors.forEach(function(error) { %>
-            <li><strong>Erreur : </strong><%= error %></li>
-        <% }) %>
-    </div>
-    <% } %>
-
-    <% if (messages.length) { %>
-    <div class="notification">
-        <%- messages %>
-    </div>
-    <% } %>
-
+<div class="module">
+    <div class="row">
     <div class="panel margin-top-m">
         <h3>Mise à jour de mes informations</h3>
 
         <div class="beta-banner"></div>
 
-        <form action="/onboarding" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+        <form action="/account/info" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
             <h4>Tes infos persos</h4>
 
             <div class="form__group">
@@ -58,14 +44,17 @@
             </div>
 
             <div class="form__group">
-                <label for="description">
+                <label for="workplace_insee_code">
                     <strong>Lieu de travail</strong><br />
                     Cette information est utilisé pour faire une carte des membres de la communauté 
                     <input
                         placeholder="Commune ou code postale"
                         type="text"
+                        value="<%= formData.workplace_insee_code %>"
                         id="input-commune" onkeyup="searchCommunes(event)">
-                    <input type="text" id="input-insee-code" value="" hidden>
+                    <input
+                        name="workplace_insee_code"
+                        type="text" id="input-insee-code" value="" hidden>
                     <ul id="list-container-city"
                     >
                     </ul>
@@ -73,24 +62,26 @@
             </div>
 
             <div class="form__group">
-                <label for="description">
+                <label for="tjm">
                     <strong>TJM moyen ht</strong><br />
                     Cette informations est utilisée uniquement pour faire des statistique et afficher null part.
-                    <input type="number" placeholder="TJM moyen ht en euros">
+                    <input
+                        value="<%= formData.tjm %>"
+                        id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros">
                 </label>
             </div>
             <div class="form__group">
-                <label for="status">
+                <label for="legal_status">
                     <strong>Statut legal de ton entreprise</strong><br />
                 </label>
-                <% statusOptions.forEach(function(status) { %>
-                    <input type="radio" name="status" value="<%= status %>" <%= (status === formData.status) ? 'checked' : '' %> required><%= status %><br>
+                <% statusOptions.forEach(function(legal_status) { %>
+                    <input type="radio" name="legal_status" value="<%= legal_status %>" <%= (legal_status === formData.legal_status) ? 'checked' : '' %> required><%= legal_status %><br>
                 <% }) %>
                 <% if(formValidationErrors['statut']) { %>
                   <p class="text-small text-color-red"><%= formValidationErrors['statut'] %></p>
                 <% } %>
             </div>
-            <div class="form__group">
+            <!-- <div class="form__group">
                 <label for="startup">
                     <strong>Startup d'État</strong><br />
                     Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
@@ -101,10 +92,11 @@
                         <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
                     <% }) %>
                 </select>
-            </div>
+            </div> -->
             <button class="button" type="submit">Soumettre ma demande</button>
         </form>
     </div>
 </div>
-<%- include('partials/footer'); -%>
+</div>
+<%- include('partials/nav-footer'); -%>
 <script src="/static/scripts/searchCommune.js"></script>

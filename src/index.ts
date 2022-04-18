@@ -134,6 +134,7 @@ app.get('/startups', startupController.getStartupList);
 app.get('/startups/:startup', startupController.getStartup);
 app.get('/account', accountController.getCurrentAccount);
 app.get('/account/info', accountController.getCurrentInfo);
+app.post('/account/info', accountController.updateCurrentInfo);
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);

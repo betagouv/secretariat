@@ -194,5 +194,24 @@ describe('Account', () => {
           done();
         });
     });
+
+    it('should update user info', async (done) => {
+      const updateEmailResponder = nock(/.*ovh.com/)
+      .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+      .reply(200)
+      const res = await chai.request(app)
+        .post('/account/info')
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        .type('form')
+        .send({
+          gender: 'female',
+          workplace_insee_code: '94120',
+          tjm: 800,
+          legal_status: 'AE'
+        })
+      const user = await knex('users').where({ 'username': 'membre.actif' }).first()
+      user.gender.should.equal('female')
+      user.workplace_insee_code.should.equal('94120')
+    });
   });
 });
