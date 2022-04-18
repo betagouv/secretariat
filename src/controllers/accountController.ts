@@ -153,20 +153,10 @@ export async function getCurrentAccount(req, res) {
 
 export async function getCurrentInfo(req, res) {
   try {
-    const [currentUser, marrainageState, dbUser] : [MemberWithPermission, string, DBUser] = await Promise.all([
+    const [currentUser] : [MemberWithPermission] = await Promise.all([
       (async () => utils.userInfos(req.user.id, true))(),
-      (async () => {
-        const [state] = await knex('marrainage').where({ username: req.user.id });
-        return state;
-      })(),
-      (async () => {
-        const rows = await knex('users').where({ username: req.user.id });
-        return rows.length === 1 ? rows[0] : null;
-      })(),
     ]);
-    const today = new Date()
     const title = 'Mon compte';
-    const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     const formValidationErrors = {}
     const startups = await betagouv.startupsInfos();
 
@@ -176,7 +166,6 @@ export async function getCurrentInfo(req, res) {
       currentUserId: req.user.id,
       emailInfos: currentUser.emailInfos,
       userInfos: currentUser.userInfos,
-      domain: config.domain,
       startups,
       statusOptions: [
         'Auto-Entreprise/Micro-Entreprise',
@@ -188,31 +177,9 @@ export async function getCurrentInfo(req, res) {
         'SA',
         'SNC',
       ],
-      isExpired: currentUser.isExpired,
-      // can create email if email is not set, or if email is not @beta.gouv.fr email
-      canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
-      canCreateRedirection: currentUser.canCreateRedirection,
-      canChangePassword: currentUser.canChangePassword,
-      emailSuspended: dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED,
-      canChangeEmails: currentUser.canChangeEmails,
-      redirections: currentUser.redirections,
-      secondaryEmail: dbUser.secondary_email,
-      primaryEmail: dbUser.primary_email,
       activeTab: 'account',
-      marrainageState,
       formData: {
         newEnd: '',
-      },
-      hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
-      hasResponder: Boolean(currentUser.responder),
-      responderFormData: currentUser.responder ? { 
-        from: new Date(currentUser.responder.from).toISOString().split('T')[0],
-        to: new Date(currentUser.responder.to).toISOString().split('T')[0],
-        content: currentUser.responder.content
-      } : {
-        from: new Date().toISOString().split('T')[0],
-        to: '',
-        content: ''
       },
       errors: req.flash('error'),
       messages: req.flash('message'),
