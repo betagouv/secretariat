@@ -195,7 +195,7 @@ describe('Account', () => {
         });
     });
 
-    it('should update user info', async (done) => {
+    it('should update user info', async () => {
       const updateEmailResponder = nock(/.*ovh.com/)
       .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
       .reply(200)
