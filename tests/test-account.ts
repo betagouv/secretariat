@@ -1,10 +1,12 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
+import sinon from 'sinon';
 import { Response } from 'superagent';
 import config from '../src/config';
 import knex from '../src/db';
 import app from '../src/index';
+import * as searchCommune from '../src/lib/searchCommune';
 import utils from './utils';
 
 chai.use(chaiHttp);
@@ -196,19 +198,20 @@ describe('Account', () => {
     });
 
     it('should update user info', async () => {
+      sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
       await chai.request(app)
         .post('/account/info')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           gender: 'female',
-          workplace_insee_code: '94120',
+          workplace_insee_code: '',
           tjm: 800,
           legal_status: 'AE'
         })
       const user = await knex('users').where({ 'username': 'membre.actif' }).first()
       user.gender.should.equal('female')
-      user.workplace_insee_code.should.equal('94120')
+      user.tjm.should.equal(800)
     });
   });
 });
