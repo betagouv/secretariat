@@ -4,8 +4,9 @@ import knex from "../db";
 import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
-import { DBUser } from "../models/dbUser";
+import { DBUser, statusOptions, genderOptions } from "../models/dbUser";
 import { EmailStatusCode } from "../models/dbUser";
+import { fetchCommuneDetails } from "../lib/searchCommune";
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors = [];
@@ -128,7 +129,10 @@ export async function getCurrentAccount(req, res) {
       activeTab: 'account',
       marrainageState,
       formData: {
-        newEnd: '',
+        gender: dbUser.gender,
+        workplace_insee_code: dbUser.workplace_insee_code,
+        tjm: dbUser.tjm,
+        legal_status: dbUser.legal_status
       },
       hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
@@ -141,6 +145,115 @@ export async function getCurrentAccount(req, res) {
         to: '',
         content: ''
       },
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+    });
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Impossible de récupérer vos informations.');
+    return res.redirect('/');
+  }
+}
+
+export async function updateCurrentInfo(req, res) {
+  const formValidationErrors = {};
+  const title = 'Mon compte';
+  const [currentUser] : [MemberWithPermission] = await Promise.all([
+    (async () => utils.userInfos(req.user.id, true))(),
+  ]);
+  try {
+    const username = req.user.id
+    const gender = req.body.gender
+    const workplace_insee_code = req.body.workplace_insee_code
+    const tjm = parseInt(req.body.tjm, 10);
+    const legal_status = req.body.legal_status
+
+    if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
+      formValidationErrors['legal_status'] = `Le statut legal n'a pas une valeur autorisé`
+    }
+    if (gender && !genderOptions.map(genderOption => genderOption.key).includes(gender)) {
+      formValidationErrors['gender'] = `Le genre n'a pas une valeur autorisé`
+    }
+    if (req.body.workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
+      formValidationErrors['workplace_insee_code'] = `La lieu de travail principal n'as pas été trouvé`
+    }
+
+    if (Object.keys(formValidationErrors).length) {
+      req.flash('error', 'Un champs du formulaire est invalide ou manquant.');
+      throw new Error();
+    }
+    await knex('users')
+      .update({
+        gender,
+        workplace_insee_code,
+        tjm,
+        legal_status,
+      })
+      .where({ username })
+    
+    req.flash('message', "Mise à jour")
+    res.redirect(`/account/info`);
+  } catch (err) {
+    if (err.message) {
+      req.flash('error', err.message);
+    }
+    const startups = await betagouv.startupsInfos();
+    res.render('info-update', {
+      title,
+      formValidationErrors,
+      currentUserId: req.user.id,
+      startups,
+      statusOptions,
+      genderOptions,
+      currentUser,
+      activeTab: 'account',
+      communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
+      formData: {
+        ...req.body,
+      },
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+    });
+  }
+}
+
+export async function getCurrentInfo(req, res) {
+  try {
+    const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+      (async () => utils.userInfos(req.user.id, true))(),
+      (async () => {
+        const rows = await knex('users').where({ username: req.user.id });
+        return rows.length === 1 ? rows[0] : null;
+      })(),
+    ]);
+    const title = 'Mon compte';
+    const formValidationErrors = {}
+    const startups = await betagouv.startupsInfos();
+    console.log({
+      gender: dbUser.gender,
+      workplace_insee_code: dbUser.workplace_insee_code,
+      tjm: dbUser.tjm,
+      legal_status: dbUser.legal_status
+    })
+    return res.render('info-update', {
+      title,
+      formValidationErrors,
+      currentUserId: req.user.id,
+      startups,
+      genderOptions,
+      statusOptions,
+      gender: dbUser.gender,
+      legal_status: dbUser.legal_status,
+      workplace_insee_code: dbUser.workplace_insee_code,
+      activeTab: 'account',
+      communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
+      formData: {
+        gender: dbUser.gender,
+        workplace_insee_code: dbUser.workplace_insee_code,
+        tjm: dbUser.tjm,
+        legal_status: dbUser.legal_status
+      },
+      currentUser,
       errors: req.flash('error'),
       messages: req.flash('message'),
     });
