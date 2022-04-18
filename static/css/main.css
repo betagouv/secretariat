@@ -27,6 +27,21 @@ fieldset {
   /* width: inherit; */
 }
 
+#list-container-city {
+  list-style-type: none;
+  margin: 0;
+  padding: 0
+}
+
+#list-container-city li {
+  padding: 5px;
+  border: 1px solid #0053b3;
+  cursor: pointer;
+}
+
+#list-container-city li:hover {
+  opacity: 0.8;
+}
 
 /* custom css */
 
