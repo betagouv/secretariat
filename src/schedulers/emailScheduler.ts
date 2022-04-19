@@ -19,11 +19,11 @@ const getValidUsers = async () => {
 };
 
 export async function setEmailAddressesActive() {
-  const tenMinutesInMs : number = 10 * 1000 * 60
-  const nowLessTenMinutes : Date = new Date(Date.now() - tenMinutesInMs)
+  const fiveMinutesInMs : number = 5 * 1000 * 60
+  const nowLessFiveMinutes : Date = new Date(Date.now() - fiveMinutesInMs)
   const dbUsers : DBUser[] = await knex('users')
     .whereIn('primary_email_status', [EmailStatusCode.EMAIL_CREATION_PENDING, EmailStatusCode.EMAIL_RECREATION_PENDING])
-    .where('primary_email_status_updated_at', '<', nowLessTenMinutes)
+    .where('primary_email_status_updated_at', '<', nowLessFiveMinutes)
     const githubUsers: Member[] = await getValidUsers();
   const concernedUsers : DBUser[] = dbUsers.filter((user) => {
     return githubUsers.find((x) => user.username === x.id);
