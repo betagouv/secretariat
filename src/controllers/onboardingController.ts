@@ -153,7 +153,7 @@ export async function postForm(req, res) {
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     const gender = req.body.gender
     const workplace_insee_code = req.body.workplace_insee_code
-    const tjm = req.body.tjm;
+    const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
 
     if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
