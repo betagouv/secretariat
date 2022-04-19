@@ -198,7 +198,7 @@ describe('Account', () => {
     });
 
     it('should update user info', async () => {
-      sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
+      const fetchCommuneDetailsStub = sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
       await chai.request(app)
         .post('/account/info')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
@@ -212,6 +212,7 @@ describe('Account', () => {
       const user = await knex('users').where({ 'username': 'membre.actif' }).first()
       user.gender.should.equal('female')
       user.tjm.should.equal(800)
+      fetchCommuneDetailsStub.restore()
     });
   });
 });
