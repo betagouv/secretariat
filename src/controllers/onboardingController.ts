@@ -162,7 +162,7 @@ export async function postForm(req, res) {
     if (gender && !genderOptions.map(genderOption => genderOption.key).includes(gender)) {
       errorHandler('gender', `Le genre n'a pas une valeur autorisé`)
     }
-    if (req.body.workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
+    if (workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
       errorHandler('workplace_insee_code', `La lieu de travail principal n'as pas été trouvé`)
     }
     if (!hasPublicServiceEmail && !isEmailBetaAsked) {
@@ -238,6 +238,10 @@ export async function postForm(req, res) {
       .insert({
         username,
         primary_email: primaryEmail,
+        tjm,
+        gender,
+        workplace_insee_code,
+        legal_status,
         secondary_email: secondaryEmail,
         primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
         primary_email_status_updated_at: new Date()
