@@ -3,6 +3,7 @@
         "outDir": "./dist",
         "target": "es6",
         "module": "commonjs",
+        "jsx": "react",
         "esModuleInterop": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
@@ -13,7 +14,28 @@
         "allowJs": true,
         "forceConsistentCasingInFileNames": true,
         "allowSyntheticDefaultImports": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        //
+        "lib": ["esnext", "dom"],
+        "typeRoots": ["./src/types", "node_modules/@types"],
+        // "strictNullChecks": true,
+        "rootDir": "./",
+        "inlineSources": true,
+        "sourceRoot": "/",
+        "baseUrl": ".",
+        "paths": {
+        "@views": [
+            "views/index.ts"
+        ],
+        "@views/*": [
+            "views/*/index.ts"
+        ],
+        },
+        "plugins": [
+        {
+            "transform": "typescript-transform-paths"
+        }
+        ]
     },
     "exclude": [
         "node_modules",

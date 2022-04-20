@@ -9,7 +9,7 @@ import { EmailStatusCode } from "../models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
 
 export async function setEmailResponder(req, res) {
-  const formValidationErrors = [];
+  const formValidationErrors: string[] = [];
 
   function requiredError(field) {
     formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
