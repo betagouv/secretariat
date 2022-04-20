@@ -33,7 +33,7 @@
   "homepage": "https://github.com/betagouv/secretariat#readme",
   "engines": {
     "node": "17",
-    "npm": "6"
+    "npm": "8.1.0"
   },
   "dependencies": {
     "@octokit/core": "^3.6.0",
