@@ -14,7 +14,7 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
 ) => {
   return (
     <>
-      <Header {...props} />
+      <Header />
       <Component {...props} />
       <Footer />
     </>
