@@ -23,7 +23,6 @@ import * as resourceController from './controllers/resourceController';
 import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import * as sentry from './lib/sentry';
-import { HomePage } from '../views';
 
 const app = express();
 
@@ -95,20 +94,6 @@ app.use((err, req, res, next) => {
   return next(err);
 });
 
-app.get(
-  '/react-test',
-  async (request, response) => {
-    response.send(
-      HomePage({
-        request,
-        errors: request.flash('error'),
-        messages: request.flash('message'),
-        domain: config.domain,
-        next: request.url ? `?next=${request.url}` : ''
-      })
-    )
-  }
-)
 app.get('/', indexController.getIndex);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
