@@ -58,7 +58,6 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
               window.__INITIAL_PROPS__ = ${props ? JSON.stringify(stripRequest(props)) : '{}'}
             </script>`
           : ''}
-        <script src="/static/scripts/app.js"></script>
         <script src="/static/scripts/hashtoparam.js"></script>
       </body>
     </html>
