@@ -74,7 +74,7 @@ const EMAIL_FILES = {
 
 const sendMessageOnChatAndEmail = async (user: MemberWithPrimaryEmailAndMattermostUsername, messageConfig: MessageConfig) => {
   const messageContent = await ejs.renderFile(
-    `./views/templates/emails/${messageConfig.emailFile}`,
+    `./src/views/templates/emails/${messageConfig.emailFile}`,
     {
       user,
     }
@@ -144,7 +144,7 @@ export async function sendInfoToSecondaryEmailAfterXDays(
         if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
           const email = dbResponse[0].secondary_email;
           const messageContent = await ejs.renderFile(
-            `./views/templates/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`,
+            `./src/views/templates/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`,
             {
               user,
             }

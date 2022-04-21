@@ -40,7 +40,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 
-  const html = await ejs.renderFile('./views/templates/emails/login.ejs', {
+  const html = await ejs.renderFile('./src/views/templates/emails/login.ejs', {
     loginUrlWithToken,
   });
 
