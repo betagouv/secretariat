@@ -1,5 +1,5 @@
-import { makeHtml } from './templates/index.html'
-import { Home } from './pages/HomePage'
+import { makeHtml } from '../index.html'
+import { Home } from './HomePage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
