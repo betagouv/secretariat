@@ -22,14 +22,17 @@
         "rootDir": "./",
         "inlineSources": true,
         "sourceRoot": "/",
-        "baseUrl": ".",
+        "baseUrl": "./",
         "paths": {
-        "@views": [
-            "views/index.ts"
-        ],
-        "@views/*": [
-            "views/*/index.ts"
-        ],
+            "@views": [
+                "views/index.ts"
+            ],
+            "@views/*": [
+                "views/*/index.ts"
+            ],
+            "@node_modules/*": [
+                "node_modules/*"
+            ],
         },
         "plugins": [
         {

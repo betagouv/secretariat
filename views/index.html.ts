@@ -39,8 +39,8 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
       <link rel="stylesheet" href="/static/css/main.css">
         ${args.hydrate
           ? html`
-              <script src="/js/shared.js"></script>
-              <script src="/js/${args.pageName}.js?${process.env.npm_package_version}"></script>
+              <script src="/public/js/shared.js"></script>
+              <script src="/public/js/${args.pageName}.js?${process.env.npm_package_version}"></script>
             `
           : ''}
       </head>

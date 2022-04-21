@@ -1,10 +1,10 @@
-import { hydrate } from 'react-dom'
+import { hydrateRoot } from 'react-dom/client';
 
 export const hydrateOnClient = (Component: (props: any) => JSX.Element) => {
   if (typeof window !== 'undefined') {
     window.addEventListener('DOMContentLoaded', function () {
       const props = (window as any).__INITIAL_PROPS__
-      hydrate(Component(props), document.querySelector('#root'))
+      hydrateRoot(document.querySelector('#root'), Component(props))
     })
   }
 }

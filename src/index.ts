@@ -23,24 +23,23 @@ import * as resourceController from './controllers/resourceController';
 import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import * as sentry from './lib/sentry';
-
 const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
 
 app.use(compression());
-
+app.use('/public', express.static(path.join(__dirname, './public')));
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use(
   '/datagouvfr',
   express.static(
-    path.join(__dirname, '../node_modules/template.data.gouv.fr/dist')
+    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/template.data.gouv.fr/dist')
   )
 ); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 app.use(
   '/topbar.js',
-  express.static(path.join(__dirname, '../node_modules/topbar/topbar.min.js'))
+  express.static(path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
 );
 
 app.use(cookieParser(config.secret));
