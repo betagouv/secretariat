@@ -26,7 +26,7 @@ import * as sentry from './lib/sentry';
 const app = express();
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '../views')); // the code is running in directory "dist".
+app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
 app.use(compression());
 app.use('/public', express.static(path.join(__dirname, './public')));

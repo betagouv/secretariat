@@ -1,0 +1,33 @@
+<%- include('partials/nav-header'); -%>
+
+<link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<script src="/static/collapse/collapse.js"></script>
+
+<div class="module">
+    <div class="row">
+        <div class="panel panel-full-width">
+            <h3>
+                Startups
+            </h3>
+            <div>
+                <table class="sortable startup-members">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% startups.forEach(function(startup) { %>
+                            <tr>
+                                <td><a href="/startups/<%= startup.id %>"><%= startup.name %></a></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <hr />
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/nav-footer'); -%>

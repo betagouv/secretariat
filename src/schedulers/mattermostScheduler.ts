@@ -210,7 +210,7 @@ export async function createUsersByEmail() {
           password,
         });
 
-        const html = await ejs.renderFile('./views/emails/mattermost.ejs', {
+        const html = await ejs.renderFile('./views/templates/emails/mattermost.ejs', {
           resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
         });
         await utils.sendMail(email, 'Inscription à mattermost', html);

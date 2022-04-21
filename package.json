@@ -17,7 +17,7 @@
     "watch:back": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
     "watch:front": "webpack --config=webpack.config.js --watch",
     "build": "npm run build:front && npm run build:back",
-    "build:back": "ttsc -p tsconfig.build.json && cp -R src/public dist/src && cp -R static dist/static",
+    "build:back": "ttsc -p tsconfig.build.json && cp -R src/public dist/src && cp -R static dist/static && cp -R src/views/templates dist/src/views",
     "build:front": "webpack --config=webpack.config.js"
   },
   "lint-staged": {

@@ -6,7 +6,7 @@ import config from '../config';
 import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '../models/dbUser';
-import { HomePage } from '../../views';
+import { HomePage } from '../views';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -40,7 +40,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 
-  const html = await ejs.renderFile('./views/emails/login.ejs', {
+  const html = await ejs.renderFile('./views/templates/emails/login.ejs', {
     loginUrlWithToken,
   });
 

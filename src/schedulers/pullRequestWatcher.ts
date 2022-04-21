@@ -32,7 +32,7 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
     } else {
         const member: Member = await Betagouv.userInfosById(author)
         const messageContent = await ejs.renderFile(
-            `./views/emails/pendingGithubAuthorPR.ejs`,
+            `./views/templates/emails/pendingGithubAuthorPR.ejs`,
             {
               username: member.fullname,
               pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
@@ -55,7 +55,7 @@ const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber)
 
     if (mattermostUser) {
         const messageContent = await ejs.renderFile(
-            `./views/emails/pendingGithubAuthorPR.ejs`,
+            `./views/templates/emails/pendingGithubAuthorPR.ejs`,
             {
               username: mattermostUser.username,
               pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`

@@ -1,0 +1,30 @@
+<%- include('partials/header'); -%>
+
+<div class="container container-small">
+
+  <% if (errors) { %>
+    <div class="notification error">
+      <strong>Erreur : </strong><%= errors %>
+    </div>
+  <% } else { %> 
+    <% if (accepted) { %> 
+      <div class="notification">
+        <p>Merci d'avoir accepté 👌</p>
+        <p>
+          Vous allez recevoir un email avec tous les deux en copie.
+          N'hésite pas à répondre à cet email pour vous mettre d'accord
+          et organiser une rencontre.
+        </p>
+      </div>
+    <% } else { %> 
+      <div class="notification">
+        Votre décision a été prise en compte 👌
+      </div>
+    <% } %>
+  <% } %>
+
+  <a class="button" href="/">Accéder à l'accueil du secrétariat</a>
+
+</div>
+
+<%- include('partials/footer'); -%>

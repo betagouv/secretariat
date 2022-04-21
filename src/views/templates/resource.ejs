@@ -1,0 +1,41 @@
+<%- include('partials/nav-header'); -%>
+
+<link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<script src="/static/collapse/collapse.js"></script>
+
+<div class="module">
+
+    <div class="panel panel-full-width">
+        <h3>
+            Ressources
+        </h3>
+        <p>
+            Ressources et liens d'invitations privés aux ressources communes à la communauté.
+        </p>
+
+        <div class="collapse">
+            <h6 class="margin-10-0 collapse-header">
+                <button aria-expanded="true">
+                    Bilans d'investigations
+                    <div class="icon fa fa-chevron-up"></div>
+                </button>
+            </h6>
+            <div class="collapse-content">
+                <% if (investigationReportsIframeURL) { %>
+                <iframe src="<%= investigationReportsIframeURL %>"
+                        frameborder="0" onmousewheel="" width="100%" height="533"
+                        style="background: transparent; border: 1px solid #ccc;">
+                </iframe>
+                <% } else { %>
+                <p>
+                    L'URL des bilans d'investigation n'est pas configurée.
+                </p>
+                <% } %>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+<%- include('partials/nav-footer'); -%>

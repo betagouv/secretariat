@@ -78,7 +78,7 @@ export async function sendEmailCreatedEmail(username) {
   })
   const secretariatUrl = `${config.protocol}://${config.host}`;
 
-  const html = await ejs.renderFile('./views/emails/createEmail.ejs', {
+  const html = await ejs.renderFile('./views/templates/emails/createEmail.ejs', {
     email: user.primary_email,
     secondaryEmail: user.secondary_email,
     secretariatUrl,

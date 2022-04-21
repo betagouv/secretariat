@@ -1,0 +1,22 @@
+<script src="/topbar.js"></script>
+<script>
+(function () {
+  "use strict"
+
+  // show the loading topbar when navigating on desktop only (mobile browsers already have their loading bar)
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  if (!isMobile) {
+    topbar.config({
+      barColors: {
+        '0': 'rgb(0, 83, 179)' // same as var(--theme-primary) (blue)
+      }
+    })
+
+    window.addEventListener('beforeunload', () => {
+      setTimeout(() => {
+        topbar.show()
+      }, 500)
+    })
+  }
+}());
+</script>

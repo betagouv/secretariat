@@ -4,7 +4,7 @@ const fs = require('fs')
 const _ = require('lodash')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
-const pageDir = path.join(__dirname, 'views', 'pages')
+const pageDir = path.join(__dirname, 'src', 'views', 'pages')
 
 const pageEntries = fs
   .readdirSync(pageDir)

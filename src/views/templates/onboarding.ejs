@@ -1,0 +1,263 @@
+<%- include('partials/header'); -%>
+
+<div class="container container-small">
+
+    <% if (errors.length) { %>
+    <div class="notification error">
+        <% errors.forEach(function(error) { %>
+            <li><strong>Erreur : </strong><%= error %></li>
+        <% }) %>
+    </div>
+    <% } %>
+
+    <% if (messages.length) { %>
+    <div class="notification">
+        <%- messages %>
+    </div>
+    <% } %>
+
+    <div class="panel margin-top-m">
+        <h3>Créer ma fiche Github</h3>
+
+        <div class="beta-banner"></div>
+
+        <form action="/onboarding" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+            <h4>Tes infos persos</h4>
+
+            <div class="form__group">
+                <p>
+                    Tes informations personnelles seront affichées sur la page <a href="https://beta.gouv.fr/communaute/" target="_blank">Communauté</a> du site BetaGouv, ainsi que dans la fiche de ta startup.
+                </p>
+                <label for="firstName">
+                    <strong>Prénom (obligatoire)</strong>
+                </label>
+                <input name="firstName" value="<%= formData.firstName %>" required>
+                <% if(formValidationErrors['prénom']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['prénom'] %></p>
+                <% } %>
+                <label for="lastName">
+                    <strong>Nom de famille (obligatoire)</strong>
+                </label>
+                <input name="lastName" value="<%= formData.lastName %>" required>
+                <% if(formValidationErrors['nom de famille']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['nom de famille'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="description">
+                    <strong>Courte bio</strong><br />
+                    Cette phrase d'accroche sera affichée sur <a href="https://beta.gouv.fr/communaute/annuaire">l'annuaire</a>.<br />
+                    <i>Exemple : « Développeur le jour, musicien la nuit. »</i>
+                    <textarea rows="2" name="description"><%= formData.description %></textarea>
+                </label>
+            </div>
+
+            <div class="form__group">
+                <label for="website">
+                    <strong>Site personnel</strong><br />
+                    Commençant avec <em>http://</em> ou <em>https://</em>
+                </label>
+                <input name="website" pattern="^(http|https)://.+" value="<%= formData.website %>" title="Doit commencer par http:// ou https://">
+                <% if(formValidationErrors['Site personnel']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['Site personnel'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="github">
+                    <strong>Nom d'utilisateur Github si tu as un compte (sans @)</strong>
+                </label>
+                <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
+                <input name="github" pattern="^[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}$"
+                    value="<%= formData.github %>"
+                    title="Nom d'utilisateur Github si tu as un compte (sans @)">
+                <% if(formValidationErrors['Utilisateur Github']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['Utilisateur Github'] %></p>
+                <% } %>
+            </div>
+
+            <h4>Ta mission</h4>
+            <div class="form__group">
+                <label for="startup">
+                    <strong>Domaine (obligatoire)</strong><br />
+                    Quel est le domaine de ta mission ?
+                </label>
+                <select name="domaine" required>
+                    <option value=""></option>
+                    <% ["Animation",
+                    "Coaching",
+                    "Déploiement",
+                    "Design",
+                    "Développement",
+                    "Intraprenariat",
+                    "Produit",
+                    "Autre"].forEach(function(domaine) { %>
+                        <option value="<%= domaine %>" <%= (domaine === formData.domaine) ? 'selected' : '' %>><%= domaine %></option>
+                    <% }) %>
+                </select>
+                <% if(formValidationErrors['domaine']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['domaine'] %></p>
+                <% } %>
+            </div>
+            <div class="form__group">
+                <label for="role">
+                    <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
+                    Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
+                </label>
+                <input name="role" value="<%= formData.role %>" required>
+                <% if(formValidationErrors['role']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['role'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="start">
+                    <strong>Début de la mission (obligatoire)</strong><br />
+                    <i>Au format JJ/MM/YYYY</i>
+                </label>
+                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <% if(formValidationErrors['début de la mission']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['début de la mission'] %></p>
+                <% } %>
+                <% if(formValidationErrors['date de début']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['date de début'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="end">
+                    <strong>Fin de la mission (obligatoire)</strong><br />
+                    Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
+                    <i>Au format JJ/MM/YYYY</i>
+                </label>
+                <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                <% if(formValidationErrors['fin de la mission']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['fin de la mission'] %></p>
+                <% } %>
+                <% if(formValidationErrors['date de fin']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['date de fin'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="status">
+                    <strong>Statut (obligatoire)</strong><br />
+                </label>
+                <% userConfig.statusOptions.forEach(function(status) { %>
+                    <input type="radio" name="status" value="<%= status.value %>" <%= (status.value === formData.status) ? 'checked' : '' %> required><%= status.label %><br>
+                <% }) %>
+                <% if(formValidationErrors['statut']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['statut'] %></p>
+                <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="referentList">
+                    <b>Référent (obligatoire)</b><br />
+                    Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
+                </label>
+                <% if(useSelectList) { %>
+                    <label for="username_select"></label>
+                    <select name="referent" id="username_select">
+                    <% users.forEach(function(user) { %>
+                        <option value="<%= user.id %>" selected="<%= formData.referent === user.id %>"> <%= user.fullname %> </option>
+                    <% }) %>
+                    </select>
+                <% } else { %>
+                    <input name="referentList" list="user_names" id="referentList" value="<%= formData.referentList %>" required>
+                    <datalist id="user_names">
+                    <% users.forEach(function(user) { %>
+                        <option data-value="<%= user.id %>" value="<%= user.fullname %>">
+                    <% }) %>
+                    </datalist>
+                    <input type="hidden" name="referent" id="referentInput_hidden" value="<%= formData.referent %>" required>
+                <% } %>
+                <% if(formValidationErrors['référent']) { %>
+                  <p class="text-small text-color-red"><%= formValidationErrors['référent'] %></p>
+                <% } %>
+
+            <% if(!useSelectList) { %>
+            <script>
+            document.getElementById('referentList').addEventListener('input', (e) => {
+                const input = e.target
+                const hiddenInput = document.getElementById('referentInput_hidden')
+                const options = document.querySelectorAll('#user_names option')
+
+                for (let i = 0; i < options.length ; i++) {
+                    const option = options[i]
+                    if (option.value === input.value.trim() && option.hasAttribute('data-value')) {
+                        hiddenInput.value = option.getAttribute('data-value')
+                    }
+                }
+            })
+            </script>
+            <% } %>
+            </div>
+
+            <div class="form__group">
+                <label for="startup">
+                    <strong>Startup d'État</strong><br />
+                    Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
+                </label>
+                <select name="startup">
+                    <option value=""></option>
+                    <% startups.forEach(function(startup) { %>
+                        <option value="<%= startup.id %>" <%= (startup.id === formData.startup) ? 'selected' : '' %>><%= startup.attributes.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="form__group">
+                <label for="employer">
+                    <strong>Employeur</strong><br />
+                    L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
+                </label>
+                <input name="employer" value="<%= formData.employer %>">
+            </div>
+
+            <div class="form__group">
+                <label for="badge">
+                    <strong>Badge</strong><br />
+                    Si tu souhaites accéder aux bureaux, il te faudra un badge. Il te faudra aussi en faire la demande séparément.
+                    En cochant cette case, nous saurons que tu en fais la demande et le badge sera renouvellé automatiquement.
+                </label>
+                <select name="badge">
+                    <option value=""></option>
+                    <% userConfig.badgeOptions.forEach(function(badge) { %>
+                        <option value="<%= badge.value %>" <%= (badge.value === formData.badge) ? 'selected' : '' %>><%= badge.label %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <h4>Ton email</h4>
+            <label for="email">
+                <strong>Email pro/perso (obligatoire)</strong><br />
+                Ton email nous servira pour t'envoyer les informations relatives à ton compte
+            </label>
+            <input type="email" name="email" value="<%= formData.email %>" required>
+            <% if(formValidationErrors['email pro/perso']) { %>
+              <p class="text-small text-color-red"><%= formValidationErrors['email pro/perso'] %></p>
+            <% } %>
+
+            <label for="isEmailBetaAsked" class="padding-10-0">
+              <input type="checkbox" name="isEmailBetaAsked" value="true" <% if(formData.isEmailBetaAsked) {%>checked<% } %>>
+              <% if(formValidationErrors['email public']) { %>
+                <strong class="text-color-red">
+            <% } else { %>
+                <strong>
+            <% } %>
+                Je souhaite une adresse @beta.gouv.fr
+              </strong><br/>
+              <span>
+                L'adresse @beta.gouv.fr donne accès aux outils officiels.
+                Elle est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
+              </span>
+            </label>
+            <% if(formValidationErrors['email public']) { %>
+              <p class="text-small text-color-red"><%= formValidationErrors['email public'] %></p>
+            <% } %>
+            <button class="button" type="submit">Soumettre ma demande</button>
+        </form>
+    </div>
+</div>
+<%- include('partials/footer'); -%>
