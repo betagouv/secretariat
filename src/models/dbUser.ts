@@ -23,7 +23,9 @@ export enum LegalStatus {
     SAS="SAS",
     SASU="SASU",
     SA="SA",
-    SNC="SNC"
+    SNC="SNC",
+    contractuel="contractuel",
+    fonctionnaire="fonctionnaire"
 }
 
 export interface DBUser {
