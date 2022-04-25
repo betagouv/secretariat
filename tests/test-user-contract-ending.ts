@@ -126,14 +126,15 @@ describe('send message on contract end to user', () => {
   it('should send message to users', async () => {
     await knex('users').insert({
       username: 'membre.quipart',
-      primary_email: 'membre.quipart@modernisation.gouv.fr'
+      primary_email: 'membre.quipart@modernisation.gouv.fr',
+      secondary_email: 'membre.emailsecondary@gmail.com'
     })
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)
       .get((uri) => uri.includes('authors.json'))
       .reply(200, betaGouvUsers);
     const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
-    await sendContractEndingMessageToUsers('mail15days');
+    await sendContractEndingMessageToUsers('mail15days', true);
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
     await knex('users').where({
