@@ -196,7 +196,7 @@
             </div>
             <div class="form__group">
                 <label for="legal_status">
-                    <strong>Statut legal</strong><br />
+                    <strong>Statut legal (obligatoire)</strong><br />
                 </label>
                 <% statusOptions.forEach(function(legal_status) { %>
                     <input type="radio" name="legal_status" value="<%= legal_status.key %>" <%= (legal_status.key === formData.legal_status) ? 'checked' : '' %> required><%= legal_status.name %><br>
