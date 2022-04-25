@@ -1,2 +1,2 @@
 web: npm start
-clock: node dist/schedulers/cron.js
+clock: node dist/src/schedulers/cron.js
