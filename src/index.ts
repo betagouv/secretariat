@@ -3,7 +3,7 @@ import compression from 'compression';
 import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import expressJWT from 'express-jwt';
+import { expressjwt } from "express-jwt";
 import expressSanitizer from 'express-sanitizer';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
@@ -53,7 +53,7 @@ const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
 app.use(
-  expressJWT({
+  expressjwt({
     secret: config.secret,
     algorithms: ['HS256'],
     getToken: (req) => req.cookies.token || null,
