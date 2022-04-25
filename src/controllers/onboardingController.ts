@@ -27,7 +27,7 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
   const dbReferent = await knex('users').where({ username: referent }).first();
   const prUrl = prInfo.data.html_url;
   const userUrl = `${config.protocol}://${config.host}/community/${username}`;
-  const messageContent = await ejs.renderFile('./views/emails/onboardingReferent.ejs', {
+  const messageContent = await ejs.renderFile('./src/views/templates/emails/onboardingReferent.ejs', {
     referent: referent, prUrl, name, userUrl, isEmailBetaAsked
   });
   await utils.sendMail(
@@ -185,7 +185,7 @@ export async function postForm(req, res) {
 
     const name = `${firstName} ${lastName}`;
     const username = utils.createUsername(firstName, lastName);
-    const content = await ejs.renderFile('./views/markdown/githubAuthor.ejs', {
+    const content = await ejs.renderFile('./src/views/templates/markdown/githubAuthor.ejs', {
       name,
       description,
       website,

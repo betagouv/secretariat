@@ -86,7 +86,7 @@ async function sendOnboarderRequestEmail(newcomer: Member, onboarder: Member) {
 
   const startup = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
 
-  const html = await ejs.renderFile('./views/emails/marrainageRequest.ejs', {
+  const html = await ejs.renderFile('./src/views/templates/emails/marrainageRequest.ejs', {
     newcomer,
     onboarder,
     marrainageAcceptUrl,
@@ -251,7 +251,7 @@ export async function acceptRequest(req, res) {
       created_by_username: onboarder.id,
       action_on_username: onboarder.id
     })
-    const html = await ejs.renderFile('./views/emails/marrainageAccept.ejs', {
+    const html = await ejs.renderFile('./src/views/templates/emails/marrainageAccept.ejs', {
       newcomer,
       onboarder,
     });

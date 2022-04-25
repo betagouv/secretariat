@@ -28,6 +28,7 @@ rules:
 ignorePatterns:
   - 'static/**/*.js'
   - 'knexfile.js'
+  - 'webpack.config.js'
 
 overrides:
   - files:

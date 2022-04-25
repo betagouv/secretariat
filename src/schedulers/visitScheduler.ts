@@ -34,7 +34,7 @@ const sendVisitEmail = async function () {
     referent: getUserInfoForUsername(usersInfos, visitInfo.referent).fullname,
   }));
 
-  const html = await ejs.renderFile('./views/emails/visitEmail.ejs', {
+  const html = await ejs.renderFile('./src/views/templates/emails/visitEmail.ejs', {
     visitsInfos,
   });
 

@@ -6,17 +6,18 @@ import config from '../config';
 import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '../models/dbUser';
+import { HomePage } from '../views';
 
 function renderLogin(req, res, params) {
-  res.render('login', {
-    // init params
-    currentUser: undefined,
-    domain: config.domain,
-    next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
-    // enrich params
-    errors: req.flash('error'),
-    messages: req.flash('message'),
-  });
+  res.send(
+    HomePage({
+      request: req,
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+      domain: config.domain,
+      next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
+    })
+  )
 }
 
 const getJwtTokenForUser = (id) =>
@@ -39,7 +40,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 
-  const html = await ejs.renderFile('./views/emails/login.ejs', {
+  const html = await ejs.renderFile('./src/views/templates/emails/login.ejs', {
     loginUrlWithToken,
   });
 

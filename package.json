@@ -4,17 +4,21 @@
   "description": "Le secrétariat de l’incubateur",
   "main": "index.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "NODE_ENV=prod node dist/src/index.js",
     "migrate": "knex migrate:latest --esm",
     "makeMigration": "knex migrate:make --esm",
     "seed": "knex seed:run --esm",
     "rolldown": "knex migrate:down --esm",
-    "dev": "ts-node-dev src/index.ts",
     "lint": "eslint . --fix",
     "test": "ts-mocha --icu-data-dir=./node_modules/full-icu tests/*.ts tests/*.ts --exit --require ./tests/env-setup.ts --timeout 3000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "build": "tsc -p tsconfig.build.json"
+    "dev": "npm run watch:back && npm run watch:front",
+    "watch:back": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
+    "watch:front": "webpack --config=webpack.config.js --watch",
+    "build": "npm run build:front && npm run build:back",
+    "build:back": "ttsc -p tsconfig.build.json && cp -R src/public dist/src && cp -R static dist/static && cp -R src/views/templates dist/src/views",
+    "build:front": "webpack --config=webpack.config.js"
   },
   "lint-staged": {
     "*.{js}": [
@@ -41,6 +45,8 @@
     "@octokit/rest": "^18.12.0",
     "@sentry/integrations": "^6.19.6",
     "@sentry/node": "^6.19.6",
+    "@types/react": "^18.0.5",
+    "@types/react-dom": "^18.0.1",
     "axios": "^0.26.1",
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",
@@ -48,6 +54,7 @@
     "cookie-parser": "^1.4.6",
     "cron": "^1.8.2",
     "dotenv": "^16.0.0",
+    "esbuild-loader": "^2.18.0",
     "ejs": "^3.1.7",
     "express": "^4.17.3",
     "express-jwt": "^7.4.3",
@@ -63,13 +70,21 @@
     "marked": "^4.0.14",
     "nodemailer": "^6.7.3",
     "ovh": "^2.0.1",
+    "path-browserify": "^1.0.1",
     "pg": "^8.7.3",
     "promise-memoize": "^1.2.1",
     "raw-body": "^2.5.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "template.data.gouv.fr": "^1.3.2",
     "topbar": "^1.0.1",
     "ts-mocha": "^9.0.2",
-    "uuid": "^8.3.2"
+    "tsconfig-paths": "^3.14.1",
+    "tsconfig-paths-webpack-plugin": "^3.5.2",
+    "typescript-transform-paths": "^3.3.1",
+    "uuid": "^8.3.2",
+    "webpack": "^5.72.0",
+    "webpack-cli": "^4.9.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
@@ -93,6 +108,7 @@
     "sinon": "^13.0.2",
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
+    "ttypescript": "^1.5.13",
     "typescript": "^4.6.3"
   },
   "prettier": {
