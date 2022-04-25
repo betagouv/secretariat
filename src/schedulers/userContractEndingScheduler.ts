@@ -5,7 +5,7 @@ import knex from '../db';
 import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
-import { Member, MemberWithPrimaryEmailAndMattermostUsername } from '../models/member';
+import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
 
 interface MessageConfig {
@@ -14,7 +14,7 @@ interface MessageConfig {
 }
 
 // get users that are member (got a github card) and mattermost account that is not in the team
-const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<MemberWithPrimaryEmailAndMattermostUsername[]> => {
+const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<MemberWithEmailsAndMattermostUsername[]> => {
   const allMattermostUsers = await mattermost.getUserWithParams();
   const users = await BetaGouv.usersInfos();
   const activeGithubUsers = users.filter((user) => {
@@ -47,13 +47,14 @@ const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<Memb
       return {
         ...githubUser,
         primary_email: user.primary_email,
+        secondary_email: user.secondary_email,
         mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
       };
     }
   );
   return registeredUsersWithEndingContractInXDays.filter(
     (user) => user.mattermostUsername
-  ) as MemberWithPrimaryEmailAndMattermostUsername[];
+  ) as MemberWithEmailsAndMattermostUsername[];
 };
 
 const CONFIG_MESSAGE = {
@@ -72,7 +73,10 @@ const EMAIL_FILES = {
   'j+30': 'mailExpired30days',
 };
 
-const sendMessageOnChatAndEmail = async (user: MemberWithPrimaryEmailAndMattermostUsername, messageConfig: MessageConfig) => {
+const sendMessageOnChatAndEmail = async (
+  user: MemberWithEmailsAndMattermostUsername,
+  messageConfig: MessageConfig,
+  sendToSecondary: boolean) => {
   const messageContent = await ejs.renderFile(
     `./src/views/templates/emails/${messageConfig.emailFile}`,
     {
@@ -92,7 +96,10 @@ const sendMessageOnChatAndEmail = async (user: MemberWithPrimaryEmailAndMattermo
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
   try {
-    const email = user.primary_email;
+    let email = user.primary_email;
+    if (sendToSecondary && user.secondary_email) {
+      email = `${email},${user.secondary_email}`
+    }
     await utils.sendMail(
       email,
       `Départ dans ${messageConfig.days} jours 🙂`,
@@ -108,11 +115,12 @@ const sendMessageOnChatAndEmail = async (user: MemberWithPrimaryEmailAndMattermo
 
 export async function sendContractEndingMessageToUsers(
   configName: string,
+  sendToSecondary = false,
   users = null
 ) {
   console.log('Run send contract ending message to users');
   const messageConfig = CONFIG_MESSAGE[configName];
-  let registeredUsersWithEndingContractInXDays : MemberWithPrimaryEmailAndMattermostUsername[];
+  let registeredUsersWithEndingContractInXDays : MemberWithEmailsAndMattermostUsername[];
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
   } else {
@@ -121,7 +129,7 @@ export async function sendContractEndingMessageToUsers(
   }
   await Promise.all(
     registeredUsersWithEndingContractInXDays.map(async (user) => {
-      await sendMessageOnChatAndEmail(user, messageConfig);
+      await sendMessageOnChatAndEmail(user, messageConfig, sendToSecondary);
     })
   );
 }
