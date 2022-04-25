@@ -33,7 +33,7 @@ export const Home = PageLayout(function (props: Props) {
         { !!props.messages.length && 
           <div className="notification">{ props.messages }</div>
         }
-        <form action={`/login${props.next}`} method="POST" id="login_form" onSubmit={e => e.preventDefault()}>
+        <form action={`/login${props.next}`} method="POST" id="login_form">
           <label htmlFor="emailInput"><b>Mon email</b></label>
           <div className="input__group">
             <input name="emailInput" type="email" placeholder="prenom.nom@beta.gouv.fr"  autoComplete="username"/>
