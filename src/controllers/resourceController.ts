@@ -4,7 +4,7 @@ export function getResources(req, res) {
   res.render('resource', {
     title: 'Ressources',
     activeTab: 'resources',
-    currentUserId: req.user.id,
+    currentUserId: req.auth.id,
     errors: req.flash('error'),
     messages: req.flash('message'),
     investigationReportsIframeURL: config.investigationReportsIframeURL,

@@ -57,11 +57,11 @@ export async function getEmailLists(req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter((user) => user.expired);
-    const currentUser = await utils.userInfos(req.user.id, true);
+    const currentUser = await utils.userInfos(req.auth.id, true);
     const title = 'Administration';
     res.render('admin', {
       title,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       userInfos: currentUser.userInfos,
       emails,
       expiredEmails,

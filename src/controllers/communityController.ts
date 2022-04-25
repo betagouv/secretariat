@@ -25,7 +25,7 @@ export async function getCommunity(req, res) {
     const title = 'Communauté';
     return res.render('community', {
       title,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       domain: config.domain,
       users,
       activeTab: 'community',
@@ -41,7 +41,7 @@ export async function getCommunity(req, res) {
 
 export async function getUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
 
   try {
     if (isCurrentUser) {
@@ -71,7 +71,7 @@ export async function getUser(req, res) {
     res.render('user', {
       title,
       username,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       emailInfos: user.emailInfos,
       redirections: user.redirections,
       userInfos: user.userInfos,
