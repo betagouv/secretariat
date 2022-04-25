@@ -12,7 +12,7 @@ export enum GenderCode {
     NPS="NPS",
     FEMALE="female",
     MALE="male",
-    NB="nb"
+    NB="NB"
 }
 
 export enum LegalStatus {
