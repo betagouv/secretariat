@@ -31,7 +31,7 @@ export async function getForm(req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       users,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       formData: {
         visitorList: [],
         referent: '',
@@ -70,7 +70,7 @@ export async function postForm(req, res) {
         date,
         number,
         referent,
-        requester: req.user.id,
+        requester: req.auth.id,
       })));
 
     const lastVisitorInList = visitors.pop();
@@ -89,7 +89,7 @@ export async function postForm(req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       domain: config.domain,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       visitsInfo: await getFuturVisitsList(users),
       users,
       activeTab: 'visit',

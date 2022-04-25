@@ -73,8 +73,8 @@ app.use(
 
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req, res, next) => {
-  if (req.user && req.user.id) {
-    res.cookie('token', getJwtTokenForUser(req.user.id), { sameSite: 'lax' });
+  if (req.auth && req.auth.id) {
+    res.cookie('token', getJwtTokenForUser(req.auth.id), { sameSite: 'lax' });
   }
   next();
 });
