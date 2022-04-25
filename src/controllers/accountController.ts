@@ -165,7 +165,7 @@ export async function updateCurrentInfo(req, res) {
     const username = req.auth.id
     const gender = req.body.gender
     const workplace_insee_code = req.body.workplace_insee_code
-    const tjm = parseInt(req.body.tjm, 10);
+    const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
 
     if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {

@@ -5,9 +5,10 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
-import { EmailStatusCode } from '../models/dbUser';
+import { EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
+import { fetchCommuneDetails } from "../lib/searchCommune";
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -100,6 +101,9 @@ export async function getForm(req, res) {
       userConfig: config.user,
       users,
       startups,
+      statusOptions,
+      genderOptions,
+      communeInfo: null,
       formData: {
         firstName: '',
         lastName: '',
@@ -147,13 +151,26 @@ export async function postForm(req, res) {
     const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
     const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
+    const gender = req.body.gender
+    const workplace_insee_code = req.body.workplace_insee_code
+    const tjm = req.body.tjm || null;
+    const legal_status = req.body.legal_status
+
+    if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
+      errorHandler('legal_status', `Le statut legal n'a pas une valeur autorisé`)
+    }
+    if (gender && !genderOptions.map(genderOption => genderOption.key).includes(gender)) {
+      errorHandler('gender', `Le genre n'a pas une valeur autorisé`)
+    }
+    if (workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
+      errorHandler('workplace_insee_code', `La lieu de travail principal n'as pas été trouvé`)
+    }
     if (!hasPublicServiceEmail && !isEmailBetaAsked) {
       errorHandler(
         'email public',
         '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
       );
     }
-
     const website = isValidUrl('Site personnel', req.body.website, errorHandler);
     const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github, errorHandler);
 
@@ -221,6 +238,10 @@ export async function postForm(req, res) {
       .insert({
         username,
         primary_email: primaryEmail,
+        tjm,
+        gender,
+        workplace_insee_code,
+        legal_status,
         secondary_email: secondaryEmail,
         primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
         primary_email_status_updated_at: new Date()
@@ -243,6 +264,9 @@ export async function postForm(req, res) {
       messages: req.flash('message'),
       userConfig: config.user,
       startups,
+      statusOptions,
+      genderOptions,
+      communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
       domain: config.domain,
       users,
       formData: req.body,

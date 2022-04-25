@@ -9,6 +9,7 @@ import utils from './utils';
 import config from '../src/config';
 import { EmailStatusCode } from '../src/models/dbUser';
 import betagouv from '../src/betagouv';
+import * as searchCommune from '../src/lib/searchCommune';
 
 chai.use(chaiHttp);
 
@@ -37,6 +38,8 @@ describe('Onboarding', () => {
     let sendEmailStub;
     let isPublicServiceEmailStub;
     let mattermostMessageStub;
+    let searchCommuneStub;
+
     nock(
       'https://mattermost.incubateur.net/api/v4/users/search'
     )
@@ -69,6 +72,8 @@ describe('Onboarding', () => {
       isPublicServiceEmailStub = sinon
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(false));
+        
+      searchCommuneStub = sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
 
       mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
 
@@ -89,7 +94,8 @@ describe('Onboarding', () => {
       makeGithubPullRequest.restore();
       sendEmailStub.restore();
       isPublicServiceEmailStub.restore();
-      mattermostMessageStub.restore()
+      mattermostMessageStub.restore();
+      searchCommuneStub.restore();
     });
 
     it('should not call Github API if a mandatory field is missing', async () => {
@@ -587,33 +593,32 @@ describe('Onboarding', () => {
         });
     });
 
-    it('Referent should be notified by email', (done) => {
+    it('Referent should be notified by email', async() => {
       nock.cleanAll();
 
       utils.mockUsers();
-
-      chai.request(app)
-        .post('/onboarding')
-        .type('form')
-        .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
-          referent: 'membre.actif',
-          role: 'Dev',
-          start: '2020-01-01',
-          end: '2021-01-01',
-          status: 'Independant',
-          domaine: 'Coaching',
-          email: 'test@example.com',
-          isEmailBetaAsked: true,
-        })
-        .end((err, res) => {
-          sendEmailStub.calledOnce.should.be.true;
-
-          const toEmail = sendEmailStub.args[0][0];
-          toEmail.should.equal(`membre.actif@${config.domain}`);
-          done();
-        });
+      try {
+        await chai.request(app)
+          .post('/onboarding')
+          .type('form')
+          .send({
+            firstName: 'Férnàndáô',
+            lastName: 'Úñíbe',
+            referent: 'membre.actif',
+            role: 'Dev',
+            start: '2020-01-01',
+            end: '2021-01-01',
+            status: 'Independant',
+            domaine: 'Coaching',
+            email: 'test@example.com',
+            isEmailBetaAsked: true,
+          })
+        } catch(e) {
+          console.log(e)
+        }
+        sendEmailStub.calledOnce.should.be.true;
+        const toEmail = sendEmailStub.args[0][0];
+        toEmail.should.equal(`membre.actif@${config.domain}`);
     });
 
     it('special characters should be replaced with dashes in the filename', (done) => {
