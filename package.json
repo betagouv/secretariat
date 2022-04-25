@@ -36,7 +36,7 @@
   },
   "homepage": "https://github.com/betagouv/secretariat#readme",
   "engines": {
-    "node": "17",
+    "node": "v16.13.0",
     "npm": "8.1.0"
   },
   "dependencies": {
