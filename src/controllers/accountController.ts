@@ -41,28 +41,28 @@ export async function setEmailResponder(req, res) {
     }
 
     if (req.body.method !== 'update') {
-      await betagouv.setResponder(req.user.id, {
+      await betagouv.setResponder(req.auth.id, {
         from: startDate,
         to: endDate,
         content
       })
       addEvent(EventCode.MEMBER_RESPONDER_CREATED, {
-        created_by_username: req.user.id,
-        action_on_username: req.user.id,
+        created_by_username: req.auth.id,
+        action_on_username: req.auth.id,
         action_metadata: {
           value: content
         }
       })
     } else {
-      const responder = await betagouv.getResponder(req.user.id)
-      await betagouv.updateResponder(req.user.id, {
+      const responder = await betagouv.getResponder(req.auth.id)
+      await betagouv.updateResponder(req.auth.id, {
         from: startDate,
         to: endDate,
         content
       })
       addEvent(EventCode.MEMBER_RESPONDER_UPDATED, {
-        created_by_username: req.user.id,
-        action_on_username: req.user.id,
+        created_by_username: req.auth.id,
+        action_on_username: req.auth.id,
         action_metadata: {
           value: content,
           old_value: responder.content,
@@ -81,10 +81,10 @@ export async function setEmailResponder(req, res) {
 
 export async function deleteEmailResponder(req, res) {
   try {
-    await betagouv.deleteResponder(req.user.id)
+    await betagouv.deleteResponder(req.auth.id)
     addEvent(EventCode.MEMBER_RESPONDER_DELETED, {
-      created_by_username: req.user.id,
-      action_on_username: req.user.id
+      created_by_username: req.auth.id,
+      action_on_username: req.auth.id
     })
   } catch(err) {
     const errorMessage = `Une erreur est intervenue lors de la suppression de la réponse automatique : ${err}`
@@ -97,13 +97,13 @@ export async function deleteEmailResponder(req, res) {
 export async function getCurrentAccount(req, res) {
   try {
     const [currentUser, marrainageState, dbUser] : [MemberWithPermission, string, DBUser] = await Promise.all([
-      (async () => utils.userInfos(req.user.id, true))(),
+      (async () => utils.userInfos(req.auth.id, true))(),
       (async () => {
-        const [state] = await knex('marrainage').where({ username: req.user.id });
+        const [state] = await knex('marrainage').where({ username: req.auth.id });
         return state;
       })(),
       (async () => {
-        const rows = await knex('users').where({ username: req.user.id });
+        const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
       })(),
     ]);
@@ -112,7 +112,7 @@ export async function getCurrentAccount(req, res) {
     const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
     return res.render('account', {
       title,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       emailInfos: currentUser.emailInfos,
       userInfos: currentUser.userInfos,
       domain: config.domain,
@@ -159,10 +159,10 @@ export async function updateCurrentInfo(req, res) {
   const formValidationErrors = {};
   const title = 'Mon compte';
   const [currentUser] : [MemberWithPermission] = await Promise.all([
-    (async () => utils.userInfos(req.user.id, true))(),
+    (async () => utils.userInfos(req.auth.id, true))(),
   ]);
   try {
-    const username = req.user.id
+    const username = req.auth.id
     const gender = req.body.gender
     const workplace_insee_code = req.body.workplace_insee_code
     const tjm = parseInt(req.body.tjm, 10);
@@ -201,7 +201,7 @@ export async function updateCurrentInfo(req, res) {
     res.render('info-update', {
       title,
       formValidationErrors,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       startups,
       statusOptions,
       genderOptions,
@@ -220,9 +220,9 @@ export async function updateCurrentInfo(req, res) {
 export async function getCurrentInfo(req, res) {
   try {
     const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
-      (async () => utils.userInfos(req.user.id, true))(),
+      (async () => utils.userInfos(req.auth.id, true))(),
       (async () => {
-        const rows = await knex('users').where({ username: req.user.id });
+        const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
       })(),
     ]);
@@ -238,7 +238,7 @@ export async function getCurrentInfo(req, res) {
     return res.render('info-update', {
       title,
       formValidationErrors,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       startups,
       genderOptions,
       statusOptions,

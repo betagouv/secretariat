@@ -9,7 +9,7 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
   messages: req.flash('message'),
   userConfig: config.user,
   domain: config.domain,
-  currentUserId: req.user.id,
+  currentUserId: req.auth.id,
   currentNewsletter,
   newsletters,
   activeTab: 'newsletter',
@@ -53,7 +53,7 @@ export async function getNewsletter(req, res) {
 
 export async function validateNewsletter(req, res) {
   try {
-    const currentNewsletter = await updateCurrentNewsletterValidator(req.user.id);
+    const currentNewsletter = await updateCurrentNewsletterValidator(req.auth.id);
     if (!currentNewsletter) {
       throw new Error('Il n\'y a pas d\'infolettre pour cette semaine');
     }

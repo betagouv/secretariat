@@ -17,7 +17,7 @@ export async function getStartup(req, res) {
     const title = `Startup ${startup}`;
     return res.render('startup', {
       title,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       startupInfos: startupInfos,
       members,
       domain: config.domain,
@@ -39,7 +39,7 @@ export async function getStartupList(req, res) {
     const title = `Startup ${startup}`;
     return res.render('startups', {
       title,
-      currentUserId: req.user.id,
+      currentUserId: req.auth.id,
       startups,
       domain: config.domain,
       activeTab: 'startups',

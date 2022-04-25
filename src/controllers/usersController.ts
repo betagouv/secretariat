@@ -105,7 +105,7 @@ async function updateSecondaryEmail(username, secondary_email) {
 
 export async function createEmailForUser(req, res) {
   const username = req.sanitize(req.params.username);
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
 
   try {
     const [user, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
@@ -135,13 +135,13 @@ export async function createEmailForUser(req, res) {
     }
 
     if (!isCurrentUser) {
-      const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
+      const loggedUserInfo = await BetaGouv.userInfosById(req.auth.id);
       if (utils.checkUserIsExpired(loggedUserInfo)) {
         throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
       }
     }
     await updateSecondaryEmail(username, req.body.to_email)
-    await createEmail(username, req.user.id);
+    await createEmail(username, req.auth.id);
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);
@@ -155,7 +155,7 @@ export async function createEmailForUser(req, res) {
 
 export async function createRedirectionForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
 
   try {
     const user = await utils.userInfos(username, isCurrentUser);
@@ -178,16 +178,16 @@ export async function createRedirectionForUser(req, res) {
     }
 
     console.log(
-      `Création d'une redirection d'email id=${req.user.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`,
+      `Création d'une redirection d'email id=${req.auth.id}&from_email=${username}&to_email=${req.body.to_email}&keep_copy=${req.body.keep_copy}`,
     );
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
+    const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
     try {
       addEvent(EventCode.MEMBER_REDIRECTION_CREATED, {
-        created_by_username: req.user.id,
+        created_by_username: req.auth.id,
         action_on_username: username,
         action_metadata: {
           value: req.body.to_email
@@ -224,7 +224,7 @@ export async function deleteRedirectionForUser(req, res) {
     username,
     email: toEmail,
   } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
 
   try {
     const user = await utils.userInfos(username, isCurrentUser);
@@ -238,11 +238,11 @@ export async function deleteRedirectionForUser(req, res) {
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
+    const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
     try {
       addEvent(EventCode.MEMBER_REDIRECTION_DELETED, {
-        created_by_username: req.user.id,
+        created_by_username: req.auth.id,
         action_on_username: username,
         action_metadata: {
           value: toEmail
@@ -266,7 +266,7 @@ export async function deleteRedirectionForUser(req, res) {
 
 export async function updatePasswordForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
   try {
     const user = await utils.userInfos(username, isCurrentUser);
 
@@ -301,13 +301,13 @@ export async function updatePasswordForUser(req, res) {
     const dbUser: DBUser = await knex('users').where({ username }).first()
     const email = utils.buildBetaEmail(username);
 
-    console.log(`Changement de mot de passe by=${req.user.id}&email=${email}`);
+    console.log(`Changement de mot de passe by=${req.auth.id}&email=${email}`);
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
 
     await BetaGouv.changePassword(username, password);
     await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
-      created_by_username: req.user.id,
+      created_by_username: req.auth.id,
       action_on_username: username
     })
     if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
@@ -316,7 +316,7 @@ export async function updatePasswordForUser(req, res) {
         primary_email_status_updated_at: new Date()
       })
     }
-    const message = `À la demande de ${req.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
+    const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
     await BetaGouv.sendInfoToChat(message);
     req.flash('message', 'Le mot de passe a bien été modifié.');
     res.redirect(`/community/${username}`);
@@ -330,7 +330,7 @@ export async function updatePasswordForUser(req, res) {
 
 export async function deleteEmailForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
 
   try {
     const user = await utils.userInfos(username, isCurrentUser);
@@ -341,21 +341,21 @@ export async function deleteEmailForUser(req, res) {
       );
     }
 
-    await BetaGouv.sendInfoToChat(`Suppression de compte de ${username} (à la demande de ${req.user.id})`);
+    await BetaGouv.sendInfoToChat(`Suppression de compte de ${username} (à la demande de ${req.auth.id})`);
     addEvent(EventCode.MEMBER_EMAIL_DELETED, {
-      created_by_username: req.user.id,
+      created_by_username: req.auth.id,
       action_on_username: username
     })
     if (user.redirections && user.redirections.length > 0) {
       await BetaGouv.requestRedirections('DELETE', user.redirections.map((x) => x.id));
-      console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.user.id})`);
+      console.log(`Suppression des redirections de l'email de ${username} (à la demande de ${req.auth.id})`);
     }
 
     await BetaGouv.createRedirection(utils.buildBetaEmail(username), config.leavesEmail, false);
     await knex('users')
       .update({ secondary_email: null })
       .where({ username });
-    console.log(`Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.user.id})`);
+    console.log(`Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.auth.id})`);
 
     if (isCurrentUser) {
       res.clearCookie('token');
@@ -374,7 +374,7 @@ export async function deleteEmailForUser(req, res) {
 
 export async function managePrimaryEmailForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
   const { primaryEmail } = req.body;
   const user : MemberWithPermission = await utils.userInfos(username, isCurrentUser);
   try {
@@ -404,7 +404,7 @@ export async function managePrimaryEmailForUser(req, res) {
       username
     });
     addEvent(EventCode.MEMBER_PRIMARY_EMAIL_UPDATED, {
-      created_by_username: req.user.id,
+      created_by_username: req.auth.id,
       action_on_username: username,
       action_metadata: {
         value: primaryEmail,
@@ -412,7 +412,7 @@ export async function managePrimaryEmailForUser(req, res) {
       }
     })
     req.flash('message', 'Ton compte email primaire a bien été mis à jour.');
-    console.log(`${req.user.id} a mis à jour son adresse mail primaire.`);
+    console.log(`${req.auth.id} a mis à jour son adresse mail primaire.`);
     res.redirect(`/community/${username}`);
   } catch (err) {
     console.error(err);
@@ -423,7 +423,7 @@ export async function managePrimaryEmailForUser(req, res) {
 
 export async function manageSecondaryEmailForUser(req, res) {
   const { username } = req.params;
-  const isCurrentUser = req.user.id === username;
+  const isCurrentUser = req.auth.id === username;
   const { secondaryEmail } = req.body;
   const user = await utils.userInfos(username, isCurrentUser);
 
@@ -443,7 +443,7 @@ export async function manageSecondaryEmailForUser(req, res) {
         username
       });
       addEvent(EventCode.MEMBER_SECONDARY_EMAIL_UPDATED, {
-        created_by_username: req.user.id,
+        created_by_username: req.auth.id,
         action_on_username: username,
         action_metadata: {
           value: secondaryEmail,
@@ -451,7 +451,7 @@ export async function manageSecondaryEmailForUser(req, res) {
         }
       })
       req.flash('message', 'Ton compte email secondaire a bien mis à jour.');
-      console.log(`${req.user.id} a mis à jour son adresse mail secondaire.`);
+      console.log(`${req.auth.id} a mis à jour son adresse mail secondaire.`);
       res.redirect(`/community/${username}`);
     };
   } catch (err) {
@@ -541,7 +541,7 @@ export async function updateEndDateForUser(req, res) {
     const changes = [{ key: 'end', old: end, new: newEnd }];
     await updateAuthorGithubFile(username, changes);
     addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
-      created_by_username: req.user.id,
+      created_by_username: req.auth.id,
       action_on_username: username,
       action_metadata: {
         value: newEnd,

@@ -187,7 +187,7 @@ export async function createRequestForUser(userId) {
 export async function createRequest(req, res) {
   try {
     const newcomerId = req.sanitize(req.body.newcomerId);
-    const loggedUserInfo = await BetaGouv.userInfosById(req.user.id);
+    const loggedUserInfo = await BetaGouv.userInfosById(req.auth.id);
     if (utils.checkUserIsExpired(loggedUserInfo)) {
       throw new Error(
         'Vous ne pouvez pas demander un·e marrain·e car votre compte a une date de fin expiré sur Github.'
@@ -203,7 +203,7 @@ export async function createRequest(req, res) {
       action_on_username: newcomer.id
     })
 
-    if (newcomer.id === req.user.id)
+    if (newcomer.id === req.auth.id)
       req.flash(
         'message',
         `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`
@@ -353,7 +353,7 @@ export async function reloadRequest(req, res) {
   try {
     const { newcomer, onboarder } = await reloadMarrainage(req.body.newcomerId);
 
-    if (req.body.newcomerId === req.user.id)
+    if (req.body.newcomerId === req.auth.id)
       req.flash(
         'message',
         `<b>${onboarder.fullname}</b> a été invité à te marrainer. Il ou elle devrait prendre contact avec toi très bientôt !`
