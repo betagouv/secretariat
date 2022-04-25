@@ -6,7 +6,9 @@ interface HasRequest {
 
 type PageProps<T> = {
   Component: (props: T) => JSX.Element
-  props: T,
+  props: {
+    title: string
+  },
   pageName: string
 } & ({ hydrate: false } | { hydrate: true; pageName: string })
 
@@ -21,7 +23,7 @@ function stripRequest(props: HasRequest) {
 }
 
 export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
-  const { Component, props, pageName } = args
+  const { Component, props } = args
   return html`
   <!DOCTYPE html>
   <html>
