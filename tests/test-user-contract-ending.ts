@@ -137,6 +137,7 @@ describe('send message on contract end to user', () => {
     await sendContractEndingMessageToUsers('mail15days', true);
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal('membre.quipart');
+    sendEmailStub.firstCall.args[0] = 'membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com'
     await knex('users').where({
       username: 'membre.quipart',
     }).delete()
