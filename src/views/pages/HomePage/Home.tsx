@@ -9,7 +9,6 @@ interface Props {
   messages: any[],
   domain: string,
   next: string,
-  title: string
 }
 
 /* Pure component */

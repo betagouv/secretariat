@@ -6,5 +6,6 @@ export const HomePage = (props: Parameters<typeof Home>[0]) =>
     Component: Home,
     props,
     hydrate: true,
+    title: 'Secretariat BetaGouv',
     pageName: 'Home', // This must match the Component name
   })

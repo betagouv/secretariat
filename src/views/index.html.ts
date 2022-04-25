@@ -6,10 +6,9 @@ interface HasRequest {
 
 type PageProps<T> = {
   Component: (props: T) => JSX.Element
-  props: {
-    title: string
-  },
-  pageName: string
+  props,
+  pageName: string,
+  title: string
 } & ({ hydrate: false } | { hydrate: true; pageName: string })
 
 const html = String.raw
@@ -31,7 +30,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
   
-      <title>${props.title}</title>
+      <title>${args.title}</title>
   
       <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
       <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">

@@ -15,7 +15,6 @@ function renderLogin(req, res, params) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       domain: config.domain,
-      title: 'Secretariat BetaGouv',
       next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
     })
   )
