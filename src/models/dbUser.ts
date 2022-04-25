@@ -9,7 +9,7 @@ export enum EmailStatusCode {
 }
 
 export enum GenderCode {
-    NPS="NPS",
+    NSP="NSP",
     FEMALE="female",
     MALE="male",
     NB="NB"
@@ -48,10 +48,10 @@ export const genderOptions = [{
     key: 'male',
     name: "Masculin"
   },{
-    key: 'nb',
+    key: 'NB',
     name: "Non-binaire"
   }, {
-    key: 'nps',
+    key: 'NSP',
     name: "Ne se prononce pas"
   }]
 
