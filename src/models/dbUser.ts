@@ -84,7 +84,7 @@ export const statusOptions = [
   },
   {
     key: 'SNC',
-    name: 'snc'
+    name: 'SNC'
   },
   {
     key: 'contractuel',
