@@ -1,5 +1,4 @@
 import ReactDOMServer from 'react-dom/server'
-import type { Request } from 'express'
 interface HasRequest {
   request: Request
 }
@@ -10,6 +9,11 @@ type PageProps<T> = {
   pageName: string,
   title: string
 } & ({ hydrate: false } | { hydrate: true; pageName: string })
+
+type EmailProps<T> = {
+  Component: (props: T) => JSX.Element
+  props,
+}
 
 const html = String.raw
 
@@ -60,6 +64,18 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
             </script>`
           : ''}
         <script src="/static/scripts/hashtoparam.js"></script>
+      </body>
+    </html>
+  `
+}
+
+export const makeHtmlEmail = <T>(args: EmailProps<T>) => {
+  const { Component, props } = args
+  return html`
+  <!DOCTYPE html>
+    <html>
+      <body>
+        <div id="root">${ReactDOMServer.renderToString(Component(props))}</div>
       </body>
     </html>
   `
