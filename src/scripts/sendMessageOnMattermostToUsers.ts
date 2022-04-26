@@ -44,7 +44,8 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
-        if (user.mattermostUsername) {
+        const accountsAlreadySent = process.env.EMAIL_SECONDARY_MESSAGE_SENT.split(',')
+        if (user.mattermostUsername && !accountsAlreadySent.includes(user.mattermostUsername)) {
             const messageContent = await ejs.renderFile(
                 `./src/views/templates/emails/updateSecondaryEmail.ejs`,
                 {
@@ -57,6 +58,7 @@ export async function getActiveUsersWithoutSecondaryEmail() {
                 'secretariat',
                 user.mattermostUsername
             );
+            await sleep(1000);
         }
     }
     const messageContent = await ejs.renderFile(
@@ -70,6 +72,12 @@ export async function getActiveUsersWithoutSecondaryEmail() {
         'secretariat',
         'lucas.charrier'
     );
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
 }
 
 getActiveUsersWithoutSecondaryEmail()
