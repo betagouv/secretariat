@@ -1,4 +1,6 @@
 import ReactDOMServer from 'react-dom/server'
+import type { Request } from 'express'
+
 interface HasRequest {
   request: Request
 }
