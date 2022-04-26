@@ -46,19 +46,23 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     for (const user of concernedUserWithMattermostUsers) {
         const accountsAlreadySent = process.env.EMAIL_SECONDARY_MESSAGE_SENT.split(',')
         if (user.mattermostUsername && !accountsAlreadySent.includes(user.mattermostUsername)) {
-            const messageContent = await ejs.renderFile(
-                `./src/views/templates/emails/updateSecondaryEmail.ejs`,
-                {
-                user,
-                }
-            );
-            console.log(`Message d'update de l'email secondaire envoyé à ${user.mattermostUsername}`)
-            await BetaGouv.sendInfoToChat(
-                messageContent,
-                'secretariat',
-                user.mattermostUsername
-            );
-            await sleep(1000);
+            try {
+                const messageContent = await ejs.renderFile(
+                    `./src/views/templates/emails/updateSecondaryEmail.ejs`,
+                    {
+                    user,
+                    }
+                );
+                console.log(`Message d'update de l'email secondaire envoyé à ${user.mattermostUsername}`)
+                await BetaGouv.sendInfoToChat(
+                    messageContent,
+                    'secretariat',
+                    user.mattermostUsername
+                );
+                await sleep(1000);
+            } catch (e) {
+                console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
+            }
         }
     }
     const messageContent = await ejs.renderFile(
