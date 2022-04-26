@@ -58,6 +58,7 @@ export async function getActiveUsersWithoutSecondaryEmail() {
                 'secretariat',
                 user.mattermostUsername
             );
+            await sleep(1000);
         }
     }
     const messageContent = await ejs.renderFile(
@@ -71,6 +72,12 @@ export async function getActiveUsersWithoutSecondaryEmail() {
         'secretariat',
         'lucas.charrier'
     );
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
 }
 
 getActiveUsersWithoutSecondaryEmail()
