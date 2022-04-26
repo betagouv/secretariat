@@ -5,7 +5,6 @@ import knex from '../db';
 import { DBUser } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
-import config from '../config';
 import { makeHtmlEmail } from '../views/index.html';
 import { EmailSecondaryEmail } from '../views/emails/EmailSecondaryEmail';
 
