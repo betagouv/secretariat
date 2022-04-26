@@ -1,3 +1,4 @@
+import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';
@@ -44,21 +45,28 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
-        console.log(user.primary_email)
+        const messageContent = await ejs.renderFile(
+            `./src/views/templates/emails/updateSecondaryEmail.ejs`,
+            {
+              user,
+            }
+        );
         if (config.featureScriptAutomaticMessageForSecondaryEmail) {
             await BetaGouv.sendInfoToChat(
-                EmailSecondaryEmailHtml({
-                    member: user
-                }),
+                messageContent,
                 'secretariat',
                 user.mattermostUsername
             );
         }
     }
-    await BetaGouv.sendInfoToChat(
-        EmailSecondaryEmailHtml({
+    const messageContent = await ejs.renderFile(
+        `./src/views/templates/emails/updateSecondaryEmail.ejs`,
+        {
             member: concernedUserWithMattermostUsers[0]
-        }),
+        }
+    );
+    await BetaGouv.sendInfoToChat(
+        messageContent,
         'secretariat',
         'lucas.charrier'
     );
