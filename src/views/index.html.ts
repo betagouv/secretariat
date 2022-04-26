@@ -82,3 +82,4 @@ export const makeHtmlEmail = <T>(args: EmailProps<T>) => {
     </html>
   `
 }
+
