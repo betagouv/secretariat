@@ -62,7 +62,7 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     const messageContent = await ejs.renderFile(
         `./src/views/templates/emails/updateSecondaryEmail.ejs`,
         {
-            member: concernedUserWithMattermostUsers[0]
+            user: concernedUserWithMattermostUsers[0]
         }
     );
     await BetaGouv.sendInfoToChat(
