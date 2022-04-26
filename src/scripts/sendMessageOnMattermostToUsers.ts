@@ -5,7 +5,6 @@ import knex from '../db';
 import { DBUser } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
-import config from '../config';
 import { makeHtmlEmail } from '../views/index.html';
 import { EmailSecondaryEmail } from '../views/emails/EmailSecondaryEmail';
 
@@ -45,13 +44,14 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
-        const messageContent = await ejs.renderFile(
-            `./src/views/templates/emails/updateSecondaryEmail.ejs`,
-            {
-              user,
-            }
-        );
-        if (config.featureScriptAutomaticMessageForSecondaryEmail) {
+        if (user.mattermostUsername) {
+            const messageContent = await ejs.renderFile(
+                `./src/views/templates/emails/updateSecondaryEmail.ejs`,
+                {
+                user,
+                }
+            );
+            console.log(`Message d'update de l'email secondaire envoyé à ${user.mattermostUsername}`)
             await BetaGouv.sendInfoToChat(
                 messageContent,
                 'secretariat',
@@ -62,7 +62,7 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     const messageContent = await ejs.renderFile(
         `./src/views/templates/emails/updateSecondaryEmail.ejs`,
         {
-            user: concernedUserWithMattermostUsers[0]
+            user: concernedUserWithMattermostUsers[0],
         }
     );
     await BetaGouv.sendInfoToChat(
@@ -70,7 +70,6 @@ export async function getActiveUsersWithoutSecondaryEmail() {
         'secretariat',
         'lucas.charrier'
     );
-
 }
 
 getActiveUsersWithoutSecondaryEmail()
