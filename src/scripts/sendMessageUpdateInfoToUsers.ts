@@ -5,8 +5,8 @@ import knex from '../db';
 import { DBUser, GenderCode } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
-import { fetchCommuneDetails } from 'src/lib/searchCommune';
-import { renderHtmlFromMd } from 'src/lib/mdtohtml';
+import { fetchCommuneDetails } from '../lib/searchCommune';
+import { renderHtmlFromMd } from '../lib/mdtohtml';
 
 export async function sendMessageToUpdateInfoToAllUsers() {
     const allMattermostUsers = await mattermost.getUserWithParams();
