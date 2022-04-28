@@ -18,6 +18,7 @@
                     <h3>
                         Ma fiche
                     </h3>
+                    <h6>Info sur ma fiche github</h6>
                     <% if (userInfos) { %>
                         <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
                     <% } %>
@@ -43,6 +44,7 @@
                             <% } %>
                         </p>
                     <% } %>
+                    <h6>Info en base de données</h6>
                     <p>
                         <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
                     </p>
@@ -59,7 +61,8 @@
                     <p>
                         <span class="font-weight-bold">Statut Legal : </span><nobr><%= legal_status || 'Non renseigné' %></nobr>
                     </p>
-                    <a href="/account/info">Mettre à jour mes infos cachée/mon lieu de travail principal </a>
+                    <a href="/account/info">Mettre à jour mes infos en base de données</a>
+                    <br/>
                 </div>
                 <div class="account-split-panel-shrink">
                     <img width="100%" src="/static/images/logo-betagouv.jpg" />
