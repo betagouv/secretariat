@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';
-import { DBUser, genderOptions } from '../models/dbUser';
+import { DBUser, genderOptions, statusOptions } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from '../lib/searchCommune';
@@ -47,8 +47,8 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                     ...user,
                     tjm: user.tjm ? `${user.tjm} euros` : 'Non défini',
                     startups: user.startups || [],
-                    gender: genderOptions[user.gender],
-                    legal_status: user.legal_status || 'Non défini',
+                    gender: genderOptions.find(opt => opt.key === user.gender).name,
+                    legal_status: user.legal_status ? statusOptions.find(opt => opt.key === user.legal_status).name : 'Non défini',
                     workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non défini',
                     secondary_email: user.secondary_email || 'Non défini'
                 }
