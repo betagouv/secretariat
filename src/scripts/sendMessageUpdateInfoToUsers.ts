@@ -32,7 +32,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 ...user,
                 primary_email: user.primary_email,
                 secondary_email: user.secondary_email,
-                mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
+                mattermostUsername: index > -1 ? allMattermostUsers[index].username : 'lucas.charrier',
             };
           }
     );
