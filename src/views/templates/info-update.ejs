@@ -76,11 +76,14 @@
             <div class="form__group">
                 <label for="secondary_email">
                     <strong>Email de récupération</strong><br />
-                    Cette information est utilisée uniquement pour faire des statistiques. Elle n'est affichée nul part.
+                    L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
                     <input
                         value="<%= formData.secondary_email %>"
-                        id="secondary_email" name="secondary_email" type="number" placeholder="Secondary email">
+                        id="secondary_email" name="secondary_email" type="email" placeholder="un email de recupération">
                 </label>
+                <% if(formValidationErrors['secondary_email']) { %>
+                    <p class="text-small text-color-red"><%= formValidationErrors['secondary_email'] %></p>
+                  <% } %>
             </div>
             <button class="button" type="submit">Changer ces informations</button>
         </form>
