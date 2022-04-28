@@ -233,12 +233,6 @@ export async function getCurrentInfo(req, res) {
     const title = 'Mon compte';
     const formValidationErrors = {}
     const startups = await betagouv.startupsInfos();
-    console.log({
-      gender: dbUser.gender,
-      workplace_insee_code: dbUser.workplace_insee_code,
-      tjm: dbUser.tjm,
-      legal_status: dbUser.legal_status
-    })
     return res.render('info-update', {
       title,
       formValidationErrors,
@@ -246,16 +240,14 @@ export async function getCurrentInfo(req, res) {
       startups,
       genderOptions,
       statusOptions,
-      gender: dbUser.gender,
-      legal_status: dbUser.legal_status,
-      workplace_insee_code: dbUser.workplace_insee_code,
       activeTab: 'account',
       communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
       formData: {
         gender: dbUser.gender,
         workplace_insee_code: dbUser.workplace_insee_code,
         tjm: dbUser.tjm,
-        legal_status: dbUser.legal_status
+        legal_status: dbUser.legal_status,
+        secondary_email: dbUser.secondary_email
       },
       currentUser,
       errors: req.flash('error'),
