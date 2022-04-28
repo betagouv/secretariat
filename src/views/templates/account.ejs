@@ -43,23 +43,28 @@
                             <% } %>
                         </p>
                     <% } %>
+                    <hr>
+                    <p>
+                        <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
+                    </p>
+                    <h6 class="margin-10-0 collapse-header">
+                        Info cachée utilisées à des fins statistiques ou de sécurité <small></small>
+                    </h6>
                     <p>
                         <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
                     </p>
                     <p>
                         <span class="font-weight-bold">Genre : </span> <%= gender || 'Non renseigné' %>
                     </p>
-                    <p>
-                        <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
-                    </p>
+
                     <p>
                         <span class="font-weight-bold">TJM : </span> <%= tjm || 'Non renseigné' %>
                     </p>
                     <p>
-                        <span class="font-weight-bold">Statut Legal : </span> <%= legal_status || 'Non renseigné' %>
+                        <span class="font-weight-bold">Statut Legal : </span><nobr><%= legal_status || 'Non renseigné' %></nobr>
                     </p>
+                    <a href="/account/info">Mettre à jour ces informations</a>
                 </div>
-                <a href="/account/info">Mettre à jour ces informations</a>
                 <div class="account-split-panel-shrink">
                     <img width="100%" src="/static/images/logo-betagouv.jpg" />
                 </div>
