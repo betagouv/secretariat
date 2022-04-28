@@ -45,7 +45,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 secretariatUrl,
                 user: {
                     ...user,
-                    tjm: user.tjm || 'Non défini',
+                    tjm: user.tjm ? `${user.tjm} euros` : 'Non défini',
                     startups: user.startups || [],
                     gender: GenderCode[user.gender],
                     legal_status: user.legal_status || 'Non défini',
