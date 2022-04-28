@@ -4,22 +4,24 @@ Voici les infos que nous avons sur ton profil.
 
 👁️ **Les infos publiques** 👁️ :
 
-les Startups sur lesquelles tu travailles :
-
+- les Startups sur lesquelles tu travailles :
 <% for(var i=0; i < user.startups.length; i++) { %>
     - {{ user.startups[0] }}
 <% } %>
-lieu de travail principal : *<%= user.workplace_insee_code %>*
+<% if (user.startups.length) { %>
+*aucune startup renseignée*
+<% } %>
+- lieu de travail principal : *<%= user.workplace_insee_code %>*
 
-🔒**Les infos cachées mais utilisées pour des fins statistiques ou de sécurité** 🔒 :
+🔒 **Les infos cachées mais utilisées pour des fins statistiques ou de sécurité** 🔒 :
 
 - Genre : *<%= user.gender %>*
-- TJM : *<%= user.tjm %>* euros
+- TJM : *<%= user.tjm %>* <% if (user.tjm) { %>euros<% } %>
 - Statut légal : *<%= user.legal_status %>*
 - Lieu de travail principal : *<%= user.workplace_insee_code %>*
 - Email de recuperation :  *<%= user.secondary_email %>*
 
-➡️**Si ces informations ne sont plus à jour, peux-tu les modifier ?**⬅️
+➡️ **Si ces informations ne sont plus à jour ou vide, peux-tu les modifier ?** ⬅️
 
 Elles sont importantes pour faire vivre la communauté (organisation d'événements comme le Grand Séminaire, mise en place d'actions en faveur de la parité) et pour assurer sa transparence (observatoire des revenus de la communauté par exemple)
 
