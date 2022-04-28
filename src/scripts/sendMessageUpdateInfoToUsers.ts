@@ -6,6 +6,7 @@ import { DBUser, GenderCode } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from 'src/lib/searchCommune';
+import { renderHtmlFromMd } from 'src/lib/mdtohtml';
 
 export async function sendMessageToUpdateInfoToAllUsers() {
     const allMattermostUsers = await mattermost.getUserWithParams();
@@ -17,7 +18,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
     const concernedUsers: DBUser[] = await knex('users')
       .whereIn(
         'username',
-        activeUsers.map((user) => user.id)
+        ['lucas.charrier'] || activeUsers.map((user) => user.id)
       );
     
     const concernedUserWithMattermostUsers : (MemberWithEmailsAndMattermostUsername & DBUser)[] = concernedUsers.map(
@@ -37,34 +38,38 @@ export async function sendMessageToUpdateInfoToAllUsers() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
-        if (user.mattermostUsername === 'lucas.charrier') {
-            try {
-                const secretariatUrl = `https://secretariat.incubateur.net/`;
-                const messageContent = await ejs.renderFile(
-                    `./src/views/templates/emails/updateUserInfoEmail.ejs`,
-                    {
-                        secretariatUrl,
-                        user: {
-                            ...user,
-                            tjm: user.tjm || 'Non défini',
-                            gender: GenderCode[user.gender],
-                            legal_status: user.legal_status || 'Non défini',
-                            workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non défini',
-                            secondary_email: user.secondary_email || 'Non défini'
-                        }
-                    }
-                );
-                console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)
-                await BetaGouv.sendInfoToChat(
-                    messageContent,
-                    'secretariat',
-                    user.mattermostUsername
-                );
-                await sleep(1000);
-            } catch (e) {
-                console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
+        const secretariatUrl = `https://secretariat.incubateur.net/`;
+        const messageContent = await ejs.renderFile(
+            `./src/views/templates/emails/updateUserInfoEmail.ejs`,
+            {
+                secretariatUrl,
+                user: {
+                    ...user,
+                    tjm: user.tjm || 'Non défini',
+                    gender: GenderCode[user.gender],
+                    legal_status: user.legal_status || 'Non défini',
+                    workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non défini',
+                    secondary_email: user.secondary_email || 'Non défini'
+                }
+            }
+        );
+        if (process.env.FEATURE_SEND_MESSAGE_UPDATE_INFO) {
+            if (user.mattermostUsername === 'lucas.charrier') {
+                try {
+                    
+                    await BetaGouv.sendInfoToChat(
+                        messageContent,
+                        'secretariat',
+                        user.mattermostUsername
+                    );
+                    await sleep(1000);
+                } catch (e) {
+                    console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
+                }
+                utils.sendMail(user.primary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
             }
         }
+        console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }
 }
 
