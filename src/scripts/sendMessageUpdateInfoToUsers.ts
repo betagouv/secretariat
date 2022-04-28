@@ -46,6 +46,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 user: {
                     ...user,
                     tjm: user.tjm || 'Non défini',
+                    startups: user.startups || [],
                     gender: GenderCode[user.gender],
                     legal_status: user.legal_status || 'Non défini',
                     workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non défini',
