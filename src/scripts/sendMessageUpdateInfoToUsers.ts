@@ -69,6 +69,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 utils.sendMail(user.primary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
             }
         }
+        console.log(user)
         console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }
 }
