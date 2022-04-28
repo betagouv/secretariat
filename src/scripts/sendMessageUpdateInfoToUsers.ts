@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';
-import { DBUser, GenderCode, genderOptions } from '../models/dbUser';
+import { DBUser, genderOptions } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from '../lib/searchCommune';
