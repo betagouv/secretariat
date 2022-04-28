@@ -3,13 +3,15 @@ Bonjour <%= user.fullname %>,
 Voici les infos que nous avons sur ton profil.
 
 👁️ **Les infos publiques** 👁️ :
+
 *les Startups sur lesquelles tu travailles :*
-{% for startup in startups %}
+
+{% for startup in user.startups %}
 - {{ startup }}
 {% endfor %}
 *lieu de travail principal :* <%= user.workplace_insee_code %>
 
-🔒**Les infos cachées mais utilisées pour des fins statistiques ou de sécurité **🔒 :
+🔒**Les infos cachées mais utilisées pour des fins statistiques ou de sécurité** 🔒 :
 
 - *Genre* : <%= user.gender %>
 - *TJM* : <%= user.tjm %>
@@ -22,7 +24,7 @@ Voici les infos que nous avons sur ton profil.
 Elles sont importantes pour faire vivre la communauté (organisation d'événements comme le Grand Séminaire, mise en place d'actions en faveur de la parité) et pour assurer sa transparence (observatoire des revenus de la communauté par exemple)
 
 Tu peux changer les startups dans l'[interface admin du site beta](https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>) ou sur [github](https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= user.id %>.md).
-Tu peux changer les autres infos ici : <%= secretariatUrl %>/account/info
+Tu peux changer les autres infos ici : <%= secretariatUrl %>account/info
 
 Merci ! 
 
