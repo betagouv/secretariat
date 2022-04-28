@@ -129,13 +129,10 @@ export async function getCurrentAccount(req, res) {
       primaryEmail: dbUser.primary_email,
       activeTab: 'account',
       marrainageState,
-      formData: {
-        gender: dbUser.gender,
-        workplace_insee_code: dbUser.workplace_insee_code,
-        tjm: dbUser.tjm,
-        legal_status: dbUser.legal_status,
-        secondary_email: dbUser.secondary_email
-      },
+      tjm: dbUser.tjm ? `${dbUser.tjm} euros` : 'Non renseigné',
+      gender: genderOptions.find(opt => opt.key === dbUser.gender).name,
+      legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
+      workplace_insee_code: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : 'Non renseigné',
       hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
       responderFormData: currentUser.responder ? { 

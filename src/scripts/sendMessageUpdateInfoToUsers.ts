@@ -45,12 +45,12 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 secretariatUrl,
                 user: {
                     ...user,
-                    tjm: user.tjm ? `${user.tjm} euros` : 'Non défini',
                     startups: user.startups || [],
+                    tjm: user.tjm ? `${user.tjm} euros` : 'Non renseigné',
                     gender: genderOptions.find(opt => opt.key === user.gender).name,
-                    legal_status: user.legal_status ? statusOptions.find(opt => opt.key === user.legal_status).name : 'Non défini',
-                    workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non défini',
-                    secondary_email: user.secondary_email || 'Non défini'
+                    legal_status: user.legal_status ? statusOptions.find(opt => opt.key === user.legal_status).name : 'Non renseigné',
+                    workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code) : 'Non renseigné',
+                    secondary_email: user.secondary_email || 'Non renseigné'
                 }
             }
         );
