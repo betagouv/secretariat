@@ -7,6 +7,7 @@ import { MemberWithPermission } from "../models/member";
 import { DBUser, statusOptions, genderOptions } from "../models/dbUser";
 import { EmailStatusCode } from "../models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
+import { isValidEmail } from "./utils";
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors: string[] = [];
@@ -128,12 +129,11 @@ export async function getCurrentAccount(req, res) {
       primaryEmail: dbUser.primary_email,
       activeTab: 'account',
       marrainageState,
-      formData: {
-        gender: dbUser.gender,
-        workplace_insee_code: dbUser.workplace_insee_code,
-        tjm: dbUser.tjm,
-        legal_status: dbUser.legal_status
-      },
+      tjm: dbUser.tjm ? `${dbUser.tjm} euros` : 'Non renseigné',
+      gender: genderOptions.find(opt => opt.key === dbUser.gender).name,
+      legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
+      workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
+      formData: {},
       hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
       responderFormData: currentUser.responder ? { 
@@ -167,7 +167,7 @@ export async function updateCurrentInfo(req, res) {
     const workplace_insee_code = req.body.workplace_insee_code
     const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
-
+    const secondary_email = req.body.secondary_email && isValidEmail(formValidationErrors, 'secondary_email', req.body.secondary_email)
     if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
       formValidationErrors['legal_status'] = `Le statut legal n'a pas une valeur autorisé`
     }
@@ -188,6 +188,7 @@ export async function updateCurrentInfo(req, res) {
         workplace_insee_code,
         tjm,
         legal_status,
+        secondary_email
       })
       .where({ username })
     
@@ -229,12 +230,6 @@ export async function getCurrentInfo(req, res) {
     const title = 'Mon compte';
     const formValidationErrors = {}
     const startups = await betagouv.startupsInfos();
-    console.log({
-      gender: dbUser.gender,
-      workplace_insee_code: dbUser.workplace_insee_code,
-      tjm: dbUser.tjm,
-      legal_status: dbUser.legal_status
-    })
     return res.render('info-update', {
       title,
       formValidationErrors,
@@ -242,16 +237,14 @@ export async function getCurrentInfo(req, res) {
       startups,
       genderOptions,
       statusOptions,
-      gender: dbUser.gender,
-      legal_status: dbUser.legal_status,
-      workplace_insee_code: dbUser.workplace_insee_code,
       activeTab: 'account',
       communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
       formData: {
         gender: dbUser.gender,
         workplace_insee_code: dbUser.workplace_insee_code,
         tjm: dbUser.tjm,
-        legal_status: dbUser.legal_status
+        legal_status: dbUser.legal_status,
+        secondary_email: dbUser.secondary_email
       },
       currentUser,
       errors: req.flash('error'),

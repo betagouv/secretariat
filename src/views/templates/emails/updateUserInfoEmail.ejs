@@ -1,0 +1,34 @@
+Bonjour <%= user.fullname %>,
+
+Voici les infos que nous avons sur ton profil.
+
+👁️ **Les infos publiques** 👁️ :
+
+- les Startups sur lesquelles tu travailles :
+<% for(var i=0; i < user.startups.length; i++) { %>
+    - {{ user.startups[0] }}
+<% } %>
+<% if (!user.startups.length) { %>
+*aucune startup renseignée*
+<% } %>
+- lieu de travail principal : *<%= user.workplace_insee_code %>*
+
+🔒 **Les infos cachées mais utilisées pour des fins statistiques ou de sécurité** 🔒 :
+
+- Genre : *<%= user.gender %>*
+- TJM : *<%= user.tjm %>*
+- Statut légal : *<%= user.legal_status %>*
+- Lieu de travail principal : *<%= user.workplace_insee_code %>*
+- Email de recuperation :  *<%= user.secondary_email %>*
+
+➡️ **Si ces informations ne sont plus à jour ou vide, peux-tu les modifier ?** ⬅️
+
+Elles sont importantes pour faire vivre la communauté (organisation d'événements comme le Grand Séminaire, mise en place d'actions en faveur de la parité) et pour assurer sa transparence (observatoire des revenus de la communauté par exemple)
+
+Tu peux changer les startups dans l'[interface admin du site beta](https://beta.gouv.fr/admin/#/collections/authors/entries/<%= user.id %>) ou sur [github](https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/<%= user.id %>.md).
+
+Tu peux changer les autres infos ici : <%= secretariatUrl %>account/info
+
+Merci ! 
+
+Ceci est un message automatique envoyé par l'app Secretariat
