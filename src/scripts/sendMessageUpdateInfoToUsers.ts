@@ -7,6 +7,7 @@ import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member'
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from '../lib/searchCommune';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
+import { sleep } from '../controllers/utils';
 
 export async function sendMessageToUpdateInfoToAllUsers() {
     const allMattermostUsers = await mattermost.getUserWithParams();
@@ -70,12 +71,6 @@ export async function sendMessageToUpdateInfoToAllUsers() {
         }
         console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }
-}
-
-function sleep(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
 }
 
 sendMessageToUpdateInfoToAllUsers()

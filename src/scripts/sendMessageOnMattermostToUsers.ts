@@ -7,6 +7,7 @@ import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member'
 import * as mattermost from '../lib/mattermost';
 import { makeHtmlEmail } from '../views/index.html';
 import { EmailSecondaryEmail } from '../views/emails/EmailSecondaryEmail';
+import { sleep } from '../controllers/utils';
 
 export const EmailSecondaryEmailHtml = (props: Parameters<typeof EmailSecondaryEmail>[0]) =>
   makeHtmlEmail({
@@ -76,12 +77,6 @@ export async function getActiveUsersWithoutSecondaryEmail() {
         'secretariat',
         'lucas.charrier'
     );
-}
-
-function sleep(ms) {
-    return new Promise((resolve) => {
-        setTimeout(resolve, ms);
-    });
 }
 
 getActiveUsersWithoutSecondaryEmail()

@@ -8,6 +8,7 @@ import { DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from "../controllers/utils";
 import { Member } from '../models/member';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
+import { sleep } from '../controllers/utils';
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
@@ -66,6 +67,7 @@ const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber)
             'secretariat',
             mattermostUser.username
         );
+        sleep(1000)
         console.log(`Message de rappel de pr envoyé par mattermost à ${mattermostUser.username}`)
         return true
     }
@@ -118,5 +120,4 @@ const pullRequestWatcher = async () => {
 export {
     pullRequestWatcher
 }
-
 
