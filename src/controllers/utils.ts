@@ -344,3 +344,9 @@ export function createUsername(firstName, lastName) {
   };
   return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 }
+
+export function sleep(ms) {
+  return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+  });
+}

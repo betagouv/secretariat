@@ -7,6 +7,7 @@ import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
+import { sleep } from '../controllers/utils';
 
 interface MessageConfig {
   days: number,
@@ -92,6 +93,7 @@ const sendMessageOnChatAndEmail = async (
     console.log(
       `Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`
     );
+    sleep(1000)
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
   }
