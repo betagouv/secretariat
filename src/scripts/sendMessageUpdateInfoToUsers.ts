@@ -18,7 +18,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
     const concernedUsers: DBUser[] = await knex('users')
       .whereIn(
         'username',
-        ['lucas.charrier'] || activeUsers.map((user) => user.id)
+        process.env.FEATURE_SEND_MESSAGE_UPDATE_INFO_USERNAME ? [process.env.FEATURE_SEND_MESSAGE_UPDATE_INFO_USERNAME] : activeUsers.map((user) => user.id)
       );
     
     const concernedUserWithMattermostUsers : (MemberWithEmailsAndMattermostUsername & DBUser)[] = concernedUsers.map(
@@ -55,22 +55,19 @@ export async function sendMessageToUpdateInfoToAllUsers() {
             }
         );
         if (process.env.FEATURE_SEND_MESSAGE_UPDATE_INFO) {
-            if (user.mattermostUsername === 'lucas.charrier') {
-                try {
-                    
-                    await BetaGouv.sendInfoToChat(
-                        messageContent,
-                        'secretariat',
-                        user.mattermostUsername
-                    );
-                    await sleep(1000);
-                } catch (e) {
-                    console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
-                }
-                utils.sendMail(user.primary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
+            try {
+                
+                await BetaGouv.sendInfoToChat(
+                    messageContent,
+                    'secretariat',
+                    user.mattermostUsername
+                );
+                await sleep(1000);
+            } catch (e) {
+                console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
             }
+            utils.sendMail(user.primary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
         }
-        console.log(user)
         console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }
 }
