@@ -177,7 +177,7 @@ const jobs: Job[] = [
     description: 'Cron job to create user on mattermost by email',
   },
   {
-    cronTime: '0 */4 * * * *',
+    cronTime: '0 0 10 * * 0',
     onTick: addUsersNotInCommunityToCommunityTeam,
     isActive: !!config.featureAddUserToCommunityTeam,
     name: 'addUsersNotInCommunityToCommunityTeam',
