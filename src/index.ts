@@ -83,8 +83,8 @@ app.use((err, req, res, next) => {
     // redirect to login and keep the requested url in the '?next=' query param
     if (req.method === 'GET') {
       req.flash(
-        'error',
-        "Vous n'êtes pas identifié pour accéder à cette page (ou votre accès n'est plus valide)"
+        'message',
+        "Pour accéder à cette page vous devez vous identifier, vous pouvez le faire en renseignant votre email juste en dessous."
       );
       const nextParam = req.url ? `?next=${req.url}` : '';
       return res.redirect(`/login${nextParam}`);
