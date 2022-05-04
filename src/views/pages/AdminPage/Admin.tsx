@@ -1,4 +1,3 @@
-import type { Request } from 'express'
 import React, { ReactNode } from 'react'
 import { InnerPageLayout } from '../components/InnerPageLayout'
 import { hydrateOnClient } from '../../../lib/hydrateOnClient'
@@ -14,18 +13,18 @@ interface Email {
   redirections: string[],
 }
 
-interface Props {
+interface AdminProps {
   emails: Email[],
   expiredEmails: Email[],
-  request: Request,
   title: string,
   currentUserId: string,
   errors: string[],
   messages: string[],
+  activeTab: string
 }
 
 /* Pure component */
-export const Admin = InnerPageLayout(function (props: Props) {
+export const Admin = InnerPageLayout((props: AdminProps) => {
 
   const rows : ReactNode[] = props.emails.map(email => {
     return (<tr>

@@ -1,10 +1,8 @@
 
    
-import type { Request } from 'express'
 import React from 'react'
 
-interface HasRequest {
-  request: Request,
+interface InnerPageLayout {
   title: string,
   currentUserId: string,
   errors: string[],
@@ -12,7 +10,7 @@ interface HasRequest {
   activeTab: string
 }
 
-export const InnerPageLayout = <T extends HasRequest>(Component: (props: T) => JSX.Element) => (
+export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T) => JSX.Element) => (
   props: T
 ) => {
   return (
@@ -38,37 +36,37 @@ export const InnerPageLayout = <T extends HasRequest>(Component: (props: T) => J
                     <ul className="hidden-mobile margin-bottom-5" id="drawer">
                         <li>
                             <a href="/account" id="account" 
-                                className="nav-item <% if(activeTab === 'account') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'account' ? 'active' : ''}`}>
                                 Mon compte
                             </a>
                         </li>
                         <li>
                             <a href="/community" id="community"
-                                className="nav-item <% if(activeTab === 'community') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'community' ? 'active' : ''}`}>
                                 Communauté
                             </a>
                         </li>
                         <li>
                             <a href="/startups" id="startups"
-                                className="nav-item <% if(activeTab === 'startups') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
                                 Startups
                             </a>
                         </li>
                         <li>
                             <a href="/admin" id="admin" 
-                                className="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'administration' ? 'active' : ''}`}>
                                 Administration
                             </a>
                         </li>
                         <li>
                             <a href="/newsletters" id="newsletter" 
-                                className="nav-item <% if(activeTab === 'newsletter') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'newsletter' ? 'active' : ''}`}>
                                 Infolettres internes
                             </a>
                         </li>
                         <li>
                             <a href="/resources" id="resources"
-                                className="nav-item <% if(activeTab === 'resources') { %> active <% } %>">
+                                className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>
                                 Ressources
                             </a>
                         </li>
