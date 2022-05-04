@@ -52,14 +52,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
           : ''}
       </head>
       <body>
-        <header id="header">
-          <a class="no-decoration" href="/">
-            <h3>🤖&nbsp;Secrétariat automatique de BetaGouv</h3>
-          </a>
-        </header>
-        <main role="main">
-          <section class="section section-grey no-padding">
-        <div id="root">${ReactDOMServer.renderToString(Component(props))}</div>
+        ${ReactDOMServer.renderToString(Component(props))}
         ${args.hydrate
           ? html`<script>
               window.__INITIAL_PROPS__ = ${props ? JSON.stringify(stripRequest(props)) : '{}'}

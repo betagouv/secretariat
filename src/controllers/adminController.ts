@@ -2,6 +2,7 @@ import PromiseMemoize from "promise-memoize";
 import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
+import { AdminPage } from '../views';
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
@@ -57,21 +58,26 @@ export async function getEmailLists(req, res) {
   try {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter((user) => user.expired);
-    const currentUser = await utils.userInfos(req.auth.id, true);
+    // const currentUser = await utils.userInfos(req.auth.id, true);
     const title = 'Administration';
-    res.render('admin', {
-      title,
-      currentUserId: req.auth.id,
-      userInfos: currentUser.userInfos,
-      emails,
-      expiredEmails,
-      activeTab: 'admin',
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-    });
+      res.send(
+        AdminPage({
+          request: req,
+          title,
+          currentUserId: req.auth.id,
+          // userInfos: currentUser.userInfos,
+          emails,
+          expiredEmails,
+          activeTab: 'admin',
+          errors: req.flash('error'),
+          messages: req.flash('message'),
+        })
+      )
   } catch (err) {
     console.error(err);
     req.flash('error', 'Erreur interne');
     res.redirect('/account');
   }
 }
+
+
