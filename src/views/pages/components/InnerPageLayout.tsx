@@ -75,7 +75,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                     </ul>
                 </aside>
                 <main role="main" className="main">
-                    { props.errors.length && 
+                    { Boolean(props.errors.length) && 
                         <div className="notification error">
                             <strong>Erreur : </strong>
                             {props.errors.map((message) => {
@@ -83,7 +83,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             })}
                         </div>
                     }
-                    { props.messages.length && <div className="notification">
+                    { Boolean(props.messages.length) && <div className="notification">
                         {props.messages.map((message) => {
                             return <p>{message}</p>
                         })}
