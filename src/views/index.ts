@@ -11,7 +11,7 @@ export const HomePage = (props: Parameters<typeof Home>[0]) =>
     pageName: 'Home', // This must match the Component name
   })
 
-export const AdminPage = (props: Parameters<typeof Home>[0]) =>
+export const AdminPage = (props: Parameters<typeof Admin>[0]) =>
   makeHtml({
     Component: Admin,
     props,
