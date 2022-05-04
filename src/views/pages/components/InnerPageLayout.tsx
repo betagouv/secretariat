@@ -17,20 +17,6 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
 ) => {
   return (
     <>
-        <html>
-        <head>
-            <meta charSet="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>{ props.title }</title>
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-            <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png"/>
-            <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png"/>
-            <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png"/>
-            <link rel="manifest" href="/static/favicon/site.webmanifest"/>
-            <link rel="stylesheet" href="/static/css/main.css"/>
-        </head>
-
-        <body>
             <div id="dashboard" className="dashboard">
                 <aside className="side-menu" role="navigation" id="navigation">
                     <button id="drawer-toggle" className="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
@@ -114,9 +100,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                         </div>
                     </section>
                 </main>
-                </div>
-            </body>
-        </html>
-    </>
+            </div>
+        </>
   )
 }
