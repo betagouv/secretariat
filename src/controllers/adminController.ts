@@ -64,7 +64,7 @@ export async function getEmailLists(req, res) {
         AdminPage({
           title,
           currentUserId: req.auth.id,
-          userInfos: currentUser.userInfos,
+          // userInfos: currentUser.userInfos,
           emails,
           expiredEmails,
           activeTab: 'admin',
@@ -78,3 +78,5 @@ export async function getEmailLists(req, res) {
     res.redirect('/account');
   }
 }
+
+

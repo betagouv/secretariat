@@ -9,6 +9,7 @@ interface HasRequest {
   currentUserId: string,
   errors: string[],
   messages: string[],
+  activeTab: string
 }
 
 export const InnerPageLayout = <T extends HasRequest>(Component: (props: T) => JSX.Element) => (
