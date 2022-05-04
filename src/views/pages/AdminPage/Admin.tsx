@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react'
 import { InnerPageLayout } from '../components/InnerPageLayout'
 import { hydrateOnClient } from '../../../lib/hydrateOnClient'
+import type { Request } from 'express'
 
 interface Email {
   github?: string,
@@ -20,7 +21,8 @@ interface AdminProps {
   currentUserId: string,
   errors: string[],
   messages: string[],
-  activeTab: string
+  activeTab: string,
+  request: Request
 }
 
 /* Pure component */

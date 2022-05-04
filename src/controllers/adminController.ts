@@ -62,6 +62,7 @@ export async function getEmailLists(req, res) {
     const title = 'Administration';
       res.send(
         AdminPage({
+          request: req,
           title,
           currentUserId: req.auth.id,
           // userInfos: currentUser.userInfos,

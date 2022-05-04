@@ -1,13 +1,15 @@
 
    
 import React from 'react'
+import type { Request } from 'express'
 
 interface InnerPageLayout {
   title: string,
   currentUserId: string,
   errors: string[],
   messages: string[],
-  activeTab: string
+  activeTab: string,
+  request: Request
 }
 
 export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T) => JSX.Element) => (
