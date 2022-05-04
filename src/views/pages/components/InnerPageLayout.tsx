@@ -93,7 +93,7 @@ export const InnerPageLayout = <T extends HasRequest>(Component: (props: T) => J
                         <div className="notification error">
                             <strong>Erreur : </strong>
                             {props.errors.map((message) => {
-                                { message }
+                                return message
                             })}
                         </div>
                     }
