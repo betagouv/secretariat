@@ -155,6 +155,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
         onRef={(r) => (ref = r)}
         columns={columns} data={data} events={{ rowClick }} />
       <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'/>
+      <link rel="stylesheet" media="screen,print" href='/react-tabulator/styles.css'/>
       <script src="/static/sortable/sortable.js"></script>
       <style media="screen">
         {css}
