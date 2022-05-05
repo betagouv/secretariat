@@ -2,6 +2,10 @@ import React, { ReactNode } from 'react'
 import { InnerPageLayout } from '../components/InnerPageLayout'
 import { hydrateOnClient } from '../../../lib/hydrateOnClient'
 import type { Request } from 'express'
+import 'react-tabulator/lib/styles.css'; // required styles
+import 'react-tabulator/lib/css/tabulator.min.css'; // theme
+import { ReactTabulator, ColumnDefinition, ReactTabulatorOptions } from 'react-tabulator';
+
 
 interface Email {
   github?: string,
@@ -25,8 +29,49 @@ interface AdminProps {
   request: Request
 }
 
+const columns: ColumnDefinition[] = [
+  { title: 'Name', field: 'name', width: 150 },
+  { title: 'Age', field: 'age', hozAlign: 'left', formatter: 'progress' },
+  { title: 'Favourite Color', field: 'color' },
+  { title: 'Date Of Birth', field: 'dob', sorter: 'date' },
+  { title: 'Rating', field: 'rating', hozAlign: 'center', formatter: 'star' },
+  { title: 'Passed?', field: 'passed', hozAlign: 'center', formatter: 'tickCross' },
+  { title: 'Custom', field: 'custom', hozAlign: 'center', editor: 'input', formatter: reactFormatter(<SimpleButton />) }
+];
+const data = [
+  { id: 1, name: 'Oli Bob', age: '12', color: 'red', dob: '01/01/1980', rating: 5, passed: true, pets: ['cat', 'dog'] },
+  { id: 2, name: 'Mary May', age: '1', color: 'green', dob: '12/05/1989', rating: 4, passed: true, pets: ['cat'] },
+  { id: 3, name: 'Christine Lobowski', age: '42', color: 'green', dob: '10/05/1985', rating: 4, passed: false },
+  { id: 4, name: 'Brendon Philips', age: '125', color: 'red', dob: '01/08/1980', rating: 4.5, passed: true },
+  { id: 5, name: 'Margret Marmajuke', age: '16', color: 'yellow', dob: '07/01/1999', rating: 4, passed: false },
+  {
+    id: 6,
+    name: 'Van Ng',
+    age: '37',
+    color: 'green',
+    dob: '06/10/1982',
+    rating: 4,
+    passed: true,
+    pets: ['dog', 'fish']
+  },
+  { id: 7, name: 'Duc Ng', age: '37', color: 'yellow', dob: '10/10/1982', rating: 4, passed: true, pets: ['dog'] }
+];
+
 /* Pure component */
 export const Admin = InnerPageLayout((props: AdminProps) => {
+
+  const [state, setState] = React.useState<any>({
+    data: [],
+    selectedName: ''
+  });
+  let ref = React.useRef<any>();
+
+  const rowClick = (e: any, row: any) => {
+    console.log('ref table: ', ref.current); // this is the Tabulator table instance
+    // ref?.current && ref?.current.replaceData([])
+    console.log('rowClick id: ${row.getData().id}', row, e, state);
+    setState({ selectedName: row.getData().name });
+  };
 
   const rows : ReactNode[] = props.emails.map(email => {
     return (<tr>
@@ -106,6 +151,9 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
               </table>
           </div>
       </div>
+      <ReactTabulator
+        onRef={(r) => (ref = r)}
+        columns={columns} data={data} events={{ rowClick }} />
       <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'/>
       <script src="/static/sortable/sortable.js"></script>
       <style media="screen">
