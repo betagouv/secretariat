@@ -43,6 +43,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
       <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
       <link rel="manifest" href="/static/favicon/site.webmanifest">
       <link rel="stylesheet" media="screen,print" href='/react-tabulator/styles.css'/>
+      <link rel="stylesheet" media="screen,print" href='/react-tabulator/lib/css/tabulator.min.css'/>
 
       <link rel="stylesheet" href="/static/css/main.css">
         ${args.hydrate

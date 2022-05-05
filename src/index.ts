@@ -42,6 +42,12 @@ app.use(
   express.static(
     path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-tabulator/lib/styles.css')
   )
+);
+app.use(
+  '/react-tabulator/tabulator.min.css',
+  express.static(
+    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-tabulator/lib/css/tabulator.min.css')
+  )
 ); 
 app.use(
   '/topbar.js',
