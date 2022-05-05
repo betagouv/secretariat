@@ -2,9 +2,9 @@ import React, { ReactNode } from 'react'
 import { InnerPageLayout } from '../components/InnerPageLayout'
 import { hydrateOnClient } from '../../../lib/hydrateOnClient'
 import type { Request } from 'express'
-import 'react-tabulator/lib/styles.css'; // required styles
-import 'react-tabulator/lib/css/tabulator.min.css'; // theme
-import { ReactTabulator, ColumnDefinition, ReactTabulatorOptions } from 'react-tabulator';
+// import 'react-tabulator/lib/styles.css'; // required styles
+// import 'react-tabulator/lib/css/tabulator.min.css'; // theme
+import { ReactTabulator, ColumnDefinition } from 'react-tabulator';
 
 
 interface Email {
