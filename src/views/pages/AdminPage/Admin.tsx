@@ -61,7 +61,7 @@ const data = [
 export const Admin = InnerPageLayout((props: AdminProps) => {
 
   const [state, setState] = React.useState<any>({
-    data: [],
+    data,
     selectedName: ''
   });
   let ref = React.useRef<any>();
