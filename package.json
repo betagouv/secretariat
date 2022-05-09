@@ -107,7 +107,7 @@
     "pg-connection-string": "^2.5.0",
     "prettier": "^2.6.2",
     "rewire": "^6.0.0",
-    "sinon": "^13.0.2",
+    "sinon": "^14.0.0",
     "ts-node": "^10.7.0",
     "ts-node-dev": "^1.1.8",
     "ttypescript": "^1.5.13",
