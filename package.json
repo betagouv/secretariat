@@ -99,7 +99,7 @@
     "chai-http": "^4.3.0",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.5.0",
-    "husky": "^7.0.4",
+    "husky": "^8.0.0",
     "lint-staged": "^12.4.0",
     "mocha": "^10.0.0",
     "nock": "^13.2.4",
