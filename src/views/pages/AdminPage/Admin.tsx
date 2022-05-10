@@ -31,7 +31,7 @@ interface AdminProps {
 
 const columns: ColumnDefinition[] = [
   { title: 'Id', field: 'id', width: 150 },
-  { title: 'Email', field: 'email', hozAlign: 'left', formatter: 'progress' },
+  { title: 'Email', field: 'email', hozAlign: 'left' },
   { title: 'Redirection', field: 'redirections' },
   { title: 'Date', field: 'endDate', sorter: 'date' },
   { title: 'Account', field: 'account', hozAlign: 'center'},
@@ -49,24 +49,7 @@ const columns: ColumnDefinition[] = [
 /* Pure component */
 export const Admin = InnerPageLayout((props: AdminProps) => {
 
-  const data = props.emails || [
-    { id: 1, name: 'Oli Bob', age: '12', color: 'red', dob: '01/01/1980', rating: 5, passed: true, pets: ['cat', 'dog'] },
-    { id: 2, name: 'Mary May', age: '1', color: 'green', dob: '12/05/1989', rating: 4, passed: true, pets: ['cat'] },
-    { id: 3, name: 'Christine Lobowski', age: '42', color: 'green', dob: '10/05/1985', rating: 4, passed: false },
-    { id: 4, name: 'Brendon Philips', age: '125', color: 'red', dob: '01/08/1980', rating: 4.5, passed: true },
-    { id: 5, name: 'Margret Marmajuke', age: '16', color: 'yellow', dob: '07/01/1999', rating: 4, passed: false },
-    {
-      id: 6,
-      name: 'Van Ng',
-      age: '37',
-      color: 'green',
-      dob: '06/10/1982',
-      rating: 4,
-      passed: true,
-      pets: ['dog', 'fish']
-    },
-    { id: 7, name: 'Duc Ng', age: '37', color: 'yellow', dob: '10/10/1982', rating: 4, passed: true, pets: ['dog'] }
-  ];
+  const data = props.emails
   const [state, setState] = React.useState<any>({
     data: data,
     selectedName: ''
