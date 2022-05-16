@@ -20,10 +20,10 @@ type EmailProps<T> = {
 const html = String.raw
 
 function stripRequest(props: HasRequest) {
-  const { query, user } = props.request
+  const { query } = props.request
   return {
     ...props,
-    request: { query, user },
+    request: { query },
   }
 }
 

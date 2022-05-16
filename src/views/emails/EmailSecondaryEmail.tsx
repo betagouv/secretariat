@@ -1,5 +1,5 @@
 import React from 'react'
-import { hydrateOnClient } from '../../lib/hydrateOnClient'
+import { hydrateOnClient } from '../hydrateOnClient'
 import { Member } from '../../models/member'
 
 interface Props {
