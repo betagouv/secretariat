@@ -44,6 +44,7 @@ export default {
   slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
   usersAPI:
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
+  incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.3/incubators.json',
   startupsAPI:
     process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
   startupsDetailsAPI:

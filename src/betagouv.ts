@@ -2,6 +2,7 @@ import axios from 'axios';
 import ovh0 from 'ovh';
 import config from './config';
 import { checkUserIsExpired } from './controllers/utils';
+import { Incubator } from './models/incubator';
 import { Member } from './models/member';
 import { Startup } from './models/startup';
 
@@ -50,8 +51,8 @@ const betaGouv = {
     }
   },
 
-  usersInfos: async (): Promise<Member[]> =>
-    axios
+  usersInfos: async (): Promise<Member[]> => {
+    return axios
       .get<Member[]>(config.usersAPI)
       .then((response) =>
         response.data.map((author: Member) => {
@@ -76,8 +77,16 @@ const betaGouv = {
       )
       .catch((err) => {
         throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
-      }),
-
+      })
+  },
+  incubators: async (): Promise<Incubator[]> => {
+    return axios
+      .get<any[]>(config.incubatorAPI)
+      .then((response) => response.data)
+      .catch((err) => {
+        throw new Error(`Error to get incubators infos : ${err}`);
+      })
+  },
   userInfosById: async (id: string): Promise<Member> => {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
