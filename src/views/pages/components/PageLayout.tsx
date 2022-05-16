@@ -21,7 +21,7 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
       </header>
       <main role="main">
         <section className="section section-grey no-padding">
-      <div id="root">
+      <div>
         <Header />
         <Component {...props} />
         <Footer />

@@ -1,10 +1,11 @@
 import React, { ReactNode } from 'react'
-import { InnerLayoutPage } from '../components/InnerLayoutPage'
+// import { InnerLayoutPage } from '../components/InnerLayoutPage'
 import { hydrateOnClient } from '../../hydrateOnClient'
 import type { Request } from 'express'
 // import 'react-tabulator/lib/styles.css'; // required styles
 // import 'react-tabulator/lib/css/tabulator.min.css'; // theme
 import { ReactTabulator, ColumnDefinition } from 'react-tabulator';
+import { InnerPageLayout } from '../components/InnerPageLayout';
 
 
 interface Email {

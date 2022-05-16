@@ -15,7 +15,7 @@ type PageProps<T> = {
 type EmailProps<T> = {
   Component: (props: T) => JSX.Element
   props,
-}
+} & ({ hydrate: false } | { hydrate: true; pageName: string })
 
 const html = String.raw
 
@@ -54,7 +54,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
           : ''}
       </head>
       <body>
-        ${ReactDOMServer.renderToString(Component(props))}
+        <div id="root">${ReactDOMServer.renderToString(Component(props))}</div>
         ${args.hydrate
           ? html`<script>
               window.__INITIAL_PROPS__ = ${props ? JSON.stringify(stripRequest(props)) : '{}'}
@@ -73,6 +73,11 @@ export const makeHtmlEmail = <T>(args: EmailProps<T>) => {
     <html>
       <body>
         <div id="root">${ReactDOMServer.renderToString(Component(props))}</div>
+        ${args.hydrate
+          ? html`<script>
+              window.__INITIAL_PROPS__ = ${props ? JSON.stringify(stripRequest(props)) : '{}'}
+            </script>`
+          : ''}
       </body>
     </html>
   `

@@ -17,7 +17,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
 ) => {
   return (
     <>
-        <div id="root">
+        <div>
             <div id="dashboard" className="dashboard">
                 <aside className="side-menu" role="navigation" id="navigation">
                     <button id="drawer-toggle" className="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
