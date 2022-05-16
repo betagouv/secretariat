@@ -3,7 +3,7 @@ import compression from 'compression';
 import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import { expressjwt } from "express-jwt";
+import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from 'express-sanitizer';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
@@ -71,7 +71,7 @@ app.use(
 );
 
 // Save a token in cookie that expire after 7 days if user is logged
-app.use((req, res, next) => {
+app.use((req: Request, res, next) => {
   if (req.auth && req.auth.id) {
     res.cookie('token', getJwtTokenForUser(req.auth.id), { sameSite: 'lax' });
   }
