@@ -113,7 +113,7 @@
             <p class="text-color-blue font-weight-bold"><%= emailInfos.email %></p>
             <ul>
                 <li>statut de l'email : <%= primaryEmailStatus %></li>
-                <li>en spam : <%= emailInfos.isBlocked ? 'oui' : 'non' %></li>
+                <li>compte bloqué pour cause de spam : <%= emailInfos.isBlocked ? 'oui (contactez un.e administrat.eur.rice)' : 'non' %></li>
             </ul>
         <% } else { %>
             <% if (canCreateEmail) { %>
