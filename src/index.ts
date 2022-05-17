@@ -161,6 +161,7 @@ app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 app.get('/resources', resourceController.getResources);
+app.get('/api/get-users', adminController.getUsers);
 
 sentry.initCaptureConsoleWithHandler(app);
 

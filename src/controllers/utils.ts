@@ -79,6 +79,10 @@ export function checkUserIsExpired(user, minDaysOfExpiration = 1) {
       today.getTime();
 }
 
+export function getActiveUsers(users, minDaysOfExpiration = 0) {
+  return users.filter((u) => !checkUserIsExpired(u, minDaysOfExpiration - 1));
+}
+
 export function getExpiredUsers(users, minDaysOfExpiration = 0) {
   return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
 }

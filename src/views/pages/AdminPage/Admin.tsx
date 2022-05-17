@@ -4,26 +4,41 @@ import { hydrateOnClient } from '../../hydrateOnClient'
 import type { Request } from 'express'
 // import 'react-tabulator/lib/styles.css'; // required styles
 // import 'react-tabulator/lib/css/tabulator.min.css'; // theme
-import { ReactTabulator, ColumnDefinition } from 'react-tabulator';
+import { ReactTabulator, ColumnDefinition, reactFormatter } from 'react-tabulator';
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { Member } from 'src/models/member';
 import Select from 'react-select'
+import axios from 'axios';
 
 
-const SEIncubateurSelect = ({ incubators }) => {
-  return <Select options={incubators} isMulti placeholder={'Sélectionne un ou plusieurs incubateurs'}  />
+const SEIncubateurSelect = ({ incubators, onChange }) => {
+  return <Select options={incubators}
+    isMulti
+    onChange={onChange}
+    placeholder={'Sélectionne un ou plusieurs incubateurs'}  />
 }
 
-const SESelect = ({ startups }) => {
-  return <Select options={startups} isMulti placeholder={'Sélectionne une ou plusieurs startups'} />
+const SESelect = ({ startups, onChange }) => {
+  return <Select
+    options={startups}
+    isMulti
+    onChange={onChange}
+    placeholder={'Sélectionne une ou plusieurs startups'} />
 }
 
-const DomaineSelect = ({ domaines }) => {
-  return <Select options={domaines} isMulti placeholder={'Sélectionne un ou plusieurs domaine'}  />
+const DomaineSelect = ({ domaines, onChange }) => {
+  return <Select
+    options={domaines}
+    onChange={onChange}
+    isMulti
+    placeholder={'Sélectionne un ou plusieurs domaine'}  />
 }
 
-const ActiveMemberSelect = ({ status }) => {
-  return <Select options={status} placeholder={'Sélectionne les membres actifs/inactifs/les deux'} />
+const MemberStatusSelect = ({ status, onChange }) => {
+  return <Select
+    options={status}
+    onChange={onChange}
+    placeholder={'Sélectionne les membres actifs/inactifs/les deux'} />
 }
 
 interface Email {
@@ -57,25 +72,17 @@ interface AdminProps {
   domaineOptions: Option[],
 }
 
+function Link(props: any) {
+  const rowData = props.cell._cell.row.data;
+  const cellValue = props.cell._cell.value || 'Edit | Show';
+  return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
+}
+
 const columns: ColumnDefinition[] = [
-  { title: 'Id', field: 'id', width: 150 },
+  { title: 'email', field: 'id', width: 150, formatter: reactFormatter(<Link/>)},
   { title: 'fullname', field: 'fullname' },
-  { title: 'github', field: 'github' },
-  { title: 'Email', field: 'email', hozAlign: 'left' },
-  { title: 'start', field: 'start', sorter: 'date' },
-  { title: 'end', field: 'end', sorter: 'date' },
-  { title: 'previously', field: 'previously', hozAlign: 'center'},
-  { title: 'missions', field: 'missions', hozAlign: 'center'},
   { title: 'startups', field: 'startups', hozAlign: 'center'},
-  { title: 'employer', field: 'employer', hozAlign: 'center' },
   { title: 'domaine', field: 'domaine', hozAlign: 'center' }
-  // { title: 'Name', field: 'name', width: 150 },
-  // { title: 'Age', field: 'age', hozAlign: 'left', formatter: 'progress' },
-  // { title: 'Favourite Color', field: 'color' },
-  // { title: 'Date Of Birth', field: 'dob', sorter: 'date' },
-  // { title: 'Rating', field: 'rating', hozAlign: 'center', formatter: 'star' },
-  // { title: 'Passed?', field: 'passed', hozAlign: 'center', formatter: 'tickCross' },
-  // { title: 'Custom', field: 'custom', hozAlign: 'center', editor: 'input' }
 ];
 
 /* Pure component */
@@ -83,6 +90,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
   const data = props.emails
   const [state, setState] = React.useState<any>({
     data: data,
+    users: [],
     selectedName: ''
   });
   let ref = React.useRef<any>();
@@ -127,19 +135,57 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
     </tr>)
   })
 
+  const onClickSearch = async () => {
+    const domaines = (state.domaines || []).map(d => d.value).join(',')
+    const incubators = (state.incubators || []).map(d => d.value).join(',')
+    const startups = (state.startups || []).map(d => d.value).join(',')
+    const memberStatus= (state.memberStatus || {}).value
+
+    const data = await axios.get(`/api/get-users?domaines=${domaines}&incubators=${incubators}&startups=${startups}&memberStatus=${memberStatus}`).then(response => response.data);
+    setState({
+      ...state,
+      users: data.users
+    })
+  }
+
+  function exportToCsv(filename, rows) {
+
+    const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+    const header = Object.keys(rows[0])
+    console.log(rows[0], Object.keys(rows[0]))
+    const csv = [
+      header.join(','), // header row first
+      ...rows.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+    ].join('\r\n')
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        const link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+
+  const onClickDownload = async () => {
+    console.log(state.users);
+    exportToCsv('users.csv', state.users)
+  }
+
   const css = ".panel { overflow: scroll; }"
-  const activeMemberOptions = [{ value: 'active', label: 'Actif'}, { value: 'unactive', label: 'Non Actif'}, { value: 'both', label: 'Tous'}]
+  const activeMemberOptions = [{ value: 'active', label: 'Membres Actifs'}, { value: 'unactive', label: 'Alumnis'}, { value: 'both', label: 'Membres actifs et Alumnis'}]
   return (
     <>
       <div className="module">
-          <div className="row">
-            <SEIncubateurSelect incubators={props.incubatorOptions} />
-            <SESelect startups={props.startupOptions} />
-          </div>
-          <div className="row">
-            <DomaineSelect domaines={props.domaineOptions} />
-            <ActiveMemberSelect status={activeMemberOptions} />
-          </div>
           <div key={'all'} className="panel panel-full-width" id="all">
               <h3>
                   Liste des emails
@@ -181,10 +227,62 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
                   </tbody>
               </table>
           </div>
+          <div key={'all'} className="panel panel-full-width" id="all">
+            <h3>
+                Filtrer les utilisateurs
+            </h3>
+            <div className="row">
+            <div style={{ width: '50%' }}>
+              <SEIncubateurSelect
+                incubators={props.incubatorOptions}
+                onChange={(incubators) => setState({
+                  ...state,
+                  incubators
+                })} />
+            </div>
+            <div style={{ width: '50%' }}>
+              <SESelect
+                startups={props.startupOptions}
+                onChange={(startups) => setState({
+                  ...state,
+                  startups
+                })} />
+            </div>
+          </div>
+          <div className="row">
+            <div style={{ width: '50%' }}>
+              <DomaineSelect
+                domaines={props.domaineOptions}
+                onChange={(domaines) => setState({
+                  ...state,
+                  domaines
+                })}
+              />
+            </div>
+            <div style={{ width: '50%' }}>
+              <MemberStatusSelect
+                status={activeMemberOptions}
+                onChange={(memberStatus) => setState({
+                  ...state,
+                  memberStatus
+                })}
+              />
+            </div>
+          </div>
+          <br/>
+          <button onClick={onClickSearch}>Chercher</button>
+          <button onClick={onClickDownload}>Télécharger</button>
+          <br/>
+          <br/>
+          <ReactTabulator
+            onRef={(r) => (ref = r)}
+            columns={columns}
+            data={state.users}
+            events={{ rowClick }} />
+          <br/>
+          <br/>
+          </div>
       </div>
-      <ReactTabulator
-        onRef={(r) => (ref = r)}
-        columns={columns} data={props.users} events={{ rowClick }} />
       <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'/>
       {/* <script src="/static/sortable/sortable.js"></script> */}
       <style media="screen">

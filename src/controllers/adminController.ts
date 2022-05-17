@@ -4,7 +4,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import { AdminPage } from '../views';
 import betagouv from "../betagouv";
-import { Domaine } from "src/models/member";
+import { Domaine, Member } from "src/models/member";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
@@ -89,9 +89,6 @@ export async function getEmailLists(req, res) {
               value: "COACHING",
               label: "Coaching"
             }, {
-              value: "COACHING",
-              label: "Coaching"
-            }, {
               value: "DEPLOIEMENT",
               label: "Déploiement"
             }, {
@@ -125,6 +122,39 @@ export async function getEmailLists(req, res) {
     req.flash('error', 'Erreur interne');
     res.redirect('/account');
   }
+}
+
+export async function getUsers(req, res) {
+    const domaines = req.query.domaines ? req.query.domaines.split(',').map(domaine => Domaine[domaine]) : []
+    const incubators = req.query.incubators ? req.query.incubators.split(',') : []
+    const memberStatus = req.query.memberStatus
+    let startups = (req.query.startups || '').split(',')
+    // const activeMembers = req.params.activeMembers
+    let users: Member[] = await betagouv.usersInfos()
+    if (memberStatus === 'unactive') {
+      users = utils.getExpiredUsers(users)
+    } else if (memberStatus === 'active') {
+      users = utils.getActiveUsers(users)
+    }
+    if (incubators.length) {
+      const incubatorsDict = await betagouv.incubators()
+      const incubatorStartups = incubators.reduce((acc, incubator) => {
+        return [...acc, ...incubatorsDict[incubator].startups.map(s => s.id)]
+      }, [])
+      startups = [...startups, ...incubatorStartups]
+    }
+    if (domaines.length) {
+      users = users.filter(user => domaines.includes(user.domaine))
+      console.log(users)
+    }
+    if (startups.length) {
+      users = users.filter(user => {
+        return Boolean(startups.filter(function(n) {
+          return (user.startups || []).indexOf(n) !== -1;
+        }).length);
+      })
+    }
+    res.json({ users })
 }
 
 
