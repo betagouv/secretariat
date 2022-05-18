@@ -42,7 +42,9 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
       <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
       <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
       <link rel="manifest" href="/static/favicon/site.webmanifest">
-  
+      <link rel="stylesheet" media="screen,print" href='/react-tabulator/styles.css'/>
+      <link rel="stylesheet" media="screen,print" href='/react-tabulator/tabulator.min.css'/>
+
       <link rel="stylesheet" href="/static/css/main.css">
         ${args.hydrate
           ? html`
@@ -52,7 +54,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
           : ''}
       </head>
       <body>
-        ${ReactDOMServer.renderToString(Component(props))}
+        <div id="root">${ReactDOMServer.renderToString(Component(props))}</div>
         ${args.hydrate
           ? html`<script>
               window.__INITIAL_PROPS__ = ${props ? JSON.stringify(stripRequest(props)) : '{}'}

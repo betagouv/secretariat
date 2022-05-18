@@ -111,6 +111,7 @@ export async function getCurrentAccount(req, res) {
     const today = new Date()
     const title = 'Mon compte';
     const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
+    const gender = dbUser.gender || 'NSP'
     return res.render('account', {
       title,
       currentUserId: req.auth.id,
@@ -130,7 +131,7 @@ export async function getCurrentAccount(req, res) {
       activeTab: 'account',
       marrainageState,
       tjm: dbUser.tjm ? `${dbUser.tjm} euros` : 'Non renseigné',
-      gender: genderOptions.find(opt => opt.key === dbUser.gender).name,
+      gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
       legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
       workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
       formData: {},

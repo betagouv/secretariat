@@ -17,11 +17,13 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
           <h3>🤖&nbsp;Secrétariat automatique de BetaGouv</h3>
         </a>
       </header>
-      <section className="section section-grey no-padding">
-        <Header />
-        <Component {...props} />
-        <Footer />
-      </section>
+      <main role="main">
+        <section className="section section-grey no-padding">
+          <Header />
+          <Component {...props} />
+          <Footer />
+        </section>
+      </main>
     </>
   )
 }
