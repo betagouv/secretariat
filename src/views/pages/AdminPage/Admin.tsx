@@ -177,7 +177,6 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
 }
 
   const onClickDownload = async () => {
-    console.log(state.users);
     exportToCsv('users.csv', state.users)
   }
 
@@ -227,7 +226,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
                   </tbody>
               </table>
           </div>
-          <div key={'all'} className="panel panel-full-width" id="all">
+          <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
             <h3>
                 Filtrer les utilisateurs
             </h3>
@@ -270,14 +269,15 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
             </div>
           </div>
           <br/>
-          <button onClick={onClickSearch}>Chercher</button>
-          <button onClick={onClickDownload}>Télécharger</button>
+          <button onClick={onClickSearch} className="button margin-right-10">Chercher</button>
+          { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
           <br/>
           <br/>
           <ReactTabulator
             onRef={(r) => (ref = r)}
             columns={columns}
             data={state.users}
+            dataLoaderLoading={'Loading'}
             events={{ rowClick }} />
           <br/>
           <br/>
