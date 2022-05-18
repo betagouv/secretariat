@@ -284,7 +284,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           </div>
       </div>
       <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'/>
-      {/* <script src="/static/sortable/sortable.js"></script> */}
+      <script src="/static/sortable/sortable.js"></script>
       <style media="screen">
         {css}
       </style>
