@@ -95,13 +95,6 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
   });
   let ref = React.useRef<any>();
 
-  const rowClick = (e: any, row: any) => {
-    console.log('ref table: ', ref.current); // this is the Tabulator table instance
-    // ref?.current && ref?.current.replaceData([])
-    console.log('rowClick id: ${row.getData().id}', row, e, state);
-    setState({ selectedName: row.getData().name });
-  };
-
   const rows : ReactNode[] = props.emails.map(email => {
     const redirectionList = email.redirections.map(function(redirection, i) {
       return <span key={i}>{redirection}<br /></span>
@@ -277,8 +270,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
             onRef={(r) => (ref = r)}
             columns={columns}
             data={state.users}
-            dataLoaderLoading={'Loading'}
-            events={{ rowClick }} />
+          />
           <br/>
           <br/>
           </div>
