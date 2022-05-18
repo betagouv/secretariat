@@ -73,7 +73,7 @@ interface AdminProps {
 }
 
 function Link(props: any) {
-  const rowData = props.cell._cell.row.data;
+  // props.cell._cell.row.data;
   const cellValue = props.cell._cell.value || 'Edit | Show';
   return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
 }
@@ -159,8 +159,8 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
     ].join('\r\n')
 
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    if (navigator.msSaveBlob) { // IE 10+
-        navigator.msSaveBlob(blob, filename);
+    if (navigator['msSaveBlob']) { // IE 10+
+        navigator['msSaveBlob'](blob, filename);
     } else {
         const link = document.createElement("a");
         if (link.download !== undefined) { // feature detection
