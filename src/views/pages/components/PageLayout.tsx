@@ -1,5 +1,3 @@
-
-   
 import type { Request } from 'express'
 import React from 'react'
 import Footer from './Footer'
@@ -25,9 +23,7 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
         <Header />
         <Component {...props} />
         <Footer />
-      </div>
       </section>
-      </main>
     </>
   )
 }
