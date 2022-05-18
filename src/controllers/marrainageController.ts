@@ -34,7 +34,7 @@ async function selectRandomOnboarder(newcomerId, domaine) {
     return !existingCandidate && senior && stillActive && !isRequester;
   });
   const onboardersFromDomaine = onboarders.filter(onboarder => onboarder.domaine === domaine)
-  const onboarderPool = domaine === Domaine.AUTRE || !onboardersFromDomaine.length ? onboarders : onboardersFromDomaine
+  const onboarderPool = (domaine === Domaine.AUTRE || !onboardersFromDomaine.length) ? onboarders : onboardersFromDomaine
   return onboarderPool[Math.floor(Math.random() * onboarderPool.length)];
 }
 
