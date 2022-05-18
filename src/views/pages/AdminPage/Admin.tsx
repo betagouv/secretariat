@@ -93,7 +93,6 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
     users: [],
     selectedName: ''
   });
-  let ref = React.useRef<any>();
 
   const rows : ReactNode[] = props.emails.map(email => {
     const redirectionList = email.redirections.map(function(redirection, i) {
@@ -267,7 +266,6 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           <br/>
           <br/>
           <ReactTabulator
-            onRef={(r) => (ref = r)}
             columns={columns}
             data={state.users}
           />
