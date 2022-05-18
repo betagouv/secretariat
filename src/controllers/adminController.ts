@@ -18,8 +18,6 @@ const emailWithMetadataMemoized = PromiseMemoize(
       BetaGouv.usersInfos(),
     ]);
 
-    console.log('users', users.length);
-
     const emails = Array.from(
       new Set([
         ...redirections.reduce(
@@ -128,7 +126,7 @@ export async function getUsers(req, res) {
     const domaines = req.query.domaines ? req.query.domaines.split(',').map(domaine => Domaine[domaine]) : []
     const incubators = req.query.incubators ? req.query.incubators.split(',') : []
     const memberStatus = req.query.memberStatus
-    let startups = (req.query.startups || '').split(',')
+    let startups = req.query.startups ? req.query.startups.split(',') : []
     // const activeMembers = req.params.activeMembers
     let users: Member[] = await betagouv.usersInfos()
     if (memberStatus === 'unactive') {
@@ -145,7 +143,6 @@ export async function getUsers(req, res) {
     }
     if (domaines.length) {
       users = users.filter(user => domaines.includes(user.domaine))
-      console.log(users)
     }
     if (startups.length) {
       users = users.filter(user => {
