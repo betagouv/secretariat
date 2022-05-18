@@ -228,7 +228,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           </div>
           <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
             <h3>
-                Filtrer les utilisateurs
+                Filtrer les membres
             </h3>
             <div className="row">
             <div style={{ width: '50%' }}>
