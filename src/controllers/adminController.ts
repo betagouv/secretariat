@@ -4,7 +4,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import { AdminPage } from '../views';
 import betagouv from "../betagouv";
-import { Domaine, Member } from "src/models/member";
+import { Domaine, Member } from "../models/member";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
