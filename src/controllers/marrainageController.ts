@@ -140,7 +140,7 @@ export async function reloadMarrainage(newcomerId) {
       `Erreur lors de la relance de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`
     );
   }
-
+  console.log(`Select ${onboarder.id} (${onboarder.domaine} for ${newcomer.id} (${newcomer.domaine}))`)
   await knex('marrainage')
     .where({ username: newcomer.id })
     .increment('count', 1)
