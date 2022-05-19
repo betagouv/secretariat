@@ -73,21 +73,22 @@ interface AdminProps {
 }
 
 function Link(props: any) {
-  // props.cell._cell.row.data;
+  const data = props.cell._cell.row.data;
   const cellValue = props.cell._cell.value || 'Edit | Show';
-  return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
+  return <a href={`/community/${data.id}`}>{cellValue}</a>;
 }
 
 const columns: ColumnDefinition[] = [
-  { title: 'email', field: 'id', width: 150, formatter: reactFormatter(<Link/>)},
-  { title: 'fullname', field: 'fullname' },
-  { title: 'startups', field: 'startups', hozAlign: 'center'},
-  { title: 'domaine', field: 'domaine', hozAlign: 'center' }
+  { title: 'Email', field: 'email', width: 150, formatter: reactFormatter(<Link/>)},
+  { title: 'Nom complet', field: 'fullname' },
+  { title: 'Startups', field: 'startups', hozAlign: 'center'},
+  { title: 'Domaine', field: 'domaine', hozAlign: 'center' }
 ];
 
 /* Pure component */
 export const Admin = InnerPageLayout((props: AdminProps) => {
   const data = props.emails
+  let tableRef = React.useRef();
   const [state, setState] = React.useState<any>({
     data: data,
     users: [],
@@ -128,75 +129,72 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
   })
 
   const onClickSearch = async () => {
+    setState({
+      ...state,
+      filterDirty: false,
+      loadingData: true
+    })
     const domaines = (state.domaines || []).map(d => d.value).join(',')
     const incubators = (state.incubators || []).map(d => d.value).join(',')
     const startups = (state.startups || []).map(d => d.value).join(',')
     const memberStatus= (state.memberStatus || {}).value
 
     const data = await axios.get(`/api/get-users?domaines=${domaines}&incubators=${incubators}&startups=${startups}&memberStatus=${memberStatus}`).then(response => response.data);
+    
     setState({
       ...state,
-      users: data.users
+      // loadingData: false,
+      users: data.users.map(user => ({
+        ...user,
+        email: `${user.id}@beta.gouv.fr`
+      }))
     })
   }
 
-  function exportToCsv(filename, rows) {
-
-    const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
-    const header = Object.keys(rows[0])
-    console.log(rows[0], Object.keys(rows[0]))
-    const csv = [
-      header.join(','), // header row first
-      ...rows.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
-    ].join('\r\n')
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    if (navigator['msSaveBlob']) { // IE 10+
-        navigator['msSaveBlob'](blob, filename);
-    } else {
-        const link = document.createElement("a");
-        if (link.download !== undefined) { // feature detection
-            // Browsers that support HTML5 download attribute
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", filename);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+  const exportToCsv = (filename, rows) => {
+    if (tableRef) {
+      tableRef.current.download("csv", "data.csv")
     }
-}
+  }
 
   const onClickDownload = async () => {
     exportToCsv('users.csv', state.users)
   }
-
+  const options  = {
+    downloadDataFormatter: (data) => data,
+    downloadReady: (fileContents, blob) => blob,
+    paginationSize: 100,
+    pagination: 'local',
+    movableRows: true,
+    // progressiveLoad: 'scroll',
+    // progressiveLoadDelay: 200,
+    // progressiveLoadScrollMargin: 30,
+  }
   const css = ".panel { overflow: scroll; }"
   const activeMemberOptions = [{ value: 'active', label: 'Membres Actifs'}, { value: 'unactive', label: 'Alumnis'}, { value: 'both', label: 'Membres actifs et Alumnis'}]
   return (
     <>
       <div className="module">
-          <div key={'all'} className="panel panel-full-width" id="all">
-              <h3>
-                  Liste des emails
-              </h3>
-              <a href="#expired">⬇️ Voir les comptes expirés</a>
-              <hr />
-              <table className="sortable">
-                  <thead>
-                      <tr>
-                          <th key={'email'}>Email</th>
-                          <th key={'github'}>Fiche sur Github</th>
-                          <th key={'date'}>Date de fin OK</th>
-                          <th key={'account'}>Compte Email</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      {rows}
-                  </tbody>
-              </table>
-          </div>
+        <div key={'all'} className="panel panel-full-width" id="all">
+          <h3>
+              Liste des emails
+          </h3>
+          <a href="#expired">⬇️ Voir les comptes expirés</a>
+          <hr />
+          <table className="sortable">
+              <thead>
+                  <tr>
+                      <th key={'email'}>Email</th>
+                      <th key={'github'}>Fiche sur Github</th>
+                      <th key={'date'}>Date de fin OK</th>
+                      <th key={'account'}>Compte Email</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {rows}
+              </tbody>
+          </table>
+        </div>
 
           <div key={'expired'}  className="panel panel-full-width" id="expired">
               <h3>
@@ -220,7 +218,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           </div>
           <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
             <h3>
-                Filtrer les membres
+                Filtrer les utilisateurs
             </h3>
             <div className="row">
             <div style={{ width: '50%' }}>
@@ -262,16 +260,23 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           </div>
           <br/>
           <button onClick={onClickSearch} className="button margin-right-10">Chercher</button>
-          { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
           <br/>
           <br/>
-          <ReactTabulator
-            columns={columns}
-            data={state.users}
-          />
-          <br/>
-          <br/>
+          { Boolean(state.users.length) && <button onClick={onClickDownload}
+          >Télécharger</button> }
+          <div style={{ position: 'relative'}}>
+            { !state.loadingData && <ReactTabulator
+              onRef={(r) => (tableRef = r)}
+              key={'tabulator'}
+              columns={columns}
+              data={state.users}
+              options={options}
+            /> }
+            { !!state.loadingData && <div>Récupération des données...</div>}
           </div>
+          <br/>
+          <br/>
+        </div>
       </div>
       <link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'/>
       <script src="/static/sortable/sortable.js"></script>

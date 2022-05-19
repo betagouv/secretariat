@@ -157,7 +157,6 @@ export async function createRequestForUser(userId) {
   console.log('Creating marrainage request for', userId)
   const newcomer: Member = await BetaGouv.userInfosById(userId);
   const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
-
   if (!onboarder) {
     const recipientEmailList = [config.senderEmail];
     const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
