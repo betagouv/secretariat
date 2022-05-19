@@ -1,16 +1,14 @@
-FROM node:16.13.0
+FROM node:16
+
+RUN apt-get update && apt-get upgrade -y
 
 WORKDIR /app
 
-RUN chown node:node /app
+COPY package.json package-lock.json .
+
+RUN npm install
 
 COPY . .
-
-RUN npm install -g nodemon
-RUN npm install typescript -g
-RUN npm install -g
-
-USER node
 
 EXPOSE 8100
 RUN npm run dev
