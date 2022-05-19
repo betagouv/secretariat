@@ -23,7 +23,7 @@ services:
       - 6379:6379
   web:
     build: .
-    command:  bash -c "echo 'first npm install can be a bit long'; npm run migrate; npm run dev"
+    command: npm run dev
     depends_on:
       - db
       - maildev
@@ -54,4 +54,3 @@ services:
       - "9229:9229"
     volumes:
       - .:/app
-    restart: on-failure
