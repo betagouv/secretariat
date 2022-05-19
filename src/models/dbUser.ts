@@ -43,7 +43,7 @@ export interface DBUser {
 
 export const genderOptions = [{
     key: 'female',
-    name: "Feminin"
+    name: "Féminin"
   },{
     key: 'male',
     name: "Masculin"
