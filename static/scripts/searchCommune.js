@@ -2,7 +2,6 @@ async function searchCommunes(
 	event
 ){
     var input = event.target.value;
-	console.log('LCS SEARCH COMMUNES 0', input)
 
 	const number = /[\d]+/.exec(input)?.join('') ?? ''
 	const text = /[^\d]+/.exec(input)?.join(' ') ?? ''
@@ -15,7 +14,6 @@ async function searchCommunes(
 		return null
 	}
 	const json = (await response.json())
-	console.log('LCS SEARCH COMMUNES', json)
 
 	const res = json
 		.flatMap(({ codesPostaux, ...commune }) =>
