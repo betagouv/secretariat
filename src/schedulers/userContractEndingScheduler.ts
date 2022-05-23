@@ -198,6 +198,7 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
       .andWhere({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
       .where('primary_email_status_updated_at', '<', todayLess30days)
   }
+  console.log(`Liste d'utilisateur à supprimer`, dbUsers.map(user => user.username), expiredUsers.map(user => user.id))
   for (const user of dbUsers) {
     try {
       await BetaGouv.deleteEmail(user.username);
