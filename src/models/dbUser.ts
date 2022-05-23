@@ -56,14 +56,21 @@ export const genderOptions = [{
     name: "Ne se prononce pas"
   }]
 
-export const statusOptions = [
   {
     key: 'AE',
     name: 'Auto-entreprise/micro-entreprise'
   },
   {
+    key: 'contractuel',
+    name: 'Contractuel-elle'
+  },
+  {
     key: 'EIRL',
     name: 'EIRL'
+  },
+  {
+    key: 'fonctionnaire',
+    name: 'Fonctionnaire'
   },
   {
     key: 'SARL',
@@ -74,6 +81,10 @@ export const statusOptions = [
     name: 'EURL'
   },
   {
+    key: 'PORTAGE',
+    name: 'Portage'
+  },
+  {
     key: 'SAS',
     name: 'SAS'
   },
@@ -82,23 +93,11 @@ export const statusOptions = [
     name: 'SASU'
   },
   {
-    key: 'PORTAGE',
-    name: 'Portage'
-  },
-  {
     key: 'SA',
     name: 'SA'
   },
   {
     key: 'SNC',
     name: 'SNC'
-  },
-  {
-    key: 'contractuel',
-    name: 'Contractuel-elle'
-  },
-  {
-    key: 'fonctionnaire',
-    name: 'Fonctionnaire'
   }
 ]
