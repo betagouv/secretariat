@@ -56,6 +56,7 @@ export const genderOptions = [{
     name: "Ne se prononce pas"
   }]
 
+export const statusOptions = [
   {
     key: 'AE',
     name: 'Auto-entreprise/micro-entreprise'
