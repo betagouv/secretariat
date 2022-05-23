@@ -22,6 +22,7 @@ export enum LegalStatus {
     EURL="EURL",
     SAS="SAS",
     SASU="SASU",
+    PORTAGE="portage",
     SA="SA",
     SNC="SNC",
     contractuel="contractuel",
@@ -79,6 +80,10 @@ export const statusOptions = [
   {
     key: 'SASU',
     name: 'SASU'
+  },
+  {
+    key: 'PORTAGE',
+    name: 'Portage'
   },
   {
     key: 'SA',
