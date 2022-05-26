@@ -86,12 +86,10 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
         } catch (e) {
             console.error(`Erreur lors de l'envoie d'un message via mattermost à ${author}`, e)
         }
-        if (!mattermostSent) {
-            try {
-                await sendEmailToAuthorsIfExists(author, pullRequestNumber)
-            } catch (e) {
-                console.error(`Erreur lors de l'envoie d'un email à ${author}`, e)
-            }
+        try {
+            await sendEmailToAuthorsIfExists(author, pullRequestNumber)
+        } catch (e) {
+            console.error(`Erreur lors de l'envoie d'un email à ${author}`, e)
         }
     }
 }
