@@ -35,7 +35,7 @@ describe('Pull requests watchers', () => {
     }));
     getPullRequestFilesStub = sinon.stub(github, 'getPullRequestFiles').returns(Promise.resolve({
         data: [{
-          filename: 'membre.actif.md',
+          filename: 'content/_authors/membre.actif.md',
           contents_url: 'https://api.github.com/repos/octocat/content/_authors/membre.actif.md'
         }]
     }));
