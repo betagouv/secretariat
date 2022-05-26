@@ -80,9 +80,8 @@ const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber:
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
-        let mattermostSent
         try {
-            mattermostSent = await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
+            await sendMattermostMessageToAuthorsIfExists(author, pullRequestNumber)
         } catch (e) {
             console.error(`Erreur lors de l'envoie d'un message via mattermost à ${author}`, e)
         }
