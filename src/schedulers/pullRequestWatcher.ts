@@ -35,7 +35,7 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
         const messageContent = await ejs.renderFile(
             `./src/views/templates/emails/pendingGithubAuthorPR.ejs`,
             {
-              username: member.fullname,
+              username: member ? member.fullname : author,
               pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
             }
         );
