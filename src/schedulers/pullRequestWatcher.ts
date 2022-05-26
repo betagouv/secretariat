@@ -111,6 +111,7 @@ const pullRequestWatcher = async () => {
         const createdDate = new Date(pr.created_at)
         return filterUpdateDateXdaysAgo(createdDate, 1) || filterUpdateDateXdaysAgo(createdDate, 5)
     })
+    console.log(`Number of PR to check ${filteredPullRequests.length}`)
     const pullRequestCheckPromises = filteredPullRequests.map(
         pr => sendMessageToAuthorsIfAuthorFilesInPullRequest(pr.number))
     return Promise.all(pullRequestCheckPromises)
