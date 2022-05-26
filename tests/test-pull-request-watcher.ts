@@ -81,7 +81,7 @@ describe('Pull requests watchers', () => {
     getPullRequestsStub.calledOnce.should.be.true;
     getPullRequestFilesStub.calledOnce.should.be.true;
     mattermostMessageStub.calledOnce.should.be.true;
-    sendEmailStub.calledOnce.should.be.false;
+    sendEmailStub.calledOnce.should.be.true;
   });
 
   it('should get pending requests and send email to users', async () => {
