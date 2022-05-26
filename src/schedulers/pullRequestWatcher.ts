@@ -102,10 +102,12 @@ const filterUpdateDateXdaysAgo = (createdDate, nbOfDays) => {
     const thresholdDateLessOneHour = new Date(thresholdDate)
     thresholdDateLessOneHour.setDate(thresholdDate.getDate())
     thresholdDateLessOneHour.setHours(thresholdDate.getHours() - 1)
+    console.log(`Verify ${thresholdDateLessOneHour} < ${createdDate} < ${thresholdDate}`) 
     return createdDate < thresholdDate && createdDate > thresholdDateLessOneHour
 }
 
 const pullRequestWatcher = async () => {
+    console.log('Run pull request watcher')
     const { data: pullRequests }  = await github.getPullRequests(
         config.githubOrganizationName, 'beta.gouv.fr', 'open')
     const filteredPullRequests = pullRequests.filter(pr => {
