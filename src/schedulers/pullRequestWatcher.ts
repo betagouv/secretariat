@@ -13,7 +13,7 @@ import { sleep } from '../controllers/utils';
 const findAuthorsInFiles = async (files) => {
     const authors = [];
     for (const file of files) {
-        if (file.contents_url.includes('content/_authors')) {
+        if (file.filename.includes('content/_authors')) {
             authors.push(file.filename.replace('content/_authors/', '').replace('.md', ''));
         }
     }
@@ -77,7 +77,6 @@ const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber)
 const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber: number) => {
     const { data: files } = await github.getPullRequestFiles(
         config.githubOrganizationName, 'beta.gouv.fr', pullRequestNumber)
-    console.log(files)
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
