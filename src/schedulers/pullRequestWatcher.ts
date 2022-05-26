@@ -77,6 +77,7 @@ const sendMattermostMessageToAuthorsIfExists = async (author, pullRequestNumber)
 const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (pullRequestNumber: number) => {
     const { data: files } = await github.getPullRequestFiles(
         config.githubOrganizationName, 'beta.gouv.fr', pullRequestNumber)
+    console.log(files)
     const authors = await findAuthorsInFiles(files)
     for (const author of authors) {
         console.log('Should send message to author', author)
@@ -99,7 +100,6 @@ const filterUpdateDateXdaysAgo = (createdDate, nbOfDays) => {
     const thresholdDateLessOneHour = new Date(thresholdDate)
     thresholdDateLessOneHour.setDate(thresholdDate.getDate())
     thresholdDateLessOneHour.setHours(thresholdDate.getHours() - 1)
-    console.log(`Verify ${thresholdDateLessOneHour} < ${createdDate} < ${thresholdDate}`) 
     return createdDate < thresholdDate && createdDate > thresholdDateLessOneHour
 }
 
