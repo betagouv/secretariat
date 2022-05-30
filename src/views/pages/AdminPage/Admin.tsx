@@ -9,36 +9,37 @@ import { InnerPageLayout } from '../components/InnerPageLayout';
 import { Member } from 'src/models/member';
 import Select from 'react-select'
 import axios from 'axios';
+import ClientOnly from '../components/ClientOnly';
 
 
 const SEIncubateurSelect = ({ incubators, onChange }) => {
-  return <Select options={incubators}
+  return <ClientOnly><Select options={incubators}
     isMulti
     onChange={onChange}
-    placeholder={'Sélectionne un ou plusieurs incubateurs'}  />
+    placeholder={'Sélectionne un ou plusieurs incubateurs'}  /></ClientOnly>
 }
 
 const SESelect = ({ startups, onChange }) => {
-  return <Select
+  return <ClientOnly><Select
     options={startups}
     isMulti
     onChange={onChange}
-    placeholder={'Sélectionne une ou plusieurs startups'} />
+    placeholder={'Sélectionne une ou plusieurs startups'} /></ClientOnly>
 }
 
 const DomaineSelect = ({ domaines, onChange }) => {
-  return <Select
+  return <ClientOnly><Select
     options={domaines}
     onChange={onChange}
     isMulti
-    placeholder={'Sélectionne un ou plusieurs domaine'}  />
+    placeholder={'Sélectionne un ou plusieurs domaine'}  /></ClientOnly>
 }
 
 const MemberStatusSelect = ({ status, onChange }) => {
-  return <Select
+  return <ClientOnly><Select
     options={status}
     onChange={onChange}
-    placeholder={'Sélectionne les membres actifs/inactifs/les deux'} />
+    placeholder={'Sélectionne les membres actifs/inactifs/les deux'} /></ClientOnly>
 }
 
 interface Email {
@@ -266,6 +267,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
           <br/>
           <br/>
           <ReactTabulator
+            data-instance={'user-table'}
             columns={columns}
             data={state.users}
           />
