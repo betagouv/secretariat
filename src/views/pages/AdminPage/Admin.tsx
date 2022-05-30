@@ -1,46 +1,14 @@
 import React, { ReactNode } from 'react'
-// import { InnerLayoutPage } from '../components/InnerLayoutPage'
-import { hydrateOnClient } from '../../hydrateOnClient'
-import type { Request } from 'express'
-// import 'react-tabulator/lib/styles.css'; // required styles
-// import 'react-tabulator/lib/css/tabulator.min.css'; // theme
-import { ReactTabulator, ColumnDefinition, reactFormatter } from 'react-tabulator';
-import { InnerPageLayout } from '../components/InnerPageLayout';
-import { Member } from 'src/models/member';
-import Select from 'react-select'
 import axios from 'axios';
-import ClientOnly from '../components/ClientOnly';
-
-
-const SEIncubateurSelect = ({ incubators, onChange }) => {
-  return <ClientOnly><Select options={incubators}
-    isMulti
-    onChange={onChange}
-    placeholder={'Sélectionne un ou plusieurs incubateurs'}  /></ClientOnly>
-}
-
-const SESelect = ({ startups, onChange }) => {
-  return <ClientOnly><Select
-    options={startups}
-    isMulti
-    onChange={onChange}
-    placeholder={'Sélectionne une ou plusieurs startups'} /></ClientOnly>
-}
-
-const DomaineSelect = ({ domaines, onChange }) => {
-  return <ClientOnly><Select
-    options={domaines}
-    onChange={onChange}
-    isMulti
-    placeholder={'Sélectionne un ou plusieurs domaine'}  /></ClientOnly>
-}
-
-const MemberStatusSelect = ({ status, onChange }) => {
-  return <ClientOnly><Select
-    options={status}
-    onChange={onChange}
-    placeholder={'Sélectionne les membres actifs/inactifs/les deux'} /></ClientOnly>
-}
+import type { Request } from 'express'
+import { ReactTabulator, ColumnDefinition, reactFormatter } from 'react-tabulator';
+import { Member } from 'src/models/member';
+import { InnerPageLayout } from '../components/InnerPageLayout';
+import { hydrateOnClient } from '../../hydrateOnClient'
+import SEIncubateurSelect from '../components/SEIncubateurSelect';
+import SESelect from '../components/SESelect';
+import DomaineSelect from '../components/DomaineSelect';
+import MemberStatusSelect from '../components/MemberStatusSelect';
 
 interface Email {
   github?: string,
