@@ -46,7 +46,7 @@
     "@sentry/integrations": "^6.19.7",
     "@sentry/node": "^6.19.7",
     "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.4",
+    "@types/react-dom": "^18.0.5",
     "axios": "^0.27.2",
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",
