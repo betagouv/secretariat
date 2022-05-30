@@ -222,8 +222,8 @@ export async function updateCurrentInfo(req, res) {
 
 export async function getCurrentInfo(req, res) {
   try {
-    const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
-      (async () => utils.userInfos(req.auth.id, true))(),
+    const [dbUser] : [DBUser] = await Promise.all([
+      // (async () => utils.userInfos(req.auth.id, true))(),
       (async () => {
         const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;

@@ -5,17 +5,6 @@ import { InnerPageLayout } from '../components/InnerPageLayout';
 import { searchCommunes } from '../../../lib/searchCommune';
 import SESelect from '../components/SESelect';
 
-interface Email {
-  github?: string,
-  expired: boolean,
-  account: string,
-  endDate: string,
-  startDate: string,
-  id: string,
-  email: string,
-  redirections: string[],
-}
-
 interface CommuneInfo {
     nom: string,
     codesPostaux?: string[]
