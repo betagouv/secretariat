@@ -136,7 +136,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                             </label>
                         </div>
                         <div className="form__group">
-                            <label htmlFor="secondary_email">
+                            <label htmlFor="startups">
                                 <strong>Startups</strong><br />
                                 Startups.
                                 <SESelect
