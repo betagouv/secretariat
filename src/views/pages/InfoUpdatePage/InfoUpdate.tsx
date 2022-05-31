@@ -45,7 +45,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     selectedName: ''
   });
 
-  const css = ".panel { overflow: scroll; }"
+  const css = ""
   return (
     <>
       <div className="module">
@@ -137,6 +137,18 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                         </div>
                         <div className="form__group">
                             <label htmlFor="secondary_email">
+                                <strong>Startups</strong><br />
+                                Startups.
+                                <SESelect
+                                    startups={props.startupOptions}
+                                    onChange={(startups) => setState({
+                                    ...state,
+                                    startups
+                                    })} />
+                            </label>
+                        </div>
+                        <div className="form__group">
+                            <label htmlFor="secondary_email">
                                 <strong>Email de récupération</strong><br />
                                 L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
                                 <input
@@ -148,19 +160,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
                             }
                         </div>
-                        <div className="form__group">
-                            <label htmlFor="secondary_email">
-                                <strong>Startups</strong><br />
-                                Startups.
-                                <SESelect
-                                    startups={props.startupOptions}
-                                    onChange={(startups) => setState({
-                                    ...state,
-                                    startups
-                                    })} />
-                            </label>
-                        </div>
-                        
                         <button className="button" type="submit">Changer ces informations</button>
                     </form>
                 </div>
