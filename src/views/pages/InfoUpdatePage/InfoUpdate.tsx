@@ -119,6 +119,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     name="workplace_insee_code"
                                     type="text"
                                     id="input-insee-code"
+                                    readOnly={true}
                                     value={state.formData.workplace_insee_code} hidden/>
                                 { !!props.formValidationErrors['workplace_insee_code'] && 
                                     <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
@@ -134,9 +135,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                             </label>
                             { props.statusOptions.map((legal_status) => {
                                 
-                                return (<><input type="radio" name="legal_status"
+                                return (<span key={legal_status.key}><input type="radio" name="legal_status"
                                     value={legal_status.key}
-                                    key={legal_status.key}
                                     onChange={(e) => {
                                         setState({
                                             ...state,
@@ -147,7 +147,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                         })
                                     }}
                                     checked={legal_status.key === state.formData.legal_status}
-                                    required/>{legal_status.name}<br/></>)
+                                    required/>{legal_status.name}<br/></span>)
 
                             })}
                             { !!props.formValidationErrors['legal_statut'] && 
