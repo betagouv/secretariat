@@ -8,6 +8,7 @@ import { DBUser, statusOptions, genderOptions } from "../models/dbUser";
 import { EmailStatusCode } from "../models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { isValidEmail } from "./utils";
+import { InfoUpdatePage } from '../views';
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors: string[] = [];
@@ -221,8 +222,7 @@ export async function updateCurrentInfo(req, res) {
 
 export async function getCurrentInfo(req, res) {
   try {
-    const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
-      (async () => utils.userInfos(req.auth.id, true))(),
+    const [dbUser] : [DBUser] = await Promise.all([
       (async () => {
         const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
@@ -231,26 +231,35 @@ export async function getCurrentInfo(req, res) {
     const title = 'Mon compte';
     const formValidationErrors = {}
     const startups = await betagouv.startupsInfos();
-    return res.render('info-update', {
-      title,
-      formValidationErrors,
-      currentUserId: req.auth.id,
-      startups,
-      genderOptions,
-      statusOptions,
-      activeTab: 'account',
-      communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
-      formData: {
-        gender: dbUser.gender,
-        workplace_insee_code: dbUser.workplace_insee_code,
-        tjm: dbUser.tjm,
-        legal_status: dbUser.legal_status,
-        secondary_email: dbUser.secondary_email
-      },
-      currentUser,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-    });
+    const startupOptions = startups.map(startup => {
+      return {
+        value: startup.id,
+        label: startup.attributes.name
+      }
+    })
+    res.send(
+      InfoUpdatePage({
+        title,
+        formValidationErrors,
+        currentUserId: req.auth.id,
+        startups,
+        genderOptions,
+        statusOptions,
+        startupOptions,
+        activeTab: 'account',
+        communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
+        formData: {
+          gender: dbUser.gender,
+          workplace_insee_code: dbUser.workplace_insee_code,
+          tjm: dbUser.tjm,
+          legal_status: dbUser.legal_status,
+          secondary_email: dbUser.secondary_email
+        },
+        errors: req.flash('error'),
+        messages: req.flash('message'),
+        request: req
+      })
+    )
   } catch (err) {
     console.error(err);
     req.flash('error', 'Impossible de récupérer vos informations.');
