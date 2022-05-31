@@ -1,6 +1,8 @@
-import React from 'react'
+import React from 'react';
+import type { Request } from 'express';
+import AsyncSelect from 'react-select/async';
+
 import { hydrateOnClient } from '../../hydrateOnClient'
-import type { Request } from 'express'
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { searchCommunes } from '../../../lib/searchCommune';
 import SESelect from '../components/SESelect';
@@ -45,8 +47,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     selectedName: '',
     ...props,
   });
-
   const css = ".panel { overflow: scroll; }"
+  const loadOptions = (inputValue: string) => searchCommunes(inputValue)
   return (
     <>
       <div className="module">
@@ -55,7 +57,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                     <h3>Mise à jour de mes informations</h3>
 
                     <div className="beta-banner"></div>
-                    <form action={`/login`} method="POST" id="login_form">
+                    <form action="/account/info" method="POST">
                         <h4>Tes infos persos</h4>
                         <div className="form__group">
                             <p>
@@ -69,20 +71,19 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <select
                                     name="gender"
                                     value={state.formData.gender}
-                                    onChange={(gender) => {
+                                    onChange={(e) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                gender
+                                                gender: e.currentTarget.value
                                             }
                                         })
                                     }}
                                     placeholder="Sélectionne une valeur" required>
                                     <>
-                                    <option value=""></option>
                                     { props.genderOptions.map((gender) => { 
-                                        <option
+                                        return <option
                                             value={gender.key}
                                             selected={gender.key === state.formData.gender}>{gender.name}</option>
                                     })}
@@ -98,23 +99,39 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                             <label htmlFor="workplace_insee_code">
                                 <strong>Lieu de travail</strong><br />
                                 Cette information est utilisée pour faire une carte des membres de la communauté 
-                                <input
+                                {/* <input
                                     placeholder="Commune ou code postale"
                                     type="text"
-                                    onChange={() => searchCommunes(event)}
+                                    onChange={(event) => {
+                                        //searchCommunes(event)
+                                    }}
                                     value={props.communeInfo ? `${props.communeInfo.nom} (${props.communeInfo.codesPostaux[0]})`: ''}
-                                    id="input-commune"/>
+                                    id="input-commune"/> */}
+                                <AsyncSelect
+                                    cacheOptions
+                                    loadOptions={loadOptions}
+                                    defaultOptions
+                                    onInputChange={(newValue) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                communes: newValue
+                                            }
+                                        })
+                                    }}
+                                    />
                                 <input
                                     name="workplace_insee_code"
                                     type="text"
                                     id="input-insee-code"
                                     value={state.formData.workplace_insee_code}
-                                    onChange={(workplace_insee_code) => {
+                                    onChange={(e) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                workplace_insee_code
+                                                workplace_insee_code: e.currentTarget.value
                                             }
                                         })
                                     }}
@@ -135,12 +152,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 
                                 return (<><input type="radio" name="legal_status"
                                     value={legal_status.key}
-                                    onChange={(legal_status) => {
+                                    onChange={(e) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                legal_status
+                                                legal_status: e.currentTarget.value
                                             }
                                         })
                                     }}
@@ -157,12 +174,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <strong>TJM moyen HT (si tu es indépendant)</strong><br />
                                 Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
                                 <input
-                                    onChange={(value) => {
+                                    onChange={(e) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                tjm: value
+                                                tjm: e.currentTarget.value
                                             }
                                         })
                                     }}
@@ -187,12 +204,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <strong>Email de récupération</strong><br />
                                 L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
                                 <input
-                                    onChange={(value) => {
+                                    onChange={(e) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                secondary_email: value
+                                                secondary_email: e.currentTarget.value
                                             }
                                         })
                                     }}

@@ -35,9 +35,9 @@ export async function fetchCommuneDetails(
 }
 
 export async function searchCommunes(
-	event
+	value
 ){
-    var input = event.target.value;
+    const input = value
 
 	const number = /[\d]+/.exec(input)?.join('') ?? ''
 	const text = /[^\d]+/.exec(input)?.join(' ') ?? ''
@@ -59,19 +59,9 @@ export async function searchCommunes(
 				.filter(({ codePostal }) => codePostal.startsWith(number))
 		)
 		.slice(0, 10)
-	renderNames(res)
+	const data = res.map(d => ({
+		value: d.code,
+		label: `${d.nom} (${d.codePostal})`
+	}))
+	return data
 }
-
-
-function renderNames(arrayOfNames) {
-	let liElemet = "" ;
-	for (let i= 0; i <arrayOfNames.length; i++) {
-		liElemet += `<li
-		id=${arrayOfNames[i].code} onclick="selectCode(
-			'${arrayOfNames[i].code}',
-			'${arrayOfNames[i].nom}',
-			'${arrayOfNames[i].codePostal}')">${arrayOfNames[i].nom} (${arrayOfNames[i].codePostal})</li>`
-	}
-	document.getElementById("list-container-city").innerHTML= liElemet;
- }
- 
