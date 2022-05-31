@@ -42,7 +42,8 @@ interface InfoUpdateProps {
 /* Pure component */
 export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
   const [state, setState] = React.useState<any>({
-    selectedName: ''
+    selectedName: '',
+    ...props,
   });
 
   const css = ".panel { overflow: scroll; }"
@@ -67,14 +68,23 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 </label>
                                 <select
                                     name="gender"
-                                    onChange={() => {}}
+                                    value={state.formData.gender}
+                                    onChange={(gender) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                gender
+                                            }
+                                        })
+                                    }}
                                     placeholder="Sélectionne une valeur" required>
                                     <>
                                     <option value=""></option>
                                     { props.genderOptions.map((gender) => { 
                                         <option
                                             value={gender.key}
-                                            selected={gender.key === props.formData.gender}>{gender.name}</option>
+                                            selected={gender.key === state.formData.gender}>{gender.name}</option>
                                     })}
                                     </>
                                 </select>
@@ -98,8 +108,17 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     name="workplace_insee_code"
                                     type="text"
                                     id="input-insee-code"
-                                    onChange={() => {}}
-                                    value={props.formData.workplace_insee_code} hidden/>
+                                    value={state.formData.workplace_insee_code}
+                                    onChange={(workplace_insee_code) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                workplace_insee_code
+                                            }
+                                        })
+                                    }}
+                                    hidden/>
                                 { !!props.formValidationErrors['workplace_insee_code'] && 
                                     <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
                                 }
@@ -116,8 +135,16 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 
                                 return (<><input type="radio" name="legal_status"
                                     value={legal_status.key}
-                                    onChange={() => {}}
-                                    checked={legal_status.key === props.formData.legal_status}
+                                    onChange={(legal_status) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                legal_status
+                                            }
+                                        })
+                                    }}
+                                    checked={legal_status.key === state.formData.legal_status}
                                     required/>{legal_status.name}<br/></>)
 
                             })}
@@ -130,8 +157,16 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <strong>TJM moyen HT (si tu es indépendant)</strong><br />
                                 Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
                                 <input
-                                    onChange={() => {}}
-                                    value={props.formData.tjm}
+                                    onChange={(value) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                tjm: value
+                                            }
+                                        })
+                                    }}
+                                    value={state.formData.tjm}
                                     id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
                             </label>
                         </div>
@@ -152,8 +187,16 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <strong>Email de récupération</strong><br />
                                 L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
                                 <input
-                                    onChange={() => {}}
-                                    value={props.formData.secondary_email}
+                                    onChange={(value) => {
+                                        setState({
+                                            ...state,
+                                            formData: {
+                                                ...state.formData,
+                                                secondary_email: value
+                                            }
+                                        })
+                                    }}
+                                    value={state.formData.secondary_email}
                                     id="secondary_email" name="secondary_email" type="email" placeholder="un email de recupération"/>
                             </label>
                             { !!props.formValidationErrors['secondary_email'] &&
