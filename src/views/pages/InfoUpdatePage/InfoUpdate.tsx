@@ -1,11 +1,12 @@
 import React from 'react';
 import type { Request } from 'express';
-import AsyncSelect from 'react-select/async';
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { searchCommunes } from '../../../lib/searchCommune';
 import SESelect from '../components/SESelect';
+import CommuneSelect from '../components/CommuneSelect';
+
 
 interface CommuneInfo {
     nom: string,
@@ -84,8 +85,9 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <>
                                     { props.genderOptions.map((gender) => { 
                                         return <option
+                                            key={gender.key}
                                             value={gender.key}
-                                            selected={gender.key === state.formData.gender}>{gender.name}</option>
+                                            >{gender.name}</option>
                                     })}
                                     </>
                                 </select>
@@ -99,44 +101,25 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                             <label htmlFor="workplace_insee_code">
                                 <strong>Lieu de travail</strong><br />
                                 Cette information est utilisée pour faire une carte des membres de la communauté 
-                                {/* <input
-                                    placeholder="Commune ou code postale"
-                                    type="text"
-                                    onChange={(event) => {
-                                        //searchCommunes(event)
-                                    }}
-                                    value={props.communeInfo ? `${props.communeInfo.nom} (${props.communeInfo.codesPostaux[0]})`: ''}
-                                    id="input-commune"/> */}
-                                <AsyncSelect
-                                    cacheOptions
+                                <CommuneSelect
                                     loadOptions={loadOptions}
-                                    defaultOptions
-                                    defaultValue={state.formData.workplace_insee_code}
-                                    onInputChange={(newValue) => {
+                                    defaultValue={ props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null}
+                                    onChange={(newValue) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                workplace_insee_code: newValue
+                                                workplace_insee_code: newValue.value
                                             }
                                         })
                                     }}
+                                    placeholder={'Commune ou code postale'}
                                     />
                                 <input
                                     name="workplace_insee_code"
                                     type="text"
                                     id="input-insee-code"
-                                    value={state.formData.workplace_insee_code}
-                                    onChange={(e) => {
-                                        setState({
-                                            ...state,
-                                            formData: {
-                                                ...state.formData,
-                                                workplace_insee_code: e.currentTarget.value
-                                            }
-                                        })
-                                    }}
-                                    hidden/>
+                                    value={state.formData.workplace_insee_code} hidden/>
                                 { !!props.formValidationErrors['workplace_insee_code'] && 
                                     <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
                                 }
@@ -153,6 +136,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 
                                 return (<><input type="radio" name="legal_status"
                                     value={legal_status.key}
+                                    key={legal_status.key}
                                     onChange={(e) => {
                                         setState({
                                             ...state,
@@ -184,11 +168,11 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                             }
                                         })
                                     }}
-                                    value={state.formData.tjm}
+                                    value={state.formData.tjm || 0}
                                     id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
                             </label>
                         </div>
-                        <div className="form__group">
+                        {/* <div className="form__group">
                             <label htmlFor="startups">
                                 <strong>Startups</strong><br />
                                 Startups.
@@ -199,7 +183,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     startups
                                     })} />
                             </label>
-                        </div>
+                        </div> */}
                         <div className="form__group">
                             <label htmlFor="secondary_email">
                                 <strong>Email de récupération</strong><br />
@@ -214,7 +198,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                             }
                                         })
                                     }}
-                                    value={state.formData.secondary_email}
+                                    value={state.formData.secondary_email || ''}
                                     id="secondary_email" name="secondary_email" type="email" placeholder="un email de recupération"/>
                             </label>
                             { !!props.formValidationErrors['secondary_email'] &&
