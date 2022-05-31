@@ -45,7 +45,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     selectedName: ''
   });
 
-  const css = ""
+  const css = ".panel { overflow: scroll; }"
   return (
     <>
       <div className="module">
