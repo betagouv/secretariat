@@ -27,5 +27,5 @@ export const InfoUpdatePage = (props: Parameters<typeof InfoUpdate>[0]) =>
     props,
     hydrate: true,
     title: 'Info Update Page',
-    pageName: 'Info Update', // This must match the Component name
+    pageName: 'InfoUpdate', // This must match the Component name
   })
