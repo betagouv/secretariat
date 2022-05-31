@@ -111,12 +111,13 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     cacheOptions
                                     loadOptions={loadOptions}
                                     defaultOptions
+                                    value={state.formData.workplace_insee_code}
                                     onInputChange={(newValue) => {
                                         setState({
                                             ...state,
                                             formData: {
                                                 ...state.formData,
-                                                communes: newValue
+                                                workplace_insee_code: newValue
                                             }
                                         })
                                     }}
