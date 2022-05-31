@@ -4,7 +4,6 @@ import type { Request } from 'express';
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { searchCommunes } from '../../../lib/searchCommune';
-import SESelect from '../components/SESelect';
 import CommuneSelect from '../components/CommuneSelect';
 
 
@@ -172,18 +171,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
                             </label>
                         </div>
-                        {/* <div className="form__group">
-                            <label htmlFor="startups">
-                                <strong>Startups</strong><br />
-                                Startups.
-                                <SESelect
-                                    startups={props.startupOptions}
-                                    onChange={(startups) => setState({
-                                    ...state,
-                                    startups
-                                    })} />
-                            </label>
-                        </div> */}
                         <div className="form__group">
                             <label htmlFor="secondary_email">
                                 <strong>Email de récupération</strong><br />
