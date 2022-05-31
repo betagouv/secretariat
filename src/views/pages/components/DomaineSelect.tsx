@@ -1,7 +1,7 @@
 import React from "react"
 import Select from 'react-select'
 
-import ClientOnly from "./ClientOnly"
+import { ClientOnly } from "./ClientOnly"
 
 export default({ domaines, onChange }) => {
     return <ClientOnly><Select
