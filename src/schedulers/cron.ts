@@ -226,7 +226,7 @@ const jobs: Job[] = [
     description: 'Cron job to remind user with pending pull request on author file',
   },
   {
-    cronTime: "0 10 1 * 1", // everyday 1srt of each month,
+    cronTime: "0 10 1 * *", // every 1srt of each month,
     onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
     start: true,
     timeZone: "Europe/Paris",
