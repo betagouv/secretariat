@@ -35,7 +35,7 @@ function selectCode(code, nom, codePostal) {
 function renderNames(arrayOfNames) {
 	let liElemet = "" ;
 	for (let i= 0; i <arrayOfNames.length; i++) {
-    const cleanedName = arrayOfNames[i].nom.replace("'","\'")
+    const cleanedName = arrayOfNames[i].nom.replace(/'/g, "\\'");
 		liElemet += `<li
 		id=${arrayOfNames[i].code} onclick="selectCode(
 			'${arrayOfNames[i].code}',
