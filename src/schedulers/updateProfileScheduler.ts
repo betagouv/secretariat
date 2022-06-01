@@ -15,7 +15,7 @@ export const EmailSecondaryEmailHtml = (props: Parameters<typeof EmailSecondaryE
     props,
 })
 
-export async function getActiveUsersWithoutSecondaryEmail() {
+export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
     const allMattermostUsers = await mattermost.getUserWithParams();
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
@@ -45,8 +45,7 @@ export async function getActiveUsersWithoutSecondaryEmail() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
-        const accountsAlreadySent = process.env.EMAIL_SECONDARY_MESSAGE_SENT.split(',')
-        if (user.mattermostUsername && !accountsAlreadySent.includes(user.mattermostUsername)) {
+        if (user.mattermostUsername) {
             try {
                 const messageContent = await ejs.renderFile(
                     `./src/views/templates/emails/updateSecondaryEmail.ejs`,
@@ -66,17 +65,4 @@ export async function getActiveUsersWithoutSecondaryEmail() {
             }
         }
     }
-    const messageContent = await ejs.renderFile(
-        `./src/views/templates/emails/updateSecondaryEmail.ejs`,
-        {
-            user: concernedUserWithMattermostUsers[0],
-        }
-    );
-    await BetaGouv.sendInfoToChat(
-        messageContent,
-        'secretariat',
-        'lucas.charrier'
-    );
 }
-
-getActiveUsersWithoutSecondaryEmail()

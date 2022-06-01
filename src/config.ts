@@ -95,6 +95,6 @@ export default {
   featureSetEmailExpired: process.env.FEATURE_SET_EMAIL_EXPIRED,
   featureSubscribeToIncubateurMailingList: process.env.FEATURE_SUBSCRIBE_TO_INCUBATEUR_MAILING_LIST,
   featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
-  featureScriptAutomaticMessageForSecondaryEmail: process.env.FEATURE_SCRIPT_AUTOMATIC_MESSAGE_FOR_SECONDARY_EMAIL,
+  featureSendMessageToActiveUsersWithoutSecondaryEmail: process.env.FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL,
   tchap_api: process.env.TCHAP_API,
 };
