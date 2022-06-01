@@ -36,6 +36,7 @@ import {
   pullRequestWatcher
 } from './pullRequestWatcher'
 import { setEmailExpired } from "../schedulers/setEmailExpired";
+import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
 
 interface Job {
   cronTime: string;
@@ -224,6 +225,14 @@ const jobs: Job[] = [
     name: 'pullRequestWatcher',
     description: 'Cron job to remind user with pending pull request on author file',
   },
+  {
+    cronTime: "0 10 1 * 1", // everyday 1srt of each month,
+    onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.featureSendMessageToActiveUsersWithoutSecondaryEmail,
+    name: "Send message to active user without secondary email to update secondary email",
+  }
 ];
 
 let activeJobs = 0;
