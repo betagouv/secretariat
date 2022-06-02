@@ -9,6 +9,8 @@ export async function syncBetagouvUserAPI() {
   for (const member of members) {
     await db('users').update({
       domaine: member.domaine
+    }).where({
+      username: member.id
     });
   }
 }
