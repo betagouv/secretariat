@@ -17,18 +17,15 @@ export enum GenderCode {
 
 export enum LegalStatus {
     AE="AE",
-    EIRL="EIRL",
-    SARL="SARL",
-    EURL="EURL",
-    SAS="SAS",
-    SASU="SASU",
-    PORTAGE="portage",
-    SA="SA",
-    SNC="SNC",
     contractuel="contractuel",
+    EIRL="EIRL",
+    EURL="EURL",
     fonctionnaire="fonctionnaire",
+    PORTAGE="portage",
     asso="asso",
-    CDI="CDI"
+    SA="sa",
+    SASU="SASU",
+    SNC="SNC",
 }
 
 export interface DBUser {
@@ -64,48 +61,40 @@ export const statusOptions = [
     name: 'Auto-entreprise/micro-entreprise'
   },
   {
-    key: 'asso',
-    name: 'Association'
-  },
-  {
     key: 'contractuel',
     name: 'Contractuel-elle'
   },
   {
-    key: 'CDI',
-    name: 'CDI (hors portage)'
-  },
-  {
     key: 'EIRL',
-    name: 'EIRL'
-  },
-  {
-    key: 'fonctionnaire',
-    name: 'Fonctionnaire'
-  },
-  {
-    key: 'SARL',
-    name: 'SARL'
+    name: 'Entreprise individuelle : EI ou EIRL'
   },
   {
     key: 'EURL',
     name: 'EURL'
   },
   {
-    key: 'PORTAGE',
-    name: 'Portage'
+    key: 'fonctionnaire',
+    name: 'Fonctionnaire'
   },
   {
-    key: 'SAS',
-    name: 'SAS'
+    key: 'PORTAGE',
+    name: 'Portage salarial'
+  },
+  {
+    key: 'CDI',
+    name: 'CDI (hors portage)'
+  },
+  {
+    key: 'asso',
+    name: "Salarié-e d'une coopérative (CAE, SCOP, Association)"
+  },
+  {
+    key: 'SA',
+    name: "Salarié-e d'une entreprise (SA, SAS, SARL)"
   },
   {
     key: 'SASU',
     name: 'SASU'
-  },
-  {
-    key: 'SA',
-    name: 'SA'
   },
   {
     key: 'SNC',
