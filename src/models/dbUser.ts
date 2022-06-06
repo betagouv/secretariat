@@ -81,10 +81,6 @@ export const statusOptions = [
     name: 'Portage salarial'
   },
   {
-    key: 'CDI',
-    name: 'CDI (hors portage)'
-  },
-  {
     key: 'asso',
     name: "Salarié-e d'une coopérative (CAE, SCOP, Association)"
   },
