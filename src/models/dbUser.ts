@@ -26,7 +26,9 @@ export enum LegalStatus {
     SA="SA",
     SNC="SNC",
     contractuel="contractuel",
-    fonctionnaire="fonctionnaire"
+    fonctionnaire="fonctionnaire",
+    asso="asso",
+    CDI="CDI"
 }
 
 export interface DBUser {
@@ -62,8 +64,16 @@ export const statusOptions = [
     name: 'Auto-entreprise/micro-entreprise'
   },
   {
+    key: 'asso',
+    name: 'Association'
+  },
+  {
     key: 'contractuel',
     name: 'Contractuel-elle'
+  },
+  {
+    key: 'CDI',
+    name: 'CDI (hors portage)'
   },
   {
     key: 'EIRL',
