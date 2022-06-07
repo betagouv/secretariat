@@ -16,11 +16,13 @@ import {
 import { EmailStatusCode } from '../src/models/dbUser';
 import { setEmailExpired } from '../src/schedulers/setEmailExpired';
 import betagouv from '../src/betagouv';
+import { Domaine } from '../src/models/member';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
 const fakeDateLess1day = '2019-12-31';
 const fakeDateMore15days = '2020-01-16';
+const fakeDateMore30days = '2020-01-31';
 const fakeDateLess30days = '2019-12-02'
 
 const betaGouvUsers = [
@@ -60,6 +62,20 @@ const betaGouvUsers = [
       },
     ],
   },
+  {
+    id: 'membre.quipart',
+    fullname: 'membre quipart',
+    github: 'test-github',
+    domaine: 'Développement',
+    missions: [
+      {
+        start: '2016-11-03',
+        end: fakeDateMore30days,
+        status: 'independent',
+        employer: 'octo',
+      },
+    ],
+  },
 ];
 
 const mattermostUsers = [
@@ -90,6 +106,7 @@ describe('send message on contract end to user', () => {
   let chat;
   let clock;
   let sendEmailStub;
+  let jobsStub
   beforeEach(async () => {
     utils.cleanMocks();
     utils.mockSlackGeneral();
@@ -102,6 +119,20 @@ describe('send message on contract end to user', () => {
     sendEmailStub = sinon
       .stub(controllerUtils, 'sendMail')
       .returns(Promise.resolve(true));
+    jobsStub = sinon
+      .stub(BetaGouv, 'getJobs').returns(Promise.resolve(
+        [{
+          "id": "/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine",
+          "domaines": [Domaine.DEVELOPPEMENT],
+          "title": "        Développeur.se full stack – 4 jours par semaine - Offre de France Chaleur Urbaine        ",
+          "url": "http://localhost:4000/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine.html",
+          "published": (new Date()).toISOString(),
+          "updated": "2022-05-31 15:52:38 +0200",
+          "author": "beta.gouv.fr",
+          "technos": "",
+          "content": "",
+          }],
+      ));
     chat = sinon.spy(BetaGouv, 'sendInfoToChat');
     clock = sinon.useFakeTimers(new Date(fakeDate));
     nock(
@@ -120,6 +151,7 @@ describe('send message on contract end to user', () => {
     chat.restore();
     clock.restore();
     sendEmailStub.restore();
+    jobsStub.restore();
     utils.cleanMocks();
   });
 
@@ -142,6 +174,31 @@ describe('send message on contract end to user', () => {
       username: 'membre.quipart',
     }).delete()
   });
+
+  it('should send message to users for j-30 with jobs', async () => {
+    await knex('users').insert({
+      username: 'membre.quipart',
+      primary_email: 'membre.quipart@modernisation.gouv.fr',
+      secondary_email: 'membre.emailsecondary@gmail.com'
+    })
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, betaGouvUsers);
+    const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
+    try {
+      await sendContractEndingMessageToUsers('mail30days', true);
+    } catch(e) {
+      console.log(e)
+    }
+    chat.calledOnce.should.be.true;
+    chat.firstCall.args[2].should.be.equal('membre.quipart');
+    sendEmailStub.firstCall.args[0] = 'membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com'
+    await knex('users').where({
+      username: 'membre.quipart',
+    }).delete()
+  });
+
 
   it('should send j1 mail to users', async () => {
     const url = process.env.USERS_API || 'https://beta.gouv.fr';

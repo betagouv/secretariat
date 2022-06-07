@@ -200,6 +200,13 @@ const jobs: Job[] = [
   },
   {
     cronTime: '0 0 10 * * *',
+    onTick: () => sendContractEndingMessageToUsers('mail30days', true),
+    isActive: !!config.featureOnUserContractEnd,
+    name: 'sendContractEndingMessageToUsers30days',
+    description: 'Create cron job for sending contract ending message to users',
+  },
+  {
+    cronTime: '0 0 10 * * *',
     onTick: () => sendContractEndingMessageToUsers('mail2days', false),
     isActive: !!config.featureOnUserContractEnd,
     name: 'sendContractEndingMessageToUsers2days',
