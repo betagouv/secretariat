@@ -98,5 +98,6 @@ export default {
   featureUnsubscribeFromIncubateurMailingList: process.env.FEATURE_UNSUBSCRIBE_FROM_INCUBATEUR_MAILING_LIST,
   featureSendMessageToActiveUsersWithoutSecondaryEmail: process.env.FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL,
   FEATURE_SYNC_BETAGOUV_USER_API: process.env.FEATURE_SYNC_BETAGOUV_USER_API,
+  FEATURE_PUBLISH_JOBS_TO_MATTERMOST: process.env.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
   tchap_api: process.env.TCHAP_API,
 };
