@@ -1,0 +1,15 @@
+Bonjour <%= user.fullname %> !  
+
+Ton départ de la communauté beta.gouv.fr est prévu pour dans 30 jours (le <%= user.end %>). 
+
+Si cette date a changé, met la à jour pour rester membre de la communauté :
+[secretariat](https://secretariat.incubateur.net/account#update-end-date)
+
+Si ta mission se termine, voici les offres actuellements ouvertes dans ton domaine :
+<% for (var i =0; i < jobs.length;  i++ ) { %>
+- [<%= jobs[i].title %>](<%= jobs[i].url %>)
+<% } %>
+
+
+
+Bonne journée
