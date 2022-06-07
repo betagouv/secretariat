@@ -15,8 +15,8 @@ export const JobMessage = function ({ jobs, domaine }: Props) {
         return[`------------------------------`,
         `${job.title.trim()}`,
         `${job.content.slice(0, 230)}`
-        ].join('/n')
-    })}`].join('/n')
+        ].join('\r\n')
+    })}`].join('\r\n')
   return <>{content}</>
 }
 
