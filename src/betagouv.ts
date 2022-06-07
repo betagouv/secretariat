@@ -87,6 +87,13 @@ const betaGouv = {
         throw new Error(`Error to get incubators infos : ${err}`);
       })
   },
+  getJobs: async() => {
+    return await axios.get<any[]>(config.JOBS_API)
+    .then(res => res.data)
+    .catch((err) => {
+      throw new Error(`Error to get jobs infos : ${err}`);
+    })
+  },
   userInfosById: async (id: string): Promise<Member> => {
     const users = await betaGouv.usersInfos();
     return users.find((user) => user.id === id);
