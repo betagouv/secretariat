@@ -10,15 +10,13 @@ interface Props {
 
 /* Pure component */
 export const JobMessage = function ({ jobs, domaine }: Props) {
-  const content = `Nouvelles offre pour le domaine : ${domaine}
-    ${jobs.map(job => {
-        return`
-        ------------------------------
-        ${job.title.trim()}
-        ${job.content.slice(0, 230)}
-        `
-    })} 
-  `
+  const content = [`Nouvelles offre pour le domaine : ${domaine}`,
+    `${jobs.map(job => {
+        return[`------------------------------`,
+        `${job.title.trim()}`,
+        `${job.content.slice(0, 230)}`
+        ].join('/n')
+    })}`].join('/n')
   return <>{content}</>
 }
 
