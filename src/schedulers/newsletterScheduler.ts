@@ -6,6 +6,7 @@ import knex from '../db';
 import * as utils from '../controllers/utils';
 import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
 import { Member, MemberWithPrimaryEmail } from '../models/member';
+import { Job } from '../models/job';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
