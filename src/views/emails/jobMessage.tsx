@@ -16,7 +16,7 @@ export const JobMessage = function ({ jobs, domaine }: Props) {
         `${job.title.trim()}`,
         `${job.content.slice(0, 230)}`
         ].join('/n')
-    })}`].join('/n)
+    })}`].join('/n')
   return <>{content}</>
 }
 
