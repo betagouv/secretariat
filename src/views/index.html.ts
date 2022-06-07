@@ -78,3 +78,8 @@ export const makeHtmlEmail = <T>(args: EmailProps<T>) => {
   `
 }
 
+export const makeMarkdownContent = <T>(args: EmailProps<T>) => {
+  const { Component, props } = args
+  return String.raw`${ReactDOMServer.renderToString(Component(props))}`
+}
+
