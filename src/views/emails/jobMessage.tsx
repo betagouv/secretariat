@@ -1,7 +1,7 @@
 import React from 'react'
 import { hydrateOnClient } from '../hydrateOnClient'
-import { Job } from '../../models/job'
 import { Domaine } from '../../models/member'
+import { Job } from '../../models/job'
 
 interface Props {
   jobs: Job[],
@@ -10,7 +10,7 @@ interface Props {
 
 /* Pure component */
 export const JobMessage = function ({ jobs, domaine }: Props) {
-  return (`
+  const content = `
     Nouvelles offre pour le domaine : ${domaine}
     ${jobs.forEach(job => {
         return`
@@ -19,7 +19,8 @@ export const JobMessage = function ({ jobs, domaine }: Props) {
         ${job.content.slice(0, 230)}
         `
     })} 
-  `)
+  `
+  return <>{content}</>
 }
 
 hydrateOnClient(JobMessage)
