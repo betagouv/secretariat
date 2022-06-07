@@ -10,9 +10,8 @@ interface Props {
 
 /* Pure component */
 export const JobMessage = function ({ jobs, domaine }: Props) {
-  const content = `
-    Nouvelles offre pour le domaine : ${domaine}
-    ${jobs.forEach(job => {
+  const content = `Nouvelles offre pour le domaine : ${domaine}
+    ${jobs.map(job => {
         return`
         ------------------------------
         ${job.title.trim()}
