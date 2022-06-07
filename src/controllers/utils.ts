@@ -202,7 +202,10 @@ export function getMonday(d) {
   const date = new Date(d);
   const day = date.getDay();
   const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-  return new Date(date.setDate(diff));
+  const monday = new Date(date.setDate(diff));
+  monday.setHours(0, 0, 0, 0);
+  monday.setSeconds(0, 0);
+  return monday
 }
 
 export function addDays(date, days, week = null) {

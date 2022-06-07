@@ -10,7 +10,7 @@ import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import { renderHtmlFromMd } from '../src/lib/mdtohtml';
-import { createNewsletter } from '../src/schedulers/newsletterScheduler';
+import { createNewsletter, getJobOfferContent } from '../src/schedulers/newsletterScheduler';
 import utils from './utils';
 
 chai.use(chaiHttp);
@@ -34,6 +34,7 @@ const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
   ## Nouveautés transverses
   *Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
   ## Annonces des recrutements
+  __REMPLACER_PAR_OFFRES__
   ## :calendar: Evénements à venir
   ### 👋 Prochain point hebdo beta.gouv, jeudi __REMPLACER_PAR_DATE_STAND_UP__ à 12h
 `;
@@ -132,12 +133,28 @@ describe('Newsletter', () => {
 
   describe('cronjob newsletter', () => {
     let slack;
+    let jobsStub;
     beforeEach((done) => {
       slack = sinon.spy(BetaGouv, 'sendInfoToChat');
+      jobsStub = sinon
+      .stub(BetaGouv, 'getJobs').returns(Promise.resolve(
+        [{
+          "id": "/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine",
+          "domaine": "Développement",
+          "title": "        Développeur.se full stack – 4 jours par semaine - Offre de France Chaleur Urbaine        ",
+          "url": "http://localhost:4000/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine.html",
+          "published": (new Date()).toISOString(),
+          "updated": "2022-05-31 15:52:38 +0200",
+          "author": "beta.gouv.fr",
+          "technos": "",
+          "content": "",
+          }],
+      ));
       done();
     });
 
     afterEach((done) => {
+      jobsStub.restore()
       slack.restore();
       done();
     });
@@ -200,6 +217,7 @@ describe('Newsletter', () => {
               NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
             )
           ),
+          __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
           __REMPLACER_PAR_DATE__:
             controllerUtils.formatDateToFrenchTextReadableFormat(
               addDays(date, NUMBER_OF_DAY_IN_A_WEEK)

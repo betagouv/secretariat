@@ -49,8 +49,9 @@ const createNewsletter = async () => {
       addDays(
         date,
         NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-      )
+      ),
     ),
+    __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
     __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(
       addDays(date, NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])
     ),
@@ -109,6 +110,16 @@ export async function newsletterReminder(reminder) {
       'general'
     );
   }
+}
+
+export async function getJobOfferContent() {
+  const monday = getMonday(new Date()); // get first day of the current week
+  const jobs = await BetaGouv.getJobs();
+  const filteredJobs = jobs.filter(job => new Date(job.published) > monday)
+  const content = filteredJobs.map(job => {
+    return `[${job.title.trim()}](${job.url})`
+  }).join('\n')
+  return content
 }
 
 export { createNewsletter };
