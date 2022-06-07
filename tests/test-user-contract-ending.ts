@@ -66,6 +66,7 @@ const betaGouvUsers = [
     id: 'membre.quipart',
     fullname: 'membre quipart',
     github: 'test-github',
+    domaine: 'Développement',
     missions: [
       {
         start: '2016-11-03',
