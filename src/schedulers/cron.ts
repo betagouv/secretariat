@@ -37,7 +37,7 @@ import {
 } from './pullRequestWatcher'
 import { setEmailExpired } from "../schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
-import { syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
+import { publishJobsToMattermost, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 
 interface Job {
   cronTime: string;
@@ -240,6 +240,14 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
+    name: "Synchronize user info from beta.gouv.fr api with bdd",
+  },
+  {
+    cronTime: "0 * * * *", // every day at 10,
+    onTick: publishJobsToMattermost,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
     name: "Synchronize user info from beta.gouv.fr api with bdd",
   }
 ];
