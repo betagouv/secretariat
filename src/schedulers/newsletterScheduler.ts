@@ -114,7 +114,7 @@ export async function newsletterReminder(reminder) {
 
 export async function getJobOfferContent() {
   const monday = getMonday(new Date()); // get first day of the current week
-  const jobs = await BetaGouv.getJobs();
+  const jobs : Job[] = await BetaGouv.getJobs();
   const filteredJobs = jobs.filter(job => new Date(job.published) > monday)
   const content = filteredJobs.map(job => {
     return `[${job.title.trim()}](${job.url})`

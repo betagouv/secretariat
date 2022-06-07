@@ -8,10 +8,19 @@ import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
 import { sleep } from '../controllers/utils';
+import { Job } from '../models/job';
+import { Mail30Days } from '../views/emails/mailXDays';
+import { makeHtmlEmail } from '../views/index.html';
+
+export const Mail30DaysHtml = (props: Parameters<typeof Mail30Days>[0]) =>
+  makeHtmlEmail({
+    Component: Mail30Days,
+    props,
+})
 
 interface MessageConfig {
   days: number,
-  emailFile: string
+  emailFile: string,
 }
 
 // get users that are member (got a github card) and mattermost account that is not in the team
@@ -67,6 +76,10 @@ const CONFIG_MESSAGE = {
     emailFile: 'mail2days.ejs',
     days: 2,
   },
+  mail30days: {
+    emailFile: 'mail30days.ejs',
+    days: 30
+  }
 };
 
 const EMAIL_FILES = {
@@ -74,14 +87,22 @@ const EMAIL_FILES = {
   'j+30': 'mailExpired30days',
 };
 
-const sendMessageOnChatAndEmail = async (
+const sendMessageOnChatAndEmail = async ({
+  user,
+  messageConfig,
+  jobs,
+  sendToSecondary
+}:{
   user: MemberWithEmailsAndMattermostUsername,
   messageConfig: MessageConfig,
-  sendToSecondary: boolean) => {
+  jobs: Job[],
+  sendToSecondary: boolean}) => {
+
   const messageContent = await ejs.renderFile(
     `./src/views/templates/emails/${messageConfig.emailFile}`,
     {
       user,
+      jobs: user.domaine ? jobs.filter(job => job.domaines.includes(user.domaine)) : [],
     }
   );
   try {
@@ -129,9 +150,15 @@ export async function sendContractEndingMessageToUsers(
     registeredUsersWithEndingContractInXDays =
       await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
+  const jobs: Job[] = await BetaGouv.getJobs()
   await Promise.all(
     registeredUsersWithEndingContractInXDays.map(async (user) => {
-      await sendMessageOnChatAndEmail(user, messageConfig, sendToSecondary);
+      await sendMessageOnChatAndEmail({
+        user, 
+        messageConfig,
+        sendToSecondary,
+        jobs
+      });
     })
   );
 }
