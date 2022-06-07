@@ -2,12 +2,12 @@ import { checkUserIsExpired } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
-import { makeHtmlEmail } from '../views/index.html';
+import { makeMarkdownContent } from '../views/index.html';
 import { JobMessage } from '../views/emails/jobMessage';
 import { Job } from 'src/models/job';
 
 export const JobMessageHtml = (props: Parameters<typeof JobMessageHtml>[0]) =>
-  makeHtmlEmail({
+  makeMarkdownContent({
     Component: JobMessage,
     props,
 })
@@ -32,14 +32,16 @@ export async function publishJobsToMattermost(jobs) {
   }
   for (const domaine of Object.values(Domaine)) {
     const jobsForDomaine = jobs.filter(job => (job.domaines || []).includes(domaine))
-    const jobMessage = JobMessageHtml({
-      jobs: jobsForDomaine,
-      domaine
-    })
-    await BetaGouv.sendInfoToChat(
-      jobMessage,
-      'embauche-test'
-    );
+    if (jobsForDomaine.length) {
+      const jobMessage = JobMessageHtml({
+        jobs: jobsForDomaine,
+        domaine
+      })
+      await BetaGouv.sendInfoToChat(
+        jobMessage,
+        'embauche-test'
+      );
+    }
   }
 }
 
