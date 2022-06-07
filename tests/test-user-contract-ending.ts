@@ -63,7 +63,7 @@ const betaGouvUsers = [
     ],
   },
   {
-    id: 'membre.quipart2',
+    id: 'membre.quipart',
     fullname: 'membre quipart',
     github: 'test-github',
     missions: [
@@ -176,8 +176,8 @@ describe('send message on contract end to user', () => {
 
   it('should send message to users for j-30 with jobs', async () => {
     await knex('users').insert({
-      username: 'membre.quipart2',
-      primary_email: 'membre.quipart2@modernisation.gouv.fr',
+      username: 'membre.quipart',
+      primary_email: 'membre.quipart@modernisation.gouv.fr',
       secondary_email: 'membre.emailsecondary@gmail.com'
     })
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
@@ -191,10 +191,10 @@ describe('send message on contract end to user', () => {
       console.log(e)
     }
     chat.calledOnce.should.be.true;
-    chat.firstCall.args[2].should.be.equal('membre.quipart2');
-    sendEmailStub.firstCall.args[0] = 'membre.quipart2@modernisation.gouv.fr,membre.emailsecondary@gmail.com'
+    chat.firstCall.args[2].should.be.equal('membre.quipart');
+    sendEmailStub.firstCall.args[0] = 'membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com'
     await knex('users').where({
-      username: 'membre.quipart2',
+      username: 'membre.quipart',
     }).delete()
   });
 
