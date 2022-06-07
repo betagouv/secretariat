@@ -9,7 +9,6 @@ import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member'
 import betagouv from '../betagouv';
 import { sleep } from '../controllers/utils';
 import { Job } from '../models/job';
-import { Mail30Days } from '../views/emails/mailXDays';
 import { makeHtmlEmail } from '../views/index.html';
 
 export const Mail30DaysHtml = (props: Parameters<typeof Mail30Days>[0]) =>
