@@ -1,6 +1,6 @@
 import React from 'react'
 import { hydrateOnClient } from '../hydrateOnClient'
-import { Domaine } from '../../models/member'
+import { Domaine, Member } from '../../models/member'
 import { Job } from '../../models/job'
 
 interface Props {
@@ -21,3 +21,16 @@ export const JobMessage = function ({ jobs, domaine }: Props) {
 }
 
 hydrateOnClient(JobMessage)
+
+interface JobMessageLongTimeOpenedProps {
+  member: Member,
+  job: Job
+}
+
+export const JobMessageLongTimeOpened = function ({ job, member }: JobMessageLongTimeOpenedProps) {
+  const content = `Bonjour ${member.fullname},
+  L'offre [${job.title}](${job.url}) est ouverte depuis longtemps.
+  Si elle n'est plus d'actualité tu peux la fermer en mettant l'attribut 'open' à false.
+  `
+  return <>{content}</>
+}
