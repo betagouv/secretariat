@@ -1,16 +1,24 @@
-import { checkUserIsExpired } from '../controllers/utils';
+import { buildBetaEmail, checkUserIsExpired } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { makeMarkdownContent } from '../views/index.html';
-import { JobMessage } from '../views/emails/jobMessage';
-import { Job } from 'src/models/job';
+import { JobMessage,  JobMessageLongTimeOpened } from '../views/emails/jobMessage';
+import { Job } from '../models/job';
+import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 
-export const JobMessageHtml = (props: Parameters<typeof JobMessageHtml>[0]) =>
+export const JobMessageMd = (props: Parameters<typeof JobMessageMd>[0]) =>
   makeMarkdownContent({
     Component: JobMessage,
     props,
 })
+
+export const JobMessageLongTimeOpenedMd = (props: Parameters<typeof JobMessageLongTimeOpenedMd>[0]) =>
+  makeMarkdownContent({
+    Component: JobMessageLongTimeOpened,
+    props,
+})
+
 
 export async function syncBetagouvUserAPI() {
   let members : Member[] = await BetaGouv.usersInfos()
@@ -43,7 +51,7 @@ export async function publishJobsToMattermost(jobs) {
   for (const domaine of Object.values(Domaine)) {
     const jobsForDomaine = jobs.filter(job => (job.domaines || []).includes(domaine))
     if (jobsForDomaine.length) {
-      const jobMessage = JobMessageHtml({
+      const jobMessage = JobMessageMd({
         jobs: jobsForDomaine,
         domaine
       })
@@ -54,3 +62,38 @@ export async function publishJobsToMattermost(jobs) {
     }
   }
 }
+
+export async function sendMessageToTeamForJobOpenedForALongTime(jobs) {
+  console.log(`Lancement du cron pour les messages de rappel de fermeture d'offre`)
+  if (!jobs) {
+    jobs = await BetaGouv.getJobs() as Job[]
+    const today = new Date();
+    const todayLess45days = new Date()
+    todayLess45days.setDate(today.getDate() - 45)
+    jobs = jobs.filter(job => new Date(job.published) < today)
+  }
+  const startups_details = await BetaGouv.startupInfos()
+  const users = await BetaGouv.usersInfos()
+  for(const job of jobs) {
+    const startup = startups_details[job.startup]
+    const intra: Member = startup.active_members.map(active_member => {
+      return users.find(user => user.id === active_member)
+    }).find(user => user.domaine = Domaine.INTRAPRENARIAT)
+    if (!intra) {
+      const mattermostUser : MattermostUser = await getUserByEmail(buildBetaEmail(intra.id))
+      if (mattermostUser) {
+        const JobMessageLongTimeOpened = JobMessageLongTimeOpenedMd({
+          member: intra,
+          job,
+        })
+        await BetaGouv.sendInfoToChat(
+          JobMessageLongTimeOpened,
+          'secretariat',
+          mattermostUser.username
+        );
+        console.log(`Message de rappel pour fermer l'offre envoyer à ${mattermostUser.username}`)
+      }
+    }
+  }
+}
+

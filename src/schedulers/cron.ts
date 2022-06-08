@@ -255,7 +255,15 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
-    name: "Synchronize user info from beta.gouv.fr api with bdd",
+    name: "Publish job offer to mattermost on dedicated channel",
+  },
+  {
+    cronTime: "0 0 10 * * 1",
+    onTick: sendMessageToTeamForJobOpenedForALongTime,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_SEND_MESSAGE_TO_TEAM_FOR_JOB_OPENED_FOR_A_LONG_TIME,
+    name: "Send message to team to remind them to close job offer",
   }
 ];
 
