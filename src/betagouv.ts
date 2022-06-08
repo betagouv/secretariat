@@ -42,9 +42,9 @@ const betaGouv = {
     if (channel === 'general') {
       hookURL = config.slackWebhookURLGeneral;
     }
-//     if (channel !== 'secretariat') {
-//       hookURL = config.slackWebhookURLGeneral;
-//     }
+    if (channel && channel !== 'secretariat') {
+      hookURL = config.slackWebhookURLGeneral;
+    }
     if (username) {
       params.channel = `@${username}`;
     }
