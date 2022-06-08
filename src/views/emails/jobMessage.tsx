@@ -12,7 +12,7 @@ interface Props {
 export const JobMessage = function ({ jobs, domaine }: Props) {
   const content = [`Nouvelles offre pour le domaine : ${domaine}`,
     `${jobs.map(job => {
-        return[`------------------------------`,
+        return[`-`,
         `${job.title.trim()}`,
         `${job.content.slice(0, 230)}`
         ].join('\r\n')
