@@ -30,6 +30,16 @@ export async function publishJobsToMattermost(jobs) {
     const now = new Date();
     jobs = jobs.filter(job => new Date(job.published) > now)
   }
+  const domaines = {
+    'Animation': 'animation',
+    'Coaching': 'coaching',
+    'Déploiement': 'deploiement',
+    'Design': 'design',
+    'Développement': 'dev',
+    'Intraprenariat': 'intraprenariat',
+    'Produit': 'produit',
+    'Autre': 'autre',
+  }
   for (const domaine of Object.values(Domaine)) {
     const jobsForDomaine = jobs.filter(job => (job.domaines || []).includes(domaine))
     if (jobsForDomaine.length) {
@@ -39,9 +49,8 @@ export async function publishJobsToMattermost(jobs) {
       })
       await BetaGouv.sendInfoToChat(
         jobMessage,
-        'embauche-test'
+        `incubateur-embauche-${domaines[domaine]}`
       );
     }
   }
 }
-
