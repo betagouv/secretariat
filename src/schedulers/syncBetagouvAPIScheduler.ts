@@ -1,25 +1,11 @@
+import ejs from 'ejs';
 import { buildBetaEmail, checkUserIsExpired } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
-import { makeMarkdownContent } from '../views/index.html';
-import { JobMessage,  JobMessageLongTimeOpened } from '../views/emails/jobMessage';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
-
-export const JobMessageMd = (props: Parameters<typeof JobMessageMd>[0]) =>
-  makeMarkdownContent({
-    Component: JobMessage,
-    props,
-})
-
-export const JobMessageLongTimeOpenedMd = (props: Parameters<typeof JobMessageLongTimeOpenedMd>[0]) =>
-  makeMarkdownContent({
-    Component: JobMessageLongTimeOpened,
-    props,
-})
-
 
 export async function syncBetagouvUserAPI() {
   let members : Member[] = await BetaGouv.usersInfos()
@@ -52,7 +38,7 @@ export async function publishJobsToMattermost(jobs=undefined) {
   for (const domaine of Object.values(Domaine)) {
     const jobsForDomaine = jobs.filter(job => (job.domaines || []).includes(domaine))
     if (jobsForDomaine.length) {
-      const jobMessage = JobMessageMd({
+      const jobMessage = ejs.renderFile('../views/templates/emails/jobMessage.ejs', {
         jobs: jobsForDomaine,
         domaine
       })
@@ -77,7 +63,6 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
   const users = await BetaGouv.usersInfos()
   for(const job of jobs) {
     const startup = startups_details.find(startup => startup.id === job.startup);
-    console.log(`Traitement d'une annonce pour ${job.startup}`, startup, job.contacts)
     if (!startup) {
       continue
     }
@@ -91,10 +76,9 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
       }).find(user => user.domaine = Domaine.INTRAPRENARIAT)
     }
     if (contact) {
-      console.log(`Recherche du contact`, contact.id)
       const mattermostUser : MattermostUser = await getUserByEmail(buildBetaEmail(contact.id))
       if (mattermostUser && mattermostUser.username === 'lucas.charrier') {
-        const JobMessageLongTimeOpened = JobMessageLongTimeOpenedMd({
+        const JobMessageLongTimeOpened = ejs.renderFile('../views/templates/emails/reminderJobMessage.ejs', {
           member: contact,
           job,
         })
