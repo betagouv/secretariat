@@ -6,6 +6,7 @@ import { makeMarkdownContent } from '../views/index.html';
 import { JobMessage,  JobMessageLongTimeOpened } from '../views/emails/jobMessage';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
+import { Startup } from '../models/startup';
 
 export const JobMessageMd = (props: Parameters<typeof JobMessageMd>[0]) =>
   makeMarkdownContent({
@@ -72,10 +73,14 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
     todayLess45days.setDate(today.getDate() - 45)
     jobs = jobs.filter(job => new Date(job.published) < todayLess45days)
   }
-  const startups_details = await BetaGouv.startupInfos()
+  const startups_details : Startup[] = await BetaGouv.startupInfos()
   const users = await BetaGouv.usersInfos()
   for(const job of jobs) {
     const startup = startups_details[job.startup]
+    console.log(`Traitement d'une annonce pour ${job.startup}`)
+    if (!startup) {
+      continue
+    }
     let contact: Member
     if (job.contacts) {
       contact = users.find(user => user.id === job.contacts)
