@@ -12,7 +12,7 @@ export enum GenderCode {
     NSP="NSP",
     FEMALE="female",
     MALE="male",
-    NB="NB"
+    OTHER="other"
 }
 
 export enum LegalStatus {
@@ -48,8 +48,8 @@ export const genderOptions = [{
     key: 'male',
     name: "Masculin"
   },{
-    key: 'NB',
-    name: "Non-binaire"
+    key: 'other',
+    name: "Autre"
   }, {
     key: 'NSP',
     name: "Ne se prononce pas"
