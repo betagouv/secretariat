@@ -90,7 +90,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
         return users.find(user => user.id === active_member)
       }).find(user => user.domaine = Domaine.INTRAPRENARIAT)
     }
-    if (!contact) {
+    if (contact) {
       const mattermostUser : MattermostUser = await getUserByEmail(buildBetaEmail(contact.id))
       if (mattermostUser && mattermostUser.username === 'lucas.charrier') {
         const JobMessageLongTimeOpened = JobMessageLongTimeOpenedMd({
