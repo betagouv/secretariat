@@ -38,7 +38,7 @@ export async function publishJobsToMattermost(jobs=undefined) {
   for (const domaine of Object.values(Domaine)) {
     const jobsForDomaine = jobs.filter(job => (job.domaines || []).includes(domaine))
     if (jobsForDomaine.length) {
-      const jobMessage = ejs.renderFile('../views/templates/emails/jobMessage.ejs', {
+      const jobMessage = await ejs.renderFile('./src/views/templates/emails/jobMessage.ejs', {
         jobs: jobsForDomaine,
         domaine
       })
@@ -78,7 +78,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
     if (contact) {
       const mattermostUser : MattermostUser = await getUserByEmail(buildBetaEmail(contact.id))
       if (mattermostUser && mattermostUser.username === 'lucas.charrier') {
-        const JobMessageLongTimeOpened = ejs.renderFile('../views/templates/emails/reminderJobMessage.ejs', {
+        const JobMessageLongTimeOpened = await ejs.renderFile('./src/views/templates/emails/reminderJobMessage.ejs', {
           member: contact,
           job,
         })
