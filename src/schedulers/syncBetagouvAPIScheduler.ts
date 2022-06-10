@@ -76,7 +76,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
   const startups_details : Startup[] = await BetaGouv.startupInfos()
   const users = await BetaGouv.usersInfos()
   for(const job of jobs) {
-    const startup = startups_details[job.startup]
+    const startup = startups_details.find(startup => startup.id === job.startup);
     console.log(`Traitement d'une annonce pour ${job.startup}`, startup, job.contacts)
     if (!startup) {
       continue
