@@ -1,0 +1,4 @@
+Nouvelles offre pour le domaine : <%= domaine %>
+<% for (var i=0; i<jobs.length; i++) { %>
+- <%= job.title.trim() %> <%= job.content.slice(0, 230) %>
+<% } %>
