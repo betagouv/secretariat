@@ -34,3 +34,6 @@ export const JobMessageLongTimeOpened = function ({ job, member }: JobMessageLon
   `
   return <>{content}</>
 }
+
+hydrateOnClient(JobMessageLongTimeOpened)
+
