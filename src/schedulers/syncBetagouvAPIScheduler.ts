@@ -77,7 +77,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
     }
     if (contact) {
       const mattermostUser : MattermostUser = await getUserByEmail(buildBetaEmail(contact.id))
-      if (mattermostUser && mattermostUser.username === 'lucas.charrier') {
+      if (mattermostUser) {
         const JobMessageLongTimeOpened = await ejs.renderFile('./src/views/templates/emails/reminderJobMessage.ejs', {
           member: contact,
           job,
