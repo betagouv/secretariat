@@ -9,12 +9,24 @@ import { Startup } from '../models/startup';
 
 export async function syncBetagouvUserAPI() {
   const members : Member[] = await BetaGouv.usersInfos()
+  await db('missions').truncate()
   for (const member of members) {
     await db('users').update({
       domaine: member.domaine,
-      missions: JSON.stringify(member.missions)
+      missions: member.missions
     }).where({
       username: member.id
+    })
+  }
+  const users = await db('users')
+  for (const user of users) {
+    await db('missions').update({
+      start: new Date(user.mission.start),
+      end: new Date(user.mission.end),
+      domaine: user.domaine,
+      gender: user.gender
+    }).where({
+      username: user.username
     });
   }
 }
