@@ -20,14 +20,16 @@ export async function syncBetagouvUserAPI() {
   }
   const users = await db('users')
   for (const user of users) {
-    await db('missions').update({
-      start: new Date(user.mission.start),
-      end: new Date(user.mission.end),
-      domaine: user.domaine,
-      gender: user.gender
-    }).where({
-      username: user.username
-    });
+    for (const mission of user.missions) {
+      await db('missions').update({
+        start: new Date(mission.start),
+        end: new Date(mission.end),
+        domaine: user.domaine,
+        gender: user.gender
+      }).where({
+        username: user.username
+      });
+    }
   }
 }
 
