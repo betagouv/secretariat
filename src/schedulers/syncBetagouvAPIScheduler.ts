@@ -1,5 +1,5 @@
 import ejs from 'ejs';
-import { buildBetaEmail, checkUserIsExpired } from '../controllers/utils';
+import { buildBetaEmail } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
@@ -8,8 +8,7 @@ import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
 
 export async function syncBetagouvUserAPI() {
-  let members : Member[] = await BetaGouv.usersInfos()
-  members = members.filter(member => !checkUserIsExpired(member))
+  const members : Member[] = await BetaGouv.usersInfos()
   for (const member of members) {
     await db('users').update({
       domaine: member.domaine,
