@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
 exports.up = function(knex) {
-    return knex.schema.table('missions', (table) => {
+    return knex.schema.createTable('missions', (table) => {
         table.date('start')
         table.date('end')
         table.string('domaine')
@@ -16,10 +16,5 @@ exports.up = function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    return knex.schema.table('missions', (table) => {
-        table.dropColumn('start')
-        table.dropColumn('end')
-        table.dropColumn('domaine')
-        table.dropColumn('gender').defaultTo('NSP');
-    })
+    return knex.schema.dropTable('missions')
 };
