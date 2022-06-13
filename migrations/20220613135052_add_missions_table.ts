@@ -21,5 +21,5 @@ exports.down = function(knex) {
         table.dropColumn('end')
         table.dropColumn('domaine')
         table.dropColumn('gender').defaultTo('NSP');
-    }
+    })
 };
