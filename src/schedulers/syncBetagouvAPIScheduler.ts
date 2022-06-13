@@ -9,7 +9,6 @@ import { Startup } from '../models/startup';
 
 export async function syncBetagouvUserAPI() {
   let members : Member[] = await BetaGouv.usersInfos()
-  members = members.filter(member => !checkUserIsExpired(member))
   for (const member of members) {
     await db('users').update({
       domaine: member.domaine,
