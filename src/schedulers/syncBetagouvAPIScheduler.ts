@@ -12,7 +12,8 @@ export async function syncBetagouvUserAPI() {
   members = members.filter(member => !checkUserIsExpired(member))
   for (const member of members) {
     await db('users').update({
-      domaine: member.domaine
+      domaine: member.domaine,
+      missions: JSON.stringify(member.missions)
     }).where({
       username: member.id
     });
