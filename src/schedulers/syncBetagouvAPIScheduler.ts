@@ -21,7 +21,7 @@ export async function syncBetagouvUserAPI() {
   const users = await db('users')
   for (const user of users) {
     for (const mission of user.missions) {
-      await db('missions').update({
+      await db('missions').insert({
         start: new Date(mission.start),
         end: new Date(mission.end),
         domaine: user.domaine,
