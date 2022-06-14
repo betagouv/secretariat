@@ -76,7 +76,7 @@ export const chartBdd =  async (users=[]) => {
   const today = new Date()
   for (const employerType of employerTypes) {
       datasets[employerType] = []
-      result['employer'][employerType].forEach(function(event) {
+      for (const event of result['employer'][employerType]) {
           // Round departure to next month
           if(event.increment === -1) {
               const oldDate = new Date(event.date);
@@ -88,12 +88,12 @@ export const chartBdd =  async (users=[]) => {
               dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerType, 0)
               dataByDate[event.date][employerType] += event.increment
           }
-      });
+      };
   };
   const domaineTypes = Object.keys(result['domaineOverDate'])
   for (const domaineType of domaineTypes) {
     datasets[domaineType] = []
-    result['domaineOverDate'][domaineType].forEach(function(event) {
+    for (const event of result['domaineOverDate'][domaineType]) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -105,13 +105,13 @@ export const chartBdd =  async (users=[]) => {
             dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineType, 0)
             dataByDate[event.date][domaineType] += event.increment
         }
-    });
+    };
   };
 
   const genderTypes = Object.keys(result['gender'])
   for (const genderType of genderTypes) {
     datasets[genderType] = []
-    result['gender'][genderType].forEach(function(event) {
+    for (const event of result['gender'][genderType]) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -123,7 +123,7 @@ export const chartBdd =  async (users=[]) => {
             dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderType, 0)
             dataByDate[event.date][genderType] += event.increment
         }
-    });
+    };
   };
   // Chart.defaults.scale.gridLines.display = false;
 
