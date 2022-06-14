@@ -148,7 +148,7 @@ export const chartBdd =  async (users=[]) => {
   console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
-    console.log('LCS ROW', type)
+    console.log('LCS ROW', row)
     for (const type of Object.keys(row)){
         console.log('LCS TYPE', type)
         currentAmounts[type] += row[type];
