@@ -391,8 +391,8 @@ export function formatDateToISOString(date) {
 */
 export function createDefaultObjectWithKeysAndValue(keys, value=0) {
   const obj = {}
-  keys.forEach(function(key) {
+  for (const key of keys){
       obj[key] = value
-  })
+  }
   return obj
 }
