@@ -77,7 +77,7 @@ export const chartBdd =  async (users=[]) => {
   *   and their corresponding values for the date, 0 (neutral value) if none.
   */
   const dataByDate = {};
-  const today = new Date()
+  const today = formatDateToISOString(new Date())
   for (const employerType of employerTypes) {
       datasets[employerType] = []
       for (const event of result['employer'][employerType]) {
