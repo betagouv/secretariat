@@ -74,7 +74,7 @@ export const chartBdd =  async (users=[]) => {
   */
   const dataByDate = {};
   const today = new Date()
-  employerTypes.forEach(function(employerType) {
+  for (const employerType of employerTypes) {
       datasets[employerType] = []
       result['employer'][employerType].forEach(function(event) {
           // Round departure to next month
@@ -85,15 +85,15 @@ export const chartBdd =  async (users=[]) => {
           event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
           if (event.date < today) {
               // use previous obj for date if exist, else define a default obj
-              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerTypes, 0)
+              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerType, 0)
               dataByDate[event.date][employerType] += event.increment
           }
       });
-  });
+  };
   const domaineTypes = Object.keys(result['domaineOverDate'])
-  domaineTypes.forEach(function(domaineTypes) {
-    datasets[domaineTypes] = []
-    result['domaineOverDate'][domaineTypes].forEach(function(event) {
+  for (const domaineType of domaineTypes) {
+    datasets[domaineType] = []
+    result['domaineOverDate'][domaineType].forEach(function(event) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -102,16 +102,16 @@ export const chartBdd =  async (users=[]) => {
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineTypes, 0)
-            dataByDate[event.date][domaineTypes] += event.increment
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineType, 0)
+            dataByDate[event.date][domaineType] += event.increment
         }
     });
-  });
+  };
 
   const genderTypes = Object.keys(result['gender'])
-  genderTypes.forEach(function(genderTypes) {
-    datasets[genderTypes] = []
-    result['gender'][genderTypes].forEach(function(event) {
+  for (const genderType of genderTypes) {
+    datasets[genderType] = []
+    result['gender'][genderType].forEach(function(event) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -120,11 +120,11 @@ export const chartBdd =  async (users=[]) => {
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderTypes, 0)
-            dataByDate[event.date][genderTypes] += event.increment
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderType, 0)
+            dataByDate[event.date][genderType] += event.increment
         }
     });
-  });
+  };
   // Chart.defaults.scale.gridLines.display = false;
 
   // use dataByDate to define each points and corresponding values
