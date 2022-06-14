@@ -145,10 +145,12 @@ export const chartBdd =  async (users=[]) => {
   ]) {
     datasets[type] = datasets[type] || []
   }
+  console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
     for (const type of Object.keys(row)){
         currentAmounts[type] += row[type];
+        console.log(type)
         datasets[type].push({
             x: date,
             y: currentAmounts[type]
