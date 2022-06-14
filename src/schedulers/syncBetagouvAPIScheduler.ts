@@ -163,7 +163,7 @@ export const chartBdd =  async (users=[]) => {
     //   Autre: currentAmounts['Autre']
     // })
   }
-  return datasets
+  return result
 }
 
 export async function syncBetagouvUserAPI() {
