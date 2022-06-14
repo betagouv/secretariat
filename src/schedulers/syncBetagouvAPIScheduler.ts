@@ -46,7 +46,7 @@ export const chartBdd =  async (users=[]) => {
 
   const now = new Date()
   for (const user of users) {
-    const missions = user['missions']
+    const missions = user['missions'] || []
     for (const mission of missions) {
       const startDate = mission['start'];
       const endDate = mission['end'];
@@ -60,7 +60,7 @@ export const chartBdd =  async (users=[]) => {
         result['domaineOverDate'][user['domaine']].push({date: endDate, increment: -1})
         result['gender'][user.gender].push({date: endDate, increment: -1})
       }
-      if (user['missions'].length && user['missions'][user.missions.length-1]['end'] >= now) {
+      if (missions.length && missions[missions.length-1]['end'] >= now) {
         result['domaine'][user['domaine']] = result['domaine'][user['domaine']] + 1
         result['total'] = result['total'] + 1 
       }
