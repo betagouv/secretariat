@@ -7,6 +7,7 @@ import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
 
+const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 
 export const chartBdd =  async (users=[]) => {
   const result = {
@@ -16,52 +17,52 @@ export const chartBdd =  async (users=[]) => {
       'service': [],
     },
     'domaineOverDate': {
-      'Déploiement': [],
-      'Design': [],
-      'Développement': [],
-      'Coaching': [],
-      'Autre': [],
-      'Intraprenariat': [],
-      'Animation': [],
-      'Produit': [],
+      'deploiement': [],
+      'design': [],
+      'developpement': [],
+      'coaching': [],
+      'autre': [],
+      'intraprenariat': [],
+      'animation': [],
+      'produit': [],
     },
     'gender': {
-      'NSP': [],
+      'nsp': [],
       'male': [],
       'female': [],
       'other': []
     },
     'domaine': {
-      'Déploiement': 0,
-      'Design': 0,
-      'Développement': 0,
-      'Coaching': 0,
-      'Autre': 0,
-      'Intraprenariat': 0,
-      'Animation': 0,
-      'Produit': 0
+      'deploiement': 0,
+      'design': 0,
+      'developpement': 0,
+      'coaching': 0,
+      'autre': 0,
+      'intraprenariat': 0,
+      'animation': 0,
+      'produit': 0
     },
     'total': 0
   }
 
   const now = new Date()
   for (const user of users) {
-    const missions = user['missions'] || []
+    const missions = user['missions']
     for (const mission of missions) {
       const startDate = mission['start'];
       const endDate = mission['end'];
       if (startDate && startDate != '') {
         result['employer'][mission['status']].push({date: startDate, increment: 1})
-        result['domaineOverDate'][user['domaine']].push({date: startDate, increment: 1})
-        result['gender'][user.gender].push({date: startDate, increment: 1})
+        result['domaineOverDate'][convert(user.domaine)].push({date: startDate, increment: 1})
+        result['gender'][convert(user.gender)].push({date: startDate, increment: 1})
       }
       if (endDate && endDate != '') {
         result['employer'][mission['status']].push({date: endDate, increment: -1})
-        result['domaineOverDate'][user['domaine']].push({date: endDate, increment: -1})
-        result['gender'][user.gender].push({date: endDate, increment: -1})
+        result['domaineOverDate'][convert(user.domaine)].push({date: endDate, increment: -1})
+        result['gender'][convert(user.gender)].push({date: endDate, increment: -1})
       }
-      if (missions.length && missions[missions.length-1]['end'] >= now) {
-        result['domaine'][user['domaine']] = result['domaine'][user['domaine']] + 1
+      if (user['missions'].length && user['missions'][user.missions.length-1]['end'] >= now) {
+        result['domaine'][convert(user.domaine)] = result['domaine'][convert(user.domaine)] + 1
         result['total'] = result['total'] + 1 
       }
     }
@@ -80,7 +81,7 @@ export const chartBdd =  async (users=[]) => {
   const today = formatDateToISOString(new Date())
   for (const employerType of employerTypes) {
       datasets[employerType] = []
-      for (const event of result['employer'][employerType]) {
+      for (const event of result.employer[employerType]) {
           // Round departure to next month
           if(event.increment === -1) {
               const oldDate = new Date(event.date);
@@ -94,10 +95,10 @@ export const chartBdd =  async (users=[]) => {
           }
       };
   };
-  const domaineTypes = Object.keys(result['domaineOverDate'])
+  const domaineTypes = Object.keys(result.domaineOverDate)
   for (const domaineType of domaineTypes) {
     datasets[domaineType] = []
-    for (const event of result['domaineOverDate'][domaineType]) {
+    for (const event of result.domaineOverDate[domaineType]) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -112,10 +113,10 @@ export const chartBdd =  async (users=[]) => {
     };
   };
 
-  const genderTypes = Object.keys(result['gender'])
+  const genderTypes = Object.keys(result.gender)
   for (const genderType of genderTypes) {
     datasets[genderType] = []
-    for (const event of result['gender'][genderType]) {
+    for (const event of result.gender[genderType]) {
         // Round departure to next month
         if(event.increment === -1) {
             const oldDate = new Date(event.date);
@@ -143,18 +144,17 @@ export const chartBdd =  async (users=[]) => {
     ...genderTypes,
     ...domaineTypes
   ]) {
-    datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] = datasets[type] || []
+    datasets[type] = datasets[type] || []
   }
   console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
     console.log('LCS ROW', row)
     for (const type of Object.keys(row)){
-        console.log('LCS TYPE', type)
-        currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] += row[type];
-        datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")].push({
+        currentAmounts[type] += row[type];
+        datasets[type].push({
             x: date,
-            y: currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]
+            y: currentAmounts[type]
         })
     }
     await db('chart').insert({
