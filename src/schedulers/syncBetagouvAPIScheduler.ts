@@ -50,12 +50,16 @@ export const chartBdd =  async (users=[]) => {
     for (const mission of missions) {
       const startDate = mission['start'];
       const endDate = mission['end'];
-      result['employer'][mission['status']] = startDate && startDate != '' ? {date: startDate, increment: 1} : undefined;
-      result['employer'][mission['status']] = endDate && endDate != '' ? {date: endDate, increment: -1} : undefined ;
-      result['domaineOverDate'][user['domaine']] = startDate && startDate != '' ? {date: startDate, increment: 1} : undefined;
-      result['domaineOverDate'][user['domaine']] = endDate && endDate != '' ? {date: endDate, increment: -1} : undefined;
-      result['gender'][user.gender] = {date: startDate, increment: -1}
-      result['gender'][user.gender] = {date: endDate, increment: -1}
+      if (startDate && startDate != '') {
+        result['employer'][mission['status']].push({date: startDate, increment: 1})
+        result['domaineOverDate'][user['domaine']].push({date: startDate, increment: 1})
+        result['gender'][user.gender].push({date: startDate, increment: 1})
+      }
+      if (endDate && endDate != '') {
+        result['employer'][mission['status']].push({date: endDate, increment: -1})
+        result['domaineOverDate'][user['domaine']].push({date: endDate, increment: -1})
+        result['gender'][user.gender].push({date: endDate, increment: -1})
+      }
       if (user['missions'].length && user['missions'][user.missions.length-1]['end'] >= now) {
         result['domaine'][user['domaine']] = result['domaine'][user['domaine']] + 1
         result['total'] = result['total'] + 1 
