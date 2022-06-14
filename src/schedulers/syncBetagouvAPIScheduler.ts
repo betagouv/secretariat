@@ -141,13 +141,13 @@ export const chartBdd =  async (users=[]) => {
 
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
-    Object.keys(row).forEach(function(type){
+    for (const type of Object.keys(row)){
         currentAmounts[type] += row[type];
         datasets[type].push({
             x: date,
             y: currentAmounts[type]
         })
-    })
+    }
     // await db('missions').insert({
     //   date,
     //   admin: currentAmounts['admin'],
@@ -163,7 +163,7 @@ export const chartBdd =  async (users=[]) => {
     //   Autre: currentAmounts['Autre']
     // })
   }
-  return result
+  return datasets
 }
 
 export async function syncBetagouvUserAPI() {
