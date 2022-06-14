@@ -7,7 +7,7 @@ import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '../models/dbUser';
 import { HomePage } from '../views';
-import { chartBdd } from 'src/schedulers/syncBetagouvAPIScheduler';
+import { chartBdd } from '../src/schedulers/syncBetagouvAPIScheduler';
 
 function renderLogin(req, res, params) {
   res.send(
