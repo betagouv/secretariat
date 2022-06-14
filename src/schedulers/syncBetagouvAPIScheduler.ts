@@ -138,7 +138,13 @@ export const chartBdd =  async (users=[]) => {
     ...genderTypes,
     ...domaineTypes
   ], 0)
-
+  for (const type of [
+    ...employerTypes,
+    ...genderTypes,
+    ...domaineTypes
+  ]) {
+    datasets[type] = datasets[type] || []
+  }
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
     for (const type of Object.keys(row)){
@@ -163,7 +169,7 @@ export const chartBdd =  async (users=[]) => {
     //   Autre: currentAmounts['Autre']
     // })
   }
-  return dataByDate
+  return datasets
 }
 
 export async function syncBetagouvUserAPI() {
