@@ -7,7 +7,7 @@ import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
 
-const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
 export const chartBdd =  async (users=[]) => {
   const result = {
