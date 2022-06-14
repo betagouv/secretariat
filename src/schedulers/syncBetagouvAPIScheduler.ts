@@ -1,11 +1,183 @@
 import ejs from 'ejs';
-import { buildBetaEmail } from '../controllers/utils';
+import { buildBetaEmail, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
+
+
+export const chartBdd =  async (users=[]) => {
+  const result = {
+    'employer': {
+      'admin': [],
+      'independent': [],
+      'service': [],
+    },
+    'domaineOverDate': {
+      'Déploiement': [],
+      'Design': [],
+      'Développement': [],
+      'Coaching': [],
+      'Autre': [],
+      'Intraprenariat': [],
+      'Animation': [],
+      'Produit': [],
+    },
+    'gender': {
+      'NSP': [],
+      'male': [],
+      'female': [],
+      'other': []
+    },
+    'domaine': {
+      'Déploiement': 0,
+      'Design': 0,
+      'Développement': 0,
+      'Coaching': 0,
+      'Autre': 0,
+      'Intraprenariat': 0,
+      'Animation': 0,
+      'Produit': 0
+    },
+    'total': 0
+  }
+
+  const now = new Date()
+  for (const user of users) {
+    const missions = user['missions']
+    for (const mission of missions) {
+      const startDate = mission['start'];
+      const endDate = mission['end'];
+      if (startDate && startDate != '') {
+        result['employer'][mission['status']].push({date: startDate, increment: 1})
+        result['domaineOverDate'][user['domaine']].push({date: startDate, increment: 1})
+        result['gender'][user.gender].push({date: startDate, increment: 1})
+      }
+      if (endDate && endDate != '') {
+        result['employer'][mission['status']].push({date: endDate, increment: -1})
+        result['domaineOverDate'][user['domaine']].push({date: endDate, increment: -1})
+        result['gender'][user.gender].push({date: endDate, increment: -1})
+      }
+      if (user['missions'].length && user['missions'][user.missions.length-1]['end'] >= now) {
+        result['domaine'][user['domaine']] = result['domaine'][user['domaine']] + 1
+        result['total'] = result['total'] + 1 
+      }
+    }
+  }
+  const datasets = {}; 
+  // keys to use for the datasets
+  const employerTypes = Object.keys(result['employer'])
+
+  /** 
+  *   Work around Chart.js' unability to stack time series unless they explicitly share their abscissa,
+  *   by adding neutral data points to all datasets whenever another changes.
+  *   dataByDate : each key is a date, and contains an obj with the datasets' keys 
+  *   and their corresponding values for the date, 0 (neutral value) if none.
+  */
+  const dataByDate = {};
+  const today = formatDateToISOString(new Date())
+  for (const employerType of employerTypes) {
+      datasets[employerType] = []
+      for (const event of result['employer'][employerType]) {
+          // Round departure to next month
+          if(event.increment === -1) {
+              const oldDate = new Date(event.date);
+              event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+          }
+          event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+          if (event.date < today) {
+              // use previous obj for date if exist, else define a default obj
+              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerTypes, 0)
+              dataByDate[event.date][employerType] += event.increment
+          }
+      };
+  };
+  const domaineTypes = Object.keys(result['domaineOverDate'])
+  for (const domaineType of domaineTypes) {
+    datasets[domaineType] = []
+    for (const event of result['domaineOverDate'][domaineType]) {
+        // Round departure to next month
+        if(event.increment === -1) {
+            const oldDate = new Date(event.date);
+            event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+        }
+        event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+        if (event.date < today) {
+            // use previous obj for date if exist, else define a default obj
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineTypes, 0)
+            dataByDate[event.date][domaineType] += event.increment
+        }
+    };
+  };
+
+  const genderTypes = Object.keys(result['gender'])
+  for (const genderType of genderTypes) {
+    datasets[genderType] = []
+    for (const event of result['gender'][genderType]) {
+        // Round departure to next month
+        if(event.increment === -1) {
+            const oldDate = new Date(event.date);
+            event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+        }
+        event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+        if (event.date < today) {
+            // use previous obj for date if exist, else define a default obj
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderTypes, 0)
+            dataByDate[event.date][genderType] += event.increment
+        }
+    };
+  };
+  // Chart.defaults.scale.gridLines.display = false;
+
+  // use dataByDate to define each points and corresponding values
+  // for each datasets we compute the value for each new points by adding all values from previous date
+  const currentAmounts = createDefaultObjectWithKeysAndValue([
+    ...employerTypes,
+    ...genderTypes,
+    ...domaineTypes
+  ], 0)
+  for (const type of [
+    ...employerTypes,
+    ...genderTypes,
+    ...domaineTypes
+  ]) {
+    datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] = datasets[type] || []
+  }
+  console.log(Object.keys(datasets))
+  for (const date of Object.keys(dataByDate).sort(sortASC)) {
+    const row = dataByDate[date]
+    console.log('LCS ROW', row)
+    for (const type of Object.keys(row)){
+        console.log('LCS TYPE', type)
+        currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] += row[type];
+        datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")].push({
+            x: date,
+            y: currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]
+        })
+    }
+    await db('chart').insert({
+      date,
+      admin: currentAmounts['admin'],
+      independent: currentAmounts['independent'],
+      service: currentAmounts['service'],
+      animation:  currentAmounts['animation'],
+      coaching: currentAmounts['coaching'],
+      deploiement: currentAmounts['déploiement'],
+      design: currentAmounts['design'],
+      developpement: currentAmounts['développement'],
+      intraprenariat: currentAmounts['dnimation'],
+      produit: currentAmounts['produit'],
+      autre: currentAmounts['autre'],
+      other: currentAmounts['other'],
+      nsp: currentAmounts['nsp'],
+      male: currentAmounts['male'],
+      female: currentAmounts['female']
+    })
+  }
+  return datasets
+}
 
 export async function syncBetagouvUserAPI() {
   const members : Member[] = await BetaGouv.usersInfos()
@@ -18,19 +190,12 @@ export async function syncBetagouvUserAPI() {
       username: member.id
     })
   }
+}
+
+export async function buildChartBDD() {
   const users = await db('users')
-  for (const user of users) {
-    for (const mission of (user.missions || [])) {
-      await db('missions').insert({
-        start: new Date(mission.start),
-        end: new Date(mission.end),
-        domaine: user.domaine,
-        gender: user.gender
-      }).where({
-        username: user.username
-      });
-    }
-  }
+  const datasets = await chartBdd(users)
+  return datasets
 }
 
 export async function publishJobsToMattermost(jobs=undefined) {
