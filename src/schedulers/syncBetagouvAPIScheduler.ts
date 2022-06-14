@@ -157,7 +157,7 @@ export const chartBdd =  async (users=[]) => {
             y: currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]
         })
     }
-    await db('missions').insert({
+    await db('chart').insert({
       date,
       admin: currentAmounts['admin'],
       independent: currentAmounts['independent'],
