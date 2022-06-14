@@ -47,7 +47,7 @@ export const chartBdd =  async (users=[]) => {
 
   const now = new Date()
   for (const user of users) {
-    const missions = user['missions']
+    const missions = user['missions'] || []
     for (const mission of missions) {
       const startDate = mission['start'];
       const endDate = mission['end'];
