@@ -143,7 +143,7 @@ export const chartBdd =  async (users=[]) => {
     ...genderTypes,
     ...domaineTypes
   ]) {
-    datasets[type] = datasets[type] || []
+    datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] = datasets[type] || []
   }
   console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
@@ -151,26 +151,30 @@ export const chartBdd =  async (users=[]) => {
     console.log('LCS ROW', row)
     for (const type of Object.keys(row)){
         console.log('LCS TYPE', type)
-        currentAmounts[type] += row[type];
-        datasets[type].push({
+        currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")] += row[type];
+        datasets[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")].push({
             x: date,
-            y: currentAmounts[type]
+            y: currentAmounts[type.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]
         })
     }
-    // await db('missions').insert({
-    //   date,
-    //   admin: currentAmounts['admin'],
-    //   independent: currentAmounts['independent'],
-    //   service: currentAmounts['service'],
-    //   Animation:  currentAmounts['Animation'],
-    //   Coaching: currentAmounts['Coaching'],
-    //   Déploiement: currentAmounts['Déploiement'],
-    //   Design: currentAmounts['Design'],
-    //   Développement: currentAmounts['Développement'],
-    //   Intraprenariat: currentAmounts['Animation'],
-    //   Produit: currentAmounts['Produit'],
-    //   Autre: currentAmounts['Autre']
-    // })
+    await db('missions').insert({
+      date,
+      admin: currentAmounts['admin'],
+      independent: currentAmounts['independent'],
+      service: currentAmounts['service'],
+      animation:  currentAmounts['animation'],
+      coaching: currentAmounts['coaching'],
+      deploiement: currentAmounts['déploiement'],
+      design: currentAmounts['design'],
+      developpement: currentAmounts['développement'],
+      intraprenariat: currentAmounts['dnimation'],
+      produit: currentAmounts['produit'],
+      autre: currentAmounts['autre'],
+      other: currentAmounts['other'],
+      nsp: currentAmounts['nsp'],
+      male: currentAmounts['male'],
+      female: currentAmounts['female']
+    })
   }
   return datasets
 }
