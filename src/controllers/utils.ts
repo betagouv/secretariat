@@ -357,3 +357,42 @@ export function sleep(ms) {
       setTimeout(resolve, ms);
   });
 }
+
+/**
+*@param	{String} date1 A date in ISO format to compare to the other one.
+*@param	{String} date2 A date in ISO format to compare to the other one.     
+*/
+export function sortASC(date1, date2) {
+  return date1 < date2 ? -1 : 1;
+}
+
+/**
+*@param	{Date} date     A date to convert to an ISO formated day.
+*/
+export function formatDateToISOString(date) {
+  const d = new Date(date);
+  let month = '' + (d.getMonth() + 1);
+  let day = '' + d.getDate();
+  const year = d.getFullYear();
+
+  if (month.length < 2) {
+      month = '0' + month;
+  }
+  if (day.length < 2) {
+      day = '0' + day;
+  }
+
+  return [year, month, day].join('-');
+}
+
+/**
+*@param	{Array} keys An array of strings
+*@param {Int} value A value to assign to each key
+*/
+export function createDefaultObjectWithKeysAndValue(keys, value=0) {
+  const obj = {}
+  keys.forEach(function(key) {
+      obj[key] = value
+  })
+  return obj
+}

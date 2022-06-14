@@ -1,11 +1,165 @@
 import ejs from 'ejs';
-import { buildBetaEmail } from '../controllers/utils';
+import { buildBetaEmail, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
+
+
+export const chartBdd =  async (users=[]) => {
+  const result = {
+    'employer': {
+      'admin': [],
+      'independent': [],
+      'service': [],
+    },
+    'domaineOverDate': {
+      'Déploiement': [],
+      'Design': [],
+      'Développement': [],
+      'Coaching': [],
+      'Autre': [],
+      'Intraprenariat': [],
+      'Animation': [],
+      'Produit': [],
+    },
+    'gender': {
+      'NSP': [],
+      'male': [],
+      'female': [],
+      'other': []
+    },
+    'domaine': {
+      'Déploiement': 0,
+      'Design': 0,
+      'Développement': 0,
+      'Coaching': 0,
+      'Autre': 0,
+      'Intraprenariat': 0,
+      'Animation': 0,
+      'Produit': 0
+    },
+    'total': 0
+  }
+
+  const now = new Date()
+  for (const user of users) {
+    for (const mission of user['missions']) {
+      const startDate = mission['start'];
+      const endDate = mission['end'];
+      result['employer'][mission['status']] = startDate && startDate != '' ? {date: startDate, increment: 1} : undefined;
+      result['employer'][mission['status']] = endDate && endDate != '' ? {date: endDate, increment: -1} : undefined ;
+      result['domaineOverDate'][user['domaine']] = startDate && startDate != '' ? {date: startDate, increment: 1} : undefined;
+      result['domaineOverDate'][user['domaine']] = endDate && endDate != '' ? {date: endDate, increment: -1} : undefined;
+      result['gender'][user.gender] = {date: startDate, increment: -1}
+      result['gender'][user.gender] = {date: endDate, increment: -1}
+      if (user['missions'][user.mission.length-1]['end'] >= now) {
+        result['domaine'][user['domaine']] = result['domaine'][user['domaine']] + 1
+        result['total'] = result['total'] + 1 
+      }
+    }
+  }
+  const datasets = {}; 
+  // keys to use for the datasets
+  const employerTypes = Object.keys(result['employer'])
+
+  /** 
+  *   Work around Chart.js' unability to stack time series unless they explicitly share their abscissa,
+  *   by adding neutral data points to all datasets whenever another changes.
+  *   dataByDate : each key is a date, and contains an obj with the datasets' keys 
+  *   and their corresponding values for the date, 0 (neutral value) if none.
+  */
+  const dataByDate = {};
+  const today = new Date()
+  employerTypes.forEach(function(employerType) {
+      datasets[employerType] = []
+      result['employer'][employerType].forEach(function(event) {
+          // Round departure to next month
+          if(event.increment === -1) {
+              const oldDate = new Date(event.date);
+              event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+          }
+          event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+          if (event.date < today) {
+              // use previous obj for date if exist, else define a default obj
+              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerTypes, 0)
+              dataByDate[event.date][employerType] += event.increment
+          }
+      });
+  });
+  const domaineTypes = Object.keys(result['domaineOverDate'])
+  domaineTypes.forEach(function(domaineTypes) {
+    datasets[domaineTypes] = []
+    result['domaineOverDate'][domaineTypes].forEach(function(event) {
+        // Round departure to next month
+        if(event.increment === -1) {
+            const oldDate = new Date(event.date);
+            event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+        }
+        event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+        if (event.date < today) {
+            // use previous obj for date if exist, else define a default obj
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineTypes, 0)
+            dataByDate[event.date][domaineTypes] += event.increment
+        }
+    });
+  });
+
+  const genderTypes = Object.keys(result['gender'])
+  genderTypes.forEach(function(genderTypes) {
+    datasets[genderTypes] = []
+    result['gender'][genderTypes].forEach(function(event) {
+        // Round departure to next month
+        if(event.increment === -1) {
+            const oldDate = new Date(event.date);
+            event.date = formatDateToISOString(new Date(oldDate.getFullYear(), oldDate.getMonth() + 1, 1));
+        }
+        event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
+        if (event.date < today) {
+            // use previous obj for date if exist, else define a default obj
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderTypes, 0)
+            dataByDate[event.date][genderTypes] += event.increment
+        }
+    });
+  });
+  // Chart.defaults.scale.gridLines.display = false;
+
+  // use dataByDate to define each points and corresponding values
+  // for each datasets we compute the value for each new points by adding all values from previous date
+  const currentAmounts = createDefaultObjectWithKeysAndValue([
+    ...employerTypes,
+    ...genderTypes,
+    ...domaineTypes
+  ], 0)
+
+  for (const date of Object.keys(dataByDate).sort(sortASC)) {
+    const row = dataByDate[date]
+    Object.keys(row).forEach(function(type){
+        currentAmounts[type] += row[type];
+        datasets[type].push({
+            x: date,
+            y: currentAmounts[type]
+        })
+    })
+    // await db('missions').insert({
+    //   date,
+    //   admin: currentAmounts['admin'],
+    //   independent: currentAmounts['independent'],
+    //   service: currentAmounts['service'],
+    //   Animation:  currentAmounts['Animation'],
+    //   Coaching: currentAmounts['Coaching'],
+    //   Déploiement: currentAmounts['Déploiement'],
+    //   Design: currentAmounts['Design'],
+    //   Développement: currentAmounts['Développement'],
+    //   Intraprenariat: currentAmounts['Animation'],
+    //   Produit: currentAmounts['Produit'],
+    //   Autre: currentAmounts['Autre']
+    // })
+  }
+  return datasets
+}
 
 export async function syncBetagouvUserAPI() {
   const members : Member[] = await BetaGouv.usersInfos()
@@ -18,19 +172,12 @@ export async function syncBetagouvUserAPI() {
       username: member.id
     })
   }
+}
+
+export async function buildMissionsBDD() {
   const users = await db('users')
-  for (const user of users) {
-    for (const mission of (user.missions || [])) {
-      await db('missions').insert({
-        start: new Date(mission.start),
-        end: new Date(mission.end),
-        domaine: user.domaine,
-        gender: user.gender
-      }).where({
-        username: user.username
-      });
-    }
-  }
+  const datasets = await chartBdd(users)
+  return datasets
 }
 
 export async function publishJobsToMattermost(jobs=undefined) {

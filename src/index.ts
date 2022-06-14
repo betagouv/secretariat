@@ -162,6 +162,7 @@ app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 app.get('/resources', resourceController.getResources);
 app.get('/api/get-users', adminController.getUsers);
+app.get('/api/get-users-dataset', loginController.buildMissionsBDD);
 
 sentry.initCaptureConsoleWithHandler(app);
 
