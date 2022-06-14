@@ -191,7 +191,7 @@ export async function postSignIn(req, res) {
   }
 };
 
-export async function buildMissionsBDD(res) {
+export async function buildMissionsBDD(req, res) {
   const users = await knex('users')
   const datasets = await chartBdd(users)
   return res.json(datasets)
