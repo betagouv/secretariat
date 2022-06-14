@@ -192,7 +192,7 @@ export async function syncBetagouvUserAPI() {
   }
 }
 
-export async function buildMissionsBDD() {
+export async function buildChartBDD() {
   const users = await db('users')
   const datasets = await chartBdd(users)
   return datasets

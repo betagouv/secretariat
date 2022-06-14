@@ -7,7 +7,6 @@ import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '../models/dbUser';
 import { HomePage } from '../views';
-import { chartBdd } from '../schedulers/syncBetagouvAPIScheduler';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -190,15 +189,3 @@ export async function postSignIn(req, res) {
     return res.redirect('/');
   }
 };
-
-export async function buildMissionsBDD(req, res) {
-  const users = await knex('users')
-  let datasets
-  try {
-    datasets = await chartBdd(users)
-  } catch(e) {
-    console.log(e)
-  }
-  return res.json(datasets)
-}
-
