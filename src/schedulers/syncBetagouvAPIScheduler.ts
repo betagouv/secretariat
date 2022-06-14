@@ -89,7 +89,7 @@ export const chartBdd =  async (users=[]) => {
           event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
           if (event.date < today) {
               // use previous obj for date if exist, else define a default obj
-              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerType, 0)
+              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerTypes, 0)
               dataByDate[event.date][employerType] += event.increment
           }
       };
@@ -106,7 +106,7 @@ export const chartBdd =  async (users=[]) => {
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineType, 0)
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineTypes, 0)
             dataByDate[event.date][domaineType] += event.increment
         }
     };
@@ -124,7 +124,7 @@ export const chartBdd =  async (users=[]) => {
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderType, 0)
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderTypes, 0)
             dataByDate[event.date][genderType] += event.increment
         }
     };
