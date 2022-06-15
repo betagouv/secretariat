@@ -94,7 +94,7 @@ const sendMessageOnChatAndEmail = async ({
     `./src/views/templates/emails/${messageConfig.emailFile}`,
     {
       user,
-      jobs: user.domaine ? jobs.filter(job => job.domaines.includes(user.domaine)) : [],
+      jobs: user.domaine ? jobs.filter(job => job.domaines.includes(user.domaine)).slice(0, 3) : [],
     }
   );
   try {
