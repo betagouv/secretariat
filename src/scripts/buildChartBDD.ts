@@ -1,5 +1,5 @@
-import { buildChartBDD } from "../schedulers/syncBetagouvAPIScheduler";
+import { buildCommunityBDD } from "../schedulers/syncBetagouvAPIScheduler";
 
-buildChartBDD().then(() => {
-    console.log('Build chart bdd has run')
+buildCommunityBDD().then(() => {
+    console.log('Build community bdd has run')
 })

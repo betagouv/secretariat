@@ -9,8 +9,8 @@ import { Startup } from '../models/startup';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
-export const chartBdd =  async (users=[]) => {
-  await db('chart').truncate()
+export const communityBdd =  async (users=[]) => {
+  await db('community').truncate()
   const result = {
     'employer': {
       'admin': [],
@@ -155,7 +155,6 @@ export const chartBdd =  async (users=[]) => {
   console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
-    console.log('LCS ROW', row)
     for (const type of Object.keys(row)){
         currentAmounts[type] += row[type];
         datasets[type].push({
@@ -163,7 +162,7 @@ export const chartBdd =  async (users=[]) => {
             y: currentAmounts[type]
         })
     }
-    await db('chart').insert({
+    await db('community').insert({
       date,
       admin: currentAmounts['admin'] || 0,
       independent: currentAmounts['independent'] || 0,
@@ -198,9 +197,9 @@ export async function syncBetagouvUserAPI() {
   }
 }
 
-export async function buildChartBDD() {
+export async function buildCommunityBDD() {
   const users = await db('users')
-  const datasets = await chartBdd(users)
+  const datasets = await communityBdd(users)
   return datasets
 }
 
