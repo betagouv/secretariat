@@ -9,8 +9,8 @@ import { Startup } from '../models/startup';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
-export const chartBdd =  async (users=[]) => {
-  await db('chart').truncate()
+export const communityBdd =  async (users=[]) => {
+  await db('community').truncate()
   const result = {
     'employer': {
       'admin': [],
@@ -96,7 +96,6 @@ export const chartBdd =  async (users=[]) => {
           }
           event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
           if (event.date < today) {
-              console.log('Event employer', event)
               // use previous obj for date if exist, else define a default obj
               dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
               dataByDate[event.date][employerType] += event.increment
@@ -115,7 +114,6 @@ export const chartBdd =  async (users=[]) => {
         }
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
-            console.log('Event domaine', event)
             // use previous obj for date if exist, else define a default obj
             dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
             dataByDate[event.date][domaineType] += event.increment
@@ -133,7 +131,6 @@ export const chartBdd =  async (users=[]) => {
         }
         event.date = event.date.slice(0, -2) + '01' // replace day by first day of the month
         if (event.date < today) {
-            console.log('Event gender', event)
             // use previous obj for date if exist, else define a default obj
             dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
             dataByDate[event.date][genderType] += event.increment
@@ -152,10 +149,8 @@ export const chartBdd =  async (users=[]) => {
   ]) {
     datasets[type] = datasets[type] || []
   }
-  console.log(Object.keys(datasets))
   for (const date of Object.keys(dataByDate).sort(sortASC)) {
     const row = dataByDate[date]
-    console.log('LCS ROW', row)
     for (const type of Object.keys(row)){
         currentAmounts[type] += row[type];
         datasets[type].push({
@@ -163,7 +158,7 @@ export const chartBdd =  async (users=[]) => {
             y: currentAmounts[type]
         })
     }
-    await db('chart').insert({
+    await db('community').insert({
       date,
       admin: currentAmounts['admin'] || 0,
       independent: currentAmounts['independent'] || 0,
@@ -198,9 +193,9 @@ export async function syncBetagouvUserAPI() {
   }
 }
 
-export async function buildChartBDD() {
+export async function buildCommunityBDD() {
   const users = await db('users')
-  const datasets = await chartBdd(users)
+  const datasets = await communityBdd(users)
   return datasets
 }
 
