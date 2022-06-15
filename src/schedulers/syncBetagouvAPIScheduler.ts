@@ -70,7 +70,13 @@ export const chartBdd =  async (users=[]) => {
   const datasets = {}; 
   // keys to use for the datasets
   const employerTypes = Object.keys(result['employer'])
-
+  const domaineTypes = Object.keys(result.domaineOverDate)
+  const genderTypes = Object.keys(result.gender)
+  const TYPES = [
+    ...employerTypes,
+    ...genderTypes,
+    ...domaineTypes
+  ]
   /** 
   *   Work around Chart.js' unability to stack time series unless they explicitly share their abscissa,
   *   by adding neutral data points to all datasets whenever another changes.
@@ -91,12 +97,13 @@ export const chartBdd =  async (users=[]) => {
           if (event.date < today) {
               console.log('Event employer', event)
               // use previous obj for date if exist, else define a default obj
-              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(employerTypes, 0)
+              dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
               dataByDate[event.date][employerType] += event.increment
           }
       };
   };
-  const domaineTypes = Object.keys(result.domaineOverDate)
+
+
   for (const domaineType of domaineTypes) {
     datasets[domaineType] = []
     for (const event of result.domaineOverDate[domaineType]) {
@@ -109,13 +116,12 @@ export const chartBdd =  async (users=[]) => {
         if (event.date < today) {
             console.log('Event domaine', event)
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(domaineTypes, 0)
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
             dataByDate[event.date][domaineType] += event.increment
         }
     };
   };
 
-  const genderTypes = Object.keys(result.gender)
   for (const genderType of genderTypes) {
     datasets[genderType] = []
     for (const event of result.gender[genderType]) {
@@ -128,7 +134,7 @@ export const chartBdd =  async (users=[]) => {
         if (event.date < today) {
             console.log('Event gender', event)
             // use previous obj for date if exist, else define a default obj
-            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(genderTypes, 0)
+            dataByDate[event.date] = dataByDate[event.date] || createDefaultObjectWithKeysAndValue(TYPES, 0)
             dataByDate[event.date][genderType] += event.increment
         }
     };
@@ -137,11 +143,7 @@ export const chartBdd =  async (users=[]) => {
 
   // use dataByDate to define each points and corresponding values
   // for each datasets we compute the value for each new points by adding all values from previous date
-  const currentAmounts = createDefaultObjectWithKeysAndValue([
-    ...employerTypes,
-    ...genderTypes,
-    ...domaineTypes
-  ], 0)
+  const currentAmounts = createDefaultObjectWithKeysAndValue(TYPES, 0)
   for (const type of [
     ...employerTypes,
     ...genderTypes,
