@@ -164,21 +164,21 @@ export const chartBdd =  async (users=[]) => {
     }
     await db('chart').insert({
       date,
-      admin: currentAmounts['admin'],
-      independent: currentAmounts['independent'],
-      service: currentAmounts['service'],
-      animation:  currentAmounts['animation'],
-      coaching: currentAmounts['coaching'],
-      deploiement: currentAmounts['deploiement'],
-      design: currentAmounts['design'],
-      developpement: currentAmounts['developpement'],
-      intraprenariat: currentAmounts['dnimation'],
-      produit: currentAmounts['produit'],
-      autre: currentAmounts['autre'],
-      other: currentAmounts['other'],
-      nsp: currentAmounts['nsp'],
-      male: currentAmounts['male'],
-      female: currentAmounts['female']
+      admin: currentAmounts['admin'] || 0,
+      independent: currentAmounts['independent'] || 0,
+      service: currentAmounts['service'] || 0,
+      animation:  currentAmounts['animation'] || 0,
+      coaching: currentAmounts['coaching'] || 0,
+      deploiement: currentAmounts['deploiement'] || 0,
+      design: currentAmounts['design'] || 0,
+      developpement: currentAmounts['developpement'] || 0,
+      intraprenariat: currentAmounts['intraprenariat'] || 0,
+      produit: currentAmounts['produit'] || 0,
+      autre: currentAmounts['autre'] || 0,
+      other: currentAmounts['other'] || 0,
+      nsp: currentAmounts['nsp'] || 0,
+      male: currentAmounts['male'] || 0,
+      female: currentAmounts['female'] || 0
     })
   }
   return datasets
