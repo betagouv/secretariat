@@ -13,12 +13,14 @@ Pour mettre à jour ta date de fin de mission, tu peux :
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider. Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à secretariat@incubateur.net](mailto:secretariat@incubateur.net).
 
 <% if (jobs.length) { %>
-Si ta mission se termine, voici les offres actuellements ouvertes qui pourraient correspondre à ton domaine :
+Si ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
 <% for (var i =0; i < jobs.length;  i++ ) { %>
 - [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
 <% } %>
-<% } %> 
+<% } %>
+
 Tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
+
 <% if (!jobs.length) { %>   
 Si ta mission se termine, tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
 <% } %>
