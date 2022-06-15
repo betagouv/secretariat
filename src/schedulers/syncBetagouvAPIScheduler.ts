@@ -10,7 +10,7 @@ import { Startup } from '../models/startup';
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
 export const chartBdd =  async (users=[]) => {
-  await knex('chart').truncate()
+  await db('chart').truncate()
   const result = {
     'employer': {
       'admin': [],
