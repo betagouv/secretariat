@@ -38,7 +38,7 @@ const betaGouv = {
     username: string = null
   ) => {
     let hookURL = config.slackWebhookURLSecretariat;
-    const params: any = { text, channel };
+    const params: any = { text, channel: channel === 'general' ? 'town-square' : channel };
     if (channel === 'general') {
       hookURL = config.slackWebhookURLGeneral;
     }
