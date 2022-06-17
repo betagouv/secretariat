@@ -57,7 +57,7 @@ export async function searchCommunes(
 				.sort()
 				.map((codePostal) => ({ ...commune, codePostal }))
 				.filter(({ codePostal }) => codePostal.startsWith(number))
-        .filter(({ code )) => ![13055, 69123, 75056].includes(code))
+        .filter(({ code }) => ![13055, 69123, 75056].includes(code))
 		)
 		.slice(0, 10)
 	const data = res.map(d => ({
