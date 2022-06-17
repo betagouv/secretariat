@@ -42,7 +42,7 @@ export async function searchCommunes(
 	const number = /[\d]+/.exec(input)?.join('') ?? ''
 	const text = /[^\d]+/.exec(input)?.join(' ') ?? ''
 	const response = await fetch(
-		`https://geo.api.gouv.fr/communes?fields=nom,code,departement,region,codesPostaux${
+		`https://geo.api.gouv.fr/communes?type=arrondissement-municipal,commune-actuelle&fields=nom,code,departement,region,codesPostaux${
 			text ? `&nom=${text}` : ''
 		}${/[\d]{5}/.exec(number) ? `&codePostal=${number}` : ''}&boost=population`
 	)
