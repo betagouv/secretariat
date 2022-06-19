@@ -52,7 +52,7 @@ export async function setEmailActive(username) {
     primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     primary_email_status_updated_at: new Date()
   })
-  await knex('users').where({
+  await knex('user_details').where({
     hash: utils.computeHash(username)
   }).update({
     active: true

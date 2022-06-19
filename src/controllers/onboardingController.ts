@@ -249,7 +249,7 @@ export async function postForm(req, res) {
       .onConflict('username')
       .merge();
     
-    await knex('users')
+    await knex('user_details')
       .insert({
         hash: utils.computeHash(username),
         tjm,

@@ -110,7 +110,7 @@ export async function getCurrentAccount(req, res) {
       })(),
       (async () => {
         const hash = utils.computeHash(req.auth.id)
-        const rows = await knex('users').where({ hash });
+        const rows = await knex('user_details').where({ hash });
         return rows.length === 1 ? rows[0] : null;
       })(),
     ]);
@@ -199,7 +199,7 @@ export async function updateCurrentInfo(req, res) {
       })
       .where({ username })
     const hash = utils.computeHash(username)
-    await knex('users')
+    await knex('user_details')
       .insert({
         tjm,
         gender,
