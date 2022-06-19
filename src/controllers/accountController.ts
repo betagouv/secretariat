@@ -98,7 +98,7 @@ export async function deleteEmailResponder(req, res) {
 
 export async function getCurrentAccount(req, res) {
   try {
-    const [currentUser, marrainageState, dbUser, dbUserDetails] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
+    const [currentUser, marrainageState, dbUser, dbUserDetail] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
       (async () => utils.userInfos(req.auth.id, true))(),
       (async () => {
         const [state] = await knex('marrainage').where({ username: req.auth.id });
@@ -117,7 +117,7 @@ export async function getCurrentAccount(req, res) {
     const today = new Date()
     const title = 'Mon compte';
     const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
-    const gender = dbUserDetails.gender || 'NSP'
+    const gender = dbUserDetail.gender || 'NSP'
     return res.render('account', {
       title,
       currentUserId: req.auth.id,
@@ -136,7 +136,7 @@ export async function getCurrentAccount(req, res) {
       primaryEmail: dbUser.primary_email,
       activeTab: 'account',
       marrainageState,
-      tjm: dbUserDetails.tjm ? `${dbUserDetails.tjm} euros` : 'Non renseigné',
+      tjm: dbUserDetail.tjm ? `${dbUserDetail.tjm} euros` : 'Non renseigné',
       gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
       legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
       workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
@@ -206,9 +206,7 @@ export async function updateCurrentInfo(req, res) {
         hash,
       })
       .onConflict('hash')
-      .merge({
-        hash
-      })
+      .merge()
     
     req.flash('message', "Mise à jour")
     res.redirect(`/account/info`);
