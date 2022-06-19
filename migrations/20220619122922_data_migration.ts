@@ -14,7 +14,8 @@ exports.up = async function(knex) {
         await knex('user_details').insert({
             hash: value,
             gender: user.gender,
-            tjm: user.tjm
+            tjm: user.tjm,
+            active: user.primary_email_status === 'EMAIL_ACTIVE'
         })
     }
 };
