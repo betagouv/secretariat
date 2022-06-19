@@ -111,7 +111,7 @@ export async function getCurrentAccount(req, res) {
       (async () => {
         const hash = utils.computeHash(req.auth.id)
         const rows = await knex('user_details').where({ hash });
-        return rows.length === 1 ? rows[0] : null;
+        return rows.length === 1 ? rows[0] : {};
       })(),
     ]);
     const today = new Date()
@@ -238,10 +238,15 @@ export async function updateCurrentInfo(req, res) {
 
 export async function getCurrentInfo(req, res) {
   try {
-    const [dbUser] : [DBUser] = await Promise.all([
+    const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
       (async () => {
         const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
+      })(),
+      (async () => {
+        const hash = utils.computeHash(req.auth.id)
+        const rows = await knex('user_details').where({ hash });
+        return rows.length === 1 ? rows[0] : {};
       })(),
     ]);
     const title = 'Mon compte';
@@ -265,9 +270,9 @@ export async function getCurrentInfo(req, res) {
         activeTab: 'account',
         communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
         formData: {
-          gender: dbUser.gender,
+          gender: dbUserDetail.gender,
           workplace_insee_code: dbUser.workplace_insee_code,
-          tjm: dbUser.tjm,
+          tjm: dbUserDetail.tjm,
           legal_status: dbUser.legal_status,
           secondary_email: dbUser.secondary_email
         },
