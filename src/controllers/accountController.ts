@@ -9,7 +9,6 @@ import { EmailStatusCode } from "../models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { isValidEmail } from "./utils";
 import { InfoUpdatePage } from '../views';
-import crypto from 'crypto';
 
 export async function setEmailResponder(req, res) {
   const formValidationErrors: string[] = [];
@@ -110,10 +109,8 @@ export async function getCurrentAccount(req, res) {
         return rows.length === 1 ? rows[0] : null;
       })(),
       (async () => {
-        const hash = crypto.createHmac('sha512', process.env.HASH_SALT); /** Hashing algorithm sha512 */
-        hash.update(req.auth.id);
-        const value = hash.digest('hex');
-        const rows = await knex('users').where({ hash: value });
+        const hash = utils.computeHash(req.auth.id)
+        const rows = await knex('users').where({ hash });
         return rows.length === 1 ? rows[0] : null;
       })(),
     ]);
@@ -201,6 +198,17 @@ export async function updateCurrentInfo(req, res) {
         secondary_email
       })
       .where({ username })
+    const hash = utils.computeHash(username)
+    await knex('users')
+      .insert({
+        tjm,
+        gender,
+        hash
+      })
+      .onConflict('hash')
+      .merge({
+        hash
+      })
     
     req.flash('message', "Mise à jour")
     res.redirect(`/account/info`);

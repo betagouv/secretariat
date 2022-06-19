@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';
-import { DBUser, genderOptions, statusOptions } from '../models/dbUser';
+import { DBUser, DBUserDetail, genderOptions, statusOptions } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from '../lib/searchCommune';
@@ -39,6 +39,9 @@ export async function sendMessageToUpdateInfoToAllUsers() {
     );
     
     for (const user of concernedUserWithMattermostUsers) {
+        const userDetails: DBUserDetail = await knex('user_details').where({
+            hash: utils.computeHash(user.id)
+        }).then(res => res[0])
         const secretariatUrl = `https://secretariat.incubateur.net/`;
         const messageContent = await ejs.renderFile(
             `./src/views/templates/emails/updateUserInfoEmail.ejs`,
@@ -47,8 +50,8 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                 user: {
                     ...user,
                     startups: user.startups || [],
-                    tjm: user.tjm ? `${user.tjm} euros` : 'Non renseigné',
-                    gender: genderOptions.find(opt => opt.key === user.gender).name,
+                    tjm: userDetails.tjm ? `${user.tjm} euros` : 'Non renseigné',
+                    gender: genderOptions.find(opt => opt.key === userDetails.gender).name,
                     legal_status: user.legal_status ? statusOptions.find(opt => opt.key === user.legal_status).name : 'Non renseigné',
                     workplace_insee_code: user.workplace_insee_code ? await fetchCommuneDetails(user.workplace_insee_code).then(commune => commune.nom)  : 'Non renseigné',
                     secondary_email: user.secondary_email || 'Non renseigné'
