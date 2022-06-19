@@ -7,6 +7,7 @@ exports.up = function(knex) {
     .createTable('user_details', (table) => {
       table.text('hash').primary();
       table.text('gender').defaultTo('NSP');
+      table.boolean('active');
       table.integer('tjm');
     });
 };
