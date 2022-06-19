@@ -199,7 +199,7 @@ export async function updateCurrentInfo(req, res) {
       })
       .where({ username })
     const hash = utils.computeHash(username)
-    const [user_details] = await knex('user_details')
+    await knex('user_details')
       .insert({
         tjm,
         gender,
@@ -207,8 +207,6 @@ export async function updateCurrentInfo(req, res) {
       })
       .onConflict('hash')
       .merge()
-      .returning("*");
-    console.log('Account controller', user_details)
     
     req.flash('message', "Mise à jour")
     res.redirect(`/account/info`);
