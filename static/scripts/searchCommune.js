@@ -2,11 +2,10 @@ async function searchCommunes(
 	event
 ){
     var input = event.target.value;
-
 	const number = /[\d]+/.exec(input)?.join('') ?? ''
 	const text = /[^\d]+/.exec(input)?.join(' ') ?? ''
 	const response = await fetch(
-		`https://geo.api.gouv.fr/communes?fields=nom,code,departement,region,codesPostaux${
+		`https://geo.api.gouv.fr/communes?type=arrondissement-municipal,commune-actuelle&fields=nom,code,departement,region,codesPostaux${
 			text ? `&nom=${text}` : ''
 		}${/[\d]{5}/.exec(number) ? `&codePostal=${number}` : ''}&boost=population`
 	)
@@ -21,6 +20,7 @@ async function searchCommunes(
 				.sort()
 				.map((codePostal) => ({ ...commune, codePostal }))
 				.filter(({ codePostal }) => codePostal.startsWith(number))
+				.filter(({ code }) => !["13055", "69123", "75056"].includes(code))
 		)
 		.slice(0, 10)
 	renderNames(res)
