@@ -203,7 +203,7 @@ export async function updateCurrentInfo(req, res) {
       .insert({
         tjm,
         gender,
-        hash
+        hash,
       })
       .onConflict('hash')
       .merge({
