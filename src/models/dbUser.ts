@@ -41,6 +41,12 @@ export interface DBUser {
     legal_status: LegalStatus;
 }
 
+export interface DBUserDetail {
+  hash: string;
+  tjm: number;
+  gender: GenderCode;
+}
+
 export const genderOptions = [{
     key: 'female',
     name: "Féminin"
