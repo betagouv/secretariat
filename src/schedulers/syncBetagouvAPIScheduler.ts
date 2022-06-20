@@ -1,11 +1,12 @@
 import ejs from 'ejs';
-import { buildBetaEmail, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
+import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup } from '../models/startup';
+import { DBUser } from 'src/models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 
@@ -184,12 +185,19 @@ export async function syncBetagouvUserAPI() {
   const members : Member[] = await BetaGouv.usersInfos()
   await db('missions').truncate()
   for (const member of members) {
-    await db('users').update({
+    const [user] : DBUser[] = await db('users').update({
       domaine: member.domaine,
       missions: JSON.stringify(member.missions)
     }).where({
       username: member.id
+    }).returning('*')
+    await db('user_details').insert({
+      hash: computeHash(member.id),
+      domaine: member.domaine,
+      active: user.primary_email_status === 'EMAIL_ACTIVE'
     })
+    .onConflict('hash')
+    .merge();
   }
 }
 

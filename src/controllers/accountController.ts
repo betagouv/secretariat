@@ -4,7 +4,7 @@ import knex from "../db";
 import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
 import { MemberWithPermission } from "../models/member";
-import { DBUser, statusOptions, genderOptions } from "../models/dbUser";
+import { DBUserDetail, DBUser, statusOptions, genderOptions } from "../models/dbUser";
 import { EmailStatusCode } from "../models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { isValidEmail } from "./utils";
@@ -98,7 +98,7 @@ export async function deleteEmailResponder(req, res) {
 
 export async function getCurrentAccount(req, res) {
   try {
-    const [currentUser, marrainageState, dbUser] : [MemberWithPermission, string, DBUser] = await Promise.all([
+    const [currentUser, marrainageState, dbUser, dbUserDetail] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
       (async () => utils.userInfos(req.auth.id, true))(),
       (async () => {
         const [state] = await knex('marrainage').where({ username: req.auth.id });
@@ -108,11 +108,16 @@ export async function getCurrentAccount(req, res) {
         const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
       })(),
+      (async () => {
+        const hash = utils.computeHash(req.auth.id)
+        const rows = await knex('user_details').where({ hash });
+        return rows.length === 1 ? rows[0] : {};
+      })(),
     ]);
     const today = new Date()
     const title = 'Mon compte';
     const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
-    const gender = dbUser.gender || 'NSP'
+    const gender = dbUserDetail.gender || 'NSP'
     return res.render('account', {
       title,
       currentUserId: req.auth.id,
@@ -131,7 +136,7 @@ export async function getCurrentAccount(req, res) {
       primaryEmail: dbUser.primary_email,
       activeTab: 'account',
       marrainageState,
-      tjm: dbUser.tjm ? `${dbUser.tjm} euros` : 'Non renseigné',
+      tjm: dbUserDetail.tjm ? `${dbUserDetail.tjm} euros` : 'Non renseigné',
       gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
       legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
       workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
@@ -193,6 +198,15 @@ export async function updateCurrentInfo(req, res) {
         secondary_email
       })
       .where({ username })
+    const hash = utils.computeHash(username)
+    await knex('user_details')
+      .insert({
+        tjm,
+        gender,
+        hash,
+      })
+      .onConflict('hash')
+      .merge()
     
     req.flash('message', "Mise à jour")
     res.redirect(`/account/info`);
@@ -222,10 +236,15 @@ export async function updateCurrentInfo(req, res) {
 
 export async function getCurrentInfo(req, res) {
   try {
-    const [dbUser] : [DBUser] = await Promise.all([
+    const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
       (async () => {
         const rows = await knex('users').where({ username: req.auth.id });
         return rows.length === 1 ? rows[0] : null;
+      })(),
+      (async () => {
+        const hash = utils.computeHash(req.auth.id)
+        const rows = await knex('user_details').where({ hash });
+        return rows.length === 1 ? rows[0] : {};
       })(),
     ]);
     const title = 'Mon compte';
@@ -249,9 +268,9 @@ export async function getCurrentInfo(req, res) {
         activeTab: 'account',
         communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
         formData: {
-          gender: dbUser.gender,
+          gender: dbUserDetail.gender,
           workplace_insee_code: dbUser.workplace_insee_code,
-          tjm: dbUser.tjm,
+          tjm: dbUserDetail.tjm,
           legal_status: dbUser.legal_status,
           secondary_email: dbUser.secondary_email
         },

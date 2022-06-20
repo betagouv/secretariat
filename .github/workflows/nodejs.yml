@@ -43,3 +43,4 @@ jobs:
         MAIL_USER: fakeuser
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         HOSTNAME: localhost
+        HASH_SALT: fakesaltfortestenv

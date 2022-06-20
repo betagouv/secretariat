@@ -52,6 +52,11 @@ export async function setEmailActive(username) {
     primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     primary_email_status_updated_at: new Date()
   })
+  await knex('user_details').where({
+    hash: utils.computeHash(username)
+  }).update({
+    active: true
+  })
   console.log(
     `Email actif pour ${user.username}`,
   );
@@ -314,6 +319,9 @@ export async function updatePasswordForUser(req, res) {
       await knex('users').where({ username }).update({
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         primary_email_status_updated_at: new Date()
+      })
+      await knex('user_details').where({ hash: utils.computeHash(username )}).update({
+        active: true
       })
     }
     const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
