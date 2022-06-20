@@ -39,12 +39,14 @@ export async function searchCommunes(
 ){
     const input = value
 
-	const number = /[\d]+/.exec(input)?.join('') ?? ''
-	const text = /[^\d]+/.exec(input)?.join(' ') ?? ''
+	const number = /[\d]{5}/.exec(input)?.join('') ?? ''
+	const arrondissement = /[\d]{1,2}/.exec(input)?.join('') ?? ''
+	const rawtext = /[^\d]+/.exec(input)?.join('') ?? ''
+	const text = number && !arrondissement ? rawtext : input
 	const response = await fetch(
 		`https://geo.api.gouv.fr/communes?type=arrondissement-municipal,commune-actuelle&fields=nom,code,departement,region,codesPostaux${
 			text ? `&nom=${text}` : ''
-		}${/[\d]{5}/.exec(number) ? `&codePostal=${number}` : ''}&boost=population`
+		}${number ? `&codePostal=${number}` : ''}&boost=population`
 	)
 	if (!response.ok) {
 		return null
