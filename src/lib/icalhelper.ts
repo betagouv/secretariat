@@ -18,7 +18,6 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
         .map((c) => new ICAL.Event(c))
     const events = []
     for (const vevent of vevents) {
-        const c = vevent
         if (vevent.isRecurring()) {
             const iter = vevent.iterator(time)
             let next = iter.next();
