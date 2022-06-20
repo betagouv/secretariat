@@ -1,6 +1,6 @@
 Les événements de la semaine :
 <% for (var i=0; i < events.length; i++) { %>
-- <%= events[i].sommaire %> de <%= events[i].startDate %> à <%= events[i].endDate %>
+- <%= events[i].title %> de <%= events[i].startDate %> à <%= events[i].endDate %>
 <% if (events[i].location) { %> (ici)[<%= events[i].location %>]<% } %> 
 
 <% } %>
