@@ -35,8 +35,8 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                 const occ = vevent.getOccurrenceDetails(next);
                 if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
                     events.push({
-                    startDate: occ.startDate,
-                    endDate: occ.endDate,
+                    startDate: new Date(occ.startDate),
+                    endDate: new Date(occ.endDate),
                     location: vevent.location,
                     sommaire: vevent.summary
                     })
@@ -49,8 +49,8 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
         } else {
             if (new Date(vevent.startDate) >= startDate && new Date(vevent.endDate) <= endDate) {
             events.push({
-                startDate: vevent.startDate,
-                endDate: vevent.endDate,
+                startDate: new Date(vevent.startDate),
+                endDate: new Date(vevent.endDate),
                 location: vevent.location,
                 title: vevent.summary
             })
