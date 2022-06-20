@@ -27,8 +27,9 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                 events.push({
                 startDate: occ.startDate,
                 endDate: occ.endDate,
-                location: occ.location,
-                sommaire: occ.summary
+                location: vevent.location,
+                title: vevent.summary,
+                duration: vevent.duration
                 })
             }
             for (; next; next = iter.next()) {
@@ -38,7 +39,8 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                     startDate: new Date(occ.startDate),
                     endDate: new Date(occ.endDate),
                     location: vevent.location,
-                    title: vevent.summary
+                    title: vevent.summary,
+                    duration:vevent.duration
                     })
                 }
                 if ((new Date(occ.startDate) > endDate)) {
@@ -52,7 +54,8 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                 startDate: new Date(vevent.startDate),
                 endDate: new Date(vevent.endDate),
                 location: vevent.location,
-                title: vevent.summary
+                title: vevent.summary,
+                duration: vevent.duration
             })
             }
         }
