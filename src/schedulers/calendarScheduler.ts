@@ -10,8 +10,8 @@ export const postEventsOnMattermost = async () => {
     const calendarURL = process.env.CALENDAR_URL
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSevenDays)
     const readableEvents = events.map(event => ({
-        startDate: utils.formatDateToFrenchTextReadableFormat(event.startDate),
-        endDate: utils.formatDateToFrenchTextReadableFormat(event.endDate),
+        startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
+        endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
         location: event.location,
         title: event.title
     }))
