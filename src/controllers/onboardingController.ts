@@ -248,6 +248,15 @@ export async function postForm(req, res) {
       })
       .onConflict('username')
       .merge();
+    
+    await knex('user_details')
+      .insert({
+        hash: utils.computeHash(username),
+        tjm,
+        gender,
+      })
+      .onConflict('hash')
+      .merge();
 
     res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
   } catch (err) {

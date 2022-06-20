@@ -4,6 +4,12 @@ import _ from 'lodash';
 import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
 import config from '../config';
+import crypto from 'crypto';
+
+export const computeHash = function(username) {
+  const hash = crypto.createHmac('sha512', config.HASH_SALT); /** Hashing algorithm sha512 */
+  return hash.update(username).digest('hex');
+}
 
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
