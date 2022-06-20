@@ -38,7 +38,7 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                     startDate: new Date(occ.startDate),
                     endDate: new Date(occ.endDate),
                     location: vevent.location,
-                    sommaire: vevent.summary
+                    title: vevent.summary
                     })
                 }
                 if ((new Date(occ.startDate) > endDate)) {
