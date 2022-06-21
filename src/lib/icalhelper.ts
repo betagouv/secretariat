@@ -1,6 +1,22 @@
 import ICAL from 'ical.js';
 import axios from 'axios';
 
+const buildEvent = (occurence, initialEvent) => {
+    const occStartDate = new Date(occurence.startDate)
+    const occEndDate = new Date(occurence.endDate)
+    const startDate = new Date(initialEvent.startDate)
+    const endDate = new Date(initialEvent.endtDate)
+    startDate.setDate(occStartDate.getDate())
+    endDate.setDate(occEndDate.getDate())
+    return {
+        startDate,
+        endDate,
+        location: initialEvent.location,
+        title: initialEvent.summary,
+        duration: initialEvent.duration
+    }
+}
+
 export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startDate, endDate) => {
     const iCalendarData = await axios.get(calendarIcalUrl).then(res => res.data)
     const jcalData = ICAL.parse(iCalendarData);
@@ -24,24 +40,12 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
             if (next) {
             const occ = vevent.getOccurrenceDetails(next);
             if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                events.push({
-                startDate: occ.startDate,
-                endDate: occ.endDate,
-                location: vevent.location,
-                title: vevent.summary,
-                duration: vevent.duration
-                })
+                events.push(buildEvent(occ, event))
             }
             for (; next; next = iter.next()) {
                 const occ = vevent.getOccurrenceDetails(next);
                 if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                    events.push({
-                    startDate: new Date(occ.startDate),
-                    endDate: new Date(occ.endDate),
-                    location: vevent.location,
-                    title: vevent.summary,
-                    duration:vevent.duration
-                    })
+                    events.push(buildEvent(occ, event))
                 }
                 if ((new Date(occ.startDate) > endDate)) {
                     break;
