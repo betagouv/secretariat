@@ -40,12 +40,12 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
             if (next) {
             const occ = vevent.getOccurrenceDetails(next);
             if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                events.push(buildEvent(occ, event))
+                events.push(buildEvent(occ, vevent))
             }
             for (; next; next = iter.next()) {
                 const occ = vevent.getOccurrenceDetails(next);
                 if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                    events.push(buildEvent(occ, event))
+                    events.push(buildEvent(occ, vevent))
                 }
                 if ((new Date(occ.startDate) > endDate)) {
                     break;
