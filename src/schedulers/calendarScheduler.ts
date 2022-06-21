@@ -19,6 +19,6 @@ export const postEventsOnMattermost = async () => {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
     });
-    await betagouv.sendInfoToChat(messageContent, 'incubateur-embauche-autre');
+    await betagouv.sendInfoToChat(messageContent, 'general');
 }
 
