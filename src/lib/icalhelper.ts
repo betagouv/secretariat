@@ -1,6 +1,16 @@
 import ICAL from 'ical.js';
 import axios from 'axios';
 
+const isOccurenceOverdue = function(event, startDate) {
+    const rule = event.component.getFirstPropertyValue('rrule')
+    if (rule.count && rule.freq === 'WEEKLY') {
+        const date = new Date(event.startDate)
+        date.setDate(date.getDate() + (7 * rule.interval * rule.count))
+        return date < startDate
+    }
+    return true
+}
+
 const buildEvent = (occurence, initialEvent) => {
     const occStartDate = new Date(occurence.startDate)
     const occEndDate = new Date(occurence.endDate)
@@ -36,13 +46,10 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
     for (const vevent of vevents) {
         if (vevent.isRecurring()) {
             const iter = vevent.iterator(time)
-            let next = iter.next();
-            if (next) {
-            const occ = vevent.getOccurrenceDetails(next);
-            if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                events.push(buildEvent(occ, vevent))
-            }
-            for (; next; next = iter.next()) {
+            for (let next = iter.next(); next; next = iter.next()) {
+                if (vevent.component.getFirstPropertyValue('rrule').count && isOccurenceOverdue(vevent, startDate)) {
+                    continue;
+                }
                 const occ = vevent.getOccurrenceDetails(next);
                 if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
                     events.push(buildEvent(occ, vevent))
@@ -50,7 +57,6 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
                 if ((new Date(occ.startDate) > endDate)) {
                     break;
                 }
-            }
             }
         } else {
             if (new Date(vevent.startDate) >= startDate && new Date(vevent.endDate) <= endDate) {

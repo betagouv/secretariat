@@ -38,6 +38,7 @@ import {
 import { setEmailExpired } from "../schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
 import { publishJobsToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
+import { postEventsOnMattermost } from './calendarScheduler';
 
 interface Job {
   cronTime: string;
@@ -73,6 +74,12 @@ const jobs: Job[] = [
     onTick: sendNewsletterAndCreateNewOne,
     isActive: true,
     name: 'sendNewsletterAndCreateNewOneJob',
+  },
+  {
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
+    onTick: postEventsOnMattermost,
+    isActive: true,
+    name: 'Post event of the week from betagouv calendar',
   },
   {
     cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00

@@ -16,7 +16,8 @@ export const postEventsOnMattermost = async () => {
         title: event.title
     }))
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
-        events: readableEvents
+        events: readableEvents,
+        CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
     });
     await betagouv.sendInfoToChat(messageContent, 'incubateur-embauche-autre');
 }
