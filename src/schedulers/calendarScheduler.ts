@@ -9,7 +9,7 @@ export const postEventsOnMattermost = async () => {
     dayInSevenDays.setDate(today.getDate() + 7)
     const calendarURL = process.env.CALENDAR_URL
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSevenDays)
-    const readableEvents = events.map(event => ({
+    const readableEvents = events.sort(event => event.startDate).map(event => ({
         startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
         endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
         location: event.location,
