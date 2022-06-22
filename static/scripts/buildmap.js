@@ -102,7 +102,7 @@ async function fetchData() {
                 "code": row.commune.properties.code,
                 "nom": row.commune.properties.nom,
                 "nbUsers": row.users.length,
-                "description": `${row.commune.properties.code.slice(0, 10)}\n${row.users.length}`,
+                "description": `${row.commune.properties.nom.slice(0, 10)}${row.commune.properties.nom.length > 10 ? '...' : ''}\n${row.users.length}`,
                 fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
             },
             "geometry": {
@@ -121,7 +121,7 @@ async function fetchData() {
         'source': 'communes',
         'minzoom': 7,
         paint: {
-            'circle-radius': 40, //["get", "circleRadius"],
+            'circle-radius': 10, //["get", "circleRadius"],
             'circle-stroke-color': 'black',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
@@ -166,7 +166,7 @@ async function fetchData() {
         'minzoom': 0,
         'maxzoom': 7,
         paint: {
-            'circle-radius': 40, //["get", "circleRadius"],
+            'circle-radius': 20, //["get", "circleRadius"],
             'circle-stroke-color': 'black',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
