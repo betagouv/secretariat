@@ -204,22 +204,34 @@ async function fetchData() {
 
     let popup = new maplibregl.Popup({
     })
-    map.on('mouseenter', 'communes', e => {
+    map.on('click', 'communes', e => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
-            <div class="popup">
+        <div class="popup">
             <center><h1>${features[0].properties.nom}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
-        popup.setLngLat(e.lngLat).setHTML(description).addTo(map)
-        })
-        map.on('mouseleave', 'communes', () => {
+        popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+    })
+
+    map.on('mouseenter', 'communes', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
+
+    map.on('mouseleave', 'communes', e => {
         map.getCanvas().style.cursor = ''
-        popup.remove()
     })
 
     map.on('mouseenter', 'departements_user', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
+
+    map.on('mouseleave', 'departements_user', e => {
+        map.getCanvas().style.cursor = ''
+    })
+
+    map.on('click', 'departements_user', e => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
@@ -227,11 +239,7 @@ async function fetchData() {
             <center><h1>${features[0].properties.nom}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
-        popup.setLngLat(e.lngLat).setHTML(description).addTo(map)
-        })
-        map.on('mouseleave', 'departements_user', () => {
-        map.getCanvas().style.cursor = ''
-        popup.remove()
+        popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
     
 }
