@@ -49,7 +49,8 @@ function centroid(poly){
 
 async function fetchData() {
     const res = await fetch('/static/communes.geojson')
-    const communes = await res.json().then(data => data.features)
+    let communes = await res.json().then(data => data.features)
+    communes = [...communes, ...cityWithArrondissement]
     const res2 = await fetch('/api/get-users-location')
     const departements = await fetch(DEPARTEMENTS_GEOJSON)
     .then(res => res.json())
@@ -58,13 +59,8 @@ async function fetchData() {
         .then(users => users
         .filter(user => user.workplace_insee_code)
         .map(user => {
-            let userCommune
             const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2))
-            if (["13055", "69123", "75056"].includes(user.workplace_insee_code)) {
-                userCommune = dep
-            } else {
-                userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
-            }
+            const userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
             return {
                 ...user,
                 communeCode: userCommune ? userCommune.properties.code : undefined,
