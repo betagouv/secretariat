@@ -14,7 +14,7 @@ export const postEventsOnMattermost = async () => {
         endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
         location: event.location,
         title: event.title
-    })).sort(event => event.startDate)
+    }))
     
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
