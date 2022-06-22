@@ -22,6 +22,7 @@ import * as onboardingController from './controllers/onboardingController';
 import * as resourceController from './controllers/resourceController';
 import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
+import * as mapController from './controllers/mapController';
 import * as sentry from './lib/sentry';
 const app = express();
 
@@ -162,6 +163,9 @@ app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 app.get('/resources', resourceController.getResources);
 app.get('/api/get-users', adminController.getUsers);
+app.get('/api/get-users-location', mapController.getUsersLocation);
+app.get('/map', mapController.getMap);
+
 
 sentry.initCaptureConsoleWithHandler(app);
 
