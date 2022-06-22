@@ -117,7 +117,7 @@ export async function getCurrentAccount(req, res) {
     const today = new Date()
     const title = 'Mon compte';
     const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
-    const gender = dbUserDetail.gender || 'NSP'
+    const gender = 'NSP' //dbUserDetail.gender || 'NSP'
     return res.render('account', {
       title,
       currentUserId: req.auth.id,
