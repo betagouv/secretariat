@@ -5,7 +5,7 @@ import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
-import { Startup, DBStartup } from '../models/startup';
+import { Startup } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
