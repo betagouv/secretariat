@@ -214,7 +214,7 @@ export async function syncBetagouvStartupAPI() {
       repository: startup.attributes.repository,
       contact: startup.attributes.contact,
       phases: JSON.stringify(startup.attributes.phases),
-      current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length] : undefined,
+      current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1] : undefined,
       incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
     })
     .onConflict('id')
