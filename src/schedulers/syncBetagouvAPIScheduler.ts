@@ -215,7 +215,7 @@ export async function syncBetagouvStartupAPI() {
       contact: startup.attributes.contact,
       phases: JSON.stringify(startup.attributes.phases),
       current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length] : undefined,
-      incubator: startup.relationships ? startup.attributes.incubator.data.id : undefined,
+      incubator: startup.relationships ? startup.incubator.data.id : undefined,
     })
     .onConflict('id')
     .merge();
