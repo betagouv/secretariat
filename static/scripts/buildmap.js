@@ -13,9 +13,8 @@ function capitalizeWord(str) {
     }).join(' ');
     }
 
-var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson'
-//"https://gist.githubusercontent.com/maximepvrt/26dd5ed5f26a63bc3040cb3f67594325/raw/c6af19f94f2743b9a445a5a2e6d657a4c0bfc3d6/departements-avec-outre-mer.geojson"
-
+var DEPARTEMENTS_GEOJSON = "https://gist.githubusercontent.com/maximepvrt/26dd5ed5f26a63bc3040cb3f67594325/raw/c6af19f94f2743b9a445a5a2e6d657a4c0bfc3d6/departements-avec-outre-mer.geojson"
+//var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson' 
 var groupBy = function(xs, key) {
     return xs.reduce(function(rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -34,7 +33,16 @@ function area(poly){
 
 
 
-function centroid(poly){
+function centroid(poly, test){
+    if (poly.type === 'MultiPolygon') {
+        return centroid({
+            type: 'Polygon',
+            coordinates: poly.coordinates.map(c => centroid({
+                type: 'Polygon',
+                coordinates: c
+            }))
+        })
+    }
     var c = [0,0];
     var ring = poly.coordinates[0];
     for(i= 0; i < (ring.length-1); i++){
@@ -58,9 +66,8 @@ async function fetchData() {
     let communes = await res.json().then(data => data.features)
     communes = [...communes, ...cityWithArrondissement]
     const res2 = await fetch('/api/get-users-location')
-    const departements = await fetch(DEPARTEMENTS_GEOJSON)
-    .then(res => res.json())
-    .then(data => data.features)
+    const departementsJson = await fetch(DEPARTEMENTS_GEOJSON).then(res => res.json())
+    const departements = departementsJson.features
     const users = await res2.json()
         .then(users => users
         .filter(user => user.workplace_insee_code)
@@ -127,7 +134,7 @@ async function fetchData() {
         'source': 'communes',
         'minzoom': 7,
         paint: {
-            'circle-radius': 10, //["get", "circleRadius"],
+            'circle-radius': 15, //["get", "circleRadius"],
             'circle-stroke-color': 'black',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
@@ -172,7 +179,7 @@ async function fetchData() {
         'minzoom': 0,
         'maxzoom': 7,
         paint: {
-            'circle-radius': 20, //["get", "circleRadius"],
+            'circle-radius': 30, //["get", "circleRadius"],
             'circle-stroke-color': 'black',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
@@ -241,6 +248,19 @@ async function fetchData() {
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
-    
+
+
+map.addSource("departements", {type: "geojson", data: departementsJson})
+map.addLayer({
+    'id': 'departements-lines',
+    'type': 'line',
+    'source': 'departements',
+    'maxzoom': 9,
+    paint: {
+      'line-color': "black",
+      'line-width': 1,
+      'line-dasharray': [2, 3],
+    }
+  });
 }
 map.on('load', fetchData)
