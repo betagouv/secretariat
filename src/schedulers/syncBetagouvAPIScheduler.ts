@@ -5,7 +5,7 @@ import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
-import { Startup } from '../models/startup';
+import { Startup, StartupInfo } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -202,7 +202,7 @@ export async function syncBetagouvUserAPI() {
 }
 
 export async function syncBetagouvStartupAPI() {
-  const startups : Startup[] = await BetaGouv.startupsInfos();
+  const startups : StartupInfo[] = await BetaGouv.startupsInfos();
   await db('startups').truncate()
   for (const startup of startups) {
     await db('startups').insert({
