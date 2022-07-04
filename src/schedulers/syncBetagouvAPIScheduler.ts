@@ -205,7 +205,7 @@ export async function syncBetagouvStartupAPI() {
   const startups : Startup[] = await BetaGouv.startupInfos()
   await db('startups').truncate()
   for (const startup of startups) {
-    await db('startups').update({
+    await db('startups').insert({
       id: startup.id,
       name: startup.name,
       pitch: startup.pitch,
@@ -216,9 +216,9 @@ export async function syncBetagouvStartupAPI() {
       phases: startup.phases,
       current_phase: startup.phases[startup.phases.length],
       incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
-    }).where({
-      username: startup.id
-    }).returning('*')
+    })
+    .onConflict('startups')
+    .merge();
   }
 }
 
