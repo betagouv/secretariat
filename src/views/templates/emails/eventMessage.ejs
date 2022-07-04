@@ -1,7 +1,5 @@
 Les événements de la semaine :
 <% for (var i=0; i < events.length; i++) { %>
-- <%= events[i].title %> le <%= events[i].startDate %>
-<% if (events[i].location && events[i].location.startsWith('http')) { %> [ici](<%= events[i].location %>)<% } %> 
-<% if (events[i].location && !events[i].location.startsWith('http')) { %> à <%= events[i].location %><% } %> 
+- <%= events[i].title %> le <%= events[i].startDate %> <% if (events[i].location && events[i].location.startsWith('http')) { %> [ici](<%= events[i].location %>)<% } %> <% if (events[i].location && !events[i].location.startsWith('http')) { %> à <%= events[i].location %><% } %> 
 <% } %>
-Retrouvez tous les événements dans l'[agenda publique](<%= CALENDAR_PUBLIC_URL %>)
+Retrouvez tous les événements dans l'[agenda public](<%= CALENDAR_PUBLIC_URL %>)
