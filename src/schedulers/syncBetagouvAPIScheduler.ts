@@ -217,7 +217,7 @@ export async function syncBetagouvStartupAPI() {
       current_phase: startup.phases[startup.phases.length],
       incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
     })
-    .onConflict('startups')
+    .onConflict('id')
     .merge();
   }
 }
