@@ -207,15 +207,15 @@ export async function syncBetagouvStartupAPI() {
   for (const startup of startups) {
     await db('startups').insert({
       id: startup.id,
-      name: startup.name,
-      pitch: startup.pitch,
-      stats_url: startup.stats_url,
-      link: startup.link,
-      repository: startup.repository,
-      contact: startup.contact,
-      phases: JSON.stringify(startup.phases),
-      current_phase: startup.phases ? startup.phases[startup.phases.length] : undefined,
-      incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+      name: startup.attributes.name,
+      pitch: startup.attributes.pitch,
+      stats_url: startup.attributes.stats_url,
+      link: startup.attributes.link,
+      repository: startup.attributes.repository,
+      contact: startup.attributes.contact,
+      phases: JSON.stringify(startup.attributes.phases),
+      current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length] : undefined,
+      incubator: startup.relationships ? startup.attributes.incubator.data.id : undefined,
     })
     .onConflict('id')
     .merge();
