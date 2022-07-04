@@ -30,8 +30,8 @@ export interface StartupInfo {
         stats_url: string;
         link: string;
         incubator: string;
+        phases: Phase[];
     };
-    phases: Phase[];
     relationships: Relationship;
 }
 
