@@ -5,7 +5,7 @@ import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
-import { Startup } from '../models/startup';
+import { Startup, DBStartup } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -198,6 +198,27 @@ export async function syncBetagouvUserAPI() {
     })
     .onConflict('hash')
     .merge();
+  }
+}
+
+export async function syncBetagouvStartupAPI() {
+  const startups : Startup[] = await BetaGouv.startupInfos()
+  await db('startups').truncate()
+  for (const startup of startups) {
+    await db('startups').update({
+      id: startup.id,
+      name: startup.name,
+      pitch: startup.pitch,
+      stats_url: startup.stats_url,
+      link: startup.link,
+      repository: startup.repository,
+      contact: startup.contact,
+      phases: startup.phases,
+      current_phase: startup.phases[startup.phases.length],
+      incubator: startup.relationships.incubator.data.id,
+    }).where({
+      username: startup.id
+    }).returning('*')
   }
 }
 

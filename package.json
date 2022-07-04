@@ -103,6 +103,7 @@
     "@typescript-eslint/parser": "^5.28.0",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.18.0",
     "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.1",
@@ -121,5 +122,10 @@
   },
   "prettier": {
     "singleQuote": true
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
