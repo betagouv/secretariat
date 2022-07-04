@@ -202,7 +202,7 @@ export async function syncBetagouvUserAPI() {
 }
 
 export async function syncBetagouvStartupAPI() {
-  const startups : Startup[] = await BetaGouv.startupInfos()
+  const startups : Startup[] = await BetaGouv.startupsInfos();
   await db('startups').truncate()
   for (const startup of startups) {
     await db('startups').insert({
