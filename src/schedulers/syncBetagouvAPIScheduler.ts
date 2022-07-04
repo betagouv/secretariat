@@ -268,7 +268,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
     todayLess45days.setDate(today.getDate() - 45)
     jobs = jobs.filter(job => new Date(job.published) < todayLess45days)
   }
-  const startups_details : Startup[] = await BetaGouv.startupInfos()
+  const startups_details : Startup[] = await BetaGouv.startupsInfos()
   const users = await BetaGouv.usersInfos()
   for(const job of jobs) {
     const startup = startups_details.find(startup => startup.id === job.startup);
