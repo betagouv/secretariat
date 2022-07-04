@@ -29,9 +29,9 @@ export interface StartupInfo {
         pitch: string;
         stats_url: string;
         link: string;
-        phases: Phase[];
         incubator: string;
-    }
+    };
+    phases: Phase[];
     relationships: Relationship;
 }
 
