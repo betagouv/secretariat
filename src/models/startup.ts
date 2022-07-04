@@ -15,11 +15,23 @@ export interface Startup {
     expired_members: string[];
     active_members: string[];
     previous_members: string[];
-    pitch: string;
-    stats_url: string;
-    link: string;
-    phases: Phase[];
-    incubator: string;
+}
+
+export interface StartupInfo {
+    id: string;
+    attributes: {
+        name: string;
+        repository: string;
+        contact: string;
+        expired_members: string[];
+        active_members: string[];
+        previous_members: string[];
+        pitch: string;
+        stats_url: string;
+        link: string;
+        phases: Phase[];
+        incubator: string;
+    }
     relationships: Relationship;
 }
 
