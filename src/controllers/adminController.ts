@@ -153,5 +153,3 @@ export async function getUsers(req, res) {
     }
     res.json({ users })
 }
-
-

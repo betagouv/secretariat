@@ -15,6 +15,7 @@ export const postEventsOnMattermost = async () => {
         location: event.location,
         title: event.title
     }))
+    
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
