@@ -14,7 +14,7 @@ exports.up = function(knex) {
         table.text('contact');
         table.json('phases');
         table.text('current_phase');
-        table.text('incubators');
+        table.text('incubator');
     });
 };
 
