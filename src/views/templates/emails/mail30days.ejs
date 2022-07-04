@@ -1,12 +1,11 @@
 Bonjour <%= user.fullname %> !  
 
-Ton départ de la communauté beta.gouv.fr est prévu pour dans 30 jours (le <%= user.end %>). 
+Un petit mot pour te rappeler que lorsque ta fiche de membre chez beta.gouv.fr a été créée ou mise-à-jour, ta date de fin de mission a été définie pour le <%= user.end %>. Cette date est pour bientôt !
 
-Si cette date a changé, met la à jour pour rester membre de la communauté :
-[secretariat](https://secretariat.incubateur.net/account#update-end-date)
+Si la date est incorrecte (tu l’avais peut-être mis sans avoir d’info sur la date réelle de fin, ou alors la date de fin a été revue), [mets-la à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations#comment-mettre-a-jour-mes-dates-de-mission) sur la page du [secretariat](https://secretariat.incubateur.net/account#update-end-date) pour rester membre de la communauté.
 
 <% if (jobs.length) { %>
-Si ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
+Si la date est correcte et que ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
 <% for (var i =0; i < jobs.length;  i++ ) { %>
 - [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
 <% } %>
@@ -17,7 +16,7 @@ Tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.g
 
 
 <% if (!jobs.length) { %>   
-Si ta mission se termine, tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
+Si la date est correcte et que ta mission se termine, tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
 <% } %>
 
 Tu peux aussi proposer une candidature spontanée : 

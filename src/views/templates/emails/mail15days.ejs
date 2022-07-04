@@ -1,20 +1,21 @@
 Bonjour <%= user.fullname %> !  
 
-Ton départ de la communauté beta.gouv.fr est prévu pour dans 15 jours (le <%= user.end %>). 
+Un petit mot pour te rappeler que lorsque ta fiche de membre chez beta.gouv.fr a été créée ou mise-à-jour, ta date de fin de mission a été définie pour le <%= user.end %>. Cette date est pour bientôt !
 
-Si cette date a changé, mets la à jour pour rester membre de la communauté. C'est important car elle permet de conserver tes accès au différents services : mattermost, emails, ...
+Si la date est incorrecte (tu l’avais peut-être mis sans avoir d’info sur la date réelle de fin, ou alors la date de fin a été revue), mets la à jour sur le secrétariat. C'est important car elle permet de conserver tes accès au différents services : mattermost, emails, ...
 
-En général, ta nouvelle date de fin doit correspondre à la date du prochain comité d'investissement de ton produit (dans 6 mois maximum).
-
-Pour mettre à jour ta date de fin de mission, tu peux : 
+Pour faire cette mise à jour, tu peux : 
 - la modifier en te connectant au [secretariat](https://secretariat.incubateur.net/account#update-end-date)
 - [suivre les autres méthodes de modification de ta fiche](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations)
+
+En général, ta nouvelle date de fin doit correspondre à la date du prochain comité d'investissement de ton produit (dans 6 mois maximum).
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à secretariat@incubateur.net](mailto:secretariat@incubateur.net).
 
+
 <% if (jobs.length) { %>
-Si ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
+Si la date est correcte et que ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
 <% for (var i =0; i < jobs.length;  i++ ) { %>
 - [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
 <% } %>
@@ -22,7 +23,7 @@ Tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.g
 <% } %>
 
 <% if (!jobs.length) { %>   
-Si ta mission se termine, tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
+Si la date est correcte et que ta mission se termine, tu peux retrouver toutes les offres ici : [https://beta.gouv.fr/](https://beta.gouv.fr/)
 <% } %>
 
 Tu peux aussi proposer une candidature spontanée : 
