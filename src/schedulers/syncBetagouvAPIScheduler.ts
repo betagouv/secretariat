@@ -187,7 +187,8 @@ export async function syncBetagouvUserAPI() {
   for (const member of members) {
     const [user] : DBUser[] = await db('users').update({
       domaine: member.domaine,
-      missions: JSON.stringify(member.missions)
+      missions: JSON.stringify(member.missions),
+      startups: member.startups
     }).where({
       username: member.id
     }).returning('*')
