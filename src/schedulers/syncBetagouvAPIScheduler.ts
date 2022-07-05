@@ -192,7 +192,7 @@ export async function syncBetagouvUserAPI() {
     }).where({
       username: member.id
     }).returning('*')
-    for (const startup in member.startups) {
+    for (const startup of member.startups) {
       await db('users_startups').insert({
         startup_id: startup,
         user_id: member.id
