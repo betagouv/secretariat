@@ -3,13 +3,13 @@ import { Domaine } from "./member";
 export interface Job {
     id: string,
     url: string,
-    name: string,
+    title: string,
     published: string,
     domaines: Domaine[],
     updated: string,
     author: string,
     technos: string,
-    profile: string
+    content: string
 }
 
 export interface JobWTTJ {
