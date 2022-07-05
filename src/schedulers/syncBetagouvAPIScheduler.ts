@@ -5,7 +5,7 @@ import db from '../db';
 import { Domaine, Member } from '../models/member';
 import { Job } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
-import { Startup } from '../models/startup';
+import { Startup, StartupInfo } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
@@ -201,6 +201,27 @@ export async function syncBetagouvUserAPI() {
   }
 }
 
+export async function syncBetagouvStartupAPI() {
+  const startups : StartupInfo[] = await BetaGouv.startupsInfos();
+  await db('startups').truncate()
+  for (const startup of startups) {
+    await db('startups').insert({
+      id: startup.id,
+      name: startup.attributes.name,
+      pitch: startup.attributes.pitch,
+      stats_url: startup.attributes.stats_url,
+      link: startup.attributes.link,
+      repository: startup.attributes.repository,
+      contact: startup.attributes.contact,
+      phases: JSON.stringify(startup.attributes.phases),
+      current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined,
+      incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+    })
+    .onConflict('id')
+    .merge();
+  }
+}
+
 export async function buildCommunityBDD() {
   const users = await db('users')
   const datasets = await communityBdd(users)
@@ -247,7 +268,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) 
     todayLess45days.setDate(today.getDate() - 45)
     jobs = jobs.filter(job => new Date(job.published) < todayLess45days)
   }
-  const startups_details : Startup[] = await BetaGouv.startupInfos()
+  const startups_details : Startup[] = await BetaGouv.startupsInfos()
   const users = await BetaGouv.usersInfos()
   for(const job of jobs) {
     const startup = startups_details.find(startup => startup.id === job.startup);
