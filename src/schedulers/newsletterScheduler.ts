@@ -6,7 +6,7 @@ import knex from '../db';
 import * as utils from '../controllers/utils';
 import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
 import { Member, MemberWithPrimaryEmail } from '../models/member';
-import { Job } from '../models/job';
+import { JobWTTJ } from '../models/job';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -115,10 +115,10 @@ export async function newsletterReminder(reminder) {
 
 export async function getJobOfferContent() {
   const monday = getMonday(new Date()); // get first day of the current week
-  const jobs : Job[] = await BetaGouv.getJobs();
-  const filteredJobs = jobs.filter(job => new Date(job.published) > monday)
+  const jobs : JobWTTJ[] = await BetaGouv.getJobsWTTJ();
+  const filteredJobs = jobs.filter(job => new Date(job.published_at) > monday)
   const content = filteredJobs.map(job => {
-    return `[${job.title.trim()}](${job.url})`
+    return `[${job.name.trim()}](https://www.welcometothejungle.com/companies/communaute-beta-gouv/jobs/${job.slug})`
   }).join('\n')
   return content
 }
