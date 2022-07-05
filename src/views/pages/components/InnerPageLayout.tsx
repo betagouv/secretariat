@@ -71,7 +71,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             <hr />
                             <img src="/static/images/betagouv.png" width="150" alt=""/>
                             <a href="https://github.com/betagouv/secretariat/" target="_blank"
-                                className="text-size-caption text-color-darker-grey">Code source du sécretariat</a>
+                                className="text-size-caption text-color-darker-grey">Code source de l'espace membre</a>
                         </li>
                     </ul>
                 </aside>
