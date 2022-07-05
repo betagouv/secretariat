@@ -137,17 +137,16 @@ describe('Newsletter', () => {
     beforeEach((done) => {
       slack = sinon.spy(BetaGouv, 'sendInfoToChat');
       jobsStub = sinon
-      .stub(BetaGouv, 'getJobs').returns(Promise.resolve(
+      .stub(BetaGouv, 'getJobsWTTJ').returns(Promise.resolve(
         [{
-          "id": "/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine",
-          "domaine": "Développement",
-          "title": "        Développeur.se full stack – 4 jours par semaine - Offre de France Chaleur Urbaine        ",
-          "url": "http://localhost:4000/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine.html",
-          "published": (new Date()).toISOString(),
-          "updated": "2022-05-31 15:52:38 +0200",
-          "author": "beta.gouv.fr",
-          "technos": "",
-          "content": "",
+          "id": 807837,
+          "reference": "LCB_979pJ9D",
+          "name": "Dev Ruby on Rails expérimenté·e",
+          "slug": "dev-ruby-on-rails-experimente-e_cenac",
+          "description": "<p>L’équipe <a href=\"https://beta.gouv.fr/startups/lapins.html\" target=\"_blank\">RDV-Solidarités</a> recherche <strong>un·e dev Ruby on Rails expérimenté·e (3 ans d'expérience)</strong> pour accélérer l’utilisation de la plateforme dans le cadre de la prise de RDV dans le champ de l’insertion et du RSA.</p>\n\n<p>Lancé en 2019 suite à une expérimentation dans le Pas-de-Calais, le service RDV-Solidarités s’est construit avec un consortium d’une dizaine de départements, principalement pour gérer les RDV du champ médico-social.</p>\n\n<p>Aujourd’hui, plus de 10 000 RDV sont pris hebdomadairement sur la plateforme, et le service s’ouvre à d’autres usages : conseillers numériques France Service, RSA et insertion, etc.</p>\n\n<p><strong>Responsabilités</strong></p>\n\n<p>Dans le cadre de ce recrutement, tu feras le lien avec l’équipe RDV-Insertion (<a href=\"http://www.rdv-insertion.fr\" target=\"_blank\">www.rdv-insertion.fr</a>), un service lié à RDV-Solidarités, en charge d’améliorer les parcours des bénéficiaires RSA. Tu auras donc en charge de comprendre et construire les features nécessaires aux usages spécifiques de l’insertion.</p>\n\n<p>Exemple de features déjà identifiées : </p>\n\n<ul>\n<li>développement des RDV collectifs dans le cadre des RDV du RSA</li>\n<li>développement d'API pour appeler appeler RDV-Solidarités et RDV-Insertion depuis des sites externes</li>\n<li>amélioration de l'interface utilisateur</li>\n<li>...</li>\n</ul>\n\n<p>Pour comprendre les roadmaps et comment les équipes de dev fonctionnent, n’hésite pas à parcourir les pages github de RDV-Solidarités (github.com/betagouv/rdv-solidarites.fret) et RDV-Insertion (github.com/betagouv/rdv-insertion) !</p>\n\n<p><strong>Stack</strong></p>\n\n<ul>\n<li>Technos : Ruby on Rails, bases de front-end (html / css / javascript)</li>\n<li>Code ouvert et libre</li>\n<li>Bonnes pratiques : le code est testé, revu, est déployé par petits lots </li>\n</ul>\n",
+          "published_at": "2022-07-05T12:23:43.029+02:00",
+          "profile": "<ul>\n<li>Tu as la volonté d'améliorer le service public</li>\n<li>Tu es autonome dans la conception, l'écriture et le déploiement de ton code, et en maîtrises les bonnes pratiques </li>\n<li>Tu sais faire preuve d'initiative et tenir tes engagement</li>\n<li>Tu es curieuse ou curieux, et capable d'interagir avec des équipes variées (incubateur des territoires, conseils départementaux, conseillers numériques)</li>\n<li>Tu aimes travailler dans une petite équipe et de manière agile</li>\n<li>Tu es à l'écoute et à l'aise dans la communication orale et écrite, avec tes collègues et en public</li>\n</ul>\n",
+          "recruitment_process": "<p>Le process de recrutement est de deux entretiens (techniques et produit), avant un <strong>démarrage souhaité dès que possible</strong>. </p>\n\n<p>Le poste ouvert pour une indépendante ou un indépendant pour un <strong>premier contrat de 3 mois renouvelable</strong>, à temps plein (3/5 ou 4/5 par semaine négociable selon le profil).</p>\n\n<p>Le télétravail est possible, et une présence ponctuelle à Paris est demandée pour participer aux sessions stratégiques et collaboratives.</p>\n\n<p>Enfin, le TJM est à définir et selon expérience, dans une fourchette entre 500 et 600 euros / jours.</p>\n",
           }],
       ));
       done();

@@ -70,6 +70,7 @@ export default {
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',
   JOBS_API: process.env.JOBS_API || 'https://beta.gouv.fr/api/v2.5/jobs.json',
+  JOBS_WTTJ_API: process.env.JOBS_WTTJ_API,
   leavesEmail: process.env.LEAVES_EMAIL || 'depart@beta.gouv.fr',
   featureReinitPasswordEmail:
     process.env.FEATURE_REINIT_PASSWORD_EMAIL || false,

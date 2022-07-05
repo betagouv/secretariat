@@ -3,7 +3,7 @@ import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, forma
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
-import { Job } from '../models/job';
+import { Job, JobWTTJ } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup, StartupInfo } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
