@@ -183,7 +183,7 @@ export const communityBdd =  async (users=[]) => {
 
 export async function syncBetagouvUserAPI() {
   const members : Member[] = await BetaGouv.usersInfos()
-  await db('missions').truncate()
+  await db('users_startups').truncate()
   for (const member of members) {
     const [user] : DBUser[] = await db('users').update({
       domaine: member.domaine,
@@ -192,6 +192,12 @@ export async function syncBetagouvUserAPI() {
     }).where({
       username: member.id
     }).returning('*')
+    for (const startup in member.startups) {
+      await db('users_startups').insert({
+        startup_id: startup,
+        user_id: member.id
+      })
+    }
     if (user) {
       await db('user_details').insert({
         hash: computeHash(member.id),
