@@ -192,13 +192,15 @@ export async function syncBetagouvUserAPI() {
     }).where({
       username: member.id
     }).returning('*')
-    await db('user_details').insert({
-      hash: computeHash(member.id),
-      domaine: member.domaine,
-      active: user.primary_email_status === 'EMAIL_ACTIVE'
-    })
-    .onConflict('hash')
-    .merge();
+    if (user) {
+      await db('user_details').insert({
+        hash: computeHash(member.id),
+        domaine: member.domaine,
+        active: user.primary_email_status === 'EMAIL_ACTIVE'
+      })
+      .onConflict('hash')
+      .merge();
+    }
   }
 }
 
