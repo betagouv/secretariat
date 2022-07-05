@@ -45,7 +45,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
   });
 
   try {
-    await utils.sendMail(email, 'Connexion au secrétariat BetaGouv', html);
+    await utils.sendMail(email, 'Connexion à l\'espace membre BetaGouv', html);
   } catch (err) {
     console.error(err);
     throw new Error("Erreur d'envoi de mail à ton adresse.");

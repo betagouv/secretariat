@@ -1,4 +1,4 @@
-# Contribuer au Secrétariat
+# Contribuer à l'espace membre
 
 ## Environnement de développement
 - Les commandes pour lancer un environnement de dev sont sur le README

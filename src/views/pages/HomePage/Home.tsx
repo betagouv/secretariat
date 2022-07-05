@@ -53,7 +53,7 @@ export const Home = PageLayout(function (props: Props) {
           <h6>🆘 Besoin d'aide ?</h6>
 
           <ul>
-            <li><b>J'ai oublié mon email pour me connecter :</b> l'accès au secrétariat se fait avec une adresse du service public (@beta.gouv.fr, @pole-emploi.fr...) ou un email secondaire (celui sur lequel tu as reçu tes accès). En cas d'oubli, demande de l'aide sur Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-help" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-help</a></li>
+            <li><b>J'ai oublié mon email pour me connecter :</b> l'accès à l'espace membre se fait avec une adresse du service public (@beta.gouv.fr, @pole-emploi.fr...) ou un email secondaire (celui sur lequel tu as reçu tes accès). En cas d'oubli, demande de l'aide sur Mattermost <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-help" target="_blank" title="Lien vers le channel secretariat sur Mattermost">~incubateur-help</a></li>
             <li><b>Je n'arrive pas à accéder à mes emails :</b> <a href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#2.-configurer-la-reception-et-lenvoi-demails" target="_blank" title="lien vers la documentation pour se connecter à sa boite mail">configure ton client webmail</a>.</li>
           </ul>
       </div>

@@ -44,7 +44,7 @@ function replaceSpecialCharacters(str) {
 export async function sendMail(toEmail, subject, html, extraParams = {}, attachments=[]) {
   const mail = {
     to: toEmail,
-    from: `Secrétariat BetaGouv <${config.senderEmail}>`,
+    from: `Espace Membre BetaGouv <${config.senderEmail}>`,
     subject,
     html,
     text: html.replace(/<(?:.|\n)*?>/gm, ''),
