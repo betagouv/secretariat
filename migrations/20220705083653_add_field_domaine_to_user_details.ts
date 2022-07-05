@@ -3,7 +3,7 @@
  * @returns { Promise<void> }
  */
  exports.up = function(knex) {
-    return knex.schema.table('users_details', (table) => {
+    return knex.schema.table('user_details', (table) => {
         table.string('domaine')
     });
 };
@@ -13,7 +13,7 @@
  * @returns { Promise<void> }
  */
 exports.down = function(knex) {
-    knex.schema.table('users_details', (table) => {
+    knex.schema.table('user_details', (table) => {
         table.dropColumn('domaine');
     });
 };
