@@ -1,7 +1,7 @@
 {
   "name": "secretariat",
   "version": "1.0.0",
-  "description": "Le secrétariat de l’incubateur",
+  "description": "L'espace membre de l’incubateur",
   "main": "index.ts",
   "scripts": {
     "start": "NODE_ENV=prod node dist/src/index.js",

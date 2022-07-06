@@ -14,7 +14,7 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
     <>
       <header id="header">
         <a className="no-decoration" href="/">
-          <h3>🤖&nbsp;Secrétariat automatique de BetaGouv</h3>
+          <h3>Espace membre de BetaGouv</h3>
         </a>
       </header>
       <main role="main">

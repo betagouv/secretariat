@@ -45,7 +45,7 @@ const sendVisitEmail = async function () {
     html,
     {
       cc: getReferentEmailList(usersInfos, visits).join(','),
-      from: `Secrétariat BetaGouv <${config.visitSenderEmail}>`,
+      from: `Espace Membre BetaGouv <${config.visitSenderEmail}>`,
     },
 
   );

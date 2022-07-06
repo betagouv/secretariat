@@ -26,6 +26,6 @@ export const InfoUpdatePage = (props: Parameters<typeof InfoUpdate>[0]) =>
     Component: InfoUpdate,
     props,
     hydrate: true,
-    title: 'Mise à jour de mes infos - Secretariat',
+    title: 'Mise à jour de mes infos - Espace Membre',
     pageName: 'InfoUpdate', // This must match the Component name
   })

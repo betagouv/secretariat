@@ -1,8 +1,8 @@
-# secretariat
+# Espace Membre
 
-Le secrétariat de l’incubateur
+L'espace membre de l’incubateur
 
-## Dev de l'app de secrétariat
+## Dev de l'app Espace Membre
 
 ### Variables d'environnement
 
@@ -113,11 +113,11 @@ Une fois [installé](http://maildev.github.io/maildev/#install) et lancé, il su
 Avec docker:
 ne pas préciser de MAIL_SERVICE, les bonnes variables d'environnement sont déjà précisées dans le docker-compose
 
-Tous les emails envoyés par le code du secrétariat seront visibles depuis l'interface web de Maildev (`http://localhost:1080/`).
+Tous les emails envoyés par le code de l'espace membre seront visibles depuis l'interface web de Maildev (`http://localhost:1080/`).
 
 ### Debug sans notifications Mattermost
 
-Pour certaines actions, le secrétariat envoie une notification Mattermost. En local, vous pouvez mettre les variables d'environnements `SLACK_WEBHOOK_URL_SECRETARIAT` et `SLACK_WEBHOOK_URL_GENERAL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
+Pour certaines actions, l'espace membre envoie une notification Mattermost. En local, vous pouvez mettre les variables d'environnements `SLACK_WEBHOOK_URL_SECRETARIAT` et `SLACK_WEBHOOK_URL_GENERAL` à un service qui reçoit des requêtes POST et répond avec un `200 OK` systématiquement.
 
 [Beeceptor](https://beeceptor.com/) permet de le faire avec une interface en ligne sans besoin de télécharger quoi que ce soit.
 

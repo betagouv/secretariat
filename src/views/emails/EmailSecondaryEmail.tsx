@@ -13,14 +13,14 @@ export const EmailSecondaryEmail = function (props: Props) {
         <p>Bonjour {props.member.fullname}</p>
             
         <p>Tu n'as pas d'email secondaire défini.</p>
-        <p>L'email secondaire permet de te connecter au secrétariat pour y changer ton mot de passe pour ton adresse @beta.gouv.fr</p>
+        <p>L'email secondaire permet de te connecter à l'espace membre pour y changer ton mot de passe pour ton adresse @beta.gouv.fr</p>
         <p>C'est utile si tu l'as perdu ou si ton email beta.gouv.fr a été suspendu temporairement.</p>
 
-        <p>Tu peux le mettre à jour en te rendant sur le secretariat : 
+        <p>Tu peux le mettre à jour en te rendant sur l'espace membre : 
             <a href="https://secretariat.incubateur.net/account#change-secondary-email">https://secretariat.incubateur.net/account#change-secondary-email</a>
         </p>
 
-        <p>🤖 Ceci est un message automatique envoyé par l'app secretariat</p>
+        <p>🤖 Ceci est un message automatique envoyé par l'app espace membre</p>
     </>
   )
 }

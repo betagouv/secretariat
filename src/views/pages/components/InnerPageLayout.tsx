@@ -21,7 +21,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
             <div id="dashboard" className="dashboard">
                 <aside className="side-menu" role="navigation" id="navigation">
                     <button id="drawer-toggle" className="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
-                    <h4 id="logo">🤖&nbsp;Secrétariat</h4>
+                    <h4 id="logo">Espace Membre</h4>
                     <ul className="hidden-mobile margin-bottom-5" id="drawer">
                         <li>
                             <a href="/account" id="account" 
@@ -71,7 +71,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             <hr />
                             <img src="/static/images/betagouv.png" width="150" alt=""/>
                             <a href="https://github.com/betagouv/secretariat/" target="_blank"
-                                className="text-size-caption text-color-darker-grey">Code source du sécretariat</a>
+                                className="text-size-caption text-color-darker-grey">Code source de l'espace membre</a>
                         </li>
                     </ul>
                 </aside>
