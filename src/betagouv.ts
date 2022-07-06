@@ -3,7 +3,7 @@ import ovh0 from 'ovh';
 import config from './config';
 import { checkUserIsExpired } from './controllers/utils';
 import { Incubator } from './models/incubator';
-import { Job } from './models/job';
+import { Job, JobWTTJ } from './models/job';
 import { Member } from './models/member';
 import { Startup } from './models/startup';
 
@@ -94,6 +94,13 @@ const betaGouv = {
   getJobs: async(): Promise<Job[]> => {
     return await axios.get<any[]>(config.JOBS_API)
     .then(res => res.data)
+    .catch((err) => {
+      throw new Error(`Error to get jobs infos : ${err}`);
+    })
+  },
+  getJobsWTTJ: async(): Promise<JobWTTJ[]> => {
+    return await axios.get(config.JOBS_WTTJ_API)
+    .then(res => res.data.jobs)
     .catch((err) => {
       throw new Error(`Error to get jobs infos : ${err}`);
     })
