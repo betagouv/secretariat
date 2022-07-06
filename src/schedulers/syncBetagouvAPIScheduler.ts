@@ -3,7 +3,7 @@ import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, forma
 import BetaGouv from '../betagouv';
 import db from '../db';
 import { Domaine, Member } from '../models/member';
-import { Job } from '../models/job';
+import { Job, JobWTTJ } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup, StartupInfo } from '../models/startup';
 import { DBUser } from 'src/models/dbUser';
@@ -267,6 +267,22 @@ export async function publishJobsToMattermost(jobs=undefined) {
       );
     }
   }
+}
+
+export async function publishJobsWTTJToMattermost(jobs=undefined) {
+  if (!jobs) {
+    jobs = await BetaGouv.getJobsWTTJ() as JobWTTJ[]
+    const now = new Date();
+    jobs = jobs.filter(job => new Date(job.published_at) > now)
+  }
+
+  const jobMessage = await ejs.renderFile('./src/views/templates/emails/jobWTTJMessage.ejs', {
+    jobs
+  })
+  await BetaGouv.sendInfoToChat(
+    jobMessage,
+    `incubateur-embauche`
+  );
 }
 
 export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) {

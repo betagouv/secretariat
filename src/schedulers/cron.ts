@@ -37,7 +37,7 @@ import {
 } from './pullRequestWatcher'
 import { setEmailExpired } from "../schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
-import { publishJobsToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
+import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
 
 interface Job {
@@ -265,12 +265,20 @@ const jobs: Job[] = [
     name: "Synchronize startup info from beta.gouv.fr api with bdd",
   },
   {
-    cronTime: "0 * * * *", // every day at 10,
+    cronTime: "0 10 * * *", // every day at 10,
     onTick: publishJobsToMattermost,
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
     name: "Publish job offer to mattermost on dedicated channel",
+  },
+  {
+    cronTime: "0 10 * * *", // every day at 10,
+    onTick: publishJobsWTTJToMattermost,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_PUBLISH_WTTJ_JOBS_TO_MATTERMOST,
+    name: "Publish wttj job offer to mattermost on dedicated channel",
   },
   {
     cronTime: "0 0 10 * * 1",
