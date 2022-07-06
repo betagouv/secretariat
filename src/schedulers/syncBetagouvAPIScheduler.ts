@@ -276,13 +276,15 @@ export async function publishJobsWTTJToMattermost(jobs=undefined) {
     jobs = jobs.filter(job => new Date(job.published_at) > now)
   }
 
-  const jobMessage = await ejs.renderFile('./src/views/templates/emails/jobWTTJMessage.ejs', {
-    jobs
-  })
-  await BetaGouv.sendInfoToChat(
-    jobMessage,
-    `incubateur-embauche`
-  );
+  if (jobs.length) {
+    const jobMessage = await ejs.renderFile('./src/views/templates/emails/jobWTTJMessage.ejs', {
+      jobs
+    })
+    await BetaGouv.sendInfoToChat(
+      jobMessage,
+      `incubateur-embauche`
+    );
+  }
 }
 
 export async function sendMessageToTeamForJobOpenedForALongTime(jobs=undefined) {
