@@ -13,8 +13,8 @@ function capitalizeWord(str) {
     }).join(' ');
     }
 
-var DEPARTEMENTS_GEOJSON = "https://gist.githubusercontent.com/maximepvrt/26dd5ed5f26a63bc3040cb3f67594325/raw/c6af19f94f2743b9a445a5a2e6d657a4c0bfc3d6/departements-avec-outre-mer.geojson"
-//var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson' 
+// var DEPARTEMENTS_GEOJSON = "https://gist.githubusercontent.com/maximepvrt/26dd5ed5f26a63bc3040cb3f67594325/raw/c6af19f94f2743b9a445a5a2e6d657a4c0bfc3d6/departements-avec-outre-mer.geojson"
+var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson' 
 var groupBy = function(xs, key) {
     return xs.reduce(function(rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
@@ -34,13 +34,12 @@ function area(poly){
 
 
 function centroid(poly, test){
+    console.log(poly)
     if (poly.type === 'MultiPolygon') {
+        console.log('Log', [poly.coordinates[0]])
         return centroid({
             type: 'Polygon',
-            coordinates: poly.coordinates.map(c => centroid({
-                type: 'Polygon',
-                coordinates: c
-            }))
+            coordinates: poly.coordinates[0]
         })
     }
     var c = [0,0];
@@ -62,7 +61,7 @@ const cityWithArrondissement = [
 ]
 
 async function fetchData() {
-    const res = await fetch('/static/communes.geojson')
+    const res = await fetch('/static/communes-avec-outre-mer.geojson')
     let communes = await res.json().then(data => data.features)
     communes = [...communes, ...cityWithArrondissement]
     const res2 = await fetch('/api/get-users-location')
@@ -72,8 +71,9 @@ async function fetchData() {
         .then(users => users
         .filter(user => user.workplace_insee_code)
         .map(user => {
-            const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2))
+            const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2) || c.properties.code === user.workplace_insee_code.slice(0, 3))
             const userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
+            console.log(user, dep, userCommune.properties.code )
             return {
                 ...user,
                 communeCode: userCommune ? userCommune.properties.code : undefined,
@@ -93,7 +93,7 @@ async function fetchData() {
         }
     })
     const usersByDep = groupBy(users, 'communeDep')
-    const dataDep = Object.keys(usersByDep).map(dep => {
+    const dataDep = Object.keys(usersByDep).filter(dep => dep).map(dep => {
         const usersOfDep = usersByDep[dep]
         return {
             users: usersOfDep,
@@ -125,6 +125,7 @@ async function fetchData() {
             })
         }
     }
+    console.log(geojson)
 
     map.addSource("communes", geojson)
 
