@@ -34,9 +34,7 @@ function area(poly){
 
 
 function centroid(poly, test){
-    console.log(poly)
     if (poly.type === 'MultiPolygon') {
-        console.log('Log', [poly.coordinates[0]])
         return centroid({
             type: 'Polygon',
             coordinates: poly.coordinates[0]
@@ -73,7 +71,6 @@ async function fetchData() {
         .map(user => {
             const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2) || c.properties.code === user.workplace_insee_code.slice(0, 3))
             const userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
-            console.log(user, dep, userCommune.properties.code )
             return {
                 ...user,
                 communeCode: userCommune ? userCommune.properties.code : undefined,
@@ -106,8 +103,6 @@ async function fetchData() {
         "data": {
             "type": "FeatureCollection",
             "features": dataCommune.map(row => {
-                // console.log(row.commune.geometry.coordinates[0])
-
                 return {
             "type": "Feature",
             "properties": {
@@ -125,7 +120,6 @@ async function fetchData() {
             })
         }
     }
-    console.log(geojson)
 
     map.addSource("communes", geojson)
 
