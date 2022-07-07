@@ -221,3 +221,15 @@ export async function changeUserEmail(id: string, email: string) {
     return false;
   }
 }
+
+export async function getChannels() {
+  const mattermostChannels = await axios
+    .get(`${config.mattermostURL}/api/v4/channels`, {
+      ...getMattermostConfig(),
+    })
+    .then((response) => response.data);
+  if (!mattermostChannels.length) {
+    return [];
+  }
+  return mattermostChannels;
+}

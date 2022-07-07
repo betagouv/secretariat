@@ -23,6 +23,7 @@ import * as resourceController from './controllers/resourceController';
 import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
+import * as budgetController from './controllers/budgetController';
 import * as sentry from './lib/sentry';
 const app = express();
 
@@ -60,6 +61,7 @@ app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used 
 app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
@@ -76,6 +78,7 @@ app.use(
       '/signin',
       '/marrainage/accept',
       '/marrainage/decline',
+      /notifications\/budget*/,
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
@@ -132,10 +135,25 @@ app.post(
   usersController.managePrimaryEmailForUser
 );
 app.post('/users/:username/end-date', usersController.updateEndDateForUser);
+
 app.post(
   '/notifications/github',
   githubNotificationController.processNotification
 );
+app.post('/notifications/budget/mattermost',
+  budgetController.determineMattermostServer,
+  budgetController.checkToken,
+  budgetController.determineMetadata,
+  budgetController.createPullRequest,
+  );
+
+app.post('/notifications/budget/site',
+  budgetController.determineMattermostServer,
+  budgetController.checkToken,
+  budgetController.determineMetadata,
+  budgetController.createPullRequest,
+  );
+
 app.post('/marrainage', marrainageController.createRequest);
 app.get('/marrainage/accept', marrainageController.acceptRequest);
 app.get('/marrainage/decline', marrainageController.declineRequest);
@@ -167,8 +185,9 @@ app.get('/api/get-users-location', mapController.getUsersLocation);
 app.get('/map', mapController.getMap);
 
 
+
 sentry.initCaptureConsoleWithHandler(app);
 
 export default app.listen(config.port, () =>
-  console.log(`Running on: ${config.protocol}://${config.host}:${config.port}`)
+  console.log(`Running on: ${config.protocol}://${config.host}:${config.port}  ${config.githubFork}`)
 );

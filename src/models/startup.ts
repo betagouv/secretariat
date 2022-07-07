@@ -12,6 +12,7 @@ export interface Startup {
     name: string;
     repository: string;
     contact: string;
+    budget_url: string;
     expired_members: string[];
     active_members: string[];
     previous_members: string[];
@@ -30,6 +31,7 @@ export interface StartupInfo {
         stats_url: string;
         link: string;
         incubator: string;
+        budget_url: string:
         phases: Phase[];
     };
     relationships: Relationship;

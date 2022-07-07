@@ -10,12 +10,6 @@ import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
 
-function createBranchName(username) {
-  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
-  const randomSuffix = crypto.randomBytes(3).toString('hex');
-  return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
-}
-
 interface IMessageInfo {
   prInfo,
   referent: string,
@@ -51,7 +45,7 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
 }
 
 async function createNewcomerGithubFile(username, content, referent) {
-  const branch = createBranchName(username);
+  const branch = utils.createBranchName(username);
   console.log(`Début de la création de fiche pour ${username}...`);
 
   const prInfo = await utils.getGithubMasterSha()

@@ -469,14 +469,8 @@ export async function manageSecondaryEmailForUser(req, res) {
   }
 }
 
-function createBranchName(username) {
-  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
-  const randomSuffix = crypto.randomBytes(3).toString('hex');
-  return `author${username.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
-}
-
 async function updateAuthorGithubFile(username, changes) {
-  const branch = createBranchName(username);
+  const branch = utils.createBranchName('author-', username, '-update-end-date');
   const path = `content/_authors/${username}.md`;
   console.log(`Début de la mise à jour de la fiche pour ${username}...`);
 
