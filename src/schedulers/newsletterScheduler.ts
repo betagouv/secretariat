@@ -88,8 +88,7 @@ const computeMessageReminder = (reminder, newsletter) => {
       Remplissez le pad avec vos news/annonces/événements qui seront présentées à l'hebdo beta.gouv.
       Le contenu du pad sera envoyé jeudi, sous forme d'infolettre à la communauté.`;
   } else if (reminder === 'SECOND_REMINDER') {
-    message = `*:wave: Retrouvez nous pour l'hebdo beta.gouv à midi sur https://invites.standup.incubateur.net/*
-      Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
+    message = `*:wave: Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
       Le pad sera envoyé à 16 h, sous forme d'infolettre à la communauté.`;
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
