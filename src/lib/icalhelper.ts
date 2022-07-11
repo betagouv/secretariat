@@ -70,7 +70,9 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
             }
         }
     }
-    return events
+    return events.filter(event => {
+        return event.startDate >= startDate && event.endDate <= endDate
+    })
 }
 
 export default {
