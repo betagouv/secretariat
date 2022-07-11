@@ -72,7 +72,7 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
             }
         }
     }
-    return events.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
+    return events.sort((a,b) => b.startDate - a.startDate);
 }
 
 export default {
