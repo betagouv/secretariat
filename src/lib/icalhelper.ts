@@ -16,8 +16,10 @@ const buildEvent = (occurence, initialEvent) => {
     const endDate = new Date(occurence.endDate)
     const initStartDate = new Date(initialEvent.startDate)
     const initEndDate = new Date(initialEvent.endtDate)
-    startDate.setTime(initStartDate.getTime())
-    endDate.setTime(initEndDate.getTime())
+    startDate.setHours(initStartDate.getHours())
+    endDate.setHours(initEndDate.getHours())
+    startDate.setMinutes(initStartDate.getMinutes())
+    endDate.setMinutes(initEndDate.getMinutes())
     return {
         startDate,
         endDate,
@@ -70,9 +72,7 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
             }
         }
     }
-    return events.filter(event => {
-        return event.startDate >= startDate && event.endDate <= endDate
-    })
+    return events.sort((a,b) => new Date(b.startDate) - new Date(a.startDate));
 }
 
 export default {
