@@ -12,12 +12,12 @@ const isOccurenceOverdue = function(event, startDate) {
 }
 
 const buildEvent = (occurence, initialEvent) => {
-    const occStartDate = new Date(occurence.startDate)
-    const occEndDate = new Date(occurence.endDate)
-    const startDate = new Date(initialEvent.startDate)
-    const endDate = new Date(initialEvent.endtDate)
-    startDate.setDate(occStartDate.getDate())
-    endDate.setDate(occEndDate.getDate())
+    const startDate = new Date(occurence.startDate)
+    const endDate = new Date(occurence.endDate)
+    const initStartDate = new Date(initialEvent.startDate)
+    const initEndDate = new Date(initialEvent.endtDate)
+    startDate.setTime(initStartDate.getTime())
+    endDate.setTime(initEndDate.getTime())
     return {
         startDate,
         endDate,
