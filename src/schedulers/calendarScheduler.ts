@@ -20,6 +20,6 @@ export const postEventsOnMattermost = async () => {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
     });
-    await betagouv.sendInfoToChat(messageContent, 'general');
+    await betagouv.sendInfoToChat(messageContent, process.env.CALENDAR_PUBLIC_CHANNEL || 'general');
 }
 
