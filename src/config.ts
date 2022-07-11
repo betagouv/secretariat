@@ -39,7 +39,7 @@ export default {
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
   newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
   mattermostURL: process.env.MATTERMOST_URL || 'https://mattermost.incubateur.net',
-  senderEmail: process.env.MAIL_SENDER || 'secretariat@incubateur.net',
+  senderEmail: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
   slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
   slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
   usersAPI:
@@ -57,7 +57,7 @@ export default {
   githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || 'beta-gouv-fr',
   defaultLoggedInRedirectUrl: '/account',
   visitRecipientEmail:
-    process.env.VISIT_MAIL_RECIPIENT || 'secretariat@incubateur.net',
+    process.env.VISIT_MAIL_RECIPIENT || 'espace-membre@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
   sentryDNS: process.env.SENTRY_DNS || false,
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,

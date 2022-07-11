@@ -17,7 +17,7 @@ export const EmailSecondaryEmail = function (props: Props) {
         <p>C'est utile si tu l'as perdu ou si ton email beta.gouv.fr a été suspendu temporairement.</p>
 
         <p>Tu peux le mettre à jour en te rendant sur l'espace membre : 
-            <a href="https://secretariat.incubateur.net/account#change-secondary-email">https://secretariat.incubateur.net/account#change-secondary-email</a>
+            <a href="https://espace-membre.incubateur.net/account#change-secondary-email">https://espace-membre.incubateur.net/account#change-secondary-email</a>
         </p>
 
         <p>🤖 Ceci est un message automatique envoyé par l'app espace membre</p>

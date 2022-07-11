@@ -42,7 +42,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
         const userDetails: DBUserDetail = await knex('user_details').where({
             hash: utils.computeHash(user.id)
         }).then(res => res[0])
-        const secretariatUrl = `https://secretariat.incubateur.net/`;
+        const secretariatUrl = `https://espace-membre.incubateur.net/`;
         const messageContent = await ejs.renderFile(
             `./src/views/templates/emails/updateUserInfoEmail.ejs`,
             {
