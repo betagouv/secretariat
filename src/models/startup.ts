@@ -31,7 +31,7 @@ export interface StartupInfo {
         stats_url: string;
         link: string;
         incubator: string;
-        budget_url: string:
+        budget_url: string;
         phases: Phase[];
     };
     relationships: Relationship;

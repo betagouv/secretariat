@@ -45,7 +45,7 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
 }
 
 async function createNewcomerGithubFile(username, content, referent) {
-  const branch = utils.createBranchName(username);
+  const branch = utils.createBranchName("author-",username, "-create");
   console.log(`Début de la création de fiche pour ${username}...`);
 
   const prInfo = await utils.getGithubMasterSha()
