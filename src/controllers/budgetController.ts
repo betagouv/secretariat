@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import config from "../config";
 import betagouv from "../betagouv";
 import * as utils from "./utils";
@@ -8,14 +10,18 @@ const mattermost = config.mattermost
 const serverKeys = Object.keys(mattermost.servers)
 
 export function determineMattermostServer(req, res, next) {
-  console.log(JSON.stringify(req.body, null, 2))
-  if (!req.body?.response_url?.length) {
+  if (process.env.NODE_ENV === "production") {
+    console.log(JSON.stringify({...req.body, trigger_id: null, token: null}))
+  } else {
+    console.log(JSON.stringify(req.body, null, 2))
+  }
+  if (!req.body?.response_url?.length && !req.body?.context?.response_url?.length) {
     return res.json({
-      text: "La propriété response_url est absente de la requête. Impossible d’en déterminer l’origine. Abandon…"
+      text: "Il n’y a ni _response_url_ ni _context._response_url_ dans la requête. Impossible d’en déterminer l’origine. Abandon…"
     })
   }
-  const mattermostUrl = new URL(req.body?.response_url)
 
+  const mattermostUrl = new URL(req.body?.response_url || req.body?.context?.response_url)
   req.mattermostServerId = serverKeys.find(k => {
     return mattermost.servers[k].startsWith(mattermostUrl.origin)
   })
@@ -28,17 +34,19 @@ export function determineMattermostServer(req, res, next) {
 }
 
 export function checkToken(req, res, next) {
-  if (!req.body?.token) {
+  req.payload = {...req.body?.context, ...req.body}
+
+  if (!req.payload.token) {
     return res.json({
       text: "Aucun token pour valider la requête. Abandon…"
     })
   }
-  if (!mattermost.hooks[req.mattermostServerId][req.body?.team_domain]?.token) {
+  if (!mattermost.hooks[req.mattermostServerId][req.payload.team_domain]?.token) {
     return res.json({
-      text: `Aucun token associé à '${req.body?.team_domain}' team_domain de la requête. Abandon…`
+      text: `Aucun token associé à '${req.payload.team_domain}' team_domain de la requête. Abandon…`
     })
   }
-  if (req.body?.token != mattermost.hooks[req.mattermostServerId][req.body.team_domain].token) {
+  if (req.payload.token != mattermost.hooks[req.mattermostServerId][req.payload.team_domain].token) {
     return res.json({
       text: "Le token contenu dans la requête ne correspond pas à celui connu. Abandon…"
     })
@@ -47,78 +55,138 @@ export function checkToken(req, res, next) {
 }
 
 function buildBudgetURL(startup, budget) {
-  if (budget.startsWith('http') || parseInt(budget) === NaN) {
-    return budget
-  } else {
-    const startDts = startup.attributes?.phases?.map(p => p?.start).filter(p => p) || []
-    startDts.sort()
+  const startDts = startup.attributes?.phases?.map(p => p?.start).filter(p => p) || []
+  startDts.sort()
 
-    const url = new URL('https://beta-gouv-fr-budget.netlify.app')
-    url.searchParams.append('budget', budget)
-    const date = new Date()
-    url.searchParams.append('date', date.toISOString().slice(0,10))
-    if (startDts.length) {
-      url.searchParams.append('start', startDts[0])
-    }
-    url.searchParams.append('startup', startup.attributes.name)
-    url.searchParams.append('startupId', startup.id)
-    return url.toString()
+  const url = new URL('https://beta-gouv-fr-budget.netlify.app')
+  url.searchParams.append('budget', budget)
+  const date = new Date()
+  url.searchParams.append('date', date.toISOString().slice(0,10))
+  if (startDts.length) {
+    url.searchParams.append('start', startDts[0])
   }
+  url.searchParams.append('startup', startup.attributes.name)
+  url.searchParams.append('startupId', startup.id)
+  return url.toString()
 }
 
-export async function determineMetadata(req, res, next) {
-  if (!req.body?.channel_name) {
+export function manageInteractiveActionCall(req, res, next) {
+  if (!req.payload.command) {
+    if (req.payload.action === "publish") {
+      axios.post(req.payload.response_url, {
+        text: `@${req.payload.user_name} vient de demander la publication d’une page budget :smiley: :tada:
+    C’est celle-là : ${req.payload.budget_url}
+    On fait quelques vérifications, on appelle GitHub et on revient vers vous !`,
+        response_type: 'in_channel',
+      })
+
+      req.budget_url = req.payload.budget_url
+      req.startupId = req.payload.startup
+      return next()
+    } else if (req.payload.action === "custom") {
+      return axios.post(req.payload.response_url, {
+        text: `@${req.payload.user_name} pour publier une page de budget personnalisée, vous pouvez utiliser la commande \`/budget url ${req.payload.startup} [url]\` !`,
+        response_type: 'in_channel',
+      })
+    } else {
+      return axios.post(req.payload.response_url, {
+        text: `BUG!`,
+        response_type: 'in_channel',
+      })
+    }
+  }
+  next()
+}
+
+export async function manageSlashCommand(req, res, next) {
+  if (req.startupId) {
+    return next()
+  }
+  if (!req.payload.channel_name) {
     return res.json({
       "text": "La requête ne contient pas d’informations sur la chaîne Mattermost. Abandon…"
     })
   }
 
-  const [subcommand, startupId, details] = req.body?.text.split(" ")?.filter(e => e.length) || []
+  const [subcommand, startupId, details] = req.payload.text.split(" ")?.filter(e => e.length) || []
+  if (["page", "url"].indexOf(subcommand) < 0) {
+    return res.json({
+      "text": `On ne sait pas quoi faire avec la commande \`${req.payload.command} ${req.payload.text}\`. Abandon…`
+    })
+  }
+
   const startups = await betagouv.startupsInfos()
   const startup = startups.find(s => s.id == startupId)
   if (!startup) {
-    return res.json({
-      text: `Aucune startup ne correspond à l’identifiant '${startupId}'`
+    return axios.post(req.body.response_url, {
+      text: `Aucune startup ne correspond à l’identifiant '${startupId}'`,
+      response_type: 'in_channel',
     })
   }
   req.startup = startup
-  console.log(subcommand)
+  req.startupId = startup.id
   if (subcommand === "page") {
+    res.json({
+      text: `@${req.payload.user_name} vient de demander la génération d’une page budget :smiley: avec la commande \`${req.payload.command} ${req.payload.text}\` :tada:
+  On fait quelques vérifications et on revient vers vous !`,
+      response_type: 'in_channel',
+    })
+
     req.budget_url = buildBudgetURL(startup, details)
-    return res.json({
-      text: `${req.body?.user_name} vient de demander la génération d'une page budget :smiley: (avec la commande \`${req.body?.command} ${req.body?.text}\` :tada:).
-La voilà :
+    return axios.post(req.body.response_url, {
+      text: `@${req.payload.user_name}, voilà la page budget demandée :smiley: avec la commande \`${req.payload.command} ${req.payload.text}\` :tada:
 ${req.budget_url}
-Si vous avez des questions ou des problèmes, n'hésitez pas à rejoindre le canal [~domaine-transparence-budget](https://mattermost.incubateur.net/betagouv/channels/domaine-transparence-budget) :smiley:
+Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le canal [~domaine-transparence-budget](https://mattermost.incubateur.net/betagouv/channels/domaine-transparence-budget) :smiley:
 `,
       response_type: 'in_channel',
       attachments: [{
         actions: [{
-          "id": `${req.body.trigger_id}-publish`,
-          "name": "Publier cette première version",
-          "integration": {
-            "url": "/notifications/budget/mattermost",
-            "context": {
-              "token": req.body.token,
-              "startup": startupId,
-              "budget_url": req.budget_url,
+          id: "publish",
+          name: "Publier cette première version",
+          integration: {
+            url: "https://9281-80-215-83-205.ngrok.io/notifications/budget",
+            context: {
+              action: "publish",
+              budget_url: req.budget_url,
+              response_url: req.body.response_url,
+              startup: startupId,
+              token: req.body.token,
+            }
+          }
+        }, {
+          id: "custom",
+          name: "Publier une autre page",
+          integration: {
+            url: "https://9281-80-215-83-205.ngrok.io/notifications/budget",
+            context: {
+              action: "custom",
+              response_url: req.body.response_url,
+              startup: startupId,
+              token: req.body.token,
             }
           }
         }]
       }]
     })
+  } else if (subcommand === "url") {
+    res.json({
+      text: `@${req.payload.user_name} vient de demander la publication d’une page budget :smiley: avec la commande \`${req.payload.command} ${subcommand} ${startupId} [url]\` :tada:
+  C’est celle-là : ${details}
+  On fait quelques vérifications, on appelle GitHub et on revient vers vous !`,
+      response_type: 'in_channel',
+    })
+
+    req.budget_url = details
+    req.channel_url = `${mattermost.servers[req.mattermostServerId]}/${req.payload.team_domain}/channels/${req.payload.channel_name}`
+    next()
   }
-  req.budget_url = details
-  req.channel_url = `${mattermost.servers[req.mattermostServerId]}/${req.body?.team_domain}/channels/${req.body?.channel_name}`
-  next()
 }
 
-async function addStartupProps(startup, props, res) {
+async function addStartupProps(startupId, props, res) {
   const propNames = Object.keys(props)
   propNames.sort()
-  const branch = utils.createBranchName('startup-', startup.id, `-${propNames.join(',')}`);
-  //const path = `content/_startups/${startup.id}.md`;
-  const path = `${startup.id}.md`;
+  const branch = utils.createBranchName('startup-', startupId, `-${propNames.join(',')}`);
+  const path = `content/_startups/${startupId}.md`;
   return utils.getGithubMasterSha()
   .then((response) => {
     const { sha } = response.data.object;
@@ -132,10 +200,14 @@ async function addStartupProps(startup, props, res) {
     return utils.createGithubFile(path, branch, content, res.data.sha).then(() => updates)
   })
   .then((updates) => {
-    return utils.makeGithubPullRequest(branch, `Mise à jour de la fiche de ${startup.id}`)
+    return utils.makeGithubPullRequest(branch, `Mise à jour de la fiche de ${startupId}`)
     .then((pullRequest) => {
       return { updates, pullRequest }
     })
+  })
+  .catch(err => {
+    console.error(err)
+    throw err
   })
 }
 
@@ -144,6 +216,12 @@ export async function createPullRequest(req, res, next) {
     budget_url: req.budget_url,
     //channel_url: req.channel_url,
   }
-  const result = await addStartupProps(req.startup, data, res)
-  return res.json({text: "DONE", response_type: "in_channel", ...result})
+  const result = await addStartupProps(req.startupId, data, res)
+  return axios.post(req.payload.response_url, {
+    text: `@${req.payload.user_name}, la page budget a été ajoutée à la fiche GitHub :tada:
+Maintenant il faut valider la _pull request_ : ${result.pullRequest.data.html_url}
+Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le canal [~domaine-transparence-budget](https://mattermost.incubateur.net/betagouv/channels/domaine-transparence-budget) :smiley:
+`,
+    response_type: 'in_channel',
+    })
 }

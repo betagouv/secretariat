@@ -61,6 +61,7 @@ app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used 
 app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
@@ -144,7 +145,8 @@ app.post(
 app.post('/notifications/budget',
   budgetController.determineMattermostServer,
   budgetController.checkToken,
-  budgetController.determineMetadata,
+  budgetController.manageInteractiveActionCall,
+  budgetController.manageSlashCommand,
   budgetController.createPullRequest,
   );
 
