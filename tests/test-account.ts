@@ -214,5 +214,41 @@ describe('Account', () => {
       user.tjm.should.equal(800)
       fetchCommuneDetailsStub.restore()
     });
+
+    it('should update communication_email value', async() => {
+      const username = 'membre.nouveau'
+      await knex('users').update({ 
+        communication_email: 'secondary',
+        secondary_email: 'membre.nouveau@gmail.com'
+      }).where({
+        username,
+      })
+      await chai.request(app)
+        .post(`/account/update_communication_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT(username)}`)
+        .send({
+          communication_email: 'primary',
+        });
+
+      const dbNewRes = await knex('users').select().where({ username })
+      dbNewRes.length.should.equal(1);
+      dbNewRes[0].communication_email.should.equal('primary');
+
+       await chai.request(app)
+        .post(`/account/update_communication_email/`)
+        .type('form')
+        .set('Cookie', `token=${utils.getJWT(username)}`)
+        .send({
+          communication_email: 'secondary',
+        });
+
+      const dbNewRes2 = await knex('users').select().where({ username })
+      dbNewRes2.length.should.equal(1);
+      dbNewRes2[0].communication_email.should.equal('secondary');
+      await knex('users').where({ username }).update({
+        secondary_email: ''
+      })
+    })
   });
 });
