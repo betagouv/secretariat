@@ -61,7 +61,6 @@ app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used 
 app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
@@ -78,7 +77,7 @@ app.use(
       '/signin',
       '/marrainage/accept',
       '/marrainage/decline',
-      /notifications\/budget*/,
+      '/notifications/budget',
       '/notifications/github',
       '/onboarding',
       /onboardingSuccess\/*/,
@@ -140,14 +139,9 @@ app.post(
   '/notifications/github',
   githubNotificationController.processNotification
 );
-app.post('/notifications/budget/mattermost',
-  budgetController.determineMattermostServer,
-  budgetController.checkToken,
-  budgetController.determineMetadata,
-  budgetController.createPullRequest,
-  );
-
-app.post('/notifications/budget/site',
+/*app.use('/notifications/budget',
+  bodyParser.json())*/
+app.post('/notifications/budget',
   budgetController.determineMattermostServer,
   budgetController.checkToken,
   budgetController.determineMetadata,

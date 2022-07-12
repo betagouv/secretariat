@@ -6,7 +6,6 @@ import { buildMattermostConfig } from "./lib/mattermost/config"
 
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
-
 const userStatusOptions = [
   { label: 'Indépendant', value: 'independent' },
   {

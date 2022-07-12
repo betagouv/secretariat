@@ -50,7 +50,7 @@ function buildBudgetURL(startup, budget) {
   if (budget.startsWith('http') || parseInt(budget) === NaN) {
     return budget
   } else {
-    const startDts = startup?.phases?.map(p => p?.start).filter(p => p) || []
+    const startDts = startup.attributes?.phases?.map(p => p?.start).filter(p => p) || []
     startDts.sort()
 
     const url = new URL('https://beta-gouv-fr-budget.netlify.app')
@@ -73,7 +73,7 @@ export async function determineMetadata(req, res, next) {
     })
   }
 
-  const [subcommand, startupId, budget] = req.body?.text.split(" ")?.filter(e => e.length) || []
+  const [subcommand, startupId, details] = req.body?.text.split(" ")?.filter(e => e.length) || []
   const startups = await betagouv.startupsInfos()
   const startup = startups.find(s => s.id == startupId)
   if (!startup) {
@@ -82,32 +82,35 @@ export async function determineMetadata(req, res, next) {
     })
   }
   req.startup = startup
-  req.budget_url = buildBudgetURL(startup, budget)
-
-  return res.json({
-    text: `${req.body?.user_name} vient de demander la génération d'une page budget :smiley: (avec la commande \`${req.body?.command} ${req.body?.text}\` :tada:).
+  console.log(subcommand)
+  if (subcommand === "page") {
+    req.budget_url = buildBudgetURL(startup, details)
+    return res.json({
+      text: `${req.body?.user_name} vient de demander la génération d'une page budget :smiley: (avec la commande \`${req.body?.command} ${req.body?.text}\` :tada:).
 La voilà :
 ${req.budget_url}
 Si vous avez des questions ou des problèmes, n'hésitez pas à rejoindre le canal [~domaine-transparence-budget](https://mattermost.incubateur.net/betagouv/channels/domaine-transparence-budget) :smiley:
 `,
-    response_type: 'in_channel',
-    attachments: [{
-      actions: [{
-        "id": `${req.body.trigger_id}-publish`,
-        "name": "Publier cette première version",
-        "integration": {
-          "url": "/notifications/budget/mattermost",
-          "context": {
-            "token": req.body.token,
-            "startup": startupId,
-            "budget_url": req.budget_url,
+      response_type: 'in_channel',
+      attachments: [{
+        actions: [{
+          "id": `${req.body.trigger_id}-publish`,
+          "name": "Publier cette première version",
+          "integration": {
+            "url": "/notifications/budget/mattermost",
+            "context": {
+              "token": req.body.token,
+              "startup": startupId,
+              "budget_url": req.budget_url,
+            }
           }
-        }
+        }]
       }]
-    }]
-  })
-
+    })
+  }
+  req.budget_url = details
   req.channel_url = `${mattermost.servers[req.mattermostServerId]}/${req.body?.team_domain}/channels/${req.body?.channel_name}`
+  next()
 }
 
 async function addStartupProps(startup, props, res) {
@@ -139,7 +142,7 @@ async function addStartupProps(startup, props, res) {
 export async function createPullRequest(req, res, next) {
   const data = {
     budget_url: req.budget_url,
-    channel_url: req.channel_url,
+    //channel_url: req.channel_url,
   }
   const result = await addStartupProps(req.startup, data, res)
   return res.json({text: "DONE", response_type: "in_channel", ...result})

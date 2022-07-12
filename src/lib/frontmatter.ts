@@ -1,6 +1,5 @@
 import YAML from "yaml";
 
-
 export function applyChanges(text, changes) {
     const changeKeys = Object.keys(changes)
     const updates = {}
