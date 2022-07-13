@@ -398,6 +398,47 @@
                     <hr />
                 </div> 
             </div>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="change-secondary-email">
+                        Quel email utiliser pour les communications @beta.gouv.fr ?
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <% if (!!primaryEmail && !secondaryEmail) { %>
+                        Tu n'as qu'une seule adresse <%= primaryEmail %>. Ajoute une adresse secondaire pour choisir sur quelles adresses tu souhaites recevoir les communications
+                    <% } %>
+                    <% if (!!primaryEmail && !!secondaryEmail) { %>
+                    <form class="no-margin" action="/account/update_communication_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <div>
+                        <input type="radio"
+                            id="primary"
+                            name="communication_email"
+                            value="primary"
+                            <% if (communication_email === 'primary') { %>
+                                checked
+                            <% } %>    
+                            ><%= primaryEmail %>
+                      </div>
+                      <div>
+                        <input
+                            type="radio"
+                            id="secondary"
+                            name="communication_email"
+                            value="secondary"
+                            <% if (communication_email === 'secondary') { %>
+                                checked
+                            <% } %>    
+                            >
+                        <%= secondaryEmail %>
+                      </div>
+                      <button class="button margin-10-0" type="submit">Sauvegarder</button>
+                    </form>
+                    <% } %>
+                    <hr />
+                </div> 
+            </div>
         </div>
     </div>
 

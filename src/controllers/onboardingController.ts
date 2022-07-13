@@ -5,7 +5,7 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
-import { EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
+import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
@@ -31,8 +31,9 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
   const messageContent = await ejs.renderFile('./src/views/templates/emails/onboardingReferent.ejs', {
     referent: referent, prUrl, name, userUrl, isEmailBetaAsked
   });
+  const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
   await utils.sendMail(
-    dbReferent.primary_email || utils.buildBetaEmail(dbReferent.username),
+    email,
     `${name} vient de créer sa fiche Github`,
     renderHtmlFromMd(messageContent)
   );

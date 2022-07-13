@@ -28,6 +28,11 @@ export enum LegalStatus {
     SNC="SNC",
 }
 
+export enum CommunicationEmailCode {
+  PRIMARY="primary",
+  SECONDARY="secondary"
+}
+
 export interface DBUser {
     secondary_email: string;
     primary_email?: string;
@@ -39,6 +44,7 @@ export interface DBUser {
     tjm: number;
     gender: GenderCode;
     legal_status: LegalStatus;
+    communication_email: CommunicationEmailCode;
 }
 
 export interface DBUserDetail {

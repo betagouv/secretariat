@@ -4,7 +4,7 @@ import config from '../config';
 import knex from '../db';
 import * as github from '../lib/github';
 import * as mattermost from '../lib/mattermost';
-import { DBUser, EmailStatusCode } from '../models/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode } from '../models/dbUser';
 import * as utils from "../controllers/utils";
 import { Member } from '../models/member';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
@@ -40,8 +40,9 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
             }
         );
         const primary_email_active = user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
+
         await utils.sendMail(
-            primary_email_active ? user.primary_email : user.secondary_email,
+            primary_email_active && user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email,
             `PR en attente`,
             renderHtmlFromMd(messageContent)
         );

@@ -5,7 +5,7 @@ import BetaGouv from '../betagouv';
 import * as utils from './utils';
 import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
-import { DBUser } from '../models/dbUser';
+import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 import { Domaine, Member } from '../models/member';
 
 interface Marrainage {
@@ -97,8 +97,9 @@ async function sendOnboarderRequestEmail(newcomer: Member, onboarder: Member) {
     username: onboarder.id
   }).first()
   try {
+    const email = dbOnboarder.communication_email === CommunicationEmailCode.SECONDARY && dbOnboarder.secondary_email ? dbOnboarder.secondary_email : dbOnboarder.primary_email
     return await utils.sendMail(
-      [dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id)],
+      [email],
       'Tu as été sélectionné·e comme marrain·e 🙌',
       html
     );
@@ -258,20 +259,23 @@ export async function acceptRequest(req, res) {
     const dbUsers: DBUser[] = await knex('users').whereIn(
       'username', [onboarder.id, newcomer.id]
     )
-    const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder.id )
-    const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer.id )
+    const dbOnboarder: DBUser = dbUsers.find(user => user.username === onboarder.id)
+    const dbNewcomer: DBUser = dbUsers.find(user => user.username === newcomer.id)
     try {
+      const emailOnboarder = dbOnboarder.communication_email === CommunicationEmailCode.SECONDARY && dbOnboarder.secondary_email ? dbOnboarder.secondary_email : dbOnboarder.primary_email
+      const emailNewcomer = dbNewcomer.communication_email === CommunicationEmailCode.SECONDARY && dbNewcomer.secondary_email ? dbNewcomer.secondary_email : dbNewcomer.primary_email
+
       await utils.sendMail(
-        dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id),
+        emailOnboarder,
         'Mise en contact 👋',
         html,
-        { replyTo: dbNewcomer ? dbNewcomer.primary_email :  utils.buildBetaEmail(newcomer.id)}
+        { replyTo: emailNewcomer}
       );
       await utils.sendMail(
-        dbNewcomer ? dbNewcomer.primary_email :  utils.buildBetaEmail(newcomer.id),
+        emailNewcomer,
         'Mise en contact 👋',
         html,
-        { replyTo: dbOnboarder ? dbOnboarder.primary_email : utils.buildBetaEmail(onboarder.id)}
+        { replyTo: emailOnboarder}
       );
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
