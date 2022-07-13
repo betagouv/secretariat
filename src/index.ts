@@ -24,6 +24,7 @@ import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
 import * as sentry from './lib/sentry';
+import axios from 'axios';
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -172,7 +173,7 @@ app.post('/hook/:hookId', express.json({type: '*/*'}), async (req, res) => {
   if (req.params.hookId === config.CHATWOOT_ID) {
     const message = `:toolbox: Nouvelle demande de support de ${req.body.contact_id} : ${req.body.messages.join('\n')}`
     console.log(`Post message : `, message) // Call your action on the request here
-    await fetch(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {
+    await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {
         method: 'POST',
         body: JSON.stringify({text: message}),
         headers: {
