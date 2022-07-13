@@ -7,7 +7,7 @@ import * as mattermost from '../lib/mattermost';
 import { MattermostUser } from '../lib/mattermost';
 import knex from "../db";
 import { Member, MemberWithPrimaryEmail } from '../models/member';
-import { CommunicationEmailCode, DBUser, EmailStatusCode } from '../models/dbUser';
+import { DBUser, EmailStatusCode } from '../models/dbUser';
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
   return {
