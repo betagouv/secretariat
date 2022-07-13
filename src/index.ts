@@ -170,6 +170,7 @@ app.get('/api/get-users-location', mapController.getUsersLocation);
 app.get('/map', mapController.getMap);
 app.post('/hook/:hookId', async (req, res) => {
   if (req.params.hookId === config.CHATWOOT_ID) {
+    console.log(req.body) // Call your action on the request here
     const message = `:toolbox: Nouvelle demande de support de ${req.body.contact_id} : ${req.body.messages.join('\n')}`
     await fetch(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {
         method: 'POST',
@@ -178,7 +179,6 @@ app.post('/hook/:hookId', async (req, res) => {
             'Content-Type': 'application/json',
         },
     });
-    console.log(req.body) // Call your action on the request here
   }
 })
 
