@@ -5,7 +5,7 @@ import config from '../config';
 import knex from '../db';
 import * as utils from '../controllers/utils';
 import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
-import { Member, MemberWithEmail, MemberWithPrimaryEmail } from '../models/member';
+import { Member, MemberWithEmail } from '../models/member';
 import { JobWTTJ } from '../models/job';
 import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 

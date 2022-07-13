@@ -39,6 +39,7 @@ export interface MemberWithEmail extends Member {
 export interface MemberWithEmailsAndMattermostUsername extends Member {
   primary_email: string;
   secondary_email?: string;
+  communication_email: string;
   mattermostUsername: string;
 }
 
