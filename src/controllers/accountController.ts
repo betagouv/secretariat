@@ -129,7 +129,7 @@ export async function getCurrentAccount(req, res) {
       canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
       canCreateRedirection: currentUser.canCreateRedirection,
       canChangePassword: currentUser.canChangePassword,
-      communication_email: 'primary',
+      communication_email: dbUser.communication_email,
       emailSuspended: dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED,
       canChangeEmails: currentUser.canChangeEmails,
       redirections: currentUser.redirections,
