@@ -157,6 +157,7 @@ export async function sendNewsletterAndCreateNewOne() {
           ...user,
           email: dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email
         })
+      }
     }
 
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
