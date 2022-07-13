@@ -24,6 +24,7 @@ import * as startupController from './controllers/startupController';
 import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
 import * as sentry from './lib/sentry';
+import axios from 'axios';
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -78,6 +79,7 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
+      /hook\/*/,
       /onboardingSuccess\/*/,
     ],
   })
@@ -167,6 +169,14 @@ app.get('/resources', resourceController.getResources);
 app.get('/api/get-users', adminController.getUsers);
 app.get('/api/get-users-location', mapController.getUsersLocation);
 app.get('/map', mapController.getMap);
+app.post('/hook/:hookId', express.json({type: '*/*'}), async (req, res) => {
+  if (req.params.hookId === config.CHATWOOT_ID) {
+    console.log(req.body)
+    const message = `:toolbox: Nouvelle demande de support de ${req.body.meta.sender.email} : ${req.body.messages.map(m => m.content).join('/n')}`
+    console.log(`Post message : `, message) // Call your action on the request here
+    await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {text: message});
+  }
+})
 
 
 sentry.initCaptureConsoleWithHandler(app);
