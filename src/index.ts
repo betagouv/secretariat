@@ -174,13 +174,7 @@ app.post('/hook/:hookId', express.json({type: '*/*'}), async (req, res) => {
     console.log(req.body)
     const message = `:toolbox: Nouvelle demande de support de ${req.body.contact_id} ${req.body.email} : ${req.body.content}`
     console.log(`Post message : `, message) // Call your action on the request here
-    await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {
-        method: 'POST',
-        body: JSON.stringify({text: message}),
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {text: message});
   }
 })
 
