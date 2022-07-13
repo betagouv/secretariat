@@ -169,7 +169,7 @@ Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le c
         }]
       }]
     }
-    console.log(response_payload)
+    console.log(JSON.stringify(response_payload))
     return axios.post(req.body.response_url, response_payload)
 
   } else if (subcommand === "url") {
