@@ -10,11 +10,7 @@ const mattermost = config.mattermost
 const serverKeys = Object.keys(mattermost.servers)
 
 export function determineMattermostServer(req, res, next) {
-  if (process.env.NODE_ENV === "production") {
-    console.log(JSON.stringify({...req.body, trigger_id: null, token: null}))
-  } else {
-    console.log(JSON.stringify(req.body, null, 2))
-  }
+  console.log(JSON.stringify({...req.body, trigger_id: null, token: null, context: {...req.body.?context, token: null}}))
   if (!req.body?.response_url?.length && !req.body?.context?.response_url?.length) {
     return res.json({
       text: "Il n’y a ni _response_url_ ni _context._response_url_ dans la requête. Impossible d’en déterminer l’origine. Abandon…"
