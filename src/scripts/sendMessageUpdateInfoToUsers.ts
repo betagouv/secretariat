@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';
-import { DBUser, DBUserDetail, genderOptions, statusOptions } from '../models/dbUser';
+import { CommunicationEmailCode, DBUser, DBUserDetail, genderOptions, statusOptions } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from '../lib/searchCommune';
@@ -70,7 +70,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
             } catch (e) {
                 console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
             }
-            utils.sendMail(user.primary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
+            utils.sendMail(user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
         }
         console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }

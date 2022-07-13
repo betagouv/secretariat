@@ -4,7 +4,7 @@ import * as utils from '../controllers/utils';
 import knex from '../db';
 import * as mattermost from '../lib/mattermost';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
-import { DBUser, EmailStatusCode } from '../models/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode } from '../models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
 import betagouv from '../betagouv';
 import { sleep } from '../controllers/utils';
@@ -50,6 +50,7 @@ const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<Memb
         ...githubUser,
         primary_email: user.primary_email,
         secondary_email: user.secondary_email,
+        communincation_email: user.communication_email,
         mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
       };
     }
@@ -112,7 +113,7 @@ const sendMessageOnChatAndEmail = async ({
   }
   try {
     let email = user.primary_email;
-    if (sendToSecondary && user.secondary_email) {
+    if ((sendToSecondary || user.communication_email === CommunicationEmailCode.SECONDARY) && user.secondary_email) {
       email = `${email},${user.secondary_email}`
     }
     await utils.sendMail(

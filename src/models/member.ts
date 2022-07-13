@@ -32,6 +32,10 @@ export interface MemberWithPrimaryEmail extends Member {
   primary_email: string;
 }
 
+export interface MemberWithEmail extends Member {
+  email: string | undefined;
+}
+
 export interface MemberWithEmailsAndMattermostUsername extends Member {
   primary_email: string;
   secondary_email?: string;

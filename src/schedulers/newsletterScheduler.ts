@@ -5,8 +5,9 @@ import config from '../config';
 import knex from '../db';
 import * as utils from '../controllers/utils';
 import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
-import { Member, MemberWithPrimaryEmail } from '../models/member';
+import { Member, MemberWithEmail, MemberWithPrimaryEmail } from '../models/member';
 import { JobWTTJ } from '../models/job';
+import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -147,17 +148,18 @@ export async function sendNewsletterAndCreateNewOne() {
 
     const usersInfos : Member[] = await BetaGouv.usersInfos();
     const users : Member[] = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
-    const dbUsers = await knex('users').whereNotNull('primary_email');
-    const concernedUsers : MemberWithPrimaryEmail[] = users.map((user) => {
-      const dbUser = dbUsers.find((x) => x.username === user.id);
-      return {
-        ...user,
-        primary_email: dbUser ? dbUser.primary_email : undefined
-      };
-    }).filter(user => user.primary_email);
+    const dbUsers : DBUser[] = await knex('users').whereNotNull('primary_email');
+    const concernedUsers : MemberWithEmail[] = []
+    for (const user of users) {
+      const dbUser: DBUser | undefined = dbUsers.find((x) => x.username === user.id);
+      if (dbUser ) {
+        concernedUsers.push({
+          ...user,
+          email: dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email
+        })
+    }
 
-    const usersEmails : string[] = concernedUsers
-      .map(user => user.primary_email)
+    const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
     await utils.sendMail(
       [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
       `${getTitle(newsletterContent)}`,
