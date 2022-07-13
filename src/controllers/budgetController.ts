@@ -133,7 +133,8 @@ export async function manageSlashCommand(req, res, next) {
     })
 
     req.budget_url = buildBudgetURL(startup, details)
-    return axios.post(req.body.response_url, {
+
+    const response_payload = {
       text: `@${req.payload.user_name}, voilà la page budget demandée :smiley: avec la commande \`${req.payload.command} ${req.payload.text}\` :tada:
 ${req.budget_url}
 Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le canal [~domaine-transparence-budget](https://mattermost.incubateur.net/betagouv/channels/domaine-transparence-budget) :smiley:
@@ -167,7 +168,10 @@ Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le c
           }
         }]
       }]
-    })
+    }
+    console.log(response_payload)
+    return axios.post(req.body.response_url, response_payload)
+
   } else if (subcommand === "url") {
     res.json({
       text: `@${req.payload.user_name} vient de demander la publication d’une page budget :smiley: avec la commande \`${req.payload.command} ${subcommand} ${startupId} [url]\` :tada:
