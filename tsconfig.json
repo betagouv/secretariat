@@ -8,7 +8,7 @@
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "removeComments": true,
-        "noUnusedLocals": true,
+        "noUnusedLocals": false,
         "declaration": true,
         "sourceMap": true,
         "allowJs": true,

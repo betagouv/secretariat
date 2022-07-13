@@ -2,6 +2,8 @@ import { config } from 'dotenv';
 
 config();
 
+import { buildMattermostConfig } from "./lib/mattermost/config"
+
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const userStatusOptions = [
@@ -39,16 +41,17 @@ export default {
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
   newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
   mattermostURL: process.env.MATTERMOST_URL || 'https://mattermost.incubateur.net',
+  mattermost: buildMattermostConfig(),
   senderEmail: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
   slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
   slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
   usersAPI:
-    process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
-  incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.3/incubators.json',
+    process.env.USERS_API || 'https://beta.gouv.fr/api/v2.5/authors.json',
+  incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.5/incubators.json',
   startupsAPI:
-    process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
+    process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2.5/startups.json',
   startupsDetailsAPI:
-    process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr/api/v2.3/startups_details.json',
+    process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr/api/v2.5/startups_details.json',
   githubToken: process.env.GITHUB_TOKEN,
   githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || 'betagouv',
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,

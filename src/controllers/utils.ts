@@ -11,6 +11,12 @@ export const computeHash = function(username) {
   return hash.update(username).digest('hex');
 }
 
+export function createBranchName(safePrefix, name, safeSuffix) {
+  const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
+  const randomSuffix = crypto.randomBytes(3).toString('hex');
+  return `${safePrefix}${name.replace(refRegex, '-')}${safeSuffix}-${randomSuffix}`;
+}
+
 const mailTransport = nodemailer.createTransport({
   debug: process.env.MAIL_DEBUG === 'true',
   service: process.env.MAIL_SERVICE ? process.env.MAIL_SERVICE : null,
