@@ -78,6 +78,7 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       '/onboarding',
+      /hook\/*/,
       /onboardingSuccess\/*/,
     ],
   })
@@ -167,7 +168,7 @@ app.get('/resources', resourceController.getResources);
 app.get('/api/get-users', adminController.getUsers);
 app.get('/api/get-users-location', mapController.getUsersLocation);
 app.get('/map', mapController.getMap);
-app.post('/hook/chatwoot/:hookId', async (req, res) => {
+app.post('/hook/:hookId', async (req, res) => {
   if (req.params.hookId === config.CHATWOOT_ID) {
     const message = `:toolbox: Nouvelle demande de support de ${req.body.contact_id} : ${req.body.messages.join('\n')}`
     await fetch(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {
