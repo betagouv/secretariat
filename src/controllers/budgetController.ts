@@ -144,7 +144,7 @@ Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le c
           id: "publish",
           name: "Publier cette première version",
           integration: {
-            url: "https://9281-80-215-83-205.ngrok.io/notifications/budget",
+            url: "${config.protocol}://${config.host}/notifications/budget",
             context: {
               action: "publish",
               budget_url: req.budget_url,
@@ -157,7 +157,7 @@ Si vous avez des questions ou des problèmes, n’hésitez pas à rejoindre le c
           id: "custom",
           name: "Publier une autre page",
           integration: {
-            url: "https://9281-80-215-83-205.ngrok.io/notifications/budget",
+            url: "${config.protocol}://${config.host}/notifications/budget",
             context: {
               action: "custom",
               response_url: req.body.response_url,
