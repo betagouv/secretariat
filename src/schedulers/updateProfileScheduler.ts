@@ -39,6 +39,7 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
                 ...githubUser,
                 primary_email: user.primary_email,
                 secondary_email: user.secondary_email,
+                communication_email: user.communication_email,
                 mattermostUsername: index > -1 ? allMattermostUsers[index].username : undefined,
             };
           }
