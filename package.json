@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@octokit/core": "^3.6.0",
-    "@octokit/request": "^6.0.2",
+    "@octokit/request": "^6.2.0",
     "@octokit/rest": "^18.12.0",
     "@sentry/integrations": "^7.4.1",
     "@sentry/node": "^7.4.1",
