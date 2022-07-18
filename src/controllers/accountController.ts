@@ -141,6 +141,7 @@ export async function getCurrentAccount(req, res) {
       gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
       legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
       workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
+      osm_city: dbUser.osm_city,
       formData: {},
       hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
@@ -206,6 +207,7 @@ export async function updateCurrentInfo(req, res) {
     const username = req.auth.id
     const gender = req.body.gender
     const workplace_insee_code = req.body.workplace_insee_code
+    const osm_city = req.body.osm_city
     const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
     const secondary_email = req.body.secondary_email && isValidEmail(formValidationErrors, 'secondary_email', req.body.secondary_email)
@@ -229,7 +231,8 @@ export async function updateCurrentInfo(req, res) {
         workplace_insee_code,
         tjm,
         legal_status,
-        secondary_email
+        secondary_email,
+        osm_city,
       })
       .where({ username })
     const hash = utils.computeHash(username)
@@ -306,7 +309,8 @@ export async function getCurrentInfo(req, res) {
           workplace_insee_code: dbUser.workplace_insee_code,
           tjm: dbUserDetail.tjm,
           legal_status: dbUser.legal_status,
-          secondary_email: dbUser.secondary_email
+          secondary_email: dbUser.secondary_email,
+          osm_city: dbUser.osm_city
         },
         errors: req.flash('error'),
         messages: req.flash('message'),

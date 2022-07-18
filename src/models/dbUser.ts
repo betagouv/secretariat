@@ -45,6 +45,7 @@ export interface DBUser {
     gender: GenderCode;
     legal_status: LegalStatus;
     communication_email: CommunicationEmailCode;
+    osm_city: string;
 }
 
 export interface DBUserDetail {

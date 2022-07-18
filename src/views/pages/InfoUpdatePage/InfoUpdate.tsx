@@ -5,7 +5,7 @@ import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { searchCommunes } from '../../../lib/searchCommune';
 import CommuneSelect from '../components/CommuneSelect';
-
+import ForeignCitySelect from '../components/ForeignCitySelect';
 
 interface CommuneInfo {
     nom: string,
@@ -22,7 +22,8 @@ interface FormData {
     legal_status: string,
     workplace_insee_code: string,
     tjm: number,
-    secondary_email: string
+    secondary_email: string,
+    osm_city: string,
 }
 
 interface InfoUpdateProps {
@@ -61,6 +62,10 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
 
     const handleCommuneChange = (newValue) => {
         changeFormData('workplace_insee_code', newValue.value)
+    }
+
+    const handleForeignCityChange = (newValue) => {
+        changeFormData('osm_city', JSON.stringify(newValue))
     }
 
     const handleGenderChange = (e) => {
@@ -123,6 +128,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <label htmlFor="workplace_insee_code">
                                     <strong>Lieu de travail</strong><br />
                                     Cette information est utilisée pour faire une carte des membres de la communauté 
+                                    <p> Si tu résides en France (Métropolitaine/Drom) : </p>
                                     <CommuneSelect
                                         loadOptions={loadOptions}
                                         defaultValue={ props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null}
@@ -141,6 +147,18 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <ul id="list-container-city"
                                     >
                                     </ul>
+                                    <p> Si tu ne résides pas en France (Métropolitaine/Drom) : </p>
+                                    <ForeignCitySelect
+                                        defaultValue={ props.formData.osm_city ? `${props.formData.osm_city})`: null}
+                                        onChange={handleForeignCityChange}
+                                        placeholder={'Commune ou code postale'}
+                                    />
+                                    <input
+                                        name="osm_city"
+                                        type="text"
+                                        id="input-osm-city"
+                                        readOnly={true}
+                                        value={state.formData.osm_city} hidden/>
                                 </label>
                             </div>
                             <div className="form__group">
