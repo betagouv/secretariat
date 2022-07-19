@@ -72,13 +72,13 @@ export default ({ defaultValue, onChange, placeholder }) => {
 
     const loadOptions = (
         inputValue: string,
-        callback: (options: any[]) => void
-        ) => {
+        callback: (data: any) => void
+      ) => {
         let timer;
         return () => {
           clearTimeout(timer);
-          timer = setTimeout(async () => {
-            const data : any[] = await searchForeignCity(inputValue)
+          timer = setTimeout(async () => {  
+            const data = await searchForeignCity(inputValue)
             callback(data)
           }, 2000);
         };
