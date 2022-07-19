@@ -150,7 +150,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <p> Si tu résides en France (Métropolitaine/Drom) : </p>
                                     <CitySelect
                                         defaultValue={getDefaultValue()}
-                                        onChange={handleCommuneChange}
+                                        onChange={handleCitySelect}
                                         placeholder={'Commune ou code postale'}
                                     ></CitySelect>
                                     <CommuneSelect
