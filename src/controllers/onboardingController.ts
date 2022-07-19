@@ -9,6 +9,19 @@ import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions }
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
+import { HomePage } from '../views';
+
+function renderOnboarding(req, res, params) {
+  res.send(
+    HomePage({
+      request: req,
+      errors: req.flash('error'),
+      messages: req.flash('message'),
+      domain: config.domain,
+      next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
+    })
+  )
+}
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -93,41 +106,42 @@ export async function getForm(req, res) {
     const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Créer ma fiche';
-    return res.render('onboarding', {
-      domain: config.domain,
-      title,
-      errors: req.flash('error'),
-      formValidationErrors: {},
-      messages: req.flash('message'),
-      userConfig: config.user,
-      users,
-      startups,
-      statusOptions,
-      genderOptions,
-      communeInfo: null,
-      formData: {
-        firstName: '',
-        lastName: '',
-        description: '',
-        website: '',
-        github: '',
-        role: '',
-        domaine: '',
-        start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
-        end: '',
-        status: '',
-        startup: '',
-        employer: '',
-        badge: '',
-        email: '',
-      },
-      useSelectList: isMobileFirefox,
-    });
-  } catch (err) {
-    console.error(err);
-    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
-    return res.redirect('/');
-  }
+    renderOnboarding(req, res, {})
+  //   return res.render('onboarding', {
+  //     domain: config.domain,
+  //     title,
+  //     errors: req.flash('error'),
+  //     formValidationErrors: {},
+  //     messages: req.flash('message'),
+  //     userConfig: config.user,
+  //     users,
+  //     startups,
+  //     statusOptions,
+  //     genderOptions,
+  //     communeInfo: null,
+  //     formData: {
+  //       firstName: '',
+  //       lastName: '',
+  //       description: '',
+  //       website: '',
+  //       github: '',
+  //       role: '',
+  //       domaine: '',
+  //       start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
+  //       end: '',
+  //       status: '',
+  //       startup: '',
+  //       employer: '',
+  //       badge: '',
+  //       email: '',
+  //     },
+  //     useSelectList: isMobileFirefox,
+  //   });
+  // } catch (err) {
+  //   console.error(err);
+  //   req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
+  //   return res.redirect('/');
+  // }
 }
 
 

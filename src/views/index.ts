@@ -2,6 +2,7 @@ import { makeHtml } from './index.html'
 import { Home } from './pages/HomePage'
 import { Admin } from './pages/AdminPage'
 import { InfoUpdate } from './pages/InfoUpdatePage'
+import { Onboarding } from './pages/OnboardingPage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
@@ -11,6 +12,16 @@ export const HomePage = (props: Parameters<typeof Home>[0]) =>
     title: 'Secretariat BetaGouv',
     pageName: 'Home', // This must match the Component name
   })
+
+  export const OnboardingPage = (props: Parameters<typeof Onboarding>[0]) =>
+  makeHtml({
+    Component: Onboarding,
+    props,
+    hydrate: true,
+    title: 'Secretariat BetaGouv',
+    pageName: 'Onboarding', // This must match the Component name
+  })
+
 
 export const AdminPage = (props: Parameters<typeof Admin>[0]) =>
   makeHtml({
