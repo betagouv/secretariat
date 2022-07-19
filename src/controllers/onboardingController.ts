@@ -106,6 +106,7 @@ export async function getForm(req, res) {
         genderOptions,
         statusOptions,
         startupOptions,
+        userConfig: config.user,
         formData: {
           gender: '',
           legal_status: '',

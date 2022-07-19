@@ -30,12 +30,18 @@ interface Props {
     messages?: string[],
     request: Request,
     formData?: FormData,
+    domaineOptions?: Option[],
     statusOptions?: Option[],
     genderOptions?: Option[],
     formValidationErrors?: Object,
     communeInfo?: CommuneInfo,
     startups?: string[],
     startupOptions?: Option[],
+    userConfig: {
+        statusOptions: Option[],
+        minStartDate: string,
+        badgeOptions: Option[],
+    }
 }
 
 /* Pure component */
@@ -195,8 +201,19 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Domaine (obligatoire)</strong><br />
                         Quel est le domaine de ta mission ?
                     </label>
-                    <select name="domaine" required>
-                        <option value=""></option>
+                    <select
+                        name="domaine"
+                        value={state.formData.domaine}
+                        onChange={handleDomaineChange}
+                        placeholder="Sélectionne une valeur" required>
+                        <>
+                        { props.domaineOptions.map((domaine) => { 
+                            return <option
+                                key={domaine.key}
+                                value={domaine.key}
+                                >{domaine.name}</option>
+                        })}
+                        </>
                     </select>
                 </div>
                 <div className="form__group">
@@ -220,6 +237,40 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                </div>
+                <div className="form__group">
+                    <label htmlFor="legal_status">
+                        <strong>Statut (obligatoire)</strong><br />
+                    </label>
+                    { props.userConfig.statusOptions.map((legal_status) => {
+                        
+                        return (<span key={legal_status.key}><input type="radio" name="legal_status"
+                            value={legal_status.key}
+                            onChange={handleLegalStatusChange}
+                            checked={legal_status.key === state.formData.legal_status}
+                            required/>{legal_status.name}<br/></span>)
+
+                    })}
+                    { !!props.formValidationErrors['legal_statut'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
+                    }
+                </div>
+                <div className="form__group">
+                    <label htmlFor="legal_status">
+                        <strong>Statut legal de ton entreprise (obligatoire)</strong><br />
+                    </label>
+                    { props.statusOptions.map((legal_status) => {
+                        
+                        return (<span key={legal_status.key}><input type="radio" name="legal_status"
+                            value={legal_status.key}
+                            onChange={handleLegalStatusChange}
+                            checked={legal_status.key === state.formData.legal_status}
+                            required/>{legal_status.name}<br/></span>)
+
+                    })}
+                    { !!props.formValidationErrors['legal_statut'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
+                    }
                 </div>
                 <div className="form__group">
                     <label htmlFor="tjm">
@@ -287,26 +338,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                     Elle est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
                 </span>
                 </label>
-            </div>
-            <div className="form__group">
-                <label htmlFor="legal_status">
-                    <strong>Statut legal de ton entreprise</strong><br />
-                </label>
-                <label htmlFor="legal_status">
-                    <strong>Statut legal de ton entreprise</strong><br />
-                </label>
-                { props.statusOptions.map((legal_status) => {
-                    
-                    return (<span key={legal_status.key}><input type="radio" name="legal_status"
-                        value={legal_status.key}
-                        onChange={handleLegalStatusChange}
-                        checked={legal_status.key === state.formData.legal_status}
-                        required/>{legal_status.name}<br/></span>)
-
-                })}
-                { !!props.formValidationErrors['legal_statut'] && 
-                    <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
-                }
             </div>
             <button className="button" type="submit">Changer ces informations</button>
         </form>
