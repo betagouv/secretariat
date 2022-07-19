@@ -44,14 +44,6 @@ export const Onboarding = PageLayout(function (props: Props) {
     const [state, setState] = React.useState<any>({
         selectedName: '',
         ...props,
-        formData: {
-            gender: '',
-            legalStatus: '',
-            workplace_insee_code: '',
-            tjm: 0,
-            secondary_email: '',
-            osm_city: '',
-        }
     });
     const css = ".panel { overflow: scroll; }"
 
