@@ -5,6 +5,25 @@ import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 
+interface CommuneInfo {
+    nom: string,
+    codesPostaux?: string[]
+}
+
+interface Option {
+  key: string,
+  name: string
+}
+
+interface FormData {
+    gender: string,
+    legal_status: string,
+    workplace_insee_code: string,
+    tjm: number,
+    secondary_email: string,
+    osm_city: string,
+}
+
 interface Props {
     title?: string,
     currentUserId?: string,
