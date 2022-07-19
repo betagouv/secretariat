@@ -101,7 +101,7 @@ export const Onboarding = PageLayout(function (props: Props) {
             <h3>Mise à jour de mes informations</h3>
 
             <div className="beta-banner"></div>
-            <form action="/onboarding" method="POST" onSubmit="event.submitter && (event.submitter.disabled = true);">
+            <form action="/onboarding" method="POST">
             <h4>Tes infos persos</h4>
 
             <div className="form__group">
@@ -167,7 +167,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <input
                         placeholder="Commune ou code postale"
                         type="text"
-                        id="input-commune" onkeyup="searchCommunes(event)"/>
+                        id="input-commune"/>
                     <input
                         name="workplace_insee_code"
                         type="text" id="input-insee-code" value="<%= formData.workplace_insee_code %>" hidden/>

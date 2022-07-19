@@ -118,7 +118,6 @@ export async function getForm(req, res) {
         genderOptions,
         statusOptions,
         startupOptions,
-        activeTab: 'account',
         communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
         formData: {
           gender: dbUserDetail.gender,
