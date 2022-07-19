@@ -108,6 +108,32 @@ export async function getForm(req, res) {
         genderOptions,
         statusOptions,
         startupOptions,
+        domaineOptions: [{
+          key: "ANIMATION",
+          name: "Animation"
+        }, {
+          key: "COACHING",
+          name: "Coaching"
+        }, {
+          key: "DEPLOIEMENT",
+          name: "Déploiement"
+        }, {
+          key: "DESIGN",
+          name: "Design"
+        }, {
+          key: "DEVELOPPEMENT",
+          name: "Développement"
+        }, {
+          key: "INTRAPRENARIAT",
+          name: "Intraprenariat"
+        }, {
+          key: "PRODUIT",
+          name: "Produit"
+        }, {
+          key: "AUTRE",
+          name: "Autre"
+        }
+      ],
         userConfig: config.user,
         users,
         formData: {
