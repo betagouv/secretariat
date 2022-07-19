@@ -83,7 +83,6 @@ export const Onboarding = PageLayout(function (props: Props) {
 
     const handleSecondaryEmail = (e) => {
         changeFormData('secondary_email', e.currentTarget.value)
-
     }
 
     const handleCitySelect = (newValue) => {
@@ -120,18 +119,24 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <label htmlFor="firstName">
                         <strong>Prénom (obligatoire)</strong>
                     </label>
-                    <input name="firstName" value="" required/>
+                    <input name="firstName" 
+                        value={state.formData.firstName}
+                        onChange={(e) => { changeFormData('firstName', e.currentTarget.value)}}
+                        required/>
                     <label htmlFor="lastName">
                         <strong>Nom de famille (obligatoire)</strong>
                     </label>
-                    <input name="lastName" value="" required/>
+                    <input name="lastName" 
+                        value={state.formData.lastName}
+                        onChange={(e) => { changeFormData('lastName', e.currentTarget.value)}}
+                        required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="description">
                         <strong>Courte bio</strong><br />
                         Cette phrase d'accroche sera affichée sur <a href="https://beta.gouv.fr/communaute/annuaire">l'annuaire</a>.<br />
                         <i>Exemple : « Développeur le jour, musicien la nuit. »</i>
-                        <textarea rows={2} name="description"></textarea>
+                        <textarea rows={2} name="description" value={state.formData.description}></textarea>
                     </label>
                 </div>
                 <div className="form__group">
@@ -139,7 +144,11 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Site personnel</strong><br />
                         Commençant avec <em>http://</em> ou <em>https://</em>
                     </label>
-                    <input name="website" pattern="^(http|https)://.+" title="Doit commencer par http:// ou https://"/>
+                    <input
+                        name="website"
+                        value={state.formData.website}
+                        onChange={(e) => { changeFormData('website', e.currentTarget.value)}}
+                        pattern="^(http|https)://.+" title="Doit commencer par http:// ou https://"/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="github">
@@ -147,7 +156,8 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
                     <input name="github" pattern="^[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}$"
-                        value=""
+                        value={state.formData.github}
+                        onChange={(e) => { changeFormData('github', e.currentTarget.value)}}
                         title="Nom d'utilisateur Github si tu as un compte (sans @)"/>
                 </div>
                 <div className="form__group">
@@ -226,7 +236,10 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
                         Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                     </label>
-                    <input name="role" value="" required/>
+                    <input name="role"
+                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
+                        value={state.formData.role}
+                        required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="start">
