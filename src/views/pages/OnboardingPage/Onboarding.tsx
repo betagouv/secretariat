@@ -5,6 +5,7 @@ import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
+import { StartupInfo } from '../../../models/startup'
 
 interface CommuneInfo {
     nom: string,
@@ -37,7 +38,7 @@ interface Props {
     genderOptions?: Option[],
     formValidationErrors?: Object,
     communeInfo?: CommuneInfo,
-    startups?: string[],
+    startups?: StartupInfo[],
     startupOptions?: Option[],
     userConfig: {
         statusOptions: Option[],
@@ -308,7 +309,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <select name="startup">
                         <option value=""></option>
-                        { props.startups.map(function(startup) {
+                        { props.startups.map((startup) => {
                             return <option value={startup.id} selected={startup.id === state.formData.startup}>{startup.attributes.name}</option>
                         })}
                     </select>
