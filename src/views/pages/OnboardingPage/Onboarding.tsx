@@ -1,11 +1,15 @@
 import React from 'react';
 import type { Request } from 'express'
+import DatePicker from "react-datepicker";
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
+
+
+import "react-datepicker/dist/react-datepicker.css";
 
 interface CommuneInfo {
     nom: string,
@@ -246,7 +250,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Début de la mission (obligatoire)</strong><br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                    <DatePicker
+                        type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        selected={state.formData.start} onChange={changeFormData('end', e.currentTarget.value)}} />
                 </div>
                 <div className="form__group">
                     <label htmlFor="end">
@@ -254,7 +260,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                    <DatePicker
+                        type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        selected={state.formData.end} onChange={(date:Date) => changeFormData('start', e.currentTarget.value)}} />
                 </div>
                 <div className="form__group">
                     <label htmlFor="legal_status">
