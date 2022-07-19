@@ -86,6 +86,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
 
     const handleCitySelect = (newValue) => {
         if (newValue.isOSM) {
+            delete newValue.country
+            delete newValue.isOSM
             changeFormData('osm_city', JSON.stringify(newValue))
             changeFormData('workplace_insee_code', undefined)
         } else {
