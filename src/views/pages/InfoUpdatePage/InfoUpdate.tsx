@@ -3,9 +3,9 @@ import type { Request } from 'express';
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
-import { searchCommunes } from '../../../lib/searchCommune';
 import CommuneSelect from '../components/CommuneSelect';
 import ForeignCitySelect from '../components/ForeignCitySelect';
+import CitySelect from '../components/CitySelect';
 
 interface CommuneInfo {
     nom: string,
@@ -49,7 +49,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
         ...props,
     });
     const css = ".panel { overflow: scroll; }"
-    const loadOptions = (inputValue: string) => searchCommunes(inputValue)
 
     const changeFormData = (key, value) => {
         const formData = state.formData
@@ -83,6 +82,25 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     const handleSecondaryEmail = (e) => {
         changeFormData('secondary_email', e.currentTarget.value)
 
+    }
+
+    const handleCitySelect = (newValue) => {
+        if (newValue.isOSM) {
+            changeFormData('osm_city', JSON.stringify(newValue))
+            changeFormData('workplace_insee_code', undefined)
+        } else {
+            changeFormData('workplace_insee_code', newValue.value)
+            changeFormData('osm_city', undefined)
+        }
+    }
+
+    const getDefaultValue = () => {
+        if (props.formData.workplace_insee_code) {
+            return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
+        } else if (props.formData.osm_city) {
+            return JSON.parse(props.formData.osm_city).display_name
+        } 
+        return ''
     }
 
     return (
@@ -130,8 +148,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     Cette information est utilisée pour faire une carte des membres de la communauté 
                                     <br></br>
                                     <p> Si tu résides en France (Métropolitaine/Drom) : </p>
+                                    <CitySelect
+                                        defaultValue={getDefaultValue()}
+                                        onChange={handleCommuneChange}
+                                        placeholder={'Commune ou code postale'}
+                                    ></CitySelect>
                                     <CommuneSelect
-                                        loadOptions={loadOptions}
                                         defaultValue={ props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null}
                                         onChange={handleCommuneChange}
                                         placeholder={'Commune ou code postale'}
@@ -145,9 +167,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     { !!props.formValidationErrors['workplace_insee_code'] && 
                                         <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
                                     }
-                                    <ul id="list-container-city"
-                                    >
-                                    </ul>
                                     <br></br>
                                     <p> Si tu ne résides pas en France : </p>
                                     <ForeignCitySelect
