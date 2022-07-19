@@ -110,11 +110,11 @@ export const Onboarding = PageLayout(function (props: Props) {
                 <label htmlFor="firstName">
                     <strong>Prénom (obligatoire)</strong>
                 </label>
-                <input name="firstName" value="<%= formData.firstName %>" required/>
+                <input name="firstName" value="" required/>
                 <label htmlFor="lastName">
                     <strong>Nom de famille (obligatoire)</strong>
                 </label>
-                <input name="lastName" value="<%= formData.lastName %>" required/>
+                <input name="lastName" value="" required/>
             </div>
 
             <div className="form__group">
@@ -140,39 +140,58 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </label>
                 <p>Si tu ne sais pas ce qu'est Github, laisse ce champ vide.</p>
                 <input name="github" pattern="^[A-z\d](?:[A-z\d]|-(?=[A-z\d])){0,38}$"
-                    value="<%= formData.github %>"
+                    value=""
                     title="Nom d'utilisateur Github si tu as un compte (sans @)"/>
             </div>
 
             <div className="form__group">
-                <p>
-                    
-                </p>
-                <div className="form__group">
-                    <label htmlFor="gender">
-                        <strong>Genre</strong><br />
-                        Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
-                    </label>
-                    <select name="gender" placeholder="Sélectionne une valeur" required>
-                       <option value=""></option>
-                    </select>
-                </div>
+                <label htmlFor="gender">
+                    <strong>Genre</strong><br />
+                    Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
+                </label>
+                <select
+                    name="gender"
+                    value={state.formData.gender}
+                    onChange={handleGenderChange}
+                    placeholder="Sélectionne une valeur" required>
+                    <>
+                    { props.genderOptions.map((gender) => { 
+                        return <option
+                            key={gender.key}
+                            value={gender.key}
+                            >{gender.name}</option>
+                    })}
+                    </>
+                </select>
+                { !!props.formValidationErrors['gender'] && 
+                <p className="text-small text-color-red">{props.formValidationErrors['gender']}</p>
+                }
             </div>
-
             <div className="form__group">
                 <label htmlFor="workplace_insee_code">
                     <strong>Lieu de travail principal</strong><br />
                     Cette information est utilisée pour faire une carte des membres de la communauté 
-                    <input
-                        placeholder="Commune ou code postale"
-                        type="text"
-                        id="input-commune"/>
+                    <br></br>
+                    <CitySelect
+                        defaultValue={getDefaultValue()}
+                        onChange={handleCitySelect}
+                        placeholder={'Commune ou code postale'}
+                    ></CitySelect>
                     <input
                         name="workplace_insee_code"
-                        type="text" id="input-insee-code" value="<%= formData.workplace_insee_code %>" hidden/>
-                    <ul id="list-container-city"
-                    >
-                    </ul>
+                        type="text"
+                        id="input-insee-code"
+                        readOnly={true}
+                        value={state.formData.workplace_insee_code} hidden/>
+                    { !!props.formValidationErrors['workplace_insee_code'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
+                    }
+                    <input
+                        name="osm_city"
+                        type="text"
+                        id="input-osm-city"
+                        readOnly={true}
+                        value={state.formData.osm_city} hidden/>
                 </label>
             </div>
             <h4>Ta mission</h4>
@@ -190,7 +209,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <strong>Rôle chez BetaGouv (obligatoire)</strong><br />
                     Quel est ton titre de poste ? Développeuse, Intrapreneur, Chargée de déploiement, Coach, UX Designer...
                 </label>
-                <input name="role" value="<%= formData.role %>" required/>
+                <input name="role" value="" required/>
             </div>
 
             <div className="form__group">
@@ -198,7 +217,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <strong>Début de la mission (obligatoire)</strong><br />
                     <i>Au format JJ/MM/YYYY</i>
                 </label>
-                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="<%= formData.start %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
             </div>
 
             <div className="form__group">
@@ -211,21 +230,12 @@ export const Onboarding = PageLayout(function (props: Props) {
             </div>
 
             <div className="form__group">
-                <label htmlFor="status">
-                    <strong>Statut (obligatoire)</strong><br />
-                </label>
-            </div>
-            <div className="form__group">
-                <label htmlFor="legal_status">
-                    <strong>Statut legal (obligatoire)</strong><br />
-                </label>
-            </div>
-            <div className="form__group">
                 <label htmlFor="tjm">
                     <strong>TJM moyen HT (si tu es indépendant)</strong><br />
                     Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
                     <input
-                        value="<%= formData.tjm %>"
+                        onChange={handleTJMChange}
+                        value={state.formData.tjm || 0}
                         id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
                 </label>
             </div>
@@ -267,12 +277,20 @@ export const Onboarding = PageLayout(function (props: Props) {
             </div>
 
             <h4>Ton email</h4>
-            <label htmlFor="email">
-                <strong>Email pro/perso (obligatoire)</strong><br />
-                Ton email nous servira pour t'envoyer les informations relatives à ton compte
-            </label>
-            <input type="email" name="email" value="<%= formData.email %>" required/>
 
+            <div className="form__group">
+                <label htmlFor="email">
+                    <strong>Email pro/perso (obligatoire)</strong><br />
+                    Ton email nous servira pour t'envoyer les informations relatives à ton compte
+                </label>
+                    <input
+                        onChange={handleSecondaryEmail}
+                        value={state.formData.secondary_email || ''}
+                        id="secondary_email" name="email" type="email" placeholder="un email de recupération" required/>
+                { !!props.formValidationErrors['secondary_email'] &&
+                    <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
+                }
+            </div>
             <label htmlFor="isEmailBetaAsked" className="padding-10-0">
               <input type="checkbox" name="isEmailBetaAsked" value="true"/>
                 Je souhaite une adresse @beta.gouv.fr
@@ -282,64 +300,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                 Elle est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
               </span>
             </label>
-                            <h4>Tes infos persos</h4>
-                            <div className="form__group">
-                                <p>
-                                    
-                                </p>
-                                <div className="form__group">
-                                    <label htmlFor="gender">
-                                        <strong>Genre</strong><br />
-                                        Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
-                                    </label>
-                                    <select
-                                        name="gender"
-                                        value={state.formData.gender}
-                                        onChange={handleGenderChange}
-                                        placeholder="Sélectionne une valeur" required>
-                                        <>
-                                        { props.genderOptions.map((gender) => { 
-                                            return <option
-                                                key={gender.key}
-                                                value={gender.key}
-                                                >{gender.name}</option>
-                                        })}
-                                        </>
-                                    </select>
-                                    { !!props.formValidationErrors['gender'] && 
-                                    <p className="text-small text-color-red">{props.formValidationErrors['gender']}</p>
-                                    }
-                                </div>
-                            </div>
+        </div>
 
                             <div className="form__group">
-                                <label htmlFor="workplace_insee_code">
-                                    <strong>Lieu de travail</strong><br />
-                                    Cette information est utilisée pour faire une carte des membres de la communauté 
-                                    <br></br>
-                                    <CitySelect
-                                        defaultValue={getDefaultValue()}
-                                        onChange={handleCitySelect}
-                                        placeholder={'Commune ou code postale'}
-                                    ></CitySelect>
-                                    <input
-                                        name="workplace_insee_code"
-                                        type="text"
-                                        id="input-insee-code"
-                                        readOnly={true}
-                                        value={state.formData.workplace_insee_code} hidden/>
-                                    { !!props.formValidationErrors['workplace_insee_code'] && 
-                                        <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
-                                    }
-                                    <input
-                                        name="osm_city"
-                                        type="text"
-                                        id="input-osm-city"
-                                        readOnly={true}
-                                        value={state.formData.osm_city} hidden/>
+                                <label htmlFor="legal_status">
+                                    <strong>Statut legal de ton entreprise</strong><br />
                                 </label>
-                            </div>
-                            <div className="form__group">
                                 <label htmlFor="legal_status">
                                     <strong>Statut legal de ton entreprise</strong><br />
                                 </label>
@@ -354,29 +320,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                                 })}
                                 { !!props.formValidationErrors['legal_statut'] && 
                                     <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
-                                }
-                            </div>
-                            <div className="form__group">
-                                <label htmlFor="tjm">
-                                    <strong>TJM moyen HT (si tu es indépendant)</strong><br />
-                                    Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
-                                    <input
-                                        onChange={handleTJMChange}
-                                        value={state.formData.tjm || 0}
-                                        id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
-                                </label>
-                            </div>
-                            <div className="form__group">
-                                <label htmlFor="secondary_email">
-                                    <strong>Email de récupération</strong><br />
-                                    L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
-                                    <input
-                                        onChange={handleSecondaryEmail}
-                                        value={state.formData.secondary_email || ''}
-                                        id="secondary_email" name="secondary_email" type="email" placeholder="un email de recupération"/>
-                                </label>
-                                { !!props.formValidationErrors['secondary_email'] &&
-                                    <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
                                 }
                             </div>
                             <button className="button" type="submit">Changer ces informations</button>
