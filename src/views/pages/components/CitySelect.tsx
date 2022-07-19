@@ -47,7 +47,7 @@ async function searchForeignCity(
 		`https://nominatim.openstreetmap.org/search?city=${search}&format=json&featuretype=city`
 	)
 	if (!response.ok) {
-		return null
+		return []
 	}
 	const cities : OpenStreetMapCity[] = (await response.json())
 
@@ -71,14 +71,14 @@ async function searchForeignCity(
 export default ({ defaultValue, onChange, placeholder }) => {
 
     const loadOptions = (
-        inputValue,
-        callback
-      ) => {
+        inputValue: string,
+        callback: (options: any[]) => void
+        ) => {
         let timer;
         return () => {
           clearTimeout(timer);
           timer = setTimeout(async () => {
-            const data = searchForeignCity(inputValue)
+            const data : any[] = await searchForeignCity(inputValue)
             callback(data)
           }, 2000);
         };
