@@ -10,6 +10,7 @@ import { StartupInfo } from '../../../models/startup'
 
 
 import "react-datepicker/dist/react-datepicker.css";
+import { formatDateToReadableFormat } from '../../../controllers/utils';
 
 interface CommuneInfo {
     nom: string,
@@ -106,6 +107,10 @@ export const Onboarding = PageLayout(function (props: Props) {
             return JSON.parse(props.formData.osm_city).label
         } 
         return ''
+    }
+
+    const formatDate = (date: Date) => {
+        return formatDateToReadableFormat(date)
     }
 
     return (
@@ -251,8 +256,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatePicker
-                        type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        selected={state.formData.start} onChange={changeFormData('end', e.currentTarget.value)}} />
+                        type="date" name="start" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        selected={state.formData.start} onChange={(date:Date) => changeFormData('end', date)} />
+                    <input name="role"
+                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
+                        value={state.formData.start ? formatDate(state.formData.start) : ''}
+                        required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="end">
@@ -261,8 +270,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatePicker
-                        type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        selected={state.formData.end} onChange={(date:Date) => changeFormData('start', e.currentTarget.value)}} />
+                        type="date" name="end" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        selected={state.formData.end} onChange={(date:Date) => changeFormData('start', date)} />
+                    <input name="role"
+                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
+                        value={state.formData.end ? formatDate(state.formData.end) : ''}
+                        required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="legal_status">
