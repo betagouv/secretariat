@@ -59,13 +59,13 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
         })
     }
 
-    const handleCommuneChange = (newValue) => {
-        changeFormData('workplace_insee_code', newValue.value)
-    }
+    // const handleCommuneChange = (newValue) => {
+    //     changeFormData('workplace_insee_code', newValue.value)
+    // }
 
-    const handleForeignCityChange = (newValue) => {
-        changeFormData('osm_city', JSON.stringify(newValue))
-    }
+    // const handleForeignCityChange = (newValue) => {
+    //     changeFormData('osm_city', JSON.stringify(newValue))
+    // }
 
     const handleGenderChange = (e) => {
         changeFormData('gender', e.currentTarget.value)
