@@ -33,7 +33,6 @@ async function getCountry(value: string) {
 		country_lat: res.lat,
 		country_lon: res.lon,
 	} : {}
-	console.log(data)
 	return data
 }
 
