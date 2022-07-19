@@ -42,7 +42,7 @@ async function searchForeignCity(
     const search = value
 
 	const response = await fetch(
-		`https://nominatim.openstreetmap.org/search?city=${search}&format=json`
+		`https://nominatim.openstreetmap.org/search?city=${search}&format=json&featuretype=city`
 	)
 	if (!response.ok) {
 		return null

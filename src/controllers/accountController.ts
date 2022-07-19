@@ -141,7 +141,6 @@ export async function getCurrentAccount(req, res) {
       gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
       legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
       workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
-      osm_city: dbUser.osm_city,
       formData: {},
       hasActiveResponder: currentUser.responder && new Date(currentUser.responder.to) >= today && new Date(currentUser.responder.from) <= today,
       hasResponder: Boolean(currentUser.responder),
@@ -310,7 +309,7 @@ export async function getCurrentInfo(req, res) {
           tjm: dbUserDetail.tjm,
           legal_status: dbUser.legal_status,
           secondary_email: dbUser.secondary_email,
-          osm_city: dbUser.osm_city
+          osm_city: dbUser.osm_city,
         },
         errors: req.flash('error'),
         messages: req.flash('message'),

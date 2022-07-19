@@ -149,9 +149,9 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     </ul>
                                     <p> Si tu ne résides pas en France (Métropolitaine/Drom) : </p>
                                     <ForeignCitySelect
-                                        defaultValue={ props.formData.osm_city ? `${props.formData.osm_city})`: null}
+                                        defaultValue={ props.formData.osm_city ? `${JSON.parse(props.formData.osm_city).label}`: null}
                                         onChange={handleForeignCityChange}
-                                        placeholder={'Commune ou code postale'}
+                                        placeholder={'Ville étrangère'}
                                     />
                                     <input
                                         name="osm_city"
