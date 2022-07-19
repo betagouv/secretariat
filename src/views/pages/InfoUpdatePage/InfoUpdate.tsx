@@ -89,10 +89,10 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
             delete newValue.country
             delete newValue.isOSM
             changeFormData('osm_city', JSON.stringify(newValue))
-            changeFormData('workplace_insee_code', undefined)
+            changeFormData('workplace_insee_code', '')
         } else {
             changeFormData('workplace_insee_code', newValue.value)
-            changeFormData('osm_city', undefined)
+            changeFormData('osm_city', '')
         }
     }
 
