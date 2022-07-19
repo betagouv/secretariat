@@ -94,7 +94,6 @@ export async function getForm(req, res) {
     const formValidationErrors = {}
     const startups = await BetaGouv.startupsInfos();
     const users : Member[] = await BetaGouv.usersInfos();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
     const startupOptions = startups.map(startup => {
       return {
         value: startup.id,
