@@ -365,4 +365,4 @@ export const Onboarding = PageLayout(function (props: Props) {
     )
 })
 
-hydrateOnClient(OnboardingPage)
+hydrateOnClient(Onboarding)
