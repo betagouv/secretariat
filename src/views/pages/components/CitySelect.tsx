@@ -71,8 +71,8 @@ async function searchForeignCity(
 export default ({ defaultValue, onChange, placeholder }) => {
 
     const loadOptions = (
-        inputValue: string,
-        callback: (data) => void
+        inputValue,
+        callback
       ) => {
         let timer;
         return () => {
