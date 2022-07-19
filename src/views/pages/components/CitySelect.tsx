@@ -54,7 +54,7 @@ async function searchForeignCity(
 	const res = cities
 		.sort((a, b) => b.importance - a.importance)
 	const data = res.map(d => {
-        const splitLabel = d.display_name.split(',')
+        const splitLabel = d.display_name.split(',').map(d => d.trim())
         return {
 		place_id: d.place_id,
 		lat: d.lat,
