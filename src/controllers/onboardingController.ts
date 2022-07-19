@@ -108,7 +108,7 @@ export async function getForm(req, res) {
         startupOptions,
         formData: {
           gender: '',
-          legalStatus: '',
+          legal_status: '',
           workplace_insee_code: '',
           tjm: 0,
           secondary_email: '',
