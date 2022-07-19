@@ -88,11 +88,6 @@ async function createNewcomerGithubFile(username, content, referent) {
 }
 
 export async function getForm(req, res) {
-  const startups = await BetaGouv.startupsInfos();
-  const users = await BetaGouv.getActiveRegisteredOVHUsers();
-  const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-  const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
-  const title = 'Créer ma fiche';
   try {
     const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
       (async () => {
