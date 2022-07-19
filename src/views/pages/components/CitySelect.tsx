@@ -40,7 +40,7 @@ async function getCountry(value: string) {
 async function searchForeignCity(
 	value : string
 ){
-    const frenchCities = searchCommunes(value)
+    const frenchCities = await searchCommunes(value)
     const search = value
 
 	const response = await fetch(
