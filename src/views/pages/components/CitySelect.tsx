@@ -37,6 +37,14 @@ async function getCountry(value: string) {
 	return data
 }
 
+function debounce(func, timeout = 300){
+	let timer;
+	return (...args) => {
+	  clearTimeout(timer);
+	  timer = setTimeout(() => { func.apply(this, args); }, timeout);
+	};
+}
+
 async function searchForeignCity(
 	value : string
 ){
@@ -70,7 +78,7 @@ async function searchForeignCity(
 
 export default ({ defaultValue, onChange, placeholder }) => {
 
-    const loadOptions = (inputValue: string) => searchForeignCity(inputValue)
+    const loadOptions = debounce((inputValue: string) => searchForeignCity(inputValue), 2000)
 
     return <ClientOnly>
         <AsyncSelect
