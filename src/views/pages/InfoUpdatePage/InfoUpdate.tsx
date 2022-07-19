@@ -128,6 +128,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <label htmlFor="workplace_insee_code">
                                     <strong>Lieu de travail</strong><br />
                                     Cette information est utilisée pour faire une carte des membres de la communauté 
+                                    <br></br>
                                     <p> Si tu résides en France (Métropolitaine/Drom) : </p>
                                     <CommuneSelect
                                         loadOptions={loadOptions}
@@ -147,7 +148,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <ul id="list-container-city"
                                     >
                                     </ul>
-                                    <p> Si tu ne résides pas en France (Métropolitaine/Drom) : </p>
+                                    <br></br>
+                                    <p> Si tu ne résides pas en France : </p>
                                     <ForeignCitySelect
                                         defaultValue={ props.formData.osm_city ? `${JSON.parse(props.formData.osm_city).label}`: null}
                                         onChange={handleForeignCityChange}
