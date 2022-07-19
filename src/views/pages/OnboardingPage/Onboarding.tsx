@@ -1,4 +1,5 @@
 import React from 'react';
+import type { Request } from 'express'
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';

@@ -9,11 +9,11 @@ import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions }
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
-import { HomePage } from '../views';
+import { OnboardingPage } from '../views';
 
 function renderOnboarding(req, res, params) {
   res.send(
-    HomePage({
+    OnboardingPage({
       request: req,
       errors: req.flash('error'),
       messages: req.flash('message'),
@@ -137,11 +137,11 @@ export async function getForm(req, res) {
   //     },
   //     useSelectList: isMobileFirefox,
   //   });
-  // } catch (err) {
-  //   console.error(err);
-  //   req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
-  //   return res.redirect('/');
-  // }
+  } catch (err) {
+    console.error(err);
+    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
+    return res.redirect('/');
+  }
 }
 
 
