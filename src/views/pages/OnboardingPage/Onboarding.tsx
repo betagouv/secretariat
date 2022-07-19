@@ -293,7 +293,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <b>Référent (obligatoire)</b><br />
                         Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
                     </label>
-                    <label for="username_select"></label>
+                    <label htmlFor="username_select"></label>
                     <select name="referent" id="username_select">
                         { props.users.map((user) => {
                             return <option value={user.id} selected={state.formData.referent === user.id}>{user.fullname}</option>
