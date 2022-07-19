@@ -69,19 +69,17 @@ async function searchForeignCity(
 
 
 export default ({ defaultValue, onChange, placeholder }) => {
+    let timer;
 
     const loadOptions = (
         inputValue: string,
         callback: (data: any) => void
       ) => {
-        let timer;
-        return () => {
-          clearTimeout(timer);
-          timer = setTimeout(async () => {  
-            const data = await searchForeignCity(inputValue)
-            callback(data)
-          }, 2000);
-        };
+        clearTimeout(timer);
+        timer = setTimeout(() => {  
+            // const data = await searchForeignCity(inputValue)
+            callback(searchForeignCity(inputValue))
+        }, 2000);
     };
       
     return <ClientOnly>
