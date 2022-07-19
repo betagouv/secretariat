@@ -6,11 +6,18 @@ import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 
 interface Props {
+    title?: string,
+    currentUserId?: string,
+    errors?: string[],
+    messages?: string[],
     request: Request,
-    errors: any[],
-    messages: any[],
-    domain: string,
-    next: string,
+    formData?: FormData,
+    statusOptions?: Option[],
+    genderOptions?: Option[],
+    formValidationErrors?: Object,
+    communeInfo?: CommuneInfo,
+    startups?: string[],
+    startupOptions?: Option[],
 }
 
 /* Pure component */

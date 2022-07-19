@@ -5,23 +5,11 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
-import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
+import { CommunicationEmailCode, DBUserDetail, DBUser, EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { OnboardingPage } from '../views';
-
-function renderOnboarding(req, res, params) {
-  res.send(
-    OnboardingPage({
-      request: req,
-      errors: req.flash('error'),
-      messages: req.flash('message'),
-      domain: config.domain,
-      next: req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : '',
-    })
-  )
-}
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -100,46 +88,59 @@ async function createNewcomerGithubFile(username, content, referent) {
 }
 
 export async function getForm(req, res) {
+  const startups = await BetaGouv.startupsInfos();
+  const users = await BetaGouv.getActiveRegisteredOVHUsers();
+  const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+  const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
+  const title = 'Créer ma fiche';
   try {
-    const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.getActiveRegisteredOVHUsers();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
-    const title = 'Créer ma fiche';
-    renderOnboarding(req, res, {})
-  //   return res.render('onboarding', {
-  //     domain: config.domain,
-  //     title,
-  //     errors: req.flash('error'),
-  //     formValidationErrors: {},
-  //     messages: req.flash('message'),
-  //     userConfig: config.user,
-  //     users,
-  //     startups,
-  //     statusOptions,
-  //     genderOptions,
-  //     communeInfo: null,
-  //     formData: {
-  //       firstName: '',
-  //       lastName: '',
-  //       description: '',
-  //       website: '',
-  //       github: '',
-  //       role: '',
-  //       domaine: '',
-  //       start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
-  //       end: '',
-  //       status: '',
-  //       startup: '',
-  //       employer: '',
-  //       badge: '',
-  //       email: '',
-  //     },
-  //     useSelectList: isMobileFirefox,
-  //   });
+    const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
+      (async () => {
+        const rows = await knex('users').where({ username: req.auth.id });
+        return rows.length === 1 ? rows[0] : null;
+      })(),
+      (async () => {
+        const hash = utils.computeHash(req.auth.id)
+        const rows = await knex('user_details').where({ hash });
+        return rows.length === 1 ? rows[0] : {};
+      })(),
+    ]);
+    const title = 'Mon compte';
+    const formValidationErrors = {}
+    const startups = await betagouv.startupsInfos();
+    const startupOptions = startups.map(startup => {
+      return {
+        value: startup.id,
+        label: startup.attributes.name
+      }
+    })
+    res.send(
+      OnboardingPage({
+        title,
+        formValidationErrors,
+        currentUserId: req.auth.id,
+        startups,
+        genderOptions,
+        statusOptions,
+        startupOptions,
+        activeTab: 'account',
+        communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
+        formData: {
+          gender: dbUserDetail.gender,
+          workplace_insee_code: dbUser.workplace_insee_code,
+          tjm: dbUserDetail.tjm,
+          legal_status: dbUser.legal_status,
+          secondary_email: dbUser.secondary_email,
+          osm_city: dbUser.osm_city,
+        },
+        errors: req.flash('error'),
+        messages: req.flash('message'),
+        request: req
+      })
+    )
   } catch (err) {
     console.error(err);
-    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
+    req.flash('error', 'Impossible de récupérer vos informations.');
     return res.redirect('/');
   }
 }
