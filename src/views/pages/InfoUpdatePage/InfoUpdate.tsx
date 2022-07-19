@@ -99,8 +99,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     const getDefaultValue = () => {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
-        } else if (props.formData.osm_city) {
-            return JSON.parse(props.formData.osm_city).display_name
+        } else if (state.formData.osm_city) {
+            return JSON.parse(props.formData.osm_city).label
         } 
         return ''
     }
