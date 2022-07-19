@@ -89,17 +89,6 @@ async function createNewcomerGithubFile(username, content, referent) {
 
 export async function getForm(req, res) {
   try {
-    const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
-      (async () => {
-        const rows = await knex('users').where({ username: req.auth.id });
-        return rows.length === 1 ? rows[0] : null;
-      })(),
-      (async () => {
-        const hash = utils.computeHash(req.auth.id)
-        const rows = await knex('user_details').where({ hash });
-        return rows.length === 1 ? rows[0] : {};
-      })(),
-    ]);
     const title = 'Mon compte';
     const formValidationErrors = {}
     const startups = await BetaGouv.startupsInfos();
@@ -113,19 +102,18 @@ export async function getForm(req, res) {
       OnboardingPage({
         title,
         formValidationErrors,
-        currentUserId: req.auth.id,
         startups,
         genderOptions,
         statusOptions,
         startupOptions,
-        communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
+        communeInfo: null,
         formData: {
-          gender: dbUserDetail.gender,
-          workplace_insee_code: dbUser.workplace_insee_code,
-          tjm: dbUserDetail.tjm,
-          legal_status: dbUser.legal_status,
-          secondary_email: dbUser.secondary_email,
-          osm_city: dbUser.osm_city,
+          gender: '',
+          workplace_insee_code: '',
+          tjm: '',
+          legal_status: '',
+          secondary_email: '',
+          osm_city: '',
         },
         errors: req.flash('error'),
         messages: req.flash('message'),

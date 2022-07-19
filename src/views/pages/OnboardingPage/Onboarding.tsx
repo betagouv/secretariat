@@ -26,7 +26,6 @@ interface FormData {
 
 interface Props {
     title?: string,
-    currentUserId?: string,
     errors?: string[],
     messages?: string[],
     request: Request,
