@@ -10,6 +10,7 @@ import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { OnboardingPage } from '../views';
+import { Member } from '../models/member';
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -92,6 +93,9 @@ export async function getForm(req, res) {
     const title = 'Mon compte';
     const formValidationErrors = {}
     const startups = await BetaGouv.startupsInfos();
+    const users : Member[] = await BetaGouv.usersInfos();
+    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
+    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const startupOptions = startups.map(startup => {
       return {
         value: startup.id,
@@ -107,6 +111,7 @@ export async function getForm(req, res) {
         statusOptions,
         startupOptions,
         userConfig: config.user,
+        users,
         formData: {
           gender: '',
           legal_status: '',

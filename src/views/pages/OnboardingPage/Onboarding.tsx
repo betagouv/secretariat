@@ -4,6 +4,7 @@ import type { Request } from 'express'
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
+import { Member } from '../../../models/member'
 
 interface CommuneInfo {
     nom: string,
@@ -30,6 +31,7 @@ interface Props {
     messages?: string[],
     request: Request,
     formData?: FormData,
+    users: Member[],
     domaineOptions?: Option[],
     statusOptions?: Option[],
     genderOptions?: Option[],
@@ -64,6 +66,10 @@ export const Onboarding = PageLayout(function (props: Props) {
 
     const handleGenderChange = (e) => {
         changeFormData('gender', e.currentTarget.value)
+    }
+
+    const handleDomaineChange = (e) => {
+        changeFormData('domaine', e.currentTarget.value)
     }
 
     const handleLegalStatusChange = (e) => {
@@ -134,7 +140,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Site personnel</strong><br />
                         Commençant avec <em>http://</em> ou <em>https://</em>
                     </label>
-                    <input name="website" pattern="^(http|https)://.+" value="<%= formData.website %>" title="Doit commencer par http:// ou https://"/>
+                    <input name="website" pattern="^(http|https)://.+" title="Doit commencer par http:// ou https://"/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="github">
@@ -228,7 +234,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Début de la mission (obligatoire)</strong><br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min="<%= userConfig.minStartDate %>" value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                    <input type="date" name="start" pattern="^\d{4}-\d{2}-\d{2}$" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="end">
@@ -236,7 +242,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.end %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
+                    <input type="date" name="end" pattern="^\d{4}-\d{2}-\d{2}$" value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="legal_status">
@@ -287,8 +293,13 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <b>Référent (obligatoire)</b><br />
                         Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
                     </label>
-                        <input name="referentList" list="user_names" id="referentList" value="<%= formData.referentList %>" required/>
-                        <datalist id="user_names"/>
+                    <label for="username_select"></label>
+                    <select name="referent" id="username_select">
+                        { props.users.map((user) => {
+                            return <option value={user.id} selected={state.formData.referent === user.id}>{user.fullname}</option>
+                        })}
+                    </select>
+                    <input type="hidden" name="referent" id="referentInput_hidden" value={state.formData.referent} required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="startup">
