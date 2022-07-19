@@ -64,7 +64,7 @@ async function searchForeignCity(
         isOSM: true
     }})
     .filter(d => d.country !== 'France')
-	return [frenchCities, data].slice(0, 15)
+	return [...frenchCities, ...data].slice(0, 15)
 }
 
 
