@@ -203,7 +203,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </div>
                 <h4>Ta mission</h4>
                 <div className="form__group">
-                    <label htmlFor="startup">
+                    <label htmlFor="domaine">
                         <strong>Domaine (obligatoire)</strong><br />
                         Quel est le domaine de ta mission ?
                     </label>
@@ -308,6 +308,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <select name="startup">
                         <option value=""></option>
+                        { props.startups.map(function(startup) {
+                            return <option value={startup.id} selected={startup.id === state.formData.startup}>{startup.attributes.name}</option>
+                        })}
                     </select>
                 </div>
                 <div className="form__group">
