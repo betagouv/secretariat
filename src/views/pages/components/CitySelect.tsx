@@ -78,8 +78,7 @@ export default ({ defaultValue, onChange, placeholder }) => {
         return () => {
           clearTimeout(timer);
           timer = setTimeout(async () => {  
-            const data = await searchForeignCity(inputValue)
-            callback(data)
+            callback(searchForeignCity(inputValue))
           }, 2000);
         };
     };
