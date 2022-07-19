@@ -3,9 +3,7 @@ import type { Request } from 'express';
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
-import { searchCommunes } from '../../../lib/searchCommune';
-import CommuneSelect from '../components/CommuneSelect';
-
+import CitySelect from '../components/CitySelect';
 
 interface CommuneInfo {
     nom: string,
@@ -22,7 +20,8 @@ interface FormData {
     legal_status: string,
     workplace_insee_code: string,
     tjm: number,
-    secondary_email: string
+    secondary_email: string,
+    osm_city: string,
 }
 
 interface InfoUpdateProps {
@@ -48,7 +47,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
         ...props,
     });
     const css = ".panel { overflow: scroll; }"
-    const loadOptions = (inputValue: string) => searchCommunes(inputValue)
 
     const changeFormData = (key, value) => {
         const formData = state.formData
@@ -57,10 +55,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
             ...state,
             formData
         })
-    }
-
-    const handleCommuneChange = (newValue) => {
-        changeFormData('workplace_insee_code', newValue.value)
     }
 
     const handleGenderChange = (e) => {
@@ -78,6 +72,25 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     const handleSecondaryEmail = (e) => {
         changeFormData('secondary_email', e.currentTarget.value)
 
+    }
+
+    const handleCitySelect = (newValue) => {
+        if (newValue.isOSM) {
+            changeFormData('osm_city', JSON.stringify(newValue))
+            changeFormData('workplace_insee_code', '')
+        } else {
+            changeFormData('workplace_insee_code', newValue.value)
+            changeFormData('osm_city', '')
+        }
+    }
+
+    const getDefaultValue = () => {
+        if (props.formData.workplace_insee_code) {
+            return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
+        } else if (state.formData.osm_city) {
+            return JSON.parse(props.formData.osm_city).label
+        } 
+        return ''
     }
 
     return (
@@ -123,12 +136,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                 <label htmlFor="workplace_insee_code">
                                     <strong>Lieu de travail</strong><br />
                                     Cette information est utilisée pour faire une carte des membres de la communauté 
-                                    <CommuneSelect
-                                        loadOptions={loadOptions}
-                                        defaultValue={ props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null}
-                                        onChange={handleCommuneChange}
+                                    <br></br>
+                                    <CitySelect
+                                        defaultValue={getDefaultValue()}
+                                        onChange={handleCitySelect}
                                         placeholder={'Commune ou code postale'}
-                                        />
+                                    ></CitySelect>
                                     <input
                                         name="workplace_insee_code"
                                         type="text"
@@ -138,9 +151,12 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     { !!props.formValidationErrors['workplace_insee_code'] && 
                                         <p className="text-small text-color-red">{props.formValidationErrors['workplace_insee_code']}</p>
                                     }
-                                    <ul id="list-container-city"
-                                    >
-                                    </ul>
+                                    <input
+                                        name="osm_city"
+                                        type="text"
+                                        id="input-osm-city"
+                                        readOnly={true}
+                                        value={state.formData.osm_city} hidden/>
                                 </label>
                             </div>
                             <div className="form__group">

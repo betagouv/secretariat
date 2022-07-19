@@ -206,6 +206,7 @@ export async function updateCurrentInfo(req, res) {
     const username = req.auth.id
     const gender = req.body.gender
     const workplace_insee_code = req.body.workplace_insee_code
+    const osm_city = req.body.osm_city
     const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
     const secondary_email = req.body.secondary_email && isValidEmail(formValidationErrors, 'secondary_email', req.body.secondary_email)
@@ -229,7 +230,8 @@ export async function updateCurrentInfo(req, res) {
         workplace_insee_code,
         tjm,
         legal_status,
-        secondary_email
+        secondary_email,
+        osm_city,
       })
       .where({ username })
     const hash = utils.computeHash(username)
@@ -306,7 +308,8 @@ export async function getCurrentInfo(req, res) {
           workplace_insee_code: dbUser.workplace_insee_code,
           tjm: dbUserDetail.tjm,
           legal_status: dbUser.legal_status,
-          secondary_email: dbUser.secondary_email
+          secondary_email: dbUser.secondary_email,
+          osm_city: dbUser.osm_city,
         },
         errors: req.flash('error'),
         messages: req.flash('message'),

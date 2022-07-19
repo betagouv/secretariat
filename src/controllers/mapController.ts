@@ -5,6 +5,7 @@ export async function getUsersLocation(req, res) {
     const users : DBUser[] = await knex('users').whereNotNull('workplace_insee_code')
     res.json(users.map(u => ({
       workplace_insee_code: u.workplace_insee_code,
+      osm_city: u.osm_city,
       username: u.username
     })))
 }

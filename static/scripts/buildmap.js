@@ -1,10 +1,293 @@
-
+const style = {
+    "id": "43f36e14-e3f5-43c1-84c0-50a9c80dc5c7",
+    "name": "MapLibre",
+    "zoom": 0.8619833357855968,
+    "pitch": 0,
+    // "center": [
+    //     17.65431710431244,
+    //     32.954120326746775
+    // ],
+    "glyphs": "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+    "layers": [
+        {
+            "id": "background",
+            "type": "background",
+            "paint": {
+            "background-color": "#D8F2FF"
+            },
+            "filter": [
+            "all"
+            ],
+            "layout": {
+            "visibility": "visible"
+        },
+        "maxzoom": 24
+    },
+    {
+        "id": "coastline",
+        "type": "line",
+        "paint": {
+            "line-blur": 0.5,
+            "line-color": "#198EC8",
+            "line-width": {
+                "stops": [
+                    [0,2],
+                    [6,6],
+                    [14,9],
+                    [22,18]
+                ]
+            }
+        },
+        "filter": [
+            "all"
+        ],
+        "layout": {
+            "line-cap": "round",
+            "line-join": "round",
+            "visibility": "visible"
+        },
+        "source": "maplibre",
+        "maxzoom": 24,
+        "minzoom": 1,
+        "source-layer": "countries"
+    },
+    {
+        "id": "countries-fill",
+        "type": "fill",
+        "paint": {
+        "fill-color": "#D6C7FF"
+    },
+    "filter": [
+        "all"
+    ],
+    "layout": {
+        "visibility": "visible"
+    },
+    "source": "maplibre",
+    "maxzoom": 24,
+    "source-layer": "countries"
+    },
+    {
+    "id": "countries-boundary",
+    "type": "line",
+    "paint": {
+    "line-color": "rgba(255, 255, 255, 1)",
+    "line-width": {
+    "stops": [
+    [
+    1,
+    1
+    ],
+    [
+    6,
+    2
+    ],
+    [
+    14,
+    6
+    ],
+    [
+    22,
+    12
+    ]
+    ]
+    },
+    "line-opacity": {
+    "stops": [
+    [
+    3,
+    0.5
+    ],
+    [
+    6,
+    1
+    ]
+    ]
+    }
+    },
+    "layout": {
+    "line-cap": "round",
+    "line-join": "round",
+    "visibility": "visible"
+    },
+    "source": "maplibre",
+    "maxzoom": 24,
+    "source-layer": "countries"
+    },
+    {
+    "id": "geolines",
+    "type": "line",
+    "paint": {
+    "line-color": "#1077B0",
+    "line-opacity": 1,
+    "line-dasharray": [
+    3,
+    3
+    ]
+    },
+    "filter": [
+    "all",
+    [
+    "!=",
+    "name",
+    "International Date Line"
+    ]
+    ],
+    "layout": {
+    "visibility": "visible"
+    },
+    "source": "maplibre",
+    "maxzoom": 24,
+    "source-layer": "geolines"
+    },
+    {
+    "id": "geolines-label",
+    "type": "symbol",
+    "paint": {
+    "text-color": "#1077B0",
+    "text-halo-blur": 1,
+    "text-halo-color": "rgba(255, 255, 255, 1)",
+    "text-halo-width": 1
+    },
+    "filter": [
+    "all",
+    [
+    "!=",
+    "name",
+    "International Date Line"
+    ]
+    ],
+    "layout": {
+    "text-font": [
+    "Open Sans Semibold"
+    ],
+    "text-size": {
+    "stops": [
+    [
+    2,
+    12
+    ],
+    [
+    6,
+    16
+    ]
+    ]
+    },
+    "text-field": "{name}",
+    "visibility": "visible",
+    "symbol-placement": "line"
+    },
+    "source": "maplibre",
+    "maxzoom": 24,
+    "minzoom": 1,
+    "source-layer": "geolines"
+    },
+    {
+    "id": "countries-label",
+    "type": "symbol",
+    "paint": {
+    "text-color": "rgba(8, 37, 77, 1)",
+    "text-halo-blur": {
+    "stops": [
+    [
+    2,
+    0.2
+    ],
+    [
+    6,
+    0
+    ]
+    ]
+    },
+    "text-halo-color": "rgba(255, 255, 255, 1)",
+    "text-halo-width": {
+    "stops": [
+    [
+    2,
+    1
+    ],
+    [
+    6,
+    1.6
+    ]
+    ]
+    }
+    },
+    "filter": [
+        "all"
+    ],
+    "layout": {
+    "text-font": [
+        "Open Sans Semibold"
+    ],
+    "text-size": {
+        "stops": [
+        [
+            2,
+            10
+        ],
+        [
+            4,
+            12
+        ],
+        [
+            6,
+            16
+        ]
+        ]
+        },
+        "text-field": {
+        "stops": [
+        [
+            2,
+            "{ABBREV}"
+        ],
+        [
+            4,
+            "{NAME}"
+            ]
+        ]
+    },
+    "visibility": "visible",
+    "text-max-width": 10,
+    "text-transform": {
+    "stops": [
+        [
+            0,
+            "uppercase"
+        ],
+        [
+            2,
+            "none"
+        ]
+    ]
+    }
+    },
+        "source": "maplibre",
+        "maxzoom": 24,
+        "minzoom": 2,
+        "source-layer": "centroids"
+    }
+    ],
+        "bearing": 0,
+        "sources": {
+        "maplibre": {
+        "url": "https://demotiles.maplibre.org/tiles/tiles.json",
+        "type": "vector"
+    }
+    },
+    "version": 8,
+    "metadata": {
+        "maptiler:copyright": "This style was generated on MapTiler Cloud. Usage is governed by the license terms in https://github.com/maplibre/demotiles/blob/gh-pages/LICENSE",
+        "openmaptiles:version": "3.x"
+    }
+}
 var map = new maplibregl.Map({
     container: 'map', // container id
-    style: 'https://openmaptiles.geo.data.gouv.fr/styles/osm-bright/style.json', // style URL
-    center: [2.087, 46],
-    zoom: 5,
-    zoomMobile: 4
+    style: style, //https://etalab-tiles.fr/styles/osm-bright/style.json?vector', // style URL
+    // center: [2.087, 46],
+    zoom: 0,
+    zoomMobile: 0
 });
 
 function capitalizeWord(str) {
@@ -58,37 +341,81 @@ const cityWithArrondissement = [
     {"type":"Feature","geometry":{"type":"Polygon","coordinates":[[[4.898361154105825,45.75288751973525],[4.893548967489635,45.75391789140447],[4.8844907338591605,45.7542398825511],[4.876092996430908,45.75533465244963],[4.873167941821067,45.760100121419754],[4.865430700595035,45.76802110362685],[4.858448312171546,45.772400183221016],[4.859863661176306,45.78688978481936],[4.853636125555355,45.7865033954434],[4.847597303135038,45.783605475123736],[4.839954418509326,45.780836351262714],[4.831179254679804,45.78205991761991],[4.823347656853456,45.78521543085688],[4.819007253238852,45.78978770513903],[4.822309734249964,45.792299236082734],[4.829009052872503,45.79616312984229],[4.832972030085835,45.79674271390623],[4.837123720499803,45.79828827141005],[4.841464124114405,45.80350452798545],[4.838822139305516,45.80389091736141],[4.837029363899485,45.80839879341423],[4.8360857978963105,45.806788837681076],[4.832594603684565,45.806144855387814],[4.8237250832547245,45.803246935068145],[4.819573392840758,45.79938304130859],[4.818441113636948,45.79931864307927],[4.815327345826472,45.79577674046634],[4.811081298812188,45.79300761660532],[4.807118321598854,45.79191284670678],[4.802400491582982,45.791977244936106],[4.795323746559174,45.790367289202955],[4.788341358135683,45.7897233069097],[4.784944520524255,45.78804895294722],[4.785699373326795,45.785795014920815],[4.791549482546476,45.78309028928912],[4.795135033358538,45.775748891145966],[4.792493048549651,45.77343055489023],[4.790888986344254,45.76879388237876],[4.7862655129287,45.76216086475819],[4.785227590325207,45.758876555062564],[4.777962132100764,45.7542398825511],[4.773244302084891,45.7530163161939],[4.771923309680447,45.750762378167494],[4.777584705699494,45.74715607732524],[4.783434814919176,45.7443225552349],[4.7918325523474286,45.74792885607715],[4.802400491582982,45.751663953378056],[4.813440213820123,45.748057652535806],[4.817120121232503,45.74818644899445],[4.814195066622664,45.744708944610856],[4.813062787418853,45.73987907741141],[4.81428942322298,45.7329240686442],[4.8187241834379,45.72654864394094],[4.820800028644885,45.71914284756845],[4.823347656853456,45.71457057328631],[4.825140432259487,45.713025015782485],[4.837595503501389,45.70742236983112],[4.840520558111231,45.707744360977756],[4.838161643103294,45.71354020161709],[4.837595503501389,45.71849886527519],[4.849673148342023,45.71882085642182],[4.854485334958212,45.71894965288047],[4.853730482155673,45.72976855540723],[4.859863661176306,45.730670130617796],[4.862411289384878,45.72693503331689],[4.880905183047097,45.72171877674149],[4.887604501669636,45.72030201569632],[4.887038362067732,45.726097856335656],[4.886849648867096,45.72963975894858],[4.8963796654991585,45.746705289719955],[4.898361154105825,45.75288751973525]]]},"properties":{"code":"69123","dep":"69","reg":"84","xcl2154":842605,"ycl2154":6520326,"nom":"Lyon"}},
 ]
 
-async function fetchData() {
-    const res = await fetch('/static/communes-avec-outre-mer.geojson')
-    let communes = await res.json().then(data => data.features)
-    communes = [...communes, ...cityWithArrondissement]
-    const res2 = await fetch('/api/get-users-location')
-    const departementsJson = await fetch(DEPARTEMENTS_GEOJSON).then(res => res.json())
-    const departements = departementsJson.features
-    const users = await res2.json()
-        .then(users => users
-        .filter(user => user.workplace_insee_code)
-        .map(user => {
-            const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2) || c.properties.code === user.workplace_insee_code.slice(0, 3))
-            const userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
-            return {
-                ...user,
-                communeCode: userCommune ? userCommune.properties.code : undefined,
-                communeDep: userCommune ? userCommune.properties.code.slice(0,2) : undefined,
-                commune: userCommune,
-                dep
-            }
-        })
-        .filter(user => user.commune))
-    
-    const usersByCommune = groupBy(users, 'communeCode')
-    const dataCommune = Object.keys(usersByCommune).map(commune => {
-        const usersOfCommune = usersByCommune[commune]
+const createForeignCityClusters = (users) => {
+    const usersByCity = groupBy(users, 'place_id')
+    const dataCity = Object.keys(usersByCity).map(city => {
+        const usersOfCommune = usersByCity[city]
         return {
             users: usersOfCommune,
-            commune: usersOfCommune[0].commune
+            osm_city: usersOfCommune[0].osm_city
         }
     })
+    const geojson = {
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": dataCity.map(row => {
+                return {
+            "type": "Feature",
+            "properties": {
+                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "code": row.osm_city.place_id,
+                "nom": row.osm_city.label,
+                "nbUsers": row.users.length,
+                "description": `${row.osm_city.label.slice(0, 10)}${row.osm_city.label.length > 10 ? '...' : ''}\n${row.users.length}`,
+                fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [parseFloat(row.osm_city.lon), parseFloat(row.osm_city.lat)]
+            }}
+            })
+        }
+    }
+    console.log(geojson)
+
+    map.addSource("foreign-cities", geojson)
+
+    map.addLayer({
+        'id': 'foreign-cities',
+        'type': 'circle',
+        'source': 'foreign-cities',
+        'minzoom': 1,
+        paint: {
+            'circle-radius': 15, //["get", "circleRadius"],
+            'circle-stroke-color': 'black',
+            'circle-stroke-width': 1,
+            'circle-opacity': 0.8,
+            'circle-color': ["get", "fillColor"],
+            'circle-opacity': 0.5
+        }
+    });
+
+    map.addLayer({
+        'id': 'foreign-cities-text',
+        'type': 'symbol',
+        'source': 'foreign-cities',
+        'minzoom': 1,
+        layout: {
+            'text-field': ["get", "description"],
+        }
+    });
+
+    let popup = new maplibregl.Popup({
+    })
+    map.on('click', 'foreign-cities', e => {
+        let features = map.queryRenderedFeatures(e.point)
+        map.getCanvas().style.cursor = 'pointer'
+        let description = `
+        <div class="popup">
+            <center><h1>${features[0].properties.nom}</h1></center>
+            <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+            </div>`
+        popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+    })
+}
+
+const createDepartementClusters = (users) => {
     const usersByDep = groupBy(users, 'communeDep')
     const dataDep = Object.keys(usersByDep).filter(dep => dep).map(dep => {
         const usersOfDep = usersByDep[dep]
@@ -97,7 +424,92 @@ async function fetchData() {
             dep: usersOfDep[0].dep
         }
     })
-    
+    const geojsonDep = {
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": dataDep.map(row => {
+                // console.log(row.commune.geometry.coordinates[0])
+
+                return {
+            "type": "Feature",
+            "properties": {
+                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "code": row.dep.properties.code,
+                "nom": row.dep.properties.nom,
+                "nbUsers": row.users.length,
+                "description": `${row.dep.properties.nom}\n${row.users.length}`,
+                fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
+                // "objetsCount": row.objets_count,
+                // "circleRadius": [2, 5, 10, 20][[5, 20, 50, 100000].findIndex(i => row.objets_count < i)]
+            },
+            //"geometry": row.commune.geometry
+            "geometry": {
+                "type": "Point",
+                "coordinates": centroid(row.dep.geometry)
+            }}
+            })
+        }
+    }
+    map.addSource("departements_user", geojsonDep)
+
+    map.addLayer({
+        'id': 'departements_user',
+        'type': 'circle',
+        'source': 'departements_user',
+        'minzoom': 1,
+        'maxzoom': 7,
+        paint: {
+            'circle-radius': 30, //["get", "circleRadius"],
+            'circle-stroke-color': 'black',
+            'circle-stroke-width': 1,
+            'circle-opacity': 0.8,
+            'circle-color': ["get", "fillColor"],
+            'circle-opacity': 0.5,
+        }
+    });
+                
+    map.addLayer({
+        'id': 'departements-text',
+        'type': 'symbol',
+        'source': 'departements_user',
+        'minzoom': 1,
+        'maxzoom': 7,
+        layout: {
+            'text-field': ["get", "description"],
+        }
+    });
+
+    map.on('mouseenter', 'departements_user', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
+
+    map.on('mouseleave', 'departements_user', e => {
+        map.getCanvas().style.cursor = ''
+    })
+    let popup = new maplibregl.Popup({
+    })
+    map.on('click', 'departements_user', e => {
+        let features = map.queryRenderedFeatures(e.point)
+        map.getCanvas().style.cursor = 'pointer'
+        let description = `
+            <div class="popup">
+            <center><h1>${features[0].properties.nom}</h1></center>
+            <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+            </div>`
+        popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+    })
+}
+
+const createCommuneClusters = (users) => {
+    const usersByCommune = groupBy(users, 'communeCode')
+    const dataCommune = Object.keys(usersByCommune).map(commune => {
+        const usersOfCommune = usersByCommune[commune]
+        return {
+            users: usersOfCommune,
+            commune: usersOfCommune[0].commune
+        }
+    })
     const geojson = {
         "type": "geojson",
         "data": {
@@ -138,62 +550,6 @@ async function fetchData() {
         }
     });
 
-    const geojsonDep = {
-        "type": "geojson",
-        "data": {
-            "type": "FeatureCollection",
-            "features": dataDep.map(row => {
-                // console.log(row.commune.geometry.coordinates[0])
-
-                return {
-            "type": "Feature",
-            "properties": {
-                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
-                "code": row.dep.properties.code,
-                "nom": row.dep.properties.nom,
-                "nbUsers": row.users.length,
-                "description": `${row.dep.properties.nom}\n${row.users.length}`,
-                fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
-                // "objetsCount": row.objets_count,
-                // "circleRadius": [2, 5, 10, 20][[5, 20, 50, 100000].findIndex(i => row.objets_count < i)]
-            },
-            //"geometry": row.commune.geometry
-            "geometry": {
-                "type": "Point",
-                "coordinates": centroid(row.dep.geometry)
-            }}
-            })
-        }
-    }
-    map.addSource("departements_user", geojsonDep)
-
-    map.addLayer({
-        'id': 'departements_user',
-        'type': 'circle',
-        'source': 'departements_user',
-        'minzoom': 0,
-        'maxzoom': 7,
-        paint: {
-            'circle-radius': 30, //["get", "circleRadius"],
-            'circle-stroke-color': 'black',
-            'circle-stroke-width': 1,
-            'circle-opacity': 0.8,
-            'circle-color': ["get", "fillColor"],
-            'circle-opacity': 0.5,
-        }
-    });
-                
-    map.addLayer({
-        'id': 'departements-text',
-        'type': 'symbol',
-        'source': 'departements_user',
-        'minzoom': 0,
-        'maxzoom': 7,
-        layout: {
-            'text-field': ["get", "description"],
-        }
-    });
-
     map.addLayer({
         'id': 'communes-text',
         'type': 'symbol',
@@ -224,38 +580,156 @@ async function fetchData() {
     map.on('mouseleave', 'communes', e => {
         map.getCanvas().style.cursor = ''
     })
+}
 
-    map.on('mouseenter', 'departements_user', e => {
-        map.getCanvas().style.cursor = 'pointer'
+const createDepartementBoarders = (departementsJson) => {
+    map.addSource("departements", {type: "geojson", data: departementsJson})
+    map.addLayer({
+        'id': 'departements-lines',
+        'type': 'line',
+        'source': 'departements',
+        'maxzoom': 9,
+        paint: {
+        'line-color': "black",
+        'line-width': 1,
+        'line-dasharray': [2, 3],
+        }
+    });
+}
+
+const createCountryClusters = (users, usersForeignCity) => {
+    const usersByCountry = groupBy(usersForeignCity.map(user => ({
+        ...user,
+        country_place_id: user.osm_city.country_place_id
+    })), 'country_place_id')
+    let dataCountry = Object.keys(usersByCountry).map(city => {
+        const usersOfCountry = usersByCountry[city]
+        return {
+            users: usersOfCountry,
+            osm_city: usersOfCountry[0].osm_city
+        }
     })
+    dataCountry = [
+        {
+            osm_city: {
+                country_label: 'France',
+                country_lon: '2.087',
+                country_lat: '46'
+            },
+            users: users
+        },
+        ...dataCountry
+    ]
+    const geojsonCountry = {
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": dataCountry.map(row => {
+                // console.log(row.commune.geometry.coordinates[0])
 
-    map.on('mouseleave', 'departements_user', e => {
-        map.getCanvas().style.cursor = ''
+                return {
+            "type": "Feature",
+            "properties": {
+                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "nom": row.osm_city.country_label,
+                "nbUsers": row.users.length,
+                "description": `${row.osm_city.country_label}`,
+                fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
+                // "objetsCount": row.objets_count,
+                // "circleRadius": [2, 5, 10, 20][[5, 20, 50, 100000].findIndex(i => row.objets_count < i)]
+            },
+            //"geometry": row.commune.geometry
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    parseFloat(row.osm_city.country_lon),
+                    parseFloat(row.osm_city.country_lat)
+                ]
+            }}
+            })
+        }
+    }
+    console.log(geojsonCountry)
+    map.addSource("country", geojsonCountry)
+    map.addLayer({
+        'id': 'country',
+        'type': 'circle',
+        'source': 'country',
+        'minzoom': 0,
+        'maxzoom': 1,
+        paint: {
+            'circle-radius': 15, //["get", "circleRadius"],
+            'circle-stroke-color': 'red',
+            'circle-stroke-width': 1,
+            'circle-opacity': 0.8,
+            'circle-color': ["get", "fillColor"],
+            'circle-opacity': 0.5
+        }
+    });
+
+    map.addLayer({
+        'id': 'country-text',
+        'type': 'symbol',
+        'source': 'country',
+        'minzoom': 0,
+        'maxzoom': 1,
+        layout: {
+            'text-field': ["get", "description"],
+        }
+    });
+
+    let popup = new maplibregl.Popup({
     })
-
-    map.on('click', 'departements_user', e => {
+    map.on('click', 'country', e => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
-            <div class="popup">
+        <div class="popup">
             <center><h1>${features[0].properties.nom}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
 
+    map.on('mouseenter', 'communes', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
 
-map.addSource("departements", {type: "geojson", data: departementsJson})
-map.addLayer({
-    'id': 'departements-lines',
-    'type': 'line',
-    'source': 'departements',
-    'maxzoom': 9,
-    paint: {
-      'line-color': "black",
-      'line-width': 1,
-      'line-dasharray': [2, 3],
-    }
-  });
+    map.on('mouseleave', 'communes', e => {
+        map.getCanvas().style.cursor = ''
+    })
+}
+
+async function fetchData() {
+    const res = await fetch('/static/communes-avec-outre-mer.geojson')
+    let communes = await res.json().then(data => data.features)
+    communes = [...communes, ...cityWithArrondissement]
+    const res2 = await fetch('/api/get-users-location')
+    const departementsJson = await fetch(DEPARTEMENTS_GEOJSON).then(res => res.json())
+    const departements = departementsJson.features
+    const usersJson = await res2.json().then(users => users)
+    const usersForeignCity = usersJson.filter(users => users.osm_city).map(user => ({
+        ...user,
+        place_id: JSON.parse(user.osm_city).place_id,
+        osm_city: JSON.parse(user.osm_city)
+    }))
+    const users = usersJson.filter(user => user.workplace_insee_code)
+        .map(user => {
+            const dep = departements.find(c => c.properties.code === user.workplace_insee_code.slice(0, 2) || c.properties.code === user.workplace_insee_code.slice(0, 3))
+            const userCommune = communes.find(c => c.properties.code === user.workplace_insee_code)
+            return {
+                ...user,
+                communeCode: userCommune ? userCommune.properties.code : undefined,
+                communeDep: userCommune ? userCommune.properties.code.slice(0,2) : undefined,
+                commune: userCommune,
+                dep
+            }
+        })
+        .filter(user => user.commune)
+    createDepartementBoarders(departementsJson)
+    createCommuneClusters(users)
+    createDepartementClusters(users)
+    createCountryClusters(users, usersForeignCity)
+    createForeignCityClusters(usersForeignCity)
 }
 map.on('load', fetchData)
