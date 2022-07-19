@@ -4,7 +4,7 @@
  */
  exports.up = function(knex) {
     return knex.schema.table('users', (table) => {
-        table.string('osm_city')
+        table.text('osm_city')
     });
 };
 
