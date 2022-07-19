@@ -107,11 +107,9 @@ export const Onboarding = PageLayout(function (props: Props) {
 
     return (
         <>
-        <div className="module">
-        <div className="row">
-        <div className="panel margin-top-m">
-            <h3>Mise à jour de mes informations</h3>
-
+        <div className="container container-small">
+            <div className="panel margin-top-m">
+            <h3>Créer ma fiche Github</h3>
             <div className="beta-banner"></div>
             <form action="/onboarding" method="POST">
                 <h4>Tes infos persos</h4>
@@ -319,7 +317,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Employeur</strong><br />
                         L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                     </label>
-                    <input name="employer" value="<%= formData.employer %>"/>
+                    <input name="employer" value=""/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="badge">
@@ -356,7 +354,6 @@ export const Onboarding = PageLayout(function (props: Props) {
             </div>
             <button className="button" type="submit">Changer ces informations</button>
         </form>
-        </div>
     </div>
 </div>
 <style media="screen">
