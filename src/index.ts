@@ -40,7 +40,7 @@ app.use(
   )
 ); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 app.use(
-  'react-datepicker/react-datepicker.css',
+  '/react-datepicker/react-datepicker.css',
   express.static(
     path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-datepicker/dist/react-datepicker.css')
   )
