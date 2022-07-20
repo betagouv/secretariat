@@ -3,7 +3,6 @@ const webpack = require('webpack')
 const fs = require('fs')
 const _ = require('lodash')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 const pageDir = path.join(__dirname, 'src', 'views', 'pages')
 
@@ -47,9 +46,7 @@ module.exports = {
   target: 'web',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    plugins: [
-      // new MiniCssExtractPlugin(),
-      new TsconfigPathsPlugin()],
+    plugins: [new TsconfigPathsPlugin()],
     fallback: { path: require.resolve('path-browserify') },
   },
   plugins: [
@@ -58,27 +55,20 @@ module.exports = {
     }),
   ],
   module: {
-    loaders: [
-      {
-          test: /\.css$/,
-          loader: 'style-loader'
-      }, {
-          test: /\.css$/,
-          loader: 'css-loader',
-          query: {
-              modules: true,
-              localIdentName: '[name]__[local]___[hash:base64:5]'
-          }
-      }
-  ],
     rules: [
-      // {
-      //   test: /\.css$/i,
-      //   use: [
-      //     MiniCssExtractPlugin.loader, // instead of style-loader
-      //     'css-loader'
-      //   ]
-      // },
+      {
+        test: /\.css$/i,
+        use: [
+          'style-loader',
+          'css-loader',
+           {
+             loader: 'esbuild-loader',
+             options: {
+               loader: 'css',
+               minify: true
+             }
+           }
+        ]},
       {
         test: /\.tsx?$/,
         loader: 'esbuild-loader',
@@ -87,6 +77,10 @@ module.exports = {
           loader: 'tsx',
           target: 'es2015',
         },
+      },
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
