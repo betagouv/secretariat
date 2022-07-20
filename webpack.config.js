@@ -57,6 +57,15 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.tsx?$/,
+        loader: 'esbuild-loader',
+        exclude: '/node_modules/',
+        options: {
+          loader: 'tsx',
+          target: 'es2015',
+        },
+      },
+      {
         test: /\.css$/i,
         use: [
           'style-loader',
@@ -69,19 +78,6 @@ module.exports = {
              }
            }
         ]},
-      {
-        test: /\.tsx?$/,
-        loader: 'esbuild-loader',
-        exclude: '/node_modules/',
-        options: {
-          loader: 'tsx',
-          target: 'es2015',
-        },
-      },
-      {
-        test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
-      },
     ],
   },
   output: {

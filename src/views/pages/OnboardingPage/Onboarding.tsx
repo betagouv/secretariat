@@ -7,9 +7,8 @@ import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
+import styles from "react-datepicker/dist/react-datepicker.css";
 
-
-import "react-datepicker/dist/react-datepicker.css";
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
     day = day.length === 1 ? `0${day}` : day;
