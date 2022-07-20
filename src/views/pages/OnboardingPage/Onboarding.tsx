@@ -132,12 +132,12 @@ export const Onboarding = PageLayout(function (props: Props) {
     return (
         <>
         <div className="container container-small">
-        { props.errors.length && <div className="notification error">
+        { !!props.errors.length && <div className="notification error">
             { props.errors.map(function(error, i) {
                 return <li key={i}><strong>Erreur : </strong>{error}</li>
             })}
         </div>}
-        {<div className="notification">
+        { !!props.messages.length && <div className="notification">
             {props.messages}
         </div>}
             <div className="panel margin-top-m">
@@ -402,6 +402,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <select name="badge">
                         <option value=""></option>
+                        { props.userConfig.badgeOptions.map(function(badge) {
+                            return <option value={badge.key} selected={badge.key === state.formData.key}>{badge.name}</option>
+                        })}
                     </select>
                 </div>
                 <h4>Ton email</h4>
@@ -428,7 +431,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </span>
                 </label>
                 { props.formValidationErrors['email public'] &&
-                    <p class="text-small text-color-red">{ props.formValidationErrors['email public']}</p>
+                    <p className="text-small text-color-red">{ props.formValidationErrors['email public']}</p>
                 } 
             </div>
             <button className="button" type="submit">Changer ces informations</button>
