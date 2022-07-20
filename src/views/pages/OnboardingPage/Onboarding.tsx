@@ -132,6 +132,14 @@ export const Onboarding = PageLayout(function (props: Props) {
     return (
         <>
         <div className="container container-small">
+        { props.errors.length && <div className="notification error">
+            { props.errors.map(function(error, i) {
+                return <li key={i}><strong>Erreur : </strong>{error}</li>
+            })}
+        </div>}
+        {<div className="notification">
+            {props.messages}
+        </div>}
             <div className="panel margin-top-m">
             <h3>Créer ma fiche Github</h3>
             <div className="beta-banner"></div>
