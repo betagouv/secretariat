@@ -109,6 +109,7 @@
     "eslint-config-prettier": "^8.5.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
+    "mini-css-extract-plugin": "^2.6.1",
     "mocha": "^10.0.0",
     "nock": "^13.2.8",
     "nodemon": "^2.0.19",

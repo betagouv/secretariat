@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const fs = require('fs')
 const _ = require('lodash')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 const pageDir = path.join(__dirname, 'src', 'views', 'pages')
 
@@ -50,6 +51,7 @@ module.exports = {
     fallback: { path: require.resolve('path-browserify') },
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new webpack.DefinePlugin({
       'process.env.npm_package_version': JSON.stringify(process.env.npm_package_version),
     }),
@@ -67,7 +69,10 @@ module.exports = {
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: [
+          MiniCssExtractPlugin.loader, // instead of style-loader
+          'css-loader'
+        ]
       },
     ],
   },
