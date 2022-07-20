@@ -298,20 +298,20 @@ export const Onboarding = PageLayout(function (props: Props) {
                         required hidden/>
                 </div>
                 <div className="form__group">
-                    <label htmlFor="legal_status">
+                    <label htmlFor="status">
                         <strong>Statut (obligatoire)</strong><br />
                     </label>
-                    { props.userConfig.statusOptions.map((legal_status) => {
+                    { props.userConfig.statusOptions.map((status) => {
                         
-                        return (<span key={legal_status.key}><input type="radio" name="legal_status"
-                            value={legal_status.key}
-                            onChange={handleLegalStatusChange}
-                            checked={legal_status.key === state.formData.legal_status}
-                            required/>{legal_status.name}<br/></span>)
+                        return (<span key={status.key}><input type="radio" name="status"
+                            value={status.key}
+                            onChange={handleStatusChange}
+                            checked={status.key === state.formData.status}
+                            required/>{status.name}<br/></span>)
 
                     })}
-                    { !!props.formValidationErrors['legal_statut'] && 
-                        <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
+                    { !!props.formValidationErrors['status'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['status']}</p>
                     }
                 </div>
                 <div className="form__group">
@@ -320,15 +320,15 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     { props.statusOptions.map((legal_status) => {
                         
-                        return (<span key={legal_status.key}><input type="radio" name="status"
+                        return (<span key={legal_status.key}><input type="radio" name="legal_status"
                             value={legal_status.key}
-                            onChange={handleStatusChange}
-                            checked={legal_status.key === state.formData.status}
+                            onChange={handleLegalStatusChange}
+                            checked={legal_status.key === state.formData.legal_status}
                             required/>{legal_status.name}<br/></span>)
 
                     })}
-                    { !!props.formValidationErrors['status'] && 
-                        <p className="text-small text-color-red">{props.formValidationErrors['status']}</p>
+                    { !!props.formValidationErrors['legal_status'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['legal_status']}</p>
                     }
                 </div>
                 <div className="form__group">
