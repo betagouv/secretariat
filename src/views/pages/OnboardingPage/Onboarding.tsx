@@ -267,7 +267,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatePicker
-                        type="date" name="start" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
                     <input name="start"
@@ -281,7 +281,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatePicker
-                        type="date" name="end" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        type="date" name="endDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('end', date)} />
                     <input name="end"
@@ -362,7 +362,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Employeur</strong><br />
                         L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                     </label>
-                    <input name="employer" onChange={(e) => changeFormData('employer', e.currentTarget.value)}/>
+                    <input name="employer" value={state.formData.employer} onChange={(e) => changeFormData('employer', e.currentTarget.value)}/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="badge">

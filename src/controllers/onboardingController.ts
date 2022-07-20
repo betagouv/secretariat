@@ -18,6 +18,33 @@ function createBranchName(username) {
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
 
+const DOMAINE_OPTIONS = [{
+  key: "ANIMATION",
+  name: "Animation"
+}, {
+  key: "COACHING",
+  name: "Coaching"
+}, {
+  key: "DEPLOIEMENT",
+  name: "Déploiement"
+}, {
+  key: "DESIGN",
+  name: "Design"
+}, {
+  key: "DEVELOPPEMENT",
+  name: "Développement"
+}, {
+  key: "INTRAPRENARIAT",
+  name: "Intraprenariat"
+}, {
+  key: "PRODUIT",
+  name: "Produit"
+}, {
+  key: "AUTRE",
+  name: "Autre"
+}
+]
+
 interface IMessageInfo {
   prInfo,
   referent: string,
@@ -108,32 +135,7 @@ export async function getForm(req, res) {
         genderOptions,
         statusOptions,
         startupOptions,
-        domaineOptions: [{
-          key: "ANIMATION",
-          name: "Animation"
-        }, {
-          key: "COACHING",
-          name: "Coaching"
-        }, {
-          key: "DEPLOIEMENT",
-          name: "Déploiement"
-        }, {
-          key: "DESIGN",
-          name: "Design"
-        }, {
-          key: "DEVELOPPEMENT",
-          name: "Développement"
-        }, {
-          key: "INTRAPRENARIAT",
-          name: "Intraprenariat"
-        }, {
-          key: "PRODUIT",
-          name: "Produit"
-        }, {
-          key: "AUTRE",
-          name: "Autre"
-        }
-      ],
+        domaineOptions: DOMAINE_OPTIONS,
         userConfig: config.user,
         users,
         formData: {
@@ -303,6 +305,7 @@ export async function postForm(req, res) {
       startups,
       statusOptions,
       genderOptions,
+      domaineOptions: DOMAINE_OPTIONS,
       communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
       domain: config.domain,
       users,
