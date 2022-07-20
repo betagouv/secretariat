@@ -418,14 +418,18 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <p className="text-small text-color-red">{props.formValidationErrors['mail']}</p>
                     }
                 <label htmlFor="isEmailBetaAsked" className="padding-10-0">
-                <input type="checkbox" name="isEmailBetaAsked" value="true"/>
-                    Je souhaite une adresse @beta.gouv.fr
+                <input type="checkbox" name="isEmailBetaAsked" checked={state.formData.isEmailBetaAsked} />
+                <strong className={!!props.formValidationErrors['email public'] ? 'text-color-red' : ''}>
+                Je souhaite une adresse @beta.gouv.fr</strong>
                 <br/>
                 <span>
                     L'adresse @beta.gouv.fr donne accès aux outils officiels.
                     Elle est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
                 </span>
                 </label>
+                { props.formValidationErrors['email public'] &&
+                    <p class="text-small text-color-red">{ props.formValidationErrors['email public']}</p>
+                } 
             </div>
             <button className="button" type="submit">Changer ces informations</button>
         </form>
