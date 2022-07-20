@@ -8,6 +8,8 @@ import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
+import ReferentSelect from '../components/ReferentSelect';
+import SESelect from '../components/SESelect';
 
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
@@ -51,7 +53,10 @@ interface Props {
     formValidationErrors?: any,
     communeInfo?: CommuneInfo,
     startups?: StartupInfo[],
-    startupOptions?: Option[],
+    startupOptions?: {
+        value: string,
+        label: string
+    }[],
     userConfig: {
         statusOptions: Option[],
         minStartDate: string,
@@ -61,7 +66,6 @@ interface Props {
 
 /* Pure component */
 export const Onboarding = PageLayout(function (props: Props) {
-
     const [state, setState] = React.useState<any>({
         selectedName: '',
         ...props,
@@ -120,7 +124,7 @@ export const Onboarding = PageLayout(function (props: Props) {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
         } else if (state.formData.osm_city) {
-            return JSON.parse(props.formData.osm_city).label
+            return JSON.parse(state.formData.osm_city).label
         } 
         return ''
     }
@@ -153,14 +157,14 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Prénom (obligatoire)</strong>
                     </label>
                     <input name="firstName" 
-                        value={state.formData.firstName}
+                        defaultValue={state.formData.firstName}
                         onChange={(e) => { changeFormData('firstName', e.currentTarget.value)}}
                         required/>
                     <label htmlFor="lastName">
                         <strong>Nom de famille (obligatoire)</strong>
                     </label>
                     <input name="lastName" 
-                        value={state.formData.lastName}
+                        defaultValue={state.formData.lastName}
                         onChange={(e) => { changeFormData('lastName', e.currentTarget.value)}}
                         required/>
                 </div>
@@ -169,7 +173,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Courte bio</strong><br />
                         Cette phrase d'accroche sera affichée sur <a href="https://beta.gouv.fr/communaute/annuaire">l'annuaire</a>.<br />
                         <i>Exemple : « Développeur le jour, musicien la nuit. »</i>
-                        <textarea rows={2} name="description" value={state.formData.description}></textarea>
+                        <textarea rows={2} name="description" defaultValue={state.formData.description}></textarea>
                     </label>
                 </div>
                 <div className="form__group">
@@ -179,7 +183,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <input
                         name="website"
-                        value={state.formData.website}
+                        defaultValue={state.formData.website}
                         onChange={(e) => { changeFormData('website', e.currentTarget.value)}}
                         pattern="^(http|https)://.+" title="Doit commencer par http:// ou https://"/>
                 </div>
@@ -367,25 +371,33 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
                     </label>
                     <label htmlFor="username_select"></label>
-                    <select name="referent">
-                        <option value=""></option>
-                        { props.users.map((user) => {
-                            return <option value={user.id} selected={state.formData.referent === user.id}>{user.fullname}</option>
-                        })}
-                    </select>
-                    {/* <input type="hidden" name="referent" id="referentInput_hidden" value={state.formData.referent} required/> */}
+                    <ReferentSelect
+                        // value={state.formData.referent}
+                        onChange={(e) => changeFormData('referent', e.value)}
+                        referents={props.users.map(u => ({
+                            value: u.id,
+                            label: u.fullname
+                        }))}
+                        defaultValue={props.users.map(u => ({
+                            value: u.id,
+                            label: u.fullname
+                        })).find(d => d.value === state.formData.referent)}></ReferentSelect>
+                    <input type="hidden" name="referent" value={state.formData.referent} required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="startup">
                         <strong>Startup d'État</strong><br />
                         Laisser vide si elle n'apparaît pas. Tu pourras modifier ton profil plus tard.
                     </label>
-                    <select name="startup">
-                        <option value=""></option>
-                        { props.startups.map((startup) => {
-                            return <option value={startup.id} selected={startup.id === state.formData.startup}>{startup.attributes.name}</option>
-                        })}
-                    </select>
+                    <SESelect
+                        startups={props.startupOptions}
+                        onChange={(e) => {
+                            changeFormData('startup', e.value)
+                        }}
+                        isMulti={undefined}
+                        placeholder={"Selectionne ta startup"}
+                        defaultValue={props.startupOptions.find(d => d.value === state.formData.startup)}></SESelect>
+                    <input type="hidden" name="startup" value={state.formData.startup} required/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="employer">
@@ -421,7 +433,10 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <p className="text-small text-color-red">{props.formValidationErrors['mail']}</p>
                     }
                 <label htmlFor="isEmailBetaAsked" className="padding-10-0">
-                <input type="checkbox" name="isEmailBetaAsked" checked={state.formData.isEmailBetaAsked} />
+                <input type="checkbox" name="isEmailBetaAsked"
+                    onChange={(e) => changeFormData('isEmailBetaAsked', !state.formData.isEmailBetaAsked)}
+                    value={state.formData.isEmailBetaAsked}
+                    checked={!!state.formData.isEmailBetaAsked} />
                 <strong className={!!props.formValidationErrors['email public'] ? 'text-color-red' : ''}>
                 Je souhaite une adresse @beta.gouv.fr</strong>
                 <br/>

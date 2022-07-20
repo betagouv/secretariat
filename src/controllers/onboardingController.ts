@@ -296,6 +296,12 @@ export async function postForm(req, res) {
       req.flash('error', err.message);
     }
     const startups = await BetaGouv.startupsInfos();
+    const startupOptions = startups.map(startup => {
+      return {
+        value: startup.id,
+        label: startup.attributes.name
+      }
+    })
     const users = await BetaGouv.usersInfos();
     res.send(OnboardingPage({
       errors: req.flash('error'),
@@ -304,6 +310,7 @@ export async function postForm(req, res) {
       userConfig: config.user,
       startups,
       statusOptions,
+      startupOptions,
       genderOptions,
       request: req,
       domaineOptions: DOMAINE_OPTIONS,
