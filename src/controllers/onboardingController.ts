@@ -307,7 +307,6 @@ export async function postForm(req, res) {
       genderOptions,
       domaineOptions: DOMAINE_OPTIONS,
       communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
-      domain: config.domain,
       users,
       formData: req.body,
       useSelectList: isMobileFirefox,
