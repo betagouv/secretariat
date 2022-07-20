@@ -57,19 +57,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/i,
-        use: [
-          'style-loader',
-          'css-loader',
-           {
-             loader: 'esbuild-loader',
-             options: {
-               loader: 'css',
-               minify: true
-             }
-           }
-        ]},
-      {
         test: /\.tsx?$/,
         loader: 'esbuild-loader',
         exclude: '/node_modules/',
