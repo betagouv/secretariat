@@ -58,6 +58,19 @@ module.exports = {
     }),
   ],
   module: {
+    loaders: [
+      {
+          test: /\.css$/,
+          loader: 'style-loader'
+      }, {
+          test: /\.css$/,
+          loader: 'css-loader',
+          query: {
+              modules: true,
+              localIdentName: '[name]__[local]___[hash:base64:5]'
+          }
+      }
+  ],
     rules: [
       // {
       //   test: /\.css$/i,
@@ -74,25 +87,6 @@ module.exports = {
           loader: 'tsx',
           target: 'es2015',
         },
-      },
-      {
-        test: /\.css$/,
-        use: [
-          "style-loader",
-          {
-            loader: "css-loader",
-            options: {
-              importLoaders: 1,
-              modules: true,
-            },
-          },
-        ],
-        include: /\.module\.css$/,
-      },
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-        exclude: /\.module\.css$/,
       },
     ],
   },
