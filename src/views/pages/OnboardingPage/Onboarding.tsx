@@ -263,7 +263,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                         type="date" name="start" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         selected={state.formData.start} onChange={(date:Date) => changeFormData('end', date)} />
                     <input name="start"
-                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
                         required hidden/>
                 </div>
@@ -277,7 +276,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                         type="date" name="end" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('start', date)} />
                     <input name="end"
-                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
                         required hidden/>
                 </div>
