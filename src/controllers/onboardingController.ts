@@ -182,6 +182,7 @@ export async function postForm(req, res) {
     const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     const gender = req.body.gender
+    const osm_city = req.body.osm_city
     const workplace_insee_code = req.body.workplace_insee_code
     const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
@@ -274,7 +275,8 @@ export async function postForm(req, res) {
         legal_status,
         secondary_email: secondaryEmail,
         primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
-        primary_email_status_updated_at: new Date()
+        primary_email_status_updated_at: new Date(),
+        osm_city
       })
       .onConflict('username')
       .merge();
