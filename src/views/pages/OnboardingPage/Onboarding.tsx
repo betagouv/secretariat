@@ -7,7 +7,13 @@ import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
 
-import { formatDateToReadableFormat } from '../../../controllers/utils';
+function formatDateToReadableFormat(date) {
+    let day = date.getDate().toString();
+    day = day.length === 1 ? `0${day}` : day;
+    let month = (date.getMonth() + 1).toString();
+    month = month.length === 1 ? `0${month}` : month;
+    return `${day}/${month}/${date.getFullYear()}`;
+  }
 
 interface CommuneInfo {
     nom: string,
