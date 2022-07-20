@@ -8,9 +8,6 @@ import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
 
-
-import "react-datepicker/dist/react-datepicker.css";
-
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
     day = day.length === 1 ? `0${day}` : day;
@@ -48,7 +45,7 @@ interface Props {
     domaineOptions?: Option[],
     statusOptions?: Option[],
     genderOptions?: Option[],
-    formValidationErrors?: Object,
+    formValidationErrors?: any,
     communeInfo?: CommuneInfo,
     startups?: StartupInfo[],
     startupOptions?: Option[],
