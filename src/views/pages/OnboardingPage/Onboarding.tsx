@@ -260,7 +260,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatePicker
-                        type="date" name="start" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        type="date" name="start" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         format='dd/MM/yyyy'
                         selected={state.formData.start} onChange={(date:Date) => changeFormData('end', date)} />
                     <input name="start"
