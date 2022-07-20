@@ -265,7 +265,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <input name="start"
                         onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
-                        required/>
+                        required hidden/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="end">
@@ -279,7 +279,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <input name="end"
                         onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
-                        required/>
+                        required hidden/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="legal_status">
