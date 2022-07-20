@@ -116,6 +116,7 @@
     "prettier": "^2.7.1",
     "rewire": "^6.0.0",
     "sinon": "^14.0.0",
+    "style-loader": "^3.3.1",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
     "ttypescript": "^1.5.13",
