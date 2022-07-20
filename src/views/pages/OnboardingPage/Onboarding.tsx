@@ -252,9 +252,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Début de la mission (obligatoire)</strong><br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    {/* <DatePicker
-                        type="date" name="start" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        selected={state.formData.start} onChange={(date:Date) => changeFormData('end', date)} /> */}
                     <input name="start"
                         onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
@@ -266,9 +263,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    {/* <DatePicker
-                        type="date" name="end" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        selected={state.formData.end} onChange={(date:Date) => changeFormData('start', date)} /> */}
                     <input name="end"
                         onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
