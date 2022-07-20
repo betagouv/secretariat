@@ -309,7 +309,6 @@ export async function postForm(req, res) {
       communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
       users,
       formData: req.body,
-      useSelectList: isMobileFirefox,
     }));
   }
 }
