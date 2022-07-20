@@ -33,6 +33,8 @@ interface FormData {
     tjm: number,
     secondary_email: string,
     osm_city: string,
+    start?: string,
+    end?: string
 }
 
 interface Props {
@@ -40,7 +42,7 @@ interface Props {
     errors?: string[],
     messages?: string[],
     request: Request,
-    formData?: FormData,
+    formData: FormData,
     users: Member[],
     domaineOptions?: Option[],
     statusOptions?: Option[],
@@ -62,6 +64,11 @@ export const Onboarding = PageLayout(function (props: Props) {
     const [state, setState] = React.useState<any>({
         selectedName: '',
         ...props,
+        formData: {
+            ...props.formData,
+            start: props.formData.start ? new Date(props.formData.start) : '',
+            end: props.formData.end ? new Date(props.formData.end) : '',
+        }
     });
     const css = ".panel { overflow: scroll; }"
 
