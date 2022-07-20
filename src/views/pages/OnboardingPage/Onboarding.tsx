@@ -285,6 +285,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                             dateFormat='dd/MM/yyyy'
                             selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
                     </ClientOnly>
+                    { !!props.formValidationErrors['début de la mission'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['début de la mission']}</p>
+                    }
+                    { !!props.formValidationErrors['date de début'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['date de début']}</p>
+                    }
                     <input name="start"
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
                         required hidden/>
@@ -301,6 +307,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('end', date)} />
                     </ClientOnly>
+                    { !!props.formValidationErrors['fin de la mission'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['fin de la mission']}</p>
+                    }
+                    { !!props.formValidationErrors['date de fin'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['date de fin']}</p>
+                    }
                     <input name="end"
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
                         required hidden/>
