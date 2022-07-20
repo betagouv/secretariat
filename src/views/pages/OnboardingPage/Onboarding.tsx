@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Request } from 'express'
 import DatePicker from "react-datepicker";
+import { ClientOnly } from "../components/ClientOnly"
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
@@ -13,7 +14,7 @@ function formatDateToReadableFormat(date) {
     day = day.length === 1 ? `0${day}` : day;
     let month = (date.getMonth() + 1).toString();
     month = month.length === 1 ? `0${month}` : month;
-    return `${day}/${month}/${date.getFullYear()}`;
+    return `${date.getFullYear()}-${month}-${day}`;
   }
 
 interface CommuneInfo {
@@ -93,12 +94,16 @@ export const Onboarding = PageLayout(function (props: Props) {
         changeFormData('legal_status', e.currentTarget.value)
     }
 
+    const handleStatusChange = (e) => {
+        changeFormData('status', e.currentTarget.value)
+    }
+
     const handleTJMChange = (e) => {
         changeFormData('tjm', e.currentTarget.value)
     }
 
-    const handleSecondaryEmail = (e) => {
-        changeFormData('secondary_email', e.currentTarget.value)
+    const handleEmail = (e) => {
+        changeFormData('email', e.currentTarget.value)
     }
 
     const handleCitySelect = (newValue) => {
@@ -245,7 +250,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         { props.domaineOptions.map((domaine) => { 
                             return <option
                                 key={domaine.key}
-                                value={domaine.key}
+                                value={domaine.name}
                                 >{domaine.name}</option>
                         })}
                         </>
@@ -266,10 +271,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Début de la mission (obligatoire)</strong><br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <DatePicker
-                        type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        dateFormat='dd/MM/yyyy'
-                        selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
+                    <ClientOnly>
+                        <DatePicker
+                            type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                            dateFormat='dd/MM/yyyy'
+                            selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
+                    </ClientOnly>
                     <input name="start"
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
                         required hidden/>
@@ -280,10 +287,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
+                    <ClientOnly>
                     <DatePicker
                         type="date" name="endDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('end', date)} />
+                    </ClientOnly>
                     <input name="end"
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
                         required hidden/>
@@ -311,15 +320,15 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     { props.statusOptions.map((legal_status) => {
                         
-                        return (<span key={legal_status.key}><input type="radio" name="legal_status"
+                        return (<span key={legal_status.key}><input type="radio" name="status"
                             value={legal_status.key}
-                            onChange={handleLegalStatusChange}
-                            checked={legal_status.key === state.formData.legal_status}
+                            onChange={handleStatusChange}
+                            checked={legal_status.key === state.formData.status}
                             required/>{legal_status.name}<br/></span>)
 
                     })}
-                    { !!props.formValidationErrors['legal_statut'] && 
-                        <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
+                    { !!props.formValidationErrors['status'] && 
+                        <p className="text-small text-color-red">{props.formValidationErrors['status']}</p>
                     }
                 </div>
                 <div className="form__group">
@@ -328,7 +337,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
                         <input
                             onChange={handleTJMChange}
-                            value={state.formData.tjm || 0}
+                            defaultValue={state.formData.tjm || 0}
                             id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
                     </label>
                 </div>
@@ -338,12 +347,13 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
                     </label>
                     <label htmlFor="username_select"></label>
-                    <select name="referent" id="username_select">
+                    <select name="referent">
+                        <option value=""></option>
                         { props.users.map((user) => {
                             return <option value={user.id} selected={state.formData.referent === user.id}>{user.fullname}</option>
                         })}
                     </select>
-                    <input type="hidden" name="referent" id="referentInput_hidden" value={state.formData.referent} required/>
+                    {/* <input type="hidden" name="referent" id="referentInput_hidden" value={state.formData.referent} required/> */}
                 </div>
                 <div className="form__group">
                     <label htmlFor="startup">
@@ -381,11 +391,11 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Ton email nous servira pour t'envoyer les informations relatives à ton compte
                     </label>
                         <input
-                            onChange={handleSecondaryEmail}
-                            value={state.formData.secondary_email || ''}
-                            id="secondary_email" name="email" type="email" placeholder="un email de recupération" required/>
-                    { !!props.formValidationErrors['secondary_email'] &&
-                        <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
+                            onChange={handleEmail}
+                            value={state.formData.email}
+                            id="email" name="email" type="email" placeholder="un email de recupération" required/>
+                    { !!props.formValidationErrors['email'] &&
+                        <p className="text-small text-color-red">{props.formValidationErrors['mail']}</p>
                     }
                 <label htmlFor="isEmailBetaAsked" className="padding-10-0">
                 <input type="checkbox" name="isEmailBetaAsked" value="true"/>
