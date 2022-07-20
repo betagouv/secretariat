@@ -355,7 +355,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Employeur</strong><br />
                         L'entité avec laquelle tu as signé ton contrat (DINUM, Octo...)
                     </label>
-                    <input name="employer" value=""/>
+                    <input name="employer" onChange={(e) => changeFormData('employer', e.currentTarget.value)}/>
                 </div>
                 <div className="form__group">
                     <label htmlFor="badge">
