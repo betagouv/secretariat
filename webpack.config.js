@@ -47,17 +47,25 @@ module.exports = {
   target: 'web',
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    plugins: [new TsconfigPathsPlugin()],
+    plugins: [
+      // new MiniCssExtractPlugin(),
+      new TsconfigPathsPlugin()],
     fallback: { path: require.resolve('path-browserify') },
   },
   plugins: [
-    new MiniCssExtractPlugin(),
     new webpack.DefinePlugin({
       'process.env.npm_package_version': JSON.stringify(process.env.npm_package_version),
     }),
   ],
   module: {
     rules: [
+      // {
+      //   test: /\.css$/i,
+      //   use: [
+      //     MiniCssExtractPlugin.loader, // instead of style-loader
+      //     'css-loader'
+      //   ]
+      // },
       {
         test: /\.tsx?$/,
         loader: 'esbuild-loader',
@@ -68,11 +76,23 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/i,
+        test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader, // instead of style-loader
-          'css-loader'
-        ]
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: {
+              importLoaders: 1,
+              modules: true,
+            },
+          },
+        ],
+        include: /\.module\.css$/,
+      },
+      {
+        test: /\.css$/,
+        use: ["style-loader", "css-loader"],
+        exclude: /\.module\.css$/,
       },
     ],
   },
