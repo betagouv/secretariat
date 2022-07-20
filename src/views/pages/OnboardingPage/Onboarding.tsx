@@ -261,6 +261,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <DatePicker
                         type="date" name="start" min={props.userConfig.minStartDate} value="" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        format='dd/MM/yyyy'
                         selected={state.formData.start} onChange={(date:Date) => changeFormData('end', date)} />
                     <input name="start"
                         value={state.formData.start ? formatDate(state.formData.start) : ''}
@@ -274,6 +275,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <DatePicker
                         type="date" name="end" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        format='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('start', date)} />
                     <input name="end"
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
