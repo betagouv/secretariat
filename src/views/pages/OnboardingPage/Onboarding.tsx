@@ -1,6 +1,5 @@
 import React from 'react';
 import type { Request } from 'express'
-// import DatePicker from "react-datepicker";
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
@@ -8,8 +7,6 @@ import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
 
-
-// import "react-datepicker/dist/react-datepicker.css";
 import { formatDateToReadableFormat } from '../../../controllers/utils';
 
 interface CommuneInfo {
