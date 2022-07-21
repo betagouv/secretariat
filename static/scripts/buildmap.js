@@ -473,6 +473,7 @@ const createClusterClusters = (users) => {
         type: 'circle',
         source: "clusters",
         filter: ['has', 'point_count'],
+        'minzoom': 2,
         paint: {
             // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
             // with three steps to implement three types of circles:
@@ -698,7 +699,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         'minzoom': 0,
         'maxzoom': 2,
         layout: {
-            'text-field': ["get", "description"],
+            'text-field': ["get", "nbUsers"],
         }
     });
 
@@ -753,8 +754,9 @@ async function fetchData() {
     // createDepartementBoarders(departementsJson)
     // createCommuneClusters(users)
     // createDepartementClusters(users)
-    createCountryClusters(users, usersForeignCity)
     createForeignCityClusters(usersForeignCity)
     createClusterClusters(users)
+    createCountryClusters(users, usersForeignCity)
+
 }
 map.on('load', fetchData)
