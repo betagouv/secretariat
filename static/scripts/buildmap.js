@@ -98,7 +98,7 @@ const createForeignCityClusters = (users) => {
         'id': 'foreign-cities',
         'type': 'circle',
         'source': 'foreign-cities',
-        'minzoom': 1,
+        'minzoom': 2,
         paint: {
             'circle-radius': 15, //["get", "circleRadius"],
             'circle-stroke-color': 'black',
@@ -113,7 +113,7 @@ const createForeignCityClusters = (users) => {
         'id': 'foreign-cities-text',
         'type': 'symbol',
         'source': 'foreign-cities',
-        'minzoom': 1,
+        'minzoom': 2,
         layout: {
             'text-field': ["get", "description"],
         }
@@ -175,7 +175,7 @@ const createDepartementClusters = (users) => {
         'id': 'departements_user',
         'type': 'circle',
         'source': 'departements_user',
-        'minzoom': 1,
+        'minzoom': 2,
         'maxzoom': 7,
         paint: {
             'circle-radius': 30, //["get", "circleRadius"],
@@ -191,7 +191,7 @@ const createDepartementClusters = (users) => {
         'id': 'departements-text',
         'type': 'symbol',
         'source': 'departements_user',
-        'minzoom': 1,
+        'minzoom': 2,
         'maxzoom': 7,
         layout: {
             'text-field': ["get", "description"],
@@ -389,7 +389,8 @@ const createClusterClusters = (users) => {
             'circle-radius': 20,
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
-            }
+            },
+            'minzoom': 2,
         });
 
         map.addLayer({
@@ -401,7 +402,8 @@ const createClusterClusters = (users) => {
                 'text-field': ['get', 'nbUsers'],
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12
-            }
+            },
+            'minzoom': 2,
         });
 
         map.addLayer({
@@ -413,7 +415,8 @@ const createClusterClusters = (users) => {
             'text-field': '{count_users}',
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12
-            }
+            },
+            'minzoom': 2,
         });
 
     let popup = new maplibregl.Popup({
@@ -556,7 +559,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         'type': 'circle',
         'source': 'country',
         'minzoom': 0,
-        'maxzoom': 1,
+        'maxzoom': 2,
         paint: {
             'circle-radius': 15, //["get", "circleRadius"],
             'circle-stroke-color': 'white',
@@ -572,7 +575,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         'type': 'symbol',
         'source': 'country',
         'minzoom': 0,
-        'maxzoom': 1,
+        'maxzoom': 2,
         layout: {
             'text-field': ["get", "description"],
         }
