@@ -283,7 +283,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatepickerSelect
-                        type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
                     { !!props.formValidationErrors['début de la mission'] && 
@@ -303,7 +303,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
                     <DatepickerSelect
-                        type="date" 
                         name="endDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('end', date)} />
