@@ -160,7 +160,7 @@ const createForeignCityClusters = (users) => {
         });
 
         map.addLayer({
-            id: 'foreign-city-clusters',
+            id: 'foreign-city-clusters-count',
             type: 'symbol',
             source: "foreign-cities",
             filter: ['has', 'point_count'],
