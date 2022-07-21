@@ -509,8 +509,6 @@ const createClusterClusters = (users) => {
             paint: {
             'circle-color': '#11b4da',
             'circle-radius': 20,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
             },
             'minzoom': 2,
         });
@@ -578,7 +576,6 @@ const createClusterClusters = (users) => {
 
     // // inspect a cluster on click
     // map.on('click', 'clusters', function (e) {
-    //     console.log('LCS ON CLICK 2')
     //     var features = map.queryRenderedFeatures(e.point, {
     //         layers: ['clusters']
     //     });
@@ -683,12 +680,8 @@ const createCountryClusters = (users, usersForeignCity) => {
         'minzoom': 0,
         'maxzoom': 2,
         paint: {
-            'circle-radius': 15, //["get", "circleRadius"],
-            'circle-stroke-color': 'white',
-            'circle-stroke-width': 1,
-            'circle-opacity': 0.8,
-            'circle-color': ["get", "fillColor"],
-            'circle-opacity': 0.5
+            'circle-color': '#11b4da',
+            'circle-radius': 20,
         }
     });
 
