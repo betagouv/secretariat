@@ -1,7 +1,5 @@
 import React from 'react';
 import type { Request } from 'express'
-import DatePicker from "react-datepicker";
-import { ClientOnly } from "../components/ClientOnly"
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
@@ -10,6 +8,7 @@ import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
 import ReferentSelect from '../components/ReferentSelect';
 import SESelect from '../components/SESelect';
+import DatepickerSelect from '../components/DatepickerSelect';
 
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
@@ -283,12 +282,10 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Début de la mission (obligatoire)</strong><br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <ClientOnly>
-                        <DatePicker
-                            type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                            dateFormat='dd/MM/yyyy'
-                            selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
-                    </ClientOnly>
+                    <DatepickerSelect
+                        type="date" name="startDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                        dateFormat='dd/MM/yyyy'
+                        selected={state.formData.start} onChange={(date:Date) => changeFormData('start', date)} />
                     { !!props.formValidationErrors['début de la mission'] && 
                         <p className="text-small text-color-red">{props.formValidationErrors['début de la mission']}</p>
                     }
@@ -305,12 +302,11 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Si tu ne la connais pas, mets une date dans 3 mois, tu pourras la corriger plus tard.<br />
                         <i>Au format JJ/MM/YYYY</i>
                     </label>
-                    <ClientOnly>
-                    <DatePicker
-                        type="date" name="endDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                    <DatepickerSelect
+                        type="date" 
+                        name="endDate" min={props.userConfig.minStartDate} title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
                         dateFormat='dd/MM/yyyy'
                         selected={state.formData.end} onChange={(date:Date) => changeFormData('end', date)} />
-                    </ClientOnly>
                     { !!props.formValidationErrors['fin de la mission'] && 
                         <p className="text-small text-color-red">{props.formValidationErrors['fin de la mission']}</p>
                     }
@@ -372,7 +368,6 @@ export const Onboarding = PageLayout(function (props: Props) {
                     </label>
                     <label htmlFor="username_select"></label>
                     <ReferentSelect
-                        // value={state.formData.referent}
                         onChange={(e) => changeFormData('referent', e.value)}
                         referents={props.users.map(u => ({
                             value: u.id,
