@@ -202,6 +202,7 @@ export const Admin = InnerPageLayout((props: AdminProps) => {
             </div>
             <div style={{ width: '50%' }}>
               <SESelect
+                isMulti={true}
                 startups={props.startupOptions}
                 onChange={(startups) => setState({
                   ...state,
