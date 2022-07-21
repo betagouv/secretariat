@@ -5,16 +5,16 @@ config();
 const isSecure = (process.env.SECURE || 'true') === 'true';
 
 const userStatusOptions = [
-  { label: 'Indépendant', value: 'independent' },
+  { name: 'Indépendant', key: 'independent' },
   {
-    label:
+    name:
       'Agent Public (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI avec une structure publique)',
-    value: 'admin',
+    key: 'admin',
   },
-  { label: 'Société de service', value: 'service' },
+  { name: 'Société de service', key: 'service' },
 ];
 
-const userBadgeOptions = [{ label: 'Ségur (Paris)', value: 'segur' }];
+const userBadgeOptions = [{ name: 'Ségur (Paris)', key: 'segur' }];
 
 export default {
   secret: process.env.SESSION_SECRET,

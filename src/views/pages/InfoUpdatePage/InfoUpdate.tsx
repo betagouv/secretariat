@@ -34,7 +34,7 @@ interface InfoUpdateProps {
   formData: FormData,
   statusOptions: Option[],
   genderOptions: Option[],
-  formValidationErrors: Object,
+  formValidationErrors: any,
   communeInfo: CommuneInfo,
   startups: string[],
   startupOptions: Option[],

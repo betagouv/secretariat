@@ -9,12 +9,41 @@ import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions }
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
+import { OnboardingPage } from '../views';
+import { Member } from '../models/member';
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
   const randomSuffix = crypto.randomBytes(3).toString('hex');
   return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
+
+const DOMAINE_OPTIONS = [{
+  key: "ANIMATION",
+  name: "Animation"
+}, {
+  key: "COACHING",
+  name: "Coaching"
+}, {
+  key: "DEPLOIEMENT",
+  name: "Déploiement"
+}, {
+  key: "DESIGN",
+  name: "Design"
+}, {
+  key: "DEVELOPPEMENT",
+  name: "Développement"
+}, {
+  key: "INTRAPRENARIAT",
+  name: "Intraprenariat"
+}, {
+  key: "PRODUIT",
+  name: "Produit"
+}, {
+  key: "AUTRE",
+  name: "Autre"
+}
+]
 
 interface IMessageInfo {
   prInfo,
@@ -88,44 +117,44 @@ async function createNewcomerGithubFile(username, content, referent) {
 
 export async function getForm(req, res) {
   try {
+    const title = 'Mon compte';
+    const formValidationErrors = {}
     const startups = await BetaGouv.startupsInfos();
-    const users = await BetaGouv.getActiveRegisteredOVHUsers();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
-    const title = 'Créer ma fiche';
-    return res.render('onboarding', {
-      domain: config.domain,
-      title,
-      errors: req.flash('error'),
-      formValidationErrors: {},
-      messages: req.flash('message'),
-      userConfig: config.user,
-      users,
-      startups,
-      statusOptions,
-      genderOptions,
-      communeInfo: null,
-      formData: {
-        firstName: '',
-        lastName: '',
-        description: '',
-        website: '',
-        github: '',
-        role: '',
-        domaine: '',
-        start: new Date().toISOString().split('T')[0], // current date in YYYY-MM-DD format
-        end: '',
-        status: '',
-        startup: '',
-        employer: '',
-        badge: '',
-        email: '',
-      },
-      useSelectList: isMobileFirefox,
-    });
+    const users : Member[] = await BetaGouv.usersInfos();
+    const startupOptions = startups.map(startup => {
+      return {
+        value: startup.id,
+        label: startup.attributes.name
+      }
+    })
+    res.send(
+      OnboardingPage({
+        title,
+        formValidationErrors,
+        startups,
+        genderOptions,
+        statusOptions,
+        startupOptions,
+        domaineOptions: DOMAINE_OPTIONS,
+        userConfig: config.user,
+        users,
+        formData: {
+          gender: '',
+          legal_status: '',
+          workplace_insee_code: '',
+          tjm: 0,
+          secondary_email: '',
+          osm_city: '',
+        },
+        communeInfo: null,
+        errors: req.flash('error'),
+        messages: req.flash('message'),
+        request: req
+      })
+    )
   } catch (err) {
     console.error(err);
-    req.flash('error', `Impossible de récupérer la liste des startups sur ${config.domain}`);
+    req.flash('error', 'Impossible de récupérer vos informations.');
     return res.redirect('/');
   }
 }
@@ -153,6 +182,7 @@ export async function postForm(req, res) {
     const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
     const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
     const gender = req.body.gender
+    const osm_city = req.body.osm_city
     const workplace_insee_code = req.body.workplace_insee_code
     const tjm = req.body.tjm || null;
     const legal_status = req.body.legal_status
@@ -245,7 +275,8 @@ export async function postForm(req, res) {
         legal_status,
         secondary_email: secondaryEmail,
         primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
-        primary_email_status_updated_at: new Date()
+        primary_email_status_updated_at: new Date(),
+        osm_city
       })
       .onConflict('username')
       .merge();
@@ -265,23 +296,28 @@ export async function postForm(req, res) {
       req.flash('error', err.message);
     }
     const startups = await BetaGouv.startupsInfos();
+    const startupOptions = startups.map(startup => {
+      return {
+        value: startup.id,
+        label: startup.attributes.name
+      }
+    })
     const users = await BetaGouv.usersInfos();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
-    res.render('onboarding', {
+    res.send(OnboardingPage({
       errors: req.flash('error'),
       formValidationErrors,
       messages: req.flash('message'),
       userConfig: config.user,
       startups,
       statusOptions,
+      startupOptions,
       genderOptions,
+      request: req,
+      domaineOptions: DOMAINE_OPTIONS,
       communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
-      domain: config.domain,
       users,
       formData: req.body,
-      useSelectList: isMobileFirefox,
-    });
+    }));
   }
 }
 
