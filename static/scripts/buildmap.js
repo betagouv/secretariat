@@ -512,6 +512,9 @@ const createCommuneClusters = (users) => {
     })
     const geojson = {
         "type": "geojson",
+         cluster: true,
+        clusterMaxZoom: 14, // Max zoom to cluster points on
+        clusterRadius: 50, // 
         "data": {
             "type": "FeatureCollection",
             "features": dataCommune.map(row => {
