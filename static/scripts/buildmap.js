@@ -630,7 +630,7 @@ async function fetchData() {
     // createCommuneClusters(users)
     // createDepartementClusters(users)
     createCountryClusters(users, usersForeignCity)
-    // createForeignCityClusters(usersForeignCity)
+    createForeignCityClusters(usersForeignCity)
     createClusterClusters(users)
 }
 map.on('load', fetchData)
