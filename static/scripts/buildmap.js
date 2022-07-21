@@ -179,7 +179,7 @@ const createDepartementClusters = (users) => {
         'maxzoom': 7,
         paint: {
             'circle-radius': 30, //["get", "circleRadius"],
-            'circle-stroke-color': 'black',
+            'circle-stroke-color': 'white',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
             'circle-color': ["get", "fillColor"],
@@ -230,9 +230,6 @@ const createCommuneClusters = (users) => {
     })
     const geojson = {
         "type": "geojson",
-        cluster: true,
-        clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50, // 
         "data": {
             "type": "FeatureCollection",
             "features": dataCommune.map(row => {
@@ -277,7 +274,9 @@ const createCommuneClusters = (users) => {
         'source': 'communes',
         'minzoom': 7,
         layout: {
-            'text-field': ["get", "description"],
+            'text-field': ["get", "nbUsers"],
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
         }
     });
 
@@ -294,30 +293,191 @@ const createCommuneClusters = (users) => {
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
 
-    // inspect a cluster on click
-    map.on('click', 'clusters', function (e) {
-        var features = map.queryRenderedFeatures(e.point, {
-            layers: ['clusters']
-        });
-        var clusterId = features[0].properties.cluster_id;
-        map.getSource('earthquakes').getClusterExpansionZoom(
-            clusterId,
-            function (err, zoom) {
-                if (err) return;
-                
-                map.easeTo({
-                    center: features[0].geometry.coordinates,
-                    zoom: zoom
-                });
-            }
-        );
-    });
-
     map.on('mouseenter', 'communes', e => {
         map.getCanvas().style.cursor = 'pointer'
     })
 
     map.on('mouseleave', 'communes', e => {
+        map.getCanvas().style.cursor = ''
+    })
+}
+
+
+const createClusterClusters = (users) => {
+    const usersByCommune = groupBy(users, 'communeCode')
+    const dataCommune = Object.keys(usersByCommune).map(commune => {
+        const usersOfCommune = usersByCommune[commune]
+        return {
+            users: usersOfCommune,
+            commune: usersOfCommune[0].commune
+        }
+    })
+    const geojson = {
+        "type": "geojson",
+        cluster: true,
+        clusterMaxZoom: 14, // Max zoom to cluster points on
+        clusterRadius: 50, // 
+        'clusterProperties': {
+            // keep separate counts for each magnitude category in a cluster
+            'count_users': ['+', ['get', 'nbUsers']],
+            'concat_usernames': ['concat', ['concat', ['get', 'usernames'], ',']],
+            'concat_noms': ['concat', ['concat', ['get', 'nom'], ',']],
+        },
+        "data": {
+            "type": "FeatureCollection",
+            "features": dataCommune.map(row => {
+                return {
+            "type": "Feature",
+            "properties": {
+                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "code": row.commune.properties.code,
+                "nom": row.commune.properties.nom,
+                "nbUsers": row.users.length,
+                "description": `${row.commune.properties.nom.slice(0, 10)}${row.commune.properties.nom.length > 10 ? '...' : ''}\n${row.users.length}`,
+                fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": centroid(row.commune.geometry)
+            }}
+            })
+        }
+    }
+
+    map.addSource("clusters", geojson)
+
+
+    map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: "clusters",
+        filter: ['has', 'point_count'],
+        paint: {
+            // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
+            // with three steps to implement three types of circles:
+            //   * Blue, 20px circles when point count is less than 100
+            //   * Yellow, 30px circles when point count is between 100 and 750
+            //   * Pink, 40px circles when point count is greater than or equal to 750
+            'circle-color': [
+                'step',
+                ['get', 'point_count'],
+                '#51bbd6',
+                100,
+                '#f1f075',
+                750,
+                '#f28cb1'
+            ],
+            'circle-radius': [
+                'step',
+                ['get', 'point_count'],
+                30,
+                100,
+                40,
+                750,
+                50
+            ]
+        }
+        });
+         
+        map.addLayer({
+            id: 'unclustered-point',
+            type: 'circle',
+            source: "clusters",
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+            'circle-color': '#11b4da',
+            'circle-radius': 20,
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#fff'
+            }
+        });
+
+        map.addLayer({
+            id: 'unclustered-point-count',
+            type: 'symbol',
+            source: "clusters",
+            filter: ['!',['has', 'point_count']],
+            layout: {
+                'text-field': ['get', 'nbUsers'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            }
+        });
+
+        map.addLayer({
+            id: 'cluster-count',
+            type: 'symbol',
+            source: "clusters",
+            filter: ['has', 'point_count'],
+            layout: {
+            'text-field': '{count_users}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
+            }
+        });
+
+    let popup = new maplibregl.Popup({
+    })
+    map.on('click', 'clusters', e => {
+        let features = map.queryRenderedFeatures(e.point)
+        console.log(features)
+        if (features[0].properties.nom) {
+            map.getCanvas().style.cursor = 'pointer'
+            let description = `
+            <div class="popup">
+                <center><h1>${features[0].properties.nom}</h1></center>
+                <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+                </div>`
+            popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+        } else {
+            map.getCanvas().style.cursor = 'pointer'
+            let description = `
+            <div class="popup">
+                <center><h1>${features[0].properties.concat_noms.split(',').join('/')}</h1></center>
+                <p>${features[0].properties.concat_usernames.split(',').join('<br/>')}</p>
+                </div>`
+            popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+        }
+    })
+
+    map.on('click', 'unclustered-point', e => {
+        let features = map.queryRenderedFeatures(e.point)
+        map.getCanvas().style.cursor = 'pointer'
+        let description = `
+        <div class="popup">
+            <center><h1>${features[0].properties.nom}</h1></center>
+            <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+            </div>`
+        popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+    })
+
+    // // inspect a cluster on click
+    // map.on('click', 'clusters', function (e) {
+    //     console.log('LCS ON CLICK 2')
+    //     var features = map.queryRenderedFeatures(e.point, {
+    //         layers: ['clusters']
+    //     });
+    //     var clusterId = features[0].properties.cluster_id;
+    //     if (clusterId) {
+    //         map.getSource('communes').getClusterExpansionZoom(
+    //             clusterId,
+    //             function (err, zoom) {
+    //                 if (err) return;
+                    
+    //                 map.easeTo({
+    //                     center: features[0].geometry.coordinates,
+    //                     zoom: zoom
+    //                 });
+    //             }
+    //         );
+    //     }
+    // });
+
+    map.on('mouseenter', 'clusters', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
+
+    map.on('mouseleave', 'clusters', e => {
         map.getCanvas().style.cursor = ''
     })
 }
@@ -399,7 +559,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         'maxzoom': 1,
         paint: {
             'circle-radius': 15, //["get", "circleRadius"],
-            'circle-stroke-color': 'red',
+            'circle-stroke-color': 'white',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
             'circle-color': ["get", "fillColor"],
@@ -467,9 +627,10 @@ async function fetchData() {
         })
         .filter(user => user.commune)
     createDepartementBoarders(departementsJson)
-    createCommuneClusters(users)
-    createDepartementClusters(users)
+    // createCommuneClusters(users)
+    // createDepartementClusters(users)
     createCountryClusters(users, usersForeignCity)
-    createForeignCityClusters(usersForeignCity)
+    // createForeignCityClusters(usersForeignCity)
+    createClusterClusters(users)
 }
 map.on('load', fetchData)
