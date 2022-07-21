@@ -68,6 +68,9 @@ const createForeignCityClusters = (users) => {
     })
     const geojson = {
         "type": "geojson",
+        cluster: true,
+        clusterMaxZoom: 14, // Max zoom to cluster points on
+        clusterRadius: 50, // 
         "data": {
             "type": "FeatureCollection",
             "features": dataCity.map(row => {
@@ -227,6 +230,9 @@ const createCommuneClusters = (users) => {
     })
     const geojson = {
         "type": "geojson",
+        cluster: true,
+        clusterMaxZoom: 14, // Max zoom to cluster points on
+        clusterRadius: 50, // 
         "data": {
             "type": "FeatureCollection",
             "features": dataCommune.map(row => {
@@ -287,6 +293,25 @@ const createCommuneClusters = (users) => {
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
+
+    // inspect a cluster on click
+    map.on('click', 'clusters', function (e) {
+        var features = map.queryRenderedFeatures(e.point, {
+            layers: ['clusters']
+        });
+        var clusterId = features[0].properties.cluster_id;
+        map.getSource('earthquakes').getClusterExpansionZoom(
+            clusterId,
+            function (err, zoom) {
+                if (err) return;
+                
+                map.easeTo({
+                    center: features[0].geometry.coordinates,
+                    zoom: zoom
+                });
+            }
+        );
+    });
 
     map.on('mouseenter', 'communes', e => {
         map.getCanvas().style.cursor = 'pointer'
