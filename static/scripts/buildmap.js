@@ -139,9 +139,7 @@ const createForeignCityClusters = (users) => {
             filter: ['!', ['has', 'point_count']],
             paint: {
             'circle-color': '#11b4da',
-            'circle-radius': 20,
-            'circle-stroke-width': 1,
-            'circle-stroke-color': '#fff'
+            'circle-radius': 20
             },
             'minzoom': 2,
         });
@@ -381,7 +379,7 @@ const createCommuneClusters = (users) => {
         'minzoom': 7,
         paint: {
             'circle-radius': 15, //["get", "circleRadius"],
-            'circle-stroke-color': 'black',
+            'circle-stroke-color': 'white',
             'circle-stroke-width': 1,
             'circle-opacity': 0.8,
             'circle-color': ["get", "fillColor"],
