@@ -8,7 +8,7 @@ export async function seed(knex) {
       id: uuidv4(),
       year_week: "2021-10",
       url: "https://pad.incubateur.net/infolettre-2021-10-d38417a9",
-      created_at: "2021-04-04 00:00:00+00"
+      created_at: "2021-04-04 00:00:00+00",
     },
     {
       id: uuidv4(),
@@ -60,11 +60,12 @@ const populatePrimaryEmail = async(knex) => {
   
   const url = `/email/domain/${process.env.SECRETARIAT_DOMAIN}/account/`;
   const allOvhEmails = await ovh.requestPromised('GET', url, {});
-  
+  const workplace_insee_codes = ['74236', '75056', '75119', '75111', '75118', '93051', '93051', '78368', '94043']
   for (const emailId of allOvhEmails) {
       await knex('users').insert({
           username: emailId,
-          primary_email: `${emailId}@${process.env.SECRETARIAT_DOMAIN}`
+          primary_email: `${emailId}@${process.env.SECRETARIAT_DOMAIN}`,
+          workplace_insee_code: workplace_insee_codes[Math.floor(Math.random() * workplace_insee_codes.length)]
       })
   }
 }
