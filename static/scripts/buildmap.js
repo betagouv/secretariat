@@ -70,7 +70,13 @@ const createForeignCityClusters = (users) => {
         "type": "geojson",
         cluster: true,
         clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50, // 
+        clusterRadius: 50,
+        'clusterProperties': {
+            // keep separate counts for each magnitude category in a cluster
+            'count_users': ['+', ['get', 'nbUsers']],
+            'concat_usernames': ['concat', ['concat', ['get', 'usernames'], ',']],
+            'concat_noms': ['concat', ['concat', ['get', 'nom'], ',']],
+        }, 
         "data": {
             "type": "FeatureCollection",
             "features": dataCity.map(row => {
@@ -95,33 +101,102 @@ const createForeignCityClusters = (users) => {
     map.addSource("foreign-cities", geojson)
 
     map.addLayer({
-        'id': 'foreign-cities',
-        'type': 'circle',
-        'source': 'foreign-cities',
-        'minzoom': 2,
+        id: 'foreign-city-clusters',
+        type: 'circle',
+        source: "foreign-cities",
+        filter: ['has', 'point_count'],
         paint: {
-            'circle-radius': 15, //["get", "circleRadius"],
-            'circle-stroke-color': 'black',
+            // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
+            // with three steps to implement three types of circles:
+            //   * Blue, 20px circles when point count is less than 100
+            //   * Yellow, 30px circles when point count is between 100 and 750
+            //   * Pink, 40px circles when point count is greater than or equal to 750
+            'circle-color': [
+                'step',
+                ['get', 'point_count'],
+                '#51bbd6',
+                100,
+                '#f1f075',
+                750,
+                '#f28cb1'
+            ],
+            'circle-radius': [
+                'step',
+                ['get', 'point_count'],
+                30,
+                100,
+                40,
+                750,
+                50
+            ]
+        }
+        });
+         
+        map.addLayer({
+            id: 'foreign-city-unclustered-point',
+            type: 'circle',
+            source: "foreign-cities",
+            filter: ['!', ['has', 'point_count']],
+            paint: {
+            'circle-color': '#11b4da',
+            'circle-radius': 20,
             'circle-stroke-width': 1,
-            'circle-opacity': 0.8,
-            'circle-color': ["get", "fillColor"],
-            'circle-opacity': 0.5
-        }
-    });
+            'circle-stroke-color': '#fff'
+            },
+            'minzoom': 2,
+        });
 
-    map.addLayer({
-        'id': 'foreign-cities-text',
-        'type': 'symbol',
-        'source': 'foreign-cities',
-        'minzoom': 2,
-        layout: {
-            'text-field': ["get", "description"],
-        }
-    });
+        map.addLayer({
+            id: 'foreign-city-unclustered-point-count',
+            type: 'symbol',
+            source: "foreign-cities",
+            filter: ['!',['has', 'point_count']],
+            layout: {
+                'text-field': ['get', 'nbUsers'],
+                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                'text-size': 12
+            },
+            'minzoom': 2,
+        });
+
+        map.addLayer({
+            id: 'foreign-city-clusters',
+            type: 'symbol',
+            source: "foreign-cities",
+            filter: ['has', 'point_count'],
+            layout: {
+            'text-field': '{count_users}',
+            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+            'text-size': 12
+            },
+            'minzoom': 2,
+        });
 
     let popup = new maplibregl.Popup({
     })
-    map.on('click', 'foreign-cities', e => {
+    map.on('click', 'foreign-city-clusters', e => {
+        let features = map.queryRenderedFeatures(e.point)
+        console.log(features)
+        if (features[0].properties.nom) {
+            map.getCanvas().style.cursor = 'pointer'
+            let description = `
+            <div class="popup">
+                <center><h1>${features[0].properties.nom}</h1></center>
+                <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+                </div>`
+            popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+        } else {
+            map.getCanvas().style.cursor = 'pointer'
+            let description = `
+            <div class="popup">
+                <center><h1>${features[0].properties.concat_noms.split(',').join('/')}</h1></center>
+                <p>${features[0].properties.concat_usernames.split(',').join('<br/>')}</p>
+                </div>`
+            popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+        }
+    })
+
+    map.on('click', 'foreign-city-unclustered-point', e => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
@@ -131,6 +206,52 @@ const createForeignCityClusters = (users) => {
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
     })
+
+    map.on('mouseenter', 'foreign-city-clusters', e => {
+        map.getCanvas().style.cursor = 'pointer'
+    })
+
+    map.on('mouseleave', 'foreign-city-clusters', e => {
+        map.getCanvas().style.cursor = ''
+    })
+
+    // map.addLayer({
+    //     'id': 'foreign-cities',
+    //     'type': 'circle',
+    //     'source': 'foreign-cities',
+    //     'minzoom': 2,
+    //     paint: {
+    //         'circle-radius': 15, //["get", "circleRadius"],
+    //         'circle-stroke-color': 'black',
+    //         'circle-stroke-width': 1,
+    //         'circle-opacity': 0.8,
+    //         'circle-color': ["get", "fillColor"],
+    //         'circle-opacity': 0.5
+    //     }
+    // });
+
+    // map.addLayer({
+    //     'id': 'foreign-cities-text',
+    //     'type': 'symbol',
+    //     'source': 'foreign-cities',
+    //     'minzoom': 2,
+    //     layout: {
+    //         'text-field': ["get", "nbUsers"],
+    //     }
+    // });
+
+    // let popup = new maplibregl.Popup({
+    // })
+    // map.on('click', 'foreign-cities', e => {
+    //     let features = map.queryRenderedFeatures(e.point)
+    //     map.getCanvas().style.cursor = 'pointer'
+    //     let description = `
+    //     <div class="popup">
+    //         <center><h1>${features[0].properties.nom}</h1></center>
+    //         <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
+    //         </div>`
+    //     popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
+    // })
 }
 
 const createDepartementClusters = (users) => {
@@ -629,7 +750,7 @@ async function fetchData() {
             }
         })
         .filter(user => user.commune)
-    createDepartementBoarders(departementsJson)
+    // createDepartementBoarders(departementsJson)
     // createCommuneClusters(users)
     // createDepartementClusters(users)
     createCountryClusters(users, usersForeignCity)
