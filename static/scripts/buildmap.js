@@ -187,7 +187,7 @@ const createForeignCityClusters = (users) => {
             map.getCanvas().style.cursor = 'pointer'
             let description = `
             <div class="popup">
-                <center><h1>${features[0].properties.concat_noms.split(',').join('/')}</h1></center>
+                <center><h1>${features[0].properties.concat_noms.split(',').join('/').slice(0, 30)}${features[0].properties.concat_noms.length > 30 ? '...' : ''}</h1></center>
                 <p>${features[0].properties.concat_usernames.split(',').join('<br/>')}</p>
                 </div>`
             popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -355,7 +355,7 @@ const createCommuneClusters = (users) => {
                 return {
             "type": "Feature",
             "properties": {
-                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "usernames": row.users.map(user => `${capitalizeWord(user.username)} (${row.commune.properties.nom})`).join(','),
                 "code": row.commune.properties.code,
                 "nom": row.commune.properties.nom,
                 "nbUsers": row.users.length,
@@ -448,7 +448,7 @@ const createClusterClusters = (users) => {
                 return {
             "type": "Feature",
             "properties": {
-                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "usernames": row.users.map(user => `${capitalizeWord(user.username)} (${row.commune.properties.nom})`).join(','),
                 "code": row.commune.properties.code,
                 "nom": row.commune.properties.nom,
                 "nbUsers": row.users.length,
@@ -554,8 +554,8 @@ const createClusterClusters = (users) => {
             map.getCanvas().style.cursor = 'pointer'
             let description = `
             <div class="popup">
-                <center><h1>${features[0].properties.concat_noms.split(',').join('/')}</h1></center>
-                <p>${features[0].properties.concat_usernames.split(',').join('<br/>')}</p>
+            <center><h1>${features[0].properties.concat_noms.split(',').join('/').slice(0, 30)}${features[0].properties.concat_noms.length > 30 ? '...' : ''}</h1></center>
+            <p>${features[0].properties.concat_usernames.split(',').join('<br/>')}</p>
                 </div>`
             popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
         }
@@ -650,7 +650,7 @@ const createCountryClusters = (users, usersForeignCity) => {
                 return {
             "type": "Feature",
             "properties": {
-                "usernames": row.users.map(user => capitalizeWord(user.username)).join(','),
+                "usernames": row.users.map(user => `${capitalizeWord(user.username)}`).join(','),
                 "nom": row.osm_city.country_label,
                 "nbUsers": row.users.length,
                 "description": `${row.osm_city.country_label}`,
