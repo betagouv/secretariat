@@ -114,11 +114,11 @@ const createForeignCityClusters = (users) => {
             'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#51bbd6',
+                '#11b4da',
                 100,
-                '#f1f075',
+                '#11b4da',
                 750,
-                '#f28cb1'
+                '#11b4da'
             ],
             'circle-radius': [
                 'step',
@@ -179,7 +179,7 @@ const createForeignCityClusters = (users) => {
             map.getCanvas().style.cursor = 'pointer'
             let description = `
             <div class="popup">
-                <center><h1>${features[0].properties.nom}</h1></center>
+                <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
                 <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
                 </div>`
             popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -199,7 +199,7 @@ const createForeignCityClusters = (users) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
         <div class="popup">
-            <center><h1>${features[0].properties.nom}</h1></center>
+            <center><h1>${features[0].properties.slice(0, 30)}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -275,7 +275,7 @@ const createDepartementClusters = (users) => {
                 "code": row.dep.properties.code,
                 "nom": row.dep.properties.nom,
                 "nbUsers": row.users.length,
-                "description": `${row.dep.properties.nom}\n${row.users.length}`,
+                "description": `${row.dep.properties.nom.slice(0, 30)}\n${row.users.length}`,
                 fillColor: ["#003f5c", "#58508d", "#bc5090", "#ff6361", "#ffa600"][[2, 10, 20, 50, 100000].findIndex(r => row.users.length < r)]
                 // "objetsCount": row.objets_count,
                 // "circleRadius": [2, 5, 10, 20][[5, 20, 50, 100000].findIndex(i => row.objets_count < i)]
@@ -331,7 +331,7 @@ const createDepartementClusters = (users) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
             <div class="popup">
-            <center><h1>${features[0].properties.nom}</h1></center>
+            <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -406,7 +406,7 @@ const createCommuneClusters = (users) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
         <div class="popup">
-            <center><h1>${features[0].properties.nom}</h1></center>
+            <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -481,11 +481,11 @@ const createClusterClusters = (users) => {
             'circle-color': [
                 'step',
                 ['get', 'point_count'],
-                '#51bbd6',
+                '#11b4da',
                 100,
-                '#f1f075',
+                '#11b4da',
                 750,
-                '#f28cb1'
+                '#11b4da'
             ],
             'circle-radius': [
                 'step',
@@ -546,7 +546,7 @@ const createClusterClusters = (users) => {
             map.getCanvas().style.cursor = 'pointer'
             let description = `
             <div class="popup">
-                <center><h1>${features[0].properties.nom}</h1></center>
+                <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
                 <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
                 </div>`
             popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -566,7 +566,7 @@ const createClusterClusters = (users) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
         <div class="popup">
-            <center><h1>${features[0].properties.nom}</h1></center>
+            <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -701,7 +701,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
         <div class="popup">
-            <center><h1>${features[0].properties.nom}</h1></center>
+            <center><h1>${features[0].properties.nom.slice(0,30)}${features[0].properties.nom.length > 30 ? '...' : ''}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
