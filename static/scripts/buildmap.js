@@ -717,7 +717,7 @@ const createCountryClusters = (users, usersForeignCity) => {
 }
 
 async function fetchData() {
-    const res = await fetch('/static/communes.geojson')
+    const res = await fetch('/static/communes-avec-outre-mer.geojson')
     let communes = await res.json().then(data => data.features)
     communes = [...communes, ...cityWithArrondissement]
     const res2 = await fetch('/api/get-users-location')
