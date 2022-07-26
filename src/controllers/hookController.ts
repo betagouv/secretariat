@@ -5,7 +5,7 @@ export const postToHook = async (req, res) => {
     if (req.params.hookId === config.CHATWOOT_ID) {
       let conversationId = ''
       try {
-        conversationId = req.body.meta.conversation.display_id
+        conversationId = req.body.id
       } catch (e) {
         console.error('Could not get conversation Id')
       }
