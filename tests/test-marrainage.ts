@@ -87,7 +87,7 @@ describe('Marrainage', () => {
 
               subject.should.equal('Mise en contact 👋');
               emailBody.should.include(
-                'Membre Actif a accepté de te marrainer'
+                'Tu as accepté de marrainer Membre Nouveau'
               );
               subject2.should.equal('Mise en contact 👋');
               emailBody2.should.include(
