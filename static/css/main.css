@@ -175,6 +175,14 @@ h4, h5, h6 {
   color: #0053b3;
 }
 
+.dashboard .side-menu a.nav-item {
+  padding: var(--space-s) var(--space-l);
+}
+
+.side-menu hr {
+  margin: var(--space-xs) 0;
+}
+
 #logo {
   padding: 32px;
   font-size: 1.25em;
@@ -374,4 +382,3 @@ table.startup-members th {
     display: none;
   }
 }
-
