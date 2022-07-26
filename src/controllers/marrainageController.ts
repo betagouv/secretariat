@@ -252,7 +252,11 @@ export async function acceptRequest(req, res) {
       created_by_username: onboarder.id,
       action_on_username: onboarder.id
     })
-    const html = await ejs.renderFile('./src/views/templates/emails/marrainageAccept.ejs', {
+    const htmlOnboarder = await ejs.renderFile('./src/views/templates/emails/marrainageAcceptOnboarder.ejs', {
+      newcomer,
+      onboarder,
+    });
+    const htmlNewcomer = await ejs.renderFile('./src/views/templates/emails/marrainageAcceptNewcomer.ejs', {
       newcomer,
       onboarder,
     });
@@ -268,13 +272,13 @@ export async function acceptRequest(req, res) {
       await utils.sendMail(
         emailOnboarder,
         'Mise en contact 👋',
-        html,
+        htmlOnboarder,
         { replyTo: emailNewcomer}
       );
       await utils.sendMail(
         emailNewcomer,
         'Mise en contact 👋',
-        html,
+        htmlNewcomer,
         { replyTo: emailOnboarder}
       );
     } catch (err) {
