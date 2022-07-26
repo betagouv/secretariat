@@ -3,7 +3,7 @@
 import React from 'react'
 import type { Request } from 'express'
 
-interface InnerPageLayout {
+interface InnerLayoutPage {
   title: string,
   currentUserId: string,
   errors: string[],
@@ -12,7 +12,7 @@ interface InnerPageLayout {
   request: Request
 }
 
-export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T) => JSX.Element) => (
+export const InnerLayoutPage = <T extends InnerLayoutPage>(Component: (props: T) => JSX.Element) => (
   props: T
 ) => {
   return (
@@ -57,6 +57,12 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             <a href="/resources" id="resources"
                                 className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>
                                 Ressources
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/map" id="map" 
+                                className={`nav-item ${props.activeTab === 'map' ? 'active' : ''}`}>
+                                Carte des membres
                             </a>
                         </li>
                         <li className="nav-end">
