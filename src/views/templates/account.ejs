@@ -2,7 +2,15 @@
 
 <link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
 <script src="/static/collapse/collapse.js"></script>
-
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+    $( function() {
+      $( document ).tooltip();
+    } );
+    </script>
 <div class="module">
     <% if (hasActiveResponder) { %>
         <div class="notification warning">
@@ -127,6 +135,43 @@
                 <br/>
             </div>
         </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-full-width">
+            <h3>Mon aventures beta.gouv.fr</h3>
+            L'écosystème betagouv peut être un peu complexe, afin d'y être le mieux intégré possible, nous t'invitons à réaliser quelques un des achievements ci-dessus. 
+            Biensûr rien n'est obligatoire :) Les badges te serve uniquement a titre personnel pour avoir une vision résumé des différentes chose que tu peux faire.
+            <h6>
+                Mes badges
+            </h6>
+            <div class="account-split-panel" style="justify-content: start;">
+                <div>
+                    <img style="width: 100px; height: 100px;" title="j'ai rejoins beta.gouv.fr" src="/static/images/logo-betagouv.jpg" />
+                </div>
+                <div>
+                    <img src="/static/images/mars-2020-contributor-default.png" style="width: 100px; height: 100px;" title="j'ai fait un marrainage"/>
+                </div>
+                <div>
+                    <img src="/static/images/public-sponsor-default.png" style="width: 100px; height: 100px;" title="j'ai contribué à la doc"/>
+                </div>
+                <div>
+                    <img src="/static/images/pull-shark-gold.png" style="width: 100px; height: 100px;" title="j'ai suivi une formation"/>
+                </div>
+                <div>
+                    <img src="/static/images/starstruck-default.png" style="width: 100px; height: 100px;" title="j'ai participé à une mission transverse" />
+                </div>
+            </div>
+            <h6>
+                Les etapes du parcours
+            </h6>
+            <p>As-tu participer à une session d'embarquement ?</p>
+            <p>As-tu participer à une autre formation ?</p>
+            <p>As-tu participer à un des forums ouverts ?</p>
+            <p>As-tu participer à une missions transverse ?</p>
+            <p>As-tu contriuer à la doc ?</p>
+            <p>As-tu parrainer/marrainer quelqu'un ?</p>
+
         </div>
     </div>
     <div class="row">
