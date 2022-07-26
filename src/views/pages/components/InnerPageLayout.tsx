@@ -3,7 +3,7 @@
 import React from 'react'
 import type { Request } from 'express'
 
-interface InnerLayoutPage {
+interface InnerPageLayout {
   title: string,
   currentUserId: string,
   errors: string[],
@@ -12,7 +12,7 @@ interface InnerLayoutPage {
   request: Request
 }
 
-export const InnerLayoutPage = <T extends InnerLayoutPage>(Component: (props: T) => JSX.Element) => (
+export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T) => JSX.Element) => (
   props: T
 ) => {
   return (
