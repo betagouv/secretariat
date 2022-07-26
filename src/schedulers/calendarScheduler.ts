@@ -5,10 +5,10 @@ import * as utils from '../controllers/utils';
 
 export const postEventsOnMattermost = async () => {
     const today = new Date()
-    const dayInSevenDays = new Date()
-    dayInSevenDays.setDate(today.getDate() + 7)
+    const dayInSixDays = new Date()
+    dayInSixDays.setDate(today.getDate() + 6)
     const calendarURL = process.env.CALENDAR_URL
-    const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSevenDays)
+    const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
     const readableEvents = events.sort(event => event.startDate).map(event => ({
         startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
         endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
