@@ -59,6 +59,12 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 Ressources
                             </a>
                         </li>
+                        <li>
+                            <a href="/map" id="map" 
+                                className={`nav-item ${props.activeTab === 'map' ? 'active' : ''}`}>
+                                Carte des membres
+                            </a>
+                        </li>
                         <li className="nav-end">
                             <hr />
                             { (props.currentUserId) &&
