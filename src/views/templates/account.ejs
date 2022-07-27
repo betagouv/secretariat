@@ -139,41 +139,81 @@
     </div>
     <div class="row">
         <div class="panel panel-full-width">
+            <div className="beta-banner"></div>
             <h3>Mon aventures beta.gouv.fr</h3>
             L'écosystème betagouv peut être un peu complexe, afin d'y être le mieux intégré possible, nous t'invitons à réaliser quelques un des achievements ci-dessus. 
             Biensûr rien n'est obligatoire :) Les badges te servent uniquement a titre personnel pour avoir une vision résumé des différentes choses que tu peux faire.
             <h6>
-                Mes badges
+                Mes badges 
             </h6>
             <div class="account-split-panel" style="justify-content: start;">
-                <div>
-                    <img style="width: 100px; height: 100px;" title="j'ai rejoins beta.gouv.fr" src="/static/images/logo-betagouv.jpg" />
+                <div style="width: 100px; height: 100px; padding: 10px;">
+                    <img style="width: 100%" title="Tu as rejoins beta.gouv.fr ! Bienvenue ! " src="/static/images/logo-betagouv.jpg" />
+                </div>
+                <div style="width: 100px; height: 100px; padding: 10px; opacity: 0.2;">
+                    <img style="width: 100%" title="Tu n'as pas encore rejoins mattermost. Un compte ta normalement été créé tu peux le rejoindre en reinitialisant le mot de passe." src="/static/images/mattermost.png" />
                 </div>
                 <div>
-                    <img style="width: 100px; height: 100px;" title="j'ai rejoins mattermost" src="/static/images/mattermost.png" />
+                    <img
+                    id="badge-video"
+                    style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore visionné les videos de présentations de beta.gouv ? Elles sont au nombre de trois, et te permettrons de mieux appréhender les valeurs et la manière de travailler à beta. Si tu les a visionné tu peux cocher la case en dessous." src="/static/images/artica.png" />
                 </div>
                 <div>
-                    <img src="/static/images/mars-2020-contributor-default.png" style="width: 100px; height: 100px;" title="j'ai fait un marrainage"/>
+                    <img 
+                    id="badge-onboarding"
+                    style="width: 100px; height: 100px; opacity: 0.2;" title="Tu n'as pas encore suivi la session d'embarquement ? Tu peux retrouver les différentes sessions sur le canal mattermost. Si tu en as déjà suivi une n'hésite pas à l'actualiser en dessous pour éviter de recevoir les nouvelles sessions par email."
+                    src="/static/images/mars-2020-contributor-default.png" />
                 </div>
                 <div>
-                    <img src="/static/images/public-sponsor-default.png" style="width: 100px; height: 100px;" title="j'ai contribué à la doc"/>
+                    <img
+                    id="badge-doc"
+                    src="/static/images/public-sponsor-default.png"
+                    style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore contribué à la doc ?
+                    La doc beta.gouv.fr est une partie important de l'écosystème beta.gouv, chacun est libre d'y contribuer, voici le lien pour y accéder à l'admin ainsi que la doc pour expliquer comment faire des changements."/>
                 </div>
                 <div>
-                    <img src="/static/images/pull-shark-gold.png" style="width: 100px; height: 100px;" title="j'ai suivi une formation"/>
+                    <img
+                        id="badge-formation"
+                        src="/static/images/pull-shark-gold.png"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore participer à une formation ? Nous t'invitons à suivre une des formations proposer par beta.gouiv tout le monde à le droit d'y participer et de prendre sur le temps facturé à la SE (dans le respect des 10% a accordé en transverse) pour le faire"/>
                 </div>
                 <div>
-                    <img src="/static/images/starstruck-default.png" style="width: 100px; height: 100px;" title="j'ai participé à une mission transverse" />
+                    <img
+                        id="badge-transverse"
+                        src="/static/images/starstruck-default.png" style="width: 100px; height: 100px; opacity: 0.2;" title="Tu n'as pas encore participer à une mission transverse ? Tu as le droit de consacré 10% du temps facturé à ta startup à réaliser une action transverse, soit en proposant quelque chose de ta propre initiative, soit en participant aux taskforce existente, l'equipe Communauté Expérience vous propose sur le channel ~general et sur ~incubateur-communauteXP de participer a des missions. Si tu as déjà fait une mission transverse tu peux cocher a case correspondante en dessous." />
                 </div>
+                <div>
+                    <img
+                        id="badge-parrainage"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                        title="Tu n'as encore marrainé personne ? Au delà d'un temps de 6 mois au sein de beta.gouv tu peux parrainé quelqu'un, voici en quoi consiste le marrainage. Tu peux t'inscrire en tant que parrain sur le formulaire suivant. Si tu as déjà fait un marrainage tu peux cocher la case en dessous." src="/static/images/pair.png" />
+                </div>
+                <div>
+                    <img
+                        id="badge-forum"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                        title="Tu n'as pas encore assisté a un forum ouvert ? Le forum ouvert est un événement beta qui a lieu tous les mois. Tu as le droit d'y participer sur le temps que tu factures a ta SE. Il y a des ateliers mais aussi des espaces pour travailler. Tu peux donc participer a un atelier et travailler le reste du temps. L'idée a d'avoir un moment d'échange en présentiel. Le forum ouvert se fini souvent par un apéro. Si tu as déjà participer a un forum ouvert, tu peux le mentionner en dessous." src="/static/images/brain.png" />
+                </div>
+                <!-- <div>
+                    <img style="width: 100px; height: 100px; opacity: 0.2;" title="j'ai rejoins mattermost" src="/static/images/artica.png" />
+                </div>
+                <div>
+                    <img style="width: 100px; height: 100px; opacity: 0.2;" title="j'ai rejoins mattermost" src="/static/images/brain.png" />
+                </div> -->
             </div>
             <h6>
                 Les etapes du parcours
             </h6>
-            <p>As-tu participer à une session d'embarquement ?</p>
-            <p>As-tu participer à une autre formation ?</p>
-            <p>As-tu participer à un des forums ouverts ?</p>
-            <p>As-tu participer à une missions transverse ?</p>
-            <p>As-tu contriuer à la doc ?</p>
-            <p>As-tu parrainer/marrainer quelqu'un ?</p>
+            <p><input type="checkbox" id="onboarding" /> As-tu participer à une session d'embarquement ?</p>
+            <p><input type="checkbox" id="video"/> As-tu visionner les vidéos de présentation de beta.gouv ?</p>
+            <p><input type="checkbox" id="formation"/> As-tu participer à une autre formation ?</p>
+            <p><input type="checkbox" id="forum"/> As-tu participer à un des forums ouverts ?</p>
+            <p><input type="checkbox" id="transverse"/> As-tu participer à une missions transverse ?</p>
+            <p><input type="checkbox" id="doc"/> As-tu contribuer à la doc ?</p>
+            <p><input type="checkbox" id="parrainage"/> As-tu parrainer/marrainer quelqu'un ?</p>
 
         </div>
     </div>
@@ -531,4 +571,25 @@
     formCancelButton.addEventListener("click", function() {
         form.style.display = "none";
     }, false);
+</script>
+<script>
+    $(':checkbox').change(function() {
+        console.log('LCS CLICK ON CHECKBOX')
+        // use evil jquery for quick testing
+        var id = $(this).attr('id')
+        var checked = $(this).is(':checked');
+        if (checked) {
+            console.log('LCS DO', id)
+            $(`#badge-${id}`).css({
+                opacity: 1
+            })
+        } else {
+            console.log('LCS DOn', id)
+            $(`#badge-${id}`).css({
+                opacity: 0.2
+            })
+        }
+    // do stuff here. It will fire on any checkbox change
+
+    }); 
 </script>
