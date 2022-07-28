@@ -11,5 +11,11 @@ export async function getUsersLocation(req, res) {
 }
   
 export async function getMap(req, res) {
-    res.render('map')
+    res.render('map', {
+      activeTab: 'map',
+      currentUserId: req.auth.id,
+      errors: [],
+      messages: [],
+      request: req,
+    })
 }

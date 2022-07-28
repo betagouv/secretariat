@@ -1,5 +1,5 @@
 var map = new maplibregl.Map({
-    container: 'map', // container id
+    container: 'mapcontainer', // container id
     style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL', //style, //https://etalab-tiles.fr/styles/osm-bright/style.json?vector', // style URL
     // center: [2.087, 46],
     zoom: 0,
@@ -70,7 +70,7 @@ const createForeignCityClusters = (users) => {
         "type": "geojson",
         cluster: true,
         clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50,
+        clusterRadius: 30,
         'clusterProperties': {
             // keep separate counts for each magnitude category in a cluster
             'count_users': ['+', ['get', 'nbUsers']],
@@ -105,6 +105,9 @@ const createForeignCityClusters = (users) => {
         type: 'circle',
         source: "foreign-cities",
         filter: ['has', 'point_count'],
+        layout: {
+            visibility: 'none',
+        },
         paint: {
             // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
             // with three steps to implement three types of circles:
@@ -141,7 +144,10 @@ const createForeignCityClusters = (users) => {
             'circle-color': '#11b4da',
             'circle-radius': 20
             },
-            'minzoom': 2,
+            layout: {
+                visibility: 'none',
+            },
+            // 'minzoom': 2,
         });
 
         map.addLayer({
@@ -154,7 +160,10 @@ const createForeignCityClusters = (users) => {
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12
             },
-            'minzoom': 2,
+            layout: {
+                visibility: 'none',
+            },
+            // 'minzoom': 2,
         });
 
         map.addLayer({
@@ -167,7 +176,10 @@ const createForeignCityClusters = (users) => {
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12
             },
-            'minzoom': 2,
+            layout: {
+                visibility: 'none',
+            },
+            // 'minzoom': 2,
         });
 
     let popup = new maplibregl.Popup({
@@ -288,14 +300,17 @@ const createDepartementClusters = (users) => {
             })
         }
     }
-    map.addSource("departements_user", geojsonDep)
+    map.addSource("departements-user", geojsonDep)
 
     map.addLayer({
-        'id': 'departements_user',
+        'id': 'departements-user',
         'type': 'circle',
-        'source': 'departements_user',
+        'source': 'departements-user',
         'minzoom': 2,
         'maxzoom': 7,
+        layout: {
+            visibility: 'none',
+        },
         paint: {
             'circle-radius': 30, //["get", "circleRadius"],
             'circle-stroke-color': 'white',
@@ -309,24 +324,27 @@ const createDepartementClusters = (users) => {
     map.addLayer({
         'id': 'departements-text',
         'type': 'symbol',
-        'source': 'departements_user',
+        'source': 'departements-user',
         'minzoom': 2,
         'maxzoom': 7,
+        layout: {
+            visibility: 'none',
+        },
         layout: {
             'text-field': ["get", "description"],
         }
     });
 
-    map.on('mouseenter', 'departements_user', e => {
+    map.on('mouseenter', 'departements-user', e => {
         map.getCanvas().style.cursor = 'pointer'
     })
 
-    map.on('mouseleave', 'departements_user', e => {
+    map.on('mouseleave', 'departements-user', e => {
         map.getCanvas().style.cursor = ''
     })
     let popup = new maplibregl.Popup({
     })
-    map.on('click', 'departements_user', e => {
+    map.on('click', 'departements-user', e => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
@@ -377,6 +395,9 @@ const createCommuneClusters = (users) => {
         'type': 'circle',
         'source': 'communes',
         'minzoom': 7,
+        layout: {
+            visibility: 'none',
+        },
         paint: {
             'circle-radius': 15, //["get", "circleRadius"],
             'circle-stroke-color': 'white',
@@ -390,6 +411,9 @@ const createCommuneClusters = (users) => {
     map.addLayer({
         'id': 'communes-text',
         'type': 'symbol',
+        layout: {
+            visibility: 'none',
+        },
         'source': 'communes',
         'minzoom': 7,
         layout: {
@@ -471,7 +495,7 @@ const createClusterClusters = (users) => {
         type: 'circle',
         source: "clusters",
         filter: ['has', 'point_count'],
-        'minzoom': 2,
+        // 'minzoom': 2,
         paint: {
             // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
             // with three steps to implement three types of circles:
@@ -508,7 +532,7 @@ const createClusterClusters = (users) => {
             'circle-color': '#11b4da',
             'circle-radius': 20,
             },
-            'minzoom': 2,
+            // 'minzoom': 2,
         });
 
         map.addLayer({
@@ -521,7 +545,7 @@ const createClusterClusters = (users) => {
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12
             },
-            'minzoom': 2,
+            // 'minzoom': 2,
         });
 
         map.addLayer({
@@ -534,7 +558,7 @@ const createClusterClusters = (users) => {
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12
             },
-            'minzoom': 2,
+            // 'minzoom': 2,
         });
 
     let popup = new maplibregl.Popup({
@@ -669,7 +693,6 @@ const createCountryClusters = (users, usersForeignCity) => {
             })
         }
     }
-    console.log(geojsonCountry)
     map.addSource("country", geojsonCountry)
     map.addLayer({
         'id': 'country',
@@ -677,9 +700,12 @@ const createCountryClusters = (users, usersForeignCity) => {
         'source': 'country',
         'minzoom': 0,
         'maxzoom': 2,
+        layout: {
+            visibility: 'none'
+        },
         paint: {
-            'circle-color': '#11b4da',
-            'circle-radius': 20,
+            'circle-color': '#55d9da',
+            'circle-radius': 30,
         }
     });
 
@@ -690,6 +716,7 @@ const createCountryClusters = (users, usersForeignCity) => {
         'minzoom': 0,
         'maxzoom': 2,
         layout: {
+            visibility: 'none',
             'text-field': ["get", "nbUsers"],
         }
     });
@@ -743,11 +770,59 @@ async function fetchData() {
         })
         .filter(user => user.commune)
     // createDepartementBoarders(departementsJson)
-    // createCommuneClusters(users)
-    // createDepartementClusters(users)
-    createForeignCityClusters(usersForeignCity)
+    createCommuneClusters(users)
+    createDepartementClusters(users)
     createClusterClusters(users)
+    createForeignCityClusters(usersForeignCity)
     createCountryClusters(users, usersForeignCity)
-
+    const helptext = document.getElementById('helptext')
+    helptext.innerHTML = "<span>Données chargées !</span>"
+    setTimeout(() => {
+        helptext.style.display = 'none';
+    }, 1000)
+    
 }
 map.on('load', fetchData)
+map.on('idle', () => {
+    const buttons = document
+.getElementsByClassName('button')
+for (button of buttons) {
+button.onclick = function (event) {
+// var id = event.target.id
+// // var button = document.getElementById(id)
+event.preventDefault();
+event.stopPropagation();
+const isButtonActive = this.className.includes('active')
+var layer = event.target.id.substr('button-'.length);
+console.log(button, layer)
+
+if (isButtonActive) {
+    this.className = 'button'
+} else {
+    this.className = 'button active'
+}
+if (layer === 'clusters') {
+    const showCluster = !isButtonActive
+    map.setLayoutProperty('departements-user', 'visibility', !showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('departements-text', 'visibility', !showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('communes', 'visibility', !showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('communes-text', 'visibility', !showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('country', 'visibility', !showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('country-text', 'visibility', !showCluster ? 'visible' : 'none');
+
+    map.setLayoutProperty('clusters', 'visibility', showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('unclustered-point', 'visibility', showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('unclustered-point-count', 'visibility', showCluster ? 'visible' : 'none');
+    map.setLayoutProperty('cluster-count', 'visibility', showCluster ? 'visible' : 'none');
+} else if (layer === 'foreign') {
+    map.setLayoutProperty('foreign-city-clusters', 'visibility', map.getLayoutProperty('foreign-city-clusters', 'visibility') === 'none' ? 'visible' : 'none');
+    map.setLayoutProperty('foreign-city-unclustered-point', 'visibility', map.getLayoutProperty('foreign-city-unclustered-point', 'visibility') === 'none' ? 'visible' : 'none');
+    map.setLayoutProperty('foreign-city-unclustered-point-count', 'visibility', map.getLayoutProperty('foreign-city-unclustered-point-count', 'visibility') === 'none' ? 'visible' : 'none');
+    map.setLayoutProperty('foreign-city-clusters-count', 'visibility', map.getLayoutProperty('foreign-city-clusters-count', 'visibility') === 'none' ? 'visible' : 'none');
+}
+}
+}
+// Use setLayoutProperty to set the value of a layout property in a style layer.
+// The three arguments are the id of the layer, the name of the layout property,
+// and the new property value.
+})
