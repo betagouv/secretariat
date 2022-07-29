@@ -211,7 +211,7 @@ const createForeignCityClusters = (users) => {
         map.getCanvas().style.cursor = 'pointer'
         let description = `
         <div class="popup">
-            <center><h1>${features[0].properties.slice(0, 30)}</h1></center>
+f            <center><h1>${features[0].properties.nom.slice(0, 30)}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
