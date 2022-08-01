@@ -106,7 +106,7 @@ const createForeignCityClusters = (users) => {
         source: "foreign-cities",
         filter: ['has', 'point_count'],
         layout: {
-            visibility: 'none',
+            visibility: 'visible',
         },
         paint: {
             // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
@@ -145,7 +145,7 @@ const createForeignCityClusters = (users) => {
             'circle-radius': 20
             },
             layout: {
-                visibility: 'none',
+                visibility: 'visible',
             },
             // 'minzoom': 2,
         });
@@ -161,7 +161,7 @@ const createForeignCityClusters = (users) => {
                 'text-size': 12
             },
             layout: {
-                visibility: 'none',
+                visibility: 'visibile',
             },
             // 'minzoom': 2,
         });
@@ -177,7 +177,7 @@ const createForeignCityClusters = (users) => {
             'text-size': 12
             },
             layout: {
-                visibility: 'none',
+                visibility: 'visible',
             },
             // 'minzoom': 2,
         });
