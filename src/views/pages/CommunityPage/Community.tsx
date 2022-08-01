@@ -45,14 +45,11 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
                         <MemberSelect
                             name="username"
                             onChange={(e) => changeFormData('username', e.value)}
-                            referents={props.users.map(u => ({
+                            members={props.users.map(u => ({
                                 value: u.id,
                                 label: u.fullname
                             }))}
-                            defaultValue={props.users.map(u => ({
-                                value: u.id,
-                                label: u.fullname
-                            })).find(d => d.value === state.formData.referent)}></MemberSelect>
+                            defaultValue={undefined}></MemberSelect>
                     </div>
                     <div className="form__group">
                         <button className="button no-margin" type="submit">Voir la fiche</button>

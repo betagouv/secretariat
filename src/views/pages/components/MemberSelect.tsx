@@ -3,7 +3,7 @@ import Select from 'react-select'
 
 import { ClientOnly } from "./ClientOnly"
 
-export default({ referents, defaultValue, onChange, name } : { referents: any, defaultValue: any, onChange: any, name?: string}) => {
+export default({ members, defaultValue, onChange, name } : { members: any, defaultValue: any, onChange: any, name?: string}) => {
     return <ClientOnly><Select
         options={referents}
         defaultValue={defaultValue}
