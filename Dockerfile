@@ -1,4 +1,4 @@
-FROM node:lts
+FROM node:16.13.0
 
 WORKDIR /app
 
@@ -13,4 +13,4 @@ RUN npm install -g
 USER node
 
 EXPOSE 8100
-RUN npm run start
+RUN npm run dev
