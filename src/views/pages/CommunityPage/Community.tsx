@@ -4,14 +4,17 @@ import { Member } from 'src/models/member';
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { hydrateOnClient } from '../../hydrateOnClient'
 import MemberSelect from '../components/MemberSelect';
-
+  
 interface CommunityProps {
-    title?: string,
-    errors?: string[],
-    messages?: string[],
-    request: Request,
+    title: string,
+    currentUserId: string,
+    errors: string[],
+    messages: string[],
     users: Member[],
+    activeTab: string,
+    request: Request,
 }
+  
 
 
 /* Pure component */

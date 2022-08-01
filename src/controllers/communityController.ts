@@ -28,7 +28,8 @@ export async function getCommunity(req, res) {
       users,
       activeTab: 'community',
       errors: req.flash('error'),
-      messages: req.flash('message')
+      messages: req.flash('message'),
+      request: req
     });
   } catch (err) {
     console.error(err);
