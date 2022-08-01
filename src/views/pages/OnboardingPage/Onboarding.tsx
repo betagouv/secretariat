@@ -6,7 +6,7 @@ import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
 import { Member } from '../../../models/member'
 import { StartupInfo } from '../../../models/startup'
-import ReferentSelect from '../components/ReferentSelect';
+import MemberSelect from '../components/MemberSelect';
 import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';
 
@@ -366,7 +366,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         Selectionne un membre l'équipe de co-animation avec qui tu es en contact.
                     </label>
                     <label htmlFor="username_select"></label>
-                    <ReferentSelect
+                    <MemberSelect
                         onChange={(e) => changeFormData('referent', e.value)}
                         referents={props.users.map(u => ({
                             value: u.id,
@@ -375,7 +375,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         defaultValue={props.users.map(u => ({
                             value: u.id,
                             label: u.fullname
-                        })).find(d => d.value === state.formData.referent)}></ReferentSelect>
+                        })).find(d => d.value === state.formData.referent)}></MemberSelect>
                     <input type="hidden" name="referent" value={state.formData.referent} required/>
                 </div>
                 <div className="form__group">

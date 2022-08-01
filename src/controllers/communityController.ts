@@ -3,6 +3,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
 import { MemberWithPermission } from "../models/member";
+import { CommunityPage } from '../views';
 
 const EMAIL_STATUS_READABLE_FORMAT = {
   EMAIL_ACTIVE: 'Actif',
@@ -20,18 +21,14 @@ export async function getCommunity(req, res) {
   }
   try {
     const users = await BetaGouv.usersInfos();
-    const userAgent = Object.prototype.hasOwnProperty.call(req.headers, 'user-agent') ? req.headers['user-agent'] : null;
-    const isMobileFirefox = userAgent && /Android.+Firefox\//.test(userAgent);
     const title = 'Communauté';
-    return res.render('community', {
+    return CommunityPage({
       title,
       currentUserId: req.auth.id,
-      domain: config.domain,
       users,
       activeTab: 'community',
       errors: req.flash('error'),
-      messages: req.flash('message'),
-      useSelectList: isMobileFirefox,
+      messages: req.flash('message')
     });
   } catch (err) {
     console.error(err);
