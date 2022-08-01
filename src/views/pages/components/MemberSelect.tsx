@@ -5,7 +5,7 @@ import { ClientOnly } from "./ClientOnly"
 
 export default({ members, defaultValue, onChange, name } : { members: any, defaultValue: any, onChange: any, name?: string}) => {
     return <ClientOnly><Select
-        options={referents}
+        options={members}
         defaultValue={defaultValue}
         onChange={onChange}
         name={name}
