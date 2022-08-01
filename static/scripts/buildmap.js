@@ -158,10 +158,8 @@ const createForeignCityClusters = (users) => {
             layout: {
                 'text-field': ['get', 'nbUsers'],
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12
-            },
-            layout: {
-                visibility: 'visibile',
+                'text-size': 12,
+                 visibility: 'visibile'
             },
             // 'minzoom': 2,
         });
@@ -172,12 +170,10 @@ const createForeignCityClusters = (users) => {
             source: "foreign-cities",
             filter: ['has', 'point_count'],
             layout: {
-            'text-field': '{count_users}',
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12
-            },
-            layout: {
-                visibility: 'visible',
+              'text-field': '{count_users}',
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': 12,
+               visibility: 'visible',
             },
             // 'minzoom': 2,
         });
@@ -210,8 +206,7 @@ const createForeignCityClusters = (users) => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
-        <div class="popup">
-f            <center><h1>${features[0].properties.nom.slice(0, 30)}</h1></center>
+        <div class="popup"><center><h1>${features[0].properties.nom.slice(0, 30)}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
