@@ -368,7 +368,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <label htmlFor="username_select"></label>
                     <MemberSelect
                         onChange={(e) => changeFormData('referent', e.value)}
-                        referents={props.users.map(u => ({
+                        members={props.users.map(u => ({
                             value: u.id,
                             label: u.fullname
                         }))}
