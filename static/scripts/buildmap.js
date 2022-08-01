@@ -158,10 +158,9 @@ const createForeignCityClusters = (users) => {
             layout: {
                 'text-field': ['get', 'nbUsers'],
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 12,
-                 visibility: 'visibile'
+                'text-size': 12
             },
-            // 'minzoom': 2,
+            'minzoom': 0,
         });
 
         map.addLayer({
@@ -172,10 +171,9 @@ const createForeignCityClusters = (users) => {
             layout: {
               'text-field': '{count_users}',
               'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-              'text-size': 12,
-               visibility: 'visible',
+              'text-size': 12
             },
-            // 'minzoom': 2,
+            'minzoom': 0,
         });
 
     let popup = new maplibregl.Popup({
@@ -324,8 +322,6 @@ const createDepartementClusters = (users) => {
         'maxzoom': 7,
         layout: {
             visibility: 'none',
-        },
-        layout: {
             'text-field': ["get", "description"],
         }
     });
@@ -406,12 +402,10 @@ const createCommuneClusters = (users) => {
     map.addLayer({
         'id': 'communes-text',
         'type': 'symbol',
-        layout: {
-            visibility: 'none',
-        },
         'source': 'communes',
         'minzoom': 7,
         layout: {
+            visibility: 'none',
             'text-field': ["get", "nbUsers"],
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12
