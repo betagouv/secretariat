@@ -9,7 +9,7 @@ export const postToHook = async (req, res) => {
       } catch (e) {
         console.error('Could not get conversation Id')
       }
-      if (config.CHATWOOT_IGNORE_EMAILS && config.CHATWOOT_IGNORE_EMAILS.includes(req.body.meta.sender.email) {
+      if (config.CHATWOOT_IGNORE_EMAILS && config.CHATWOOT_IGNORE_EMAILS.includes(req.body.meta.sender.email)) {
         console.log(`Ignore message from ${req.body.meta.sender.email}`)
         return
       }
