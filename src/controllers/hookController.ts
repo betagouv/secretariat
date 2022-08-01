@@ -9,6 +9,10 @@ export const postToHook = async (req, res) => {
       } catch (e) {
         console.error('Could not get conversation Id')
       }
+      if (config.CHATWOOT_IGNORE_EMAILS && config.CHATWOOT_IGNORE_EMAILS.includes(req.body.meta.sender.email)) {
+        console.log(`Ignore message from ${req.body.meta.sender.email}`)
+        return
+      }
       const message = `:toolbox: Nouvelle demande de support de ${req.body.meta.sender.email} : ${req.body.messages.map(m => m.content).join('/n')}
 https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversationId}
       `

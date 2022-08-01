@@ -23,6 +23,7 @@ export default {
   host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
   CHATWOOT_ID: process.env.CHATWOOT_ID,
+  CHATWOOT_IGNORE_EMAILS: process.env.CHATWOOT_IGNORE_EMAILS || [],
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
   newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
   newsletterSentDay: process.env.NEWSLETTER_SENT_DAY || 'THURSDAY',

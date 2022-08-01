@@ -106,7 +106,7 @@ const createForeignCityClusters = (users) => {
         source: "foreign-cities",
         filter: ['has', 'point_count'],
         layout: {
-            visibility: 'none',
+            visibility: 'visible',
         },
         paint: {
             // Use step expressions (https://maplibre.org/maplibre-gl-js-docs/style-spec/#expressions-step)
@@ -145,7 +145,7 @@ const createForeignCityClusters = (users) => {
             'circle-radius': 20
             },
             layout: {
-                visibility: 'none',
+                visibility: 'visible',
             },
             // 'minzoom': 2,
         });
@@ -160,10 +160,7 @@ const createForeignCityClusters = (users) => {
                 'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
                 'text-size': 12
             },
-            layout: {
-                visibility: 'none',
-            },
-            // 'minzoom': 2,
+            'minzoom': 0,
         });
 
         map.addLayer({
@@ -172,14 +169,11 @@ const createForeignCityClusters = (users) => {
             source: "foreign-cities",
             filter: ['has', 'point_count'],
             layout: {
-            'text-field': '{count_users}',
-            'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-            'text-size': 12
+              'text-field': '{count_users}',
+              'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+              'text-size': 12
             },
-            layout: {
-                visibility: 'none',
-            },
-            // 'minzoom': 2,
+            'minzoom': 0,
         });
 
     let popup = new maplibregl.Popup({
@@ -210,8 +204,7 @@ const createForeignCityClusters = (users) => {
         let features = map.queryRenderedFeatures(e.point)
         map.getCanvas().style.cursor = 'pointer'
         let description = `
-        <div class="popup">
-f            <center><h1>${features[0].properties.nom.slice(0, 30)}</h1></center>
+        <div class="popup"><center><h1>${features[0].properties.nom.slice(0, 30)}</h1></center>
             <p>${features[0].properties.usernames.split(',').join('<br/>')}</p>
             </div>`
         popup.setLngLat(features[0].geometry.coordinates).setHTML(description).addTo(map)
@@ -329,8 +322,6 @@ const createDepartementClusters = (users) => {
         'maxzoom': 7,
         layout: {
             visibility: 'none',
-        },
-        layout: {
             'text-field': ["get", "description"],
         }
     });
@@ -411,12 +402,10 @@ const createCommuneClusters = (users) => {
     map.addLayer({
         'id': 'communes-text',
         'type': 'symbol',
-        layout: {
-            visibility: 'none',
-        },
         'source': 'communes',
         'minzoom': 7,
         layout: {
+            visibility: 'none',
             'text-field': ["get", "nbUsers"],
             'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
             'text-size': 12
