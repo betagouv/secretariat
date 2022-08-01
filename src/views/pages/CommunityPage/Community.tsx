@@ -15,7 +15,7 @@ interface CommunityProps {
     request: Request,
 }
   
-
+const css = ".panel { min-height: 100vh; }"
 
 /* Pure component */
 export const Community = InnerPageLayout((props: CommunityProps) => {
@@ -24,11 +24,9 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
         ...props,
     });
     const changeFormData = (key, value) => {
-        const formData = state.formData
-        formData[key] = value
         setState({
             ...state,
-            formData
+            key: value
         })
     }
 
@@ -61,6 +59,9 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
                 </p>
             </div>
         </div>
+        <style media="screen">
+            {css}
+        </style>
     </>)
 })
 

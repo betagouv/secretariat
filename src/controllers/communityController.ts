@@ -22,7 +22,7 @@ export async function getCommunity(req, res) {
   try {
     const users = await BetaGouv.usersInfos();
     const title = 'Communauté';
-    return CommunityPage({
+    return res.send(CommunityPage({
       title,
       currentUserId: req.auth.id,
       users,
@@ -30,7 +30,7 @@ export async function getCommunity(req, res) {
       errors: req.flash('error'),
       messages: req.flash('message'),
       request: req
-    });
+    }));
   } catch (err) {
     console.error(err);
     return res.send('Erreur interne : impossible de récupérer les informations de la communauté');
