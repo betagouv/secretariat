@@ -3,6 +3,8 @@ import { Home } from './pages/HomePage'
 import { Admin } from './pages/AdminPage'
 import { InfoUpdate } from './pages/InfoUpdatePage'
 import { Onboarding } from './pages/OnboardingPage'
+import { Community } from './pages/CommunityPage';
+
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
@@ -20,6 +22,15 @@ export const HomePage = (props: Parameters<typeof Home>[0]) =>
     hydrate: true,
     title: 'Secretariat BetaGouv',
     pageName: 'Onboarding', // This must match the Component name
+  })
+
+  export const CommunityPage = (props: Parameters<typeof Community>[0]) =>
+  makeHtml({
+    Component: Community,
+    props,
+    hydrate: true,
+    title: 'Page communauté',
+    pageName: 'Community', // This must match the Component name
   })
 
 
