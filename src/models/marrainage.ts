@@ -6,4 +6,3 @@ export interface Marrainage {
     created_at: string,
     last_updated: string
 }
-  

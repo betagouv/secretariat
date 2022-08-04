@@ -6,37 +6,11 @@ import * as utils from './utils';
 import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
 import { CommunicationEmailCode, DBUser } from '../models/dbUser';
-import { Domaine, Member } from '../models/member';
+import { Member } from '../models/member';
+import { MarrainageService1v, MarrainageService2v } from 'src/services/marrainageService';
 
-interface Marrainage {
-  username: string,
-  last_onboarder: string,
-  count: number,
-  completed: boolean,
-  created_at: string,
-  last_updated: string
-}
-
-async function selectRandomOnboarder(newcomerId, domaine) {
-  const users: Member[] = await BetaGouv.usersInfos();
-  const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
-  const existingCandidates: string[] = await knex('marrainage')
-    .select('last_onboarder')
-    .where({ completed: false })
-    .distinct()
-    .then((marrainages: Marrainage[]) => marrainages.map((x) => x.last_onboarder));
-
-  const onboarders = users.filter((x) => {
-    const existingCandidate = existingCandidates.includes(x.id);
-    const senior = new Date(minimumSeniority) > new Date(x.start);
-    const stillActive = !utils.checkUserIsExpired(x);
-    const isRequester = x.id === newcomerId;
-    return !existingCandidate && senior && stillActive && !isRequester;
-  });
-  const onboardersFromDomaine = onboarders.filter(onboarder => onboarder.domaine === domaine)
-  const onboarderPool = (domaine === Domaine.AUTRE || !onboardersFromDomaine.length) ? onboarders : onboardersFromDomaine
-  return onboarderPool[Math.floor(Math.random() * onboarderPool.length)];
-}
+const MarrainageService =
+  config.FEATURE_USE_NEW_MARRAINAGE ? new MarrainageService2v() : new MarrainageService1v()
 
 async function getMarrainageTokenData(token) {
   if (!token) {
@@ -134,7 +108,7 @@ export async function reloadMarrainage(newcomerId) {
       "Il n'y a pas de demande de marrainage existant pour cette personne."
     );
   }
-  const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
+  const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
   if (!onboarder) {
     throw new Error(
