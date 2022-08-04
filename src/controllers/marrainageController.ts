@@ -10,7 +10,7 @@ import { Member } from '../models/member';
 import { MarrainageService1v, MarrainageService2v } from '../services/marrainageService';
 
 const MarrainageService =
-  config.FEATURE_USE_NEW_MARRAINAGE ? new MarrainageService2v() : new MarrainageService1v()
+  config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST ? new MarrainageService2v(config.ONBOARDER_IN_LIST) : new MarrainageService1v()
 
 async function getMarrainageTokenData(token) {
   if (!token) {

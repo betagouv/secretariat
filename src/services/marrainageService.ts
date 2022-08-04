@@ -1,7 +1,6 @@
 import { Marrainage } from "../models/marrainage";
 import { Domaine, Member } from '../models/member';
 import BetaGouv from '../betagouv';
-import config from '../config';
 import * as utils from '../controllers/utils';
 import knex from '../db';
 
@@ -33,15 +32,20 @@ export class MarrainageService1v implements MarrainageService {
 }
 
 export class MarrainageService2v implements MarrainageService {
+    users: Member[];
+
+    constructor(users: Member[]) {
+        this.users = users
+    }
+
     async selectRandomOnboarder(newcomerId, domaine) {
-        const users = config.ONBOARDER_IN_LIST
         const existingCandidates: string[] = await knex('marrainage')
           .select('last_onboarder')
           .where({ completed: false })
           .distinct()
           .then((marrainages: Marrainage[]) => marrainages.map((x) => x.last_onboarder));
       
-        const onboarders = users.filter((x) => {
+        const onboarders = this.users.filter((x) => {
           const existingCandidate = existingCandidates.includes(x.id);
           const isRequester = x.id === newcomerId;
           return !existingCandidate && !isRequester;
