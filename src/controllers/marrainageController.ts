@@ -7,7 +7,7 @@ import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
 import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
-import { MarrainageService1v, MarrainageService2v } from 'src/services/marrainageService';
+import { MarrainageService1v, MarrainageService2v } from '../services/marrainageService';
 
 const MarrainageService =
   config.FEATURE_USE_NEW_MARRAINAGE ? new MarrainageService2v() : new MarrainageService1v()
