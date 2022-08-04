@@ -131,7 +131,7 @@ export async function reloadMarrainage(newcomerId) {
 export async function createRequestForUser(userId) {
   console.log('Creating marrainage request for', userId)
   const newcomer: Member = await BetaGouv.userInfosById(userId);
-  const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
+  const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
   if (!onboarder) {
     const recipientEmailList = [config.senderEmail];
@@ -297,7 +297,7 @@ export async function declineRequest(req, res) {
       return redirectOutdatedMarrainage(req, res);
     }
 
-    const onboarder = await selectRandomOnboarder(newcomer.id, newcomer.domaine);
+    const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
 
     if (!onboarder) {
       console.log(
