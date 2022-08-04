@@ -41,13 +41,13 @@ describe('Marrainage Service test', () => {
         it('Test marrainageService v1', async () => {
             const marrainageService = new MarrainageService1v()
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
-            onboarder.should.not.be(undefined)
+            onboarder.should.not.be.equals(undefined)
         });
 
         it('Test marrainageService v2', async () => {
             const marrainageService = new MarrainageService2v(testUsers as Member[])
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
-            onboarder.should.not.be(undefined)
+            onboarder.should.not.equals(undefined)
         });
     });
 });
