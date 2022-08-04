@@ -11,7 +11,7 @@ import { Domaine, Member } from '../src/models/member';
 
 chai.use(chaiHttp);
 
-describe('Marrainage', () => {
+describe('Marrainage Service test', () => {
   let clock;
   let sendEmailStub;
   let differenceLodashSpy;
@@ -41,13 +41,13 @@ describe('Marrainage', () => {
         it('Test marrainageService v1', async () => {
             const marrainageService = new MarrainageService1v()
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
-            console.log(onboarder)
+            onboarder.should.not.be(undefined)
         });
 
         it('Test marrainageService v2', async () => {
             const marrainageService = new MarrainageService2v(testUsers as Member[])
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
-            console.log(onboarder)
+            onboarder.should.not.be(undefined)
         });
     });
 });
