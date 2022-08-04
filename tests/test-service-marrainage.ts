@@ -38,14 +38,16 @@ describe('Marrainage', () => {
   });
 
     describe('unauthenticated', () => {
-        it('Test marrainageService v1', (done) => {
+        it('Test marrainageService v1', async () => {
             const marrainageService = new MarrainageService1v()
-            const onboarder = marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
+            const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
+            console.log(onboarder)
         });
 
-        it('Test marrainageService v2', (done) => {
+        it('Test marrainageService v2', async () => {
             const marrainageService = new MarrainageService2v(testUsers as Member[])
-            const onboarder = marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
+            const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
+            console.log(onboarder)
         });
     });
 });
