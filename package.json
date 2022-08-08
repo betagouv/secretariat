@@ -44,7 +44,7 @@
     "@octokit/request": "^6.2.0",
     "@octokit/rest": "^19.0.3",
     "@sentry/integrations": "^7.8.1",
-    "@sentry/node": "^7.8.1",
+    "@sentry/node": "^7.9.0",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
@@ -95,7 +95,7 @@
     "webpack-cli": "^4.10.0"
   },
   "devDependencies": {
-    "@types/chai": "^4.3.1",
+    "@types/chai": "^4.3.3",
     "@types/marked": "^4.0.3",
     "@types/mocha": "^9.1.1",
     "@types/sinon": "^10.0.13",
