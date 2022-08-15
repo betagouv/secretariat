@@ -53,8 +53,8 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         if (!pendingMarrainageGroup) {
             pendingMarrainageGroup = await knex('marrainage_groups').insert({
                 status: MarrainageGroupStatus.PENDING,
-                onboarder: this.users[Math.floor(Math.random() * this.users.length)]
-            })
+                onboarder: this.users[Math.floor(Math.random() * this.users.length)].id
+            }).returning('*').then(res => res[0]);
         }
         return pendingMarrainageGroup.onboarder
     }
