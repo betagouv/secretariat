@@ -5,7 +5,7 @@ import _ from 'lodash/array';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import testUsers from './users.json';
-import { MarrainageService1v, MarrainageService2v } from '../src/services/marrainageService';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '../src/services/marrainageService';
 import { Domaine, Member } from '../src/models/member';
 
 
@@ -44,8 +44,8 @@ describe('Marrainage Service test', () => {
             onboarder.should.not.be.equals(undefined)
         });
 
-        it('Test marrainageService v2', async () => {
-            const marrainageService = new MarrainageService2v(testUsers as Member[])
+        it('Test marrainageService with group', async () => {
+            const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[])
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.equals(undefined)
         });

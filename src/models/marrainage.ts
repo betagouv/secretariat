@@ -6,3 +6,9 @@ export interface Marrainage {
     created_at: string,
     last_updated: string
 }
+
+export enum MarrainageGroupStatus {
+    DOING="DOING",
+    PENDING="PENDING",
+    DONE="DONE",
+}
