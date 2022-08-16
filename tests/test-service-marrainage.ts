@@ -38,16 +38,32 @@ describe('Marrainage Service test', () => {
   });
 
     describe('unauthenticated', () => {
-        it('Test marrainageService v1', async () => {
+        it('should get an onboarder using selectRandomOnBoarderFunction v1', async () => {
             const marrainageService = new MarrainageService1v()
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.be.equals(undefined)
         });
 
-        it('Test marrainageService with group', async () => {
+        it('should get an onboarder using selectRandomOnBoarderFunction with group', async () => {
             const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[])
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.equals(undefined)
         });
+
+        it('should create marrainage', async () => {
+          const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[])
+          const onboarder : string = 'julien.dauphant'
+          const newcomer : string = 'lucas.charrier'
+          await marrainageService.createMarrainage(newcomer, onboarder)
+          const marrainageGroup = await knex('marrainage_groups').where({
+            onboarder: 'julien.dauphant'
+          }).first()
+          marrainageGroup.count.should.equals(1)
+          const marrainage_groups_members = await knex('marrainage_groups_members').where({
+            id: marrainageGroup.id,
+            username: newcomer
+          })
+          chai.should().not.exist(marrainage_groups_members)
+      });
     });
 });
