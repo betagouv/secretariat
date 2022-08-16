@@ -1,6 +1,3 @@
-export * from './redisPublish'
-export * from './redisSubscribe'
-
 export const RedisSmqConfig  = {
     namespace: 'espace-membre',
     redis: {
