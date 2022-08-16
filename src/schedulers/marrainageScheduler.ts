@@ -4,8 +4,6 @@ import knex from '../db';
 import { reloadMarrainage } from '../controllers/marrainageController';
 import { createRequestForUser } from '../controllers/marrainageController';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
-import { DomainEvent } from '../../src/models/domainEvent';
-import { subscribeToRedis } from '../../src/eventBus.config';
 import { MarrainageGroup, MarrainageGroupStatus } from '../models/marrainage';
 import config from '../config';
 import { sendMail } from '../controllers/utils';
