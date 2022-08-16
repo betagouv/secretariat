@@ -12,3 +12,16 @@ export enum MarrainageGroupStatus {
     PENDING="PENDING",
     DONE="DONE",
 }
+
+export interface MarrainageGroup {
+    id: number,
+    onboarder: string,
+    created_at: Date,
+    status: MarrainageGroupStatus
+    count: number
+}
+
+export interface MarrainageGroupMember {
+    marrainage_group_id: number,
+    username: string
+}

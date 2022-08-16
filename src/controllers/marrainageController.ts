@@ -9,8 +9,9 @@ import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '../services/marrainageService';
 
-const MarrainageService =
-  config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST) : new MarrainageService1v()
+const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+const MarrainageService = useNewMarrainage
+   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
 
 async function getMarrainageTokenData(token) {
   if (!token) {

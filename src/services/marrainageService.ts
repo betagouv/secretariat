@@ -1,4 +1,4 @@
-import { Marrainage, MarrainageGroupStatus } from "../models/marrainage";
+import { Marrainage, MarrainageGroup, MarrainageGroupStatus } from "../models/marrainage";
 import { Domaine, Member } from '../models/member';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
@@ -6,6 +6,23 @@ import knex from '../db';
 
 interface MarrainageService {
     selectRandomOnboarder(newcomerId: string, domaine: string): Promise<Member>
+}
+
+const countNumberOfMarrainage = (onboarders) => {
+    const count = {};
+    for (const  onboarder of onboarders) {
+        if (count[ onboarder]) {
+          count[ onboarder] += 1;
+        } else {
+          count[onboarder] = 0;
+        }
+    }
+    return onboarders.map(onboarder => {
+        return {
+            onboarder,
+            count: count[onboarder]
+        }
+    })
 }
 
 export class MarrainageService1v implements MarrainageService {
@@ -40,49 +57,66 @@ export class MarrainageService1v implements MarrainageService {
 
 export class MarrainageServiceWithGroup implements MarrainageService {
     users: Member[];
+    MARRAINAGE_GROUP_LIMIT: number;
 
-    constructor(users: Member[]) {
+    constructor(users: Member[], marrainage_group_limit: number) {
         this.users = users
+        this.MARRAINAGE_GROUP_LIMIT = marrainage_group_limit || 5
     }
 
     async selectRandomOnboarder(newcomerId, domaine) {
         let pendingMarrainageGroup: any = await knex('marrainage_groups').where({
             status: MarrainageGroupStatus.PENDING
         }).first()
-      
-        if (!pendingMarrainageGroup) {
-            pendingMarrainageGroup = await knex('marrainage_groups').insert({
-                status: MarrainageGroupStatus.PENDING,
-                onboarder: this.users[Math.floor(Math.random() * this.users.length)].id
-            }).returning('*').then(res => res[0]);
+        let onboarder
+        if (pendingMarrainageGroup) {
+            onboarder = pendingMarrainageGroup.onboarder
+        } else {
+            const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups').whereNotIn('status', [
+                MarrainageGroupStatus.DOING,
+                MarrainageGroupStatus.DONE
+            ])
+            const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(function(a, b){return a-b})
+            onboarder = sortedOnboarder[0]
         }
-        return pendingMarrainageGroup.onboarder
+        return onboarder
     }
 
     async createMarrainage(newcomerId, onboarderId) {
-        const marrainage_group = await knex('marrainage_groups')
-            .where({
-                onboarderId: onboarderId,
-                status: MarrainageGroupStatus.PENDING
-            }).first()
-        
-        await knex('marrainage_groups_members')
-            .insert({
-                username: newcomerId,
-                marrainage_group_id: marrainage_group.id
-            }).first()
+        await knex.transaction(async (trx) => {
+            let marrainage_group = await trx('marrainage_groups')
+                .where({
+                    onboarder: onboarderId,
+                    status: MarrainageGroupStatus.PENDING
+                })
+                .where('count', '<', this.MARRAINAGE_GROUP_LIMIT).first()
+            
+            if (!marrainage_group) {
+                marrainage_group = await trx('marrainage_groups')
+                .insert({
+                    onboarder: onboarderId,
+                    status: MarrainageGroupStatus.PENDING
+                }).returning('*').then(res => res[0])
+            }
+            await trx('marrainage_groups_members')
+                .insert({
+                    username: newcomerId,
+                    marrainage_group_id: marrainage_group.id
+                })
 
-        const updateParams = {
-            count: marrainage_group.count + 1
-        }
-        if (marrainage_group.count + 1 > process.env.MARRAINAGE_LIMIT) {
-            updateParams['status'] = MarrainageGroupStatus.DOING
-        }
-        await knex('marrainage_groups')
-            .where({
-                id: marrainage_group.id
-            })
-            .update(updateParams)
+            const updateParams = {
+                count: marrainage_group.count + 1
+            }
+            if (marrainage_group.count + 1 >= this.MARRAINAGE_GROUP_LIMIT) {
+                updateParams['status'] = MarrainageGroupStatus.DOING
+            }
+            await trx('marrainage_groups')
+                .where({
+                    id: marrainage_group.id
+                })
+                .update(updateParams)
+        })
     }
 
 }
