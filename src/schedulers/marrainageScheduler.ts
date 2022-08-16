@@ -4,6 +4,12 @@ import knex from '../db';
 import { reloadMarrainage } from '../controllers/marrainageController';
 import { createRequestForUser } from '../controllers/marrainageController';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
+import { DomainEvent } from '../../src/models/domainEvent';
+import { subscribeToRedis } from '../../src/eventBus.config';
+import { MarrainageGroup, MarrainageGroupStatus } from '../models/marrainage';
+import config from '../config';
+import { sendMail } from '../controllers/utils';
+import { RedisSmqConfig } from '../infra/redis';
 
 export async function reloadMarrainages() {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -60,3 +66,74 @@ export async function createMarrainages() {
     .catch(console.error);
 }
 
+export async function handleMarrainageDoing() {
+  const members : DBUser & MarrainageGroup [] = await knex('marrainage_groups_members')
+        .where({
+          id: marrainage_group.id
+      })
+      .join('users', 'users.username', 'marrainage_group_members.username')
+
+      for(member in members) {
+        sendMail()
+      }
+}
+
+export async function produceMessage(eventMessageType, params) {
+  const { Message, Producer } = require('redis-smq');
+  const producer = new Producer(RedisSmqConfig);
+  producer.run((err) => {
+    if (err) throw err;
+    const message = new Message();
+    message
+      .setBody(params)
+      .setTTL(3600000) // in millis
+      .setQueue(eventMessageType);
+    producer.produce(message, (err) => {
+        if (err) console.log(err);
+        else {
+          const msgId = message.getId(); // string
+          console.log('Successfully produced. Message ID is ', msgId);
+        }
+    });
+  })
+}
+
+export async function consumeMessage(eventMessageType, messageHandler) {
+  const { Consumer } = require('redis-smq');
+
+  const consumer = new Consumer(RedisSmqConfig);
+
+  consumer.consume(eventMessageType, messageHandler, (err) => {
+    if (err) console.error(err);
+  });
+
+  consumer.run();
+}
+
+export async function checkMarrainageStatus() {
+
+    const marrainage_groups : MarrainageGroup[] = await knex('marrainage_groups')
+    .where({
+      status: MarrainageGroupStatus.PENDING,
+    })
+    .where('count', '>=', config.MARRAINAGE_GROUP_LIMIT)
+    for(const marrainage_group of marrainage_groups) {
+      await knex('marrainage_groups')
+        .where({
+          id: marrainage_group.id
+      })
+      .update({
+        status: MarrainageGroupStatus.DOING
+      })
+      produceMessage('MarrainageIsDoingEvent', { marrainage_group_id: marrainage_group.id })
+    }
+}
+
+export async function sendEmailOnMarrainageCreated() {
+  const messageHandler = (msg, cb) => {
+    const payload = msg.getBody();
+    console.log('Message payload', payload);
+    cb(); // acknowledging the message
+  };
+  consumeMessage('MarrainageIsDoingEvent', messageHandler)
+}
