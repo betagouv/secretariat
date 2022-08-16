@@ -62,6 +62,7 @@ export default {
     process.env.VISIT_MAIL_RECIPIENT || 'espace-membre@incubateur.net',
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || 'secretariat@beta.gouv.fr',
   sentryDNS: process.env.SENTRY_DNS || false,
+  MARRAINAGE_GROUP_LIMIT: parseInt(process.env.MARRAINAGE_GROUP_LIMIT) || 5,
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
   mattermostTeamId: process.env.MATTERMOST_TEAM_ID || 'testteam',
   mattermostAlumniTeamId:

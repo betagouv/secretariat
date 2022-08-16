@@ -7,10 +7,11 @@ import knex from '../db';
 import { addEvent, EventCode } from '../lib/events'
 import { CommunicationEmailCode, DBUser } from '../models/dbUser';
 import { Member } from '../models/member';
-import { MarrainageService1v, MarrainageService2v } from '../services/marrainageService';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '../services/marrainageService';
 
-const MarrainageService =
-  config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST ? new MarrainageService2v(config.ONBOARDER_IN_LIST) : new MarrainageService1v()
+const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+const MarrainageService = useNewMarrainage
+   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
 
 async function getMarrainageTokenData(token) {
   if (!token) {
@@ -116,10 +117,7 @@ export async function reloadMarrainage(newcomerId) {
     );
   }
   console.log(`Select ${onboarder.id} (${onboarder.domaine} for ${newcomer.id} (${newcomer.domaine}))`)
-  await knex('marrainage')
-    .where({ username: newcomer.id })
-    .increment('count', 1)
-    .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
+  await MarrainageService.createMarrainage(newcomer.id, onboarder.id);
 
   await sendOnboarderRequestEmail(newcomer, onboarder);
   console.log(

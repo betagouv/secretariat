@@ -5,8 +5,9 @@ import _ from 'lodash/array';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import testUsers from './users.json';
-import { MarrainageService1v, MarrainageService2v } from '../src/services/marrainageService';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '../src/services/marrainageService';
 import { Domaine, Member } from '../src/models/member';
+import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '../src/models/marrainage';
 
 
 chai.use(chaiHttp);
@@ -38,16 +39,50 @@ describe('Marrainage Service test', () => {
   });
 
     describe('unauthenticated', () => {
-        it('Test marrainageService v1', async () => {
+        it('should get an onboarder using selectRandomOnBoarderFunction v1', async () => {
             const marrainageService = new MarrainageService1v()
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.be.equals(undefined)
         });
 
-        it('Test marrainageService v2', async () => {
-            const marrainageService = new MarrainageService2v(testUsers as Member[])
+        it('should get an onboarder using selectRandomOnBoarderFunction with group', async () => {
+            const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], 2)
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.equals(undefined)
         });
+
+        it('should create marrainage', async () => {
+          const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], 2)
+          const onboarder : string = 'julien.dauphant'
+          const newcomer : string = 'membre.nouveau'
+          const newcomer2 : string = 'membre.actif'
+
+          // marrainage does not exist yet
+          let marrainageGroup: MarrainageGroup = await knex('marrainage_groups').where({
+            onboarder
+          }).first()
+          chai.should().not.exist(marrainageGroup)
+
+          // marrainage goup with onboader should be created
+          await marrainageService.createMarrainage(newcomer, onboarder)
+          marrainageGroup = await knex('marrainage_groups').where({
+            onboarder
+          }).first()
+          marrainageGroup.count.should.equals(1)
+
+          const marrainage_groups_members : MarrainageGroupMember = await knex('marrainage_groups_members').where({
+            marrainage_group_id: marrainageGroup.id,
+            username: newcomer
+          }).first()
+          chai.should().exist(marrainage_groups_members)
+
+          // marrainage goup with onboarder should be increments by 1
+          await marrainageService.createMarrainage(newcomer2, onboarder)
+          marrainageGroup = await knex('marrainage_groups').where({
+            onboarder
+          }).first()  
+          chai.should().equal(marrainageGroup.count, 2)
+          chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.DOING)
+      });
     });
 });
