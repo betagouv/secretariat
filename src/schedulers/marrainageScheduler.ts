@@ -6,7 +6,7 @@ import { createRequestForUser } from '../controllers/marrainageController';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { MarrainageGroup, MarrainageGroupStatus } from '../models/marrainage';
 import config from '../config';
-import { EventQueue } from '../infra/redis';
+import Redis from '../infra/redis';
 
 export async function reloadMarrainages() {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -63,45 +63,6 @@ export async function createMarrainages() {
     .catch(console.error);
 }
 
-export async function produceMessage(eventMessageType, params) {
-
-  EventQueue.sendMessage({
-      qname: eventMessageType,
-      message: `Hello World at ${new Date().toISOString()}`,
-      delay: 0
-  }, (err) => {
-      if (err) {
-          console.error(err);
-          return;
-      }
-  });
-}
-
-export async function consumeMessage(eventMessageType, messageHandler) {
-  // check for new messages on a delay
-  console.log("Checking for job");
-  EventQueue.receiveMessage({ qname: eventMessageType }, (err, resp) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    if (resp.id) {
-      console.log("Hey I got the message you sent me!");
-      // do lots of processing here
-      // when we are done we can delete it
-      EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log("deleted message with id", resp.id);
-      });
-    } else {
-      console.log("no message in queue");
-    }
-  });
-}
-
 export async function checkMarrainageStatus() {
 
     const marrainage_groups : MarrainageGroup[] = await knex('marrainage_groups')
@@ -117,15 +78,15 @@ export async function checkMarrainageStatus() {
       .update({
         status: MarrainageGroupStatus.DOING
       })
-      produceMessage('MarrainageIsDoingEvent', { marrainage_group_id: marrainage_group.id })
+      Redis.produce('MarrainageIsDoingEvent', { marrainage_group_id: marrainage_group.id })
     }
 }
 
 export async function sendEmailOnMarrainageCreated() {
   const messageHandler = (msg, cb) => {
-    const payload = msg.getBody();
+    const payload = JSON.parse(msg)
     console.log('Message payload', payload);
     cb(); // acknowledging the message
   };
-  consumeMessage('MarrainageIsDoingEvent', messageHandler)
+  Redis.consume('MarrainageIsDoingEvent', messageHandler)
 }
