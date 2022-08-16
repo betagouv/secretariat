@@ -6,7 +6,6 @@ import { createRequestForUser } from '../controllers/marrainageController';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { MarrainageGroup, MarrainageGroupStatus } from '../models/marrainage';
 import config from '../config';
-import { sendMail } from '../controllers/utils';
 import { RedisSmqConfig } from '../infra/redis';
 
 export async function reloadMarrainages() {
@@ -62,18 +61,6 @@ export async function createMarrainages() {
   return Promise.all(createMarrainagePromises)
     .then(() => console.log('Cron de création de marrainage terminé'))
     .catch(console.error);
-}
-
-export async function handleMarrainageDoing() {
-  const members : DBUser & MarrainageGroup [] = await knex('marrainage_groups_members')
-        .where({
-          id: marrainage_group.id
-      })
-      .join('users', 'users.username', 'marrainage_group_members.username')
-
-      for(member in members) {
-        sendMail()
-      }
 }
 
 export async function produceMessage(eventMessageType, params) {
