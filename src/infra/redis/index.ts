@@ -1,8 +1,8 @@
 export const RedisSmqConfig  = {
     namespace: 'espace-membre',
     redis: {
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
+        host: undefined,
+        port: undefined,
         url: process.env.REDIS_URL,
         connect_timeout: 3600000,
     },
