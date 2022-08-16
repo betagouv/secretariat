@@ -6,7 +6,7 @@ import { createRequestForUser } from '../controllers/marrainageController';
 import { DBUser, EmailStatusCode } from '../models/dbUser';
 import { MarrainageGroup, MarrainageGroupStatus } from '../models/marrainage';
 import config from '../config';
-import { RedisSmqConfig } from '../infra/redis';
+import { EventQueue } from '../infra/redis';
 
 export async function reloadMarrainages() {
   console.log('Demarrage du cron job pour la relance de marrainages');
@@ -64,35 +64,42 @@ export async function createMarrainages() {
 }
 
 export async function produceMessage(eventMessageType, params) {
-  const { Message, Producer } = require('redis-smq');
-  const producer = new Producer(RedisSmqConfig);
-  producer.run((err) => {
-    if (err) throw err;
-    const message = new Message();
-    message
-      .setBody(params)
-      .setTTL(3600000) // in millis
-      .setQueue(eventMessageType);
-    producer.produce(message, (err) => {
-        if (err) console.log(err);
-        else {
-          const msgId = message.getId(); // string
-          console.log('Successfully produced. Message ID is ', msgId);
-        }
-    });
-  })
+
+  EventQueue.sendMessage({
+      qname: eventMessageType,
+      message: `Hello World at ${new Date().toISOString()}`,
+      delay: 0
+  }, (err) => {
+      if (err) {
+          console.error(err);
+          return;
+      }
+  });
 }
 
 export async function consumeMessage(eventMessageType, messageHandler) {
-  const { Consumer } = require('redis-smq');
-
-  const consumer = new Consumer(RedisSmqConfig);
-
-  consumer.consume(eventMessageType, messageHandler, (err) => {
-    if (err) console.error(err);
+  // check for new messages on a delay
+  console.log("Checking for job");
+  EventQueue.receiveMessage({ qname: eventMessageType }, (err, resp) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    if (resp.id) {
+      console.log("Hey I got the message you sent me!");
+      // do lots of processing here
+      // when we are done we can delete it
+      EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        console.log("deleted message with id", resp.id);
+      });
+    } else {
+      console.log("no message in queue");
+    }
   });
-
-  consumer.run();
 }
 
 export async function checkMarrainageStatus() {

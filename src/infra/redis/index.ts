@@ -2,23 +2,31 @@ import { config } from "dotenv";
 
 config();
 
-export const RedisSmqConfig  = {
-    namespace: 'espace-membre',
-    redis: {
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT,
-        url: process.env.REDIS_URL,
-        connect_timeout: 3600000,
-    },
-    log: {
-        enabled: 0,
-        options: {
-            level: 'trace',
-        },
-    },
-    monitor: {
-        enabled: false,
-        host: '127.0.0.1',
-        port: 3000,
-    },
-};
+let RedisSMQ = require("rsmq");
+
+// let QUEUENAME = "testqueue";
+let NAMESPACE = "rsmq";
+
+let raw_url = new URL(process.env.REDIS_URL);
+let REDIS_HOST=raw_url.hostname;
+let REDIS_PORT=raw_url.port;
+let REDIS_PASSWORD=raw_url.password;
+
+export const EventQueue = new RedisSMQ({
+    host: REDIS_HOST,
+    port: REDIS_PORT,
+    ns: NAMESPACE,
+    password: REDIS_PASSWORD
+});
+
+EventQueue.createQueue({qname: 'MarrainageIsDoingEvent'}, (err) => {
+    if (err) {
+        if (err.name !== "queueExists") {
+            console.error(err);
+            return;
+        } else {
+            console.log("The queue exists. That's OK.");
+        }
+    }
+    console.log("queue created");
+  });
