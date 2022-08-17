@@ -1,4 +1,4 @@
-import { DBUser } from "src/models/dbUser"
+import { DBUser } from "../../models/dbUser"
 
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL='MARRAINAGE_NEWCOMER_EMAIL',
