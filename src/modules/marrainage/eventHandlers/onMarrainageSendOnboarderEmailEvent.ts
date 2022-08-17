@@ -2,7 +2,7 @@ import { sendEmail } from "../../../config/email.config"
 import { MarrainageOnboarderEmailEvent } from "src/models/marrainage"
 import db from "../../../db"
 import { EMAIL_TYPES, MarrainageOnboarderEmail } from "../../email"
-import { CommunicationEmailCode, DBUser } from "src/models/dbUser"
+import { CommunicationEmailCode, DBUser } from "../../../models/dbUser"
 
 export const onMarrainageSendOnboarderEmail:
     (evenement: MarrainageOnboarderEmailEvent) => Promise<void> = async (evt) => {
