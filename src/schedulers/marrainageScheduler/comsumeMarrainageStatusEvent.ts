@@ -1,7 +1,6 @@
 import knex from '../../db';
 import { MarrainageGroup, MarrainageGroupMember, MarrainageNewcomerEmailEvent, MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from '../../models/marrainage';
 import { IEventBus } from '../../infra/eventBus';
-import { EMAIL_TYPES } from '../../modules/email';
 
 interface MarrainageCreatedJob {
   marrainage_group_id: number
@@ -18,13 +17,13 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
     if (marrainageGroup.length) {
       EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL, {
         user: marrainageGroup[0].username,
-        type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL
+        type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL
       } as MarrainageOnboarderEmailEvent)
 
       for (const marrainage of marrainageGroup) {
         EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL, {
           user: marrainage.username,
-          type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL
+          type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL
         } as MarrainageNewcomerEmailEvent) 
       }
     } else {
