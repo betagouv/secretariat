@@ -4,6 +4,7 @@
     "node_modules",
     "static",
     "**/*.d.ts",
+    "**/*.spec.ts",
     "migrations",
     "knexfile.js",
     "dist",

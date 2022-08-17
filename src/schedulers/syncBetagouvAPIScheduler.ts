@@ -6,7 +6,7 @@ import { Domaine, Member } from '../models/member';
 import { Job, JobWTTJ } from '../models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
 import { Startup, StartupInfo } from '../models/startup';
-import { DBUser } from 'src/models/dbUser';
+import { DBUser } from '../models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 

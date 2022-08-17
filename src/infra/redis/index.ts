@@ -53,13 +53,14 @@ async function produce(eventMessageType, params) {
   async function consume(eventMessageType, messageHandler) {
     // check for new messages on a delay
     console.log("Checking for job");
-    EventQueue.receiveMessage({ qname: eventMessageType }, (err, resp) => {
+    EventQueue.receiveMessage({ qname: eventMessageType }, async (err, resp) => {
       if (err) {
         console.error(err);
         return;
       }
       if (resp.id) {
-        console.log("Hey I got the message you sent me!");
+        const message = JSON.parse(resp.message)
+        await messageHandler(message)
         // do lots of processing here
         // when we are done we can delete it
         EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {

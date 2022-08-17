@@ -36,6 +36,7 @@ services:
       MAIL_HOST: maildev
       MAIL_PORT: 25
       MAIL_IGNORE_TLS: "true"
+      MAIL_SENDER: "addresse@localhost"
       SECURE: "false"
       HOSTNAME: localhost
       SESSION_SECRET: "SecretThatShouldChangedInProduction"
