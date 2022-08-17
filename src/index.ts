@@ -25,10 +25,10 @@ import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
 import * as hookController from './controllers/hookController';
 import * as sentry from './lib/sentry';
-import RedisConfig from './infra/redis';
+import EventBus from './infra/eventBus/eventBus';
 
 const app = express();
-RedisConfig.init(['MarrainageIsDoingEvent'])
+EventBus.init(['MarrainageIsDoingEvent'])
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".

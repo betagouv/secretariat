@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import { IEventBus } from "../eventBus";
 
 config();
 
@@ -73,7 +74,7 @@ async function produce(eventMessageType, params) {
       }
 })};
 
-const RedisConfig = {
+const RedisConfig : IEventBus = {
     init: init,
     produce: produce,
     consume: consume,
