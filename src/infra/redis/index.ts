@@ -24,7 +24,7 @@ const makeRedisEventBus = ({
   });
 
   async function init(queueNames: string[]) {
-      for (const queueName in queueNames) {
+      for (const queueName of queueNames) {
           EventQueue.createQueue({qname: queueName}, (err) => {
               if (err) {
                   if (err.name !== "queueExists") {
