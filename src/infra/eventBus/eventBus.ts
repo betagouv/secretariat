@@ -1,5 +1,5 @@
 import InMemoryEventBus from '../inMemoryEventBus';
-import RedisEventBus from '../redis';
+import makeRedisEventBus from '../redis';
 
 export interface IEventBus {
     init: any,
@@ -7,6 +7,6 @@ export interface IEventBus {
     produce: any
 }
 
-const EventBus : IEventBus = process.env.NODE_ENV === 'test' ? new InMemoryEventBus() : RedisEventBus
+const EventBus : IEventBus = process.env.NODE_ENV === 'test' ? new InMemoryEventBus() : makeRedisEventBus({ REDIS_URL: process.env.REDIS_URL })
 
 export default EventBus
