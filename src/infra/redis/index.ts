@@ -41,7 +41,7 @@ const makeRedisEventBus = ({
 
   async function produce(eventMessageType, params) {
 
-      EventQueue.sendMessage({
+      return EventQueue.sendMessage({
           qname: eventMessageType,
           message: JSON.stringify(params),
           delay: 0
@@ -56,7 +56,7 @@ const makeRedisEventBus = ({
     async function consume(eventMessageType, messageHandler) {
       // check for new messages on a delay
       console.log(`Checking for job in queue ${eventMessageType}`);
-      EventQueue.receiveMessage({ qname: eventMessageType }, async (err, resp) => {
+      return EventQueue.receiveMessage({ qname: eventMessageType }, async (err, resp) => {
         if (err) {
           console.error(`queue ${eventMessageType} : ${err}`);
           return;
