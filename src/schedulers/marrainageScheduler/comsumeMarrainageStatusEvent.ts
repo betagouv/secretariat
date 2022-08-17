@@ -9,7 +9,7 @@ interface MarrainageCreatedJob {
 export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
   console.info('Job: comsumeMarrainageStatusEvent started')
 
-  const messageHandler = async ({ marrainage_group_id } : MarrainageCreatedJob, cb) => {
+  const messageHandler = async ({ marrainage_group_id } : MarrainageCreatedJob) => {
     const marrainageGroup : (Pick<MarrainageGroup, "onboarder"> & Pick<MarrainageGroupMember, "username">)[] = await knex('marrainage_groups')
       .where({ id: marrainage_group_id })
       .join('marrainage_groups_members', 'marrainage_groups.id', 'marrainage_groups_members.marrainage_group_id')
@@ -29,7 +29,6 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
     } else {
       console.error(`No marrainage group found for id : ${marrainage_group_id}`)
     }
-    cb(); // acknowledging the message
   };
   EventBus.consume(MARRAINAGE_EVENT.MARRAINAGE_IS_DOING_EVENT, messageHandler)
   console.info('Job: comsumeMarrainageStatusEvent ended')
