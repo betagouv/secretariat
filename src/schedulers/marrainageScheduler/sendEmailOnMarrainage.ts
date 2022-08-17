@@ -1,3 +1,4 @@
+import { MARRAINAGE_EVENT } from '../../models/marrainage';
 import { IEventBus } from '../../infra/eventBus';
 
 export async function sendEmailOnMarrainageCreated(EventBus: IEventBus) {
@@ -6,5 +7,5 @@ export async function sendEmailOnMarrainageCreated(EventBus: IEventBus) {
     console.log('Message payload', payload);
     cb(); // acknowledging the message
   };
-  EventBus.consume('MarrainageIsDoingEvent', messageHandler)
+  EventBus.consume(MARRAINAGE_EVENT.MARRAINAGE_IS_DOING_EVENT, messageHandler)
 }

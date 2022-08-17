@@ -1,5 +1,5 @@
 import knex from '../../db';
-import { MarrainageGroup, MarrainageGroupStatus } from '../../models/marrainage';
+import { MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from '../../models/marrainage';
 import config from '../../config';
 import { IEventBus } from '../../infra/eventBus';
 
@@ -18,6 +18,6 @@ export async function checkMarrainageStatus(EventBus : IEventBus) {
       .update({
         status: MarrainageGroupStatus.DOING
       })
-      EventBus.produce('MarrainageIsDoingEvent', { marrainage_group_id: marrainage_group.id })
+      EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_IS_DOING_EVENT, { marrainage_group_id: marrainage_group.id })
     }
 }

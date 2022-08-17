@@ -1,3 +1,5 @@
+export * from './marrainageEvent';
+
 export interface Marrainage {
     username: string,
     last_onboarder: string,
