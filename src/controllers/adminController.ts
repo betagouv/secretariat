@@ -5,6 +5,8 @@ import * as utils from "./utils";
 import { AdminPage } from '../views';
 import betagouv from "../betagouv";
 import { Domaine, Member } from "../models/member";
+import db from "../db";
+import { time } from "console";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
@@ -59,55 +61,13 @@ export async function getEmailLists(req, res) {
     const emails = await emailWithMetadataMemoized();
     const expiredEmails = emails.filter((user) => user.expired);
     const users = await betagouv.usersInfos()
-    const incubators = await betagouv.incubators()
-    const startups = await betagouv.startupsInfos()
-    // const currentUser = await utils.userInfos(req.auth.id, true);
     const title = 'Administration';
       res.send(
         AdminPage({
           request: req,
           title,
           currentUserId: req.auth.id,
-          incubatorOptions: Object.keys(incubators).map(incubator => {
-            return {
-              value: incubator,
-              label: incubators[incubator].title 
-            }
-          }),
-          startupOptions: startups.map(startup => {
-            return {
-              value: startup.id,
-              label: startup.attributes.name
-            }
-          }),
-          domaineOptions: [{
-              value: "ANIMATION",
-              label: "Animation"
-            }, {
-              value: "COACHING",
-              label: "Coaching"
-            }, {
-              value: "DEPLOIEMENT",
-              label: "Déploiement"
-            }, {
-              value: "DESIGN",
-              label: "Design"
-            }, {
-              value: "DEVELOPPEMENT",
-              label: "Développement"
-            }, {
-              value: "INTRAPRENARIAT",
-              label: "Intraprenariat"
-            }, {
-              value: "PRODUIT",
-              label: "Produit"
-            }, {
-              value: "AUTRE",
-              label: "Autre"
-            }
-          ],
           users: users.splice(0, 100),
-          // userInfos: currentUser.userInfos,
           emails,
           expiredEmails,
           activeTab: 'admin',
@@ -125,6 +85,7 @@ export async function getEmailLists(req, res) {
 export async function getUsers(req, res) {
     const domaines = req.query.domaines ? req.query.domaines.split(',').map(domaine => Domaine[domaine]) : []
     const incubators = req.query.incubators ? req.query.incubators.split(',') : []
+    const startupPhases = req.query.startupPhases ? req.query.startupPhases.split(',') : []
     const memberStatus = req.query.memberStatus
     let startups = req.query.startups ? req.query.startups.split(',') : []
     // const activeMembers = req.params.activeMembers
@@ -143,6 +104,14 @@ export async function getUsers(req, res) {
     }
     if (domaines.length) {
       users = users.filter(user => domaines.includes(user.domaine))
+    }
+    if (startupPhases) {
+      const usersStartupsByPhase : UserStartup[] = await db('users_startups')
+        .whereIn('user_id', users.map(user => user.id))
+        .join('startups', 'users_startups.startup_id', 'startups.id')
+        .whereIn('startups.current_phase', startupPhases)
+      const usersByPhaseIds = usersStartupsByPhase.map(item => item.user_id)
+      users = users.filter(user => usersByPhaseIds.includes(user.id))
     }
     if (startups.length) {
       users = users.filter(user => {
