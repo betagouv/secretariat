@@ -104,7 +104,7 @@ export async function getUsers(req, res) {
     if (domaines.length) {
       users = users.filter(user => domaines.includes(user.domaine))
     }
-    if (startupPhases) {
+    if (startupPhases.length) {
       const usersStartupsByPhase : UserStartup[] = await db('users_startups')
         .whereIn('user_id', users.map(user => user.id))
         .join('startups', 'users_startups.startup_id', 'startups.id')
