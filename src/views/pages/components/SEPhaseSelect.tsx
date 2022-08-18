@@ -24,5 +24,5 @@ export default ({ onChange, isMulti, placeholder, defaultValue }: {
       isMulti={isMulti}
       defaultValue={defaultValue}
       onChange={onChange}
-      placeholder={placeholder || 'Sélectionne une ou plusieurs phase'} /></ClientOnly>
+      placeholder={placeholder || 'Sélectionne une ou plusieurs phases'} /></ClientOnly>
 }

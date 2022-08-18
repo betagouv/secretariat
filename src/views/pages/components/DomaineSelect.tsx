@@ -8,5 +8,5 @@ export default({ domaines, onChange }) => {
       options={domaines}
       onChange={onChange}
       isMulti
-      placeholder={'Sélectionne un ou plusieurs domaine'}  /></ClientOnly>
+      placeholder={'Sélectionne un ou plusieurs domaines'}  /></ClientOnly>
   }

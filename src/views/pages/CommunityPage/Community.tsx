@@ -168,7 +168,7 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
                 </div>
             </div>
             <div className="row">
-                <div style={{ width: '33%' }}>
+                <div style={{ width: '50%' }}>
                     <DomaineSelect
                         domaines={props.domaineOptions}
                         onChange={(domaines) => setState({
@@ -177,7 +177,7 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
                         })}
                     />
                 </div>
-                <div style={{ width: '33%' }}>
+                <div style={{ width: '50%' }}>
                     <MemberStatusSelect
                         onChange={(memberStatus) => setState({
                         ...state,
@@ -185,7 +185,9 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
                         })}
                     />
                 </div>
-                <div style={{ width: '33%' }}>
+            </div>
+            <div className="row">
+                <div style={{ width: '50%' }}>
                     <SEPhaseSelect
                         isMulti={true}
                         onChange={(startupPhases) => setState({
