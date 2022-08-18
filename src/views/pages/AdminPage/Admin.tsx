@@ -23,6 +23,7 @@ interface AdminProps {
   currentUserId: string,
   errors: string[],
   messages: string[],
+  users: Member[],
   activeTab: string,
   request: Request,
 }
