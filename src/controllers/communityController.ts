@@ -19,12 +19,53 @@ export async function getCommunity(req, res) {
   if (req.query.username) {
     return res.redirect(`/community/${req.query.username}`);
   }
+
   try {
     const users = await BetaGouv.usersInfos();
+    const incubators = await BetaGouv.incubators()
+    const startups = await BetaGouv.startupsInfos()
     const title = 'Communauté';
     return res.send(CommunityPage({
       title,
       currentUserId: req.auth.id,
+      incubatorOptions: Object.keys(incubators).map(incubator => {
+        return {
+          value: incubator,
+          label: incubators[incubator].title 
+        }
+      }),
+      startupOptions: startups.map(startup => {
+        return {
+          value: startup.id,
+          label: startup.attributes.name
+        }
+      }),
+      domaineOptions: [{
+          value: "ANIMATION",
+          label: "Animation"
+        }, {
+          value: "COACHING",
+          label: "Coaching"
+        }, {
+          value: "DEPLOIEMENT",
+          label: "Déploiement"
+        }, {
+          value: "DESIGN",
+          label: "Design"
+        }, {
+          value: "DEVELOPPEMENT",
+          label: "Développement"
+        }, {
+          value: "INTRAPRENARIAT",
+          label: "Intraprenariat"
+        }, {
+          value: "PRODUIT",
+          label: "Produit"
+        }, {
+          value: "AUTRE",
+          label: "Autre"
+        }
+      ],
       users,
       activeTab: 'community',
       errors: req.flash('error'),

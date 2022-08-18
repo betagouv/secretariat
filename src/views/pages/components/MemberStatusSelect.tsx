@@ -3,9 +3,16 @@ import Select from 'react-select'
 
 import { ClientOnly } from "./ClientOnly"
 
-export default ({ status, onChange }) => {
+const statusOptions = [
+  { value: 'active', label: 'Membres Actifs'},
+  { value: 'unactive', label: 'Alumnis'},
+  { value: 'both', label: 'Membres actifs et Alumnis'}
+]
+
+
+export default ({ onChange }) => {
     return <ClientOnly><Select
-      options={status}
+      options={statusOptions}
       onChange={onChange}
       placeholder={'Sélectionne les membres actifs/inactifs/les deux'} /></ClientOnly>
   }
