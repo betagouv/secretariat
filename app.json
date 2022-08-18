@@ -6,7 +6,8 @@
     }
   },
   "addons": [
-    "postgresql:postgresql-sandbox"
+    "postgresql:postgresql-sandbox",
+    "redis:redis-sandbox"
   ],
   "buildpacks": [
     {
