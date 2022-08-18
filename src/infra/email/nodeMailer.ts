@@ -2,8 +2,8 @@ import nodemailer from 'nodemailer';
 import { EmailProps, SendEmail, SendEmailProps } from '../../modules/email';
 
 const TEMPLATE_URL_BY_TYPE: Record<EmailProps['type'], string> = {
-  'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageRequest.ejs',
-  'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageRequest.ejs',
+  'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageByGroupNewcomerEmail.ejs',
+  'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageByGroupOnboarderEmail.ejs',
 }
 
 interface SendEmailFromNodemailerDeps {
