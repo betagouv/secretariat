@@ -6,7 +6,6 @@ import { AdminPage } from '../views';
 import betagouv from "../betagouv";
 import { Domaine, Member } from "../models/member";
 import db from "../db";
-import { time } from "console";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
