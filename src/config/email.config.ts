@@ -55,11 +55,6 @@ if (process.env.NODE_ENV === 'production') {
   console.log('Emails will go through a FAKE email service (no mails sent).')
 }
 
-if (!process.env.MAIL_SENDER) {
-  console.error('ERROR: MAIL_SENDER is not set')
-  process.exit(1)
-}
-
 export {
     sendEmail
 }
