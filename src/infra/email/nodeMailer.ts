@@ -49,7 +49,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
     });
       
 
-  return function sendMailFromNodemailer(props: SendEmailProps) {
+  return async function sendMailFromNodemailer(props: SendEmailProps) {
     const {
         subject,
         type,
@@ -60,10 +60,9 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
     } = props
 
     const templateURL = TEMPLATE_URL_BY_TYPE[type]
-    const html : string = htmlBuilder.renderFile(templateURL, {
+    const html : string = await htmlBuilder.renderFile(templateURL, {
       ...variables
     });
-    console.info('Will send html', html)
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
