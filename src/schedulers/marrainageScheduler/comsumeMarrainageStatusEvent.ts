@@ -17,6 +17,7 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
     if (marrainageGroup.length) {
       EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL, {
         user: marrainageGroup[0].username,
+        marrainage_group_id: marrainage_group_id,
         type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL
       } as MarrainageOnboarderEmailEvent)
 
