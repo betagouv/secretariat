@@ -6,6 +6,7 @@ import { AdminPage } from '../views';
 import betagouv from "../betagouv";
 import { Domaine, Member } from "../models/member";
 import db from "../db";
+import { CommunicationEmailCode, DBUser } from "../models/dbUser";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 
@@ -117,6 +118,18 @@ export async function getUsers(req, res) {
         return Boolean(startups.filter(function(n) {
           return (user.startups || []).indexOf(n) !== -1;
         }).length);
+      })
+    }
+    const dbUsers : DBUser[] = await db('users').whereIn('username', users.map(user => user.id))
+    if (process.env.ESPACE_MEMBRE_ADMIN && process.env.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
+      users = users.map(user => {
+        const dbUser = dbUsers.find(dbUser => dbUser.username === user.id)
+        return {
+          ...user,
+          primaryEmail: dbUser ? dbUser.primary_email : '',
+          secondaryEmail: dbUser ? dbUser.secondary_email : '',
+          communicationEmail: dbUser ? (dbUser.communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email) : ''
+        }
       })
     }
     res.json({ users })

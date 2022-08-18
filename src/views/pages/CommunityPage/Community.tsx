@@ -88,7 +88,6 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
 
         const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
         const header = Object.keys(rows[0])
-        console.log(rows[0], Object.keys(rows[0]))
         const csv = [
         header.join(','), // header row first
         ...rows.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
