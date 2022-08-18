@@ -6,14 +6,18 @@ import * as Email from '../../../config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "../../../models/dbUser";
 import { EMAIL_TYPES, MarrainageOnboarderEmail } from "../../../modules/email";
+import betagouv from "../../../betagouv";
+import { Member } from "../../../models/member";
 
 describe('Test marrainage send onboarder email', () => {
     it('should send email to onboarder email', async () => {
         const onboarder = 'membre.nouveau'
         const [user] : DBUser[] = await db('users').where({ username: onboarder })
+        const member : Member = await betagouv.userInfosById(onboarder)
         const evt : MarrainageOnboarderEmailEvent = {
             type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL,
-            user: user.username
+            user: user.username,
+            marrainage_group_id: 15157
         }
         await onMarrainageSendOnboarderEmail(evt)
         const sendEmail = sinon.spy(Email, 'sendEmail');
@@ -21,8 +25,12 @@ describe('Test marrainage send onboarder email', () => {
             type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
             variables: {
                 member: {
-                    ...user
+                    ...member
                 },
+                newcomers: [{
+                    fullname: 'membre.nouveau',
+                    email: 'membre.nouveau@beta.gouv.fr'
+                }]
             },
             extraParams: {},
             attachments: [],

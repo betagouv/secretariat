@@ -1,3 +1,4 @@
+import { Member } from "../../models/member"
 import { DBUser } from "../../models/dbUser"
 
 export enum EMAIL_TYPES {
@@ -16,7 +17,11 @@ type BaseEmail = {
 export type MarrainageOnboarderEmail = {
     type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL
     variables: {
-        member: DBUser
+        member: Member,
+        newcomers: {
+            fullname: string,
+            email: string
+        }[]
     }
 } & BaseEmail
 

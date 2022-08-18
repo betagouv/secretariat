@@ -11,7 +11,7 @@ const EMAIL_CONFIG =  {
     MAIL_IGNORE_TLS: process.env.MAIL_HOST,
     MAIL_PASS: process.env.MAIL_PASS,
     MAIL_PORT: process.env.MAIL_PORT,
-    MAIL_SENDER: process.env.MAIL_SENDER,
+    MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
     MAIL_SERVICE: process.env.MAIL_SERVICE,
     MAIL_USER: process.env.MAIL_USER,
 }
@@ -53,11 +53,6 @@ if (process.env.NODE_ENV === 'production') {
   }
 } else {
   console.log('Emails will go through a FAKE email service (no mails sent).')
-}
-
-if (!process.env.MAIL_SENDER) {
-  console.error('ERROR: MAIL_SENDER is not set')
-  process.exit(1)
 }
 
 export {

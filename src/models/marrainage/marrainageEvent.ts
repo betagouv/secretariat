@@ -16,10 +16,12 @@ type BaseEvent = {
 }
 
 export type MarrainageOnboarderEmailEvent = {
-    type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL
+    type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL,
+    marrainage_group_id: number
 } & BaseEvent
 
 export type MarrainageNewcomerEmailEvent  = {
-    type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL
+    type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
+    marrainage_group_id: number
 } & BaseEvent
 
