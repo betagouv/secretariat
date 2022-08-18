@@ -9,11 +9,11 @@ function fakeSendEmail(props: SendEmailProps): Promise<null> {
     return null
   }
 
-  const { subject, recipients, type, variables } = props
+  const { subject, toEmail, type, variables } = props
 
   console.info(
-    `EMAIL OUT: ${recipients
-      .map((item) => item.email)
+    `EMAIL OUT: ${toEmail
+      .map((item) => item)
       .join(', ')} with subject "${subject}" and type ${type}`,
     variables
   )

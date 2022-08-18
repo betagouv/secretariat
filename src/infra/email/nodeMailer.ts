@@ -55,13 +55,15 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         type,
         toEmail,
         extraParams = {}, 
-        attachments=[]
+        attachments=[],
+        variables = {},
     } = props
 
     const templateURL = TEMPLATE_URL_BY_TYPE[type]
-    const html = htmlBuilder.renderFile(templateURL, {
-        resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
+    const html : string = htmlBuilder.renderFile(templateURL, {
+      ...variables
     });
+    console.info('Will send html', html)
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,

@@ -26,7 +26,6 @@ describe('Test marrainage send newcomer email', () => {
             },
             extraParams: {},
             attachments: [],
-            recipients: [],
             toEmail: [user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email],
         }
         sendEmail.calledOnceWith(email)

@@ -7,11 +7,10 @@ export enum EMAIL_TYPES {
 
 type BaseEmail = {
     subject?: string
-    variables: any
+    variables: Record<string, any>,
     toEmail: string[],
     extraParams: Record<string, string>, 
     attachments: any[]
-    recipients: Array<{ email: string; name?: string }>
 }
 
 export type MarrainageOnboarderEmail = {
@@ -37,11 +36,10 @@ export type EmailProps = BaseEmail & EmailVariants
 export type SendEmailProps = {
     subject?: string
     type: EmailProps['type']
-    variables: Record<string, string>
+    variables: Record<string, any>,
     toEmail: string[],
     extraParams: Record<string, string>, 
     attachments: any[]
-    recipients: Array<{ email: string; name?: string }>
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>

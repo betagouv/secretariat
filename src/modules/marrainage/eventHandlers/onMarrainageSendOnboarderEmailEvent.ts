@@ -20,7 +20,6 @@ export const onMarrainageSendOnboarderEmail:
         },
         extraParams: {},
         attachments: [],
-        recipients: []
     } 
     return sendEmail(email)
   }
