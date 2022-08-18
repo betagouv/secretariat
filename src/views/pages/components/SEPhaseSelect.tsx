@@ -8,7 +8,7 @@ const options = [
   { value: 'success', label: 'success'},
   { value: 'transfer', label: 'transfer'},
   { value: 'investigation', label: 'investigation'},
-  { value: 'onstruction', label: 'onstruction'},
+  { value: 'construction', label: 'construction'},
   { value: 'alumni', label: 'alumni' }
 ]
 
