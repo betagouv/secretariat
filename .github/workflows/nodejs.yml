@@ -41,6 +41,7 @@ jobs:
         MAIL_PASS: fakepass
         MAIL_SERVICE: debug
         MAIL_USER: fakeuser
+        MAIL_SENDER: fake@localhost
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
         HOSTNAME: localhost
         HASH_SALT: fakesaltfortestenv

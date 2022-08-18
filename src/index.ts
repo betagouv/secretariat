@@ -25,7 +25,11 @@ import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
 import * as hookController from './controllers/hookController';
 import * as sentry from './lib/sentry';
+import EventBus from './infra/eventBus/eventBus';
+import { MARRAINAGE_EVENTS_VALUES } from './models/marrainage';
+
 const app = express();
+EventBus.init([...MARRAINAGE_EVENTS_VALUES])
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
