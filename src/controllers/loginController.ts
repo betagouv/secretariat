@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
 import BetaGouv from '../betagouv';
 import config from '@config';

@@ -5,7 +5,6 @@ import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendEmailFromSendinblue } from '@infra/email/sendInBlue'
 
 let sendEmail: SendEmail = fakeSendEmail
-let sendEmailFromSendinblue: SendEmail
 
 const EMAIL_CONFIG =  {
     MAIL_DEBUG: process.env.MAIL_DEBUG,
