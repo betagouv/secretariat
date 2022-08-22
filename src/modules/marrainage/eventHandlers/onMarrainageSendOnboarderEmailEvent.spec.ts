@@ -5,7 +5,7 @@ import { MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from "../../../models
 import * as Email from '../../../config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "../../../models/dbUser";
-import { EMAIL_TYPES, MarrainageOnboarderEmail } from "../../../modules/email";
+import { EMAIL_TYPES, MarrainageOnboarderEmail } from "@modules/email";
 import betagouv from "../../../betagouv";
 import { Member } from "../../../models/member";
 

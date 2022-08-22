@@ -5,7 +5,7 @@ import { MarrainageNewcomerEmailEvent, MARRAINAGE_EVENT } from "../../../models/
 import * as Email from '../../../config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "../../../models/dbUser";
-import { EMAIL_TYPES, MarrainageNewcomerEmail } from "../../../modules/email";
+import { EMAIL_TYPES, MarrainageNewcomerEmail } from "@modules/email";
 
 describe('Test marrainage send newcomer email', () => {
     it('should send email to newcomer email', async () => {

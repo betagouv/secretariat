@@ -33,6 +33,9 @@
             "@node_modules/*": [
                 "node_modules/*"
             ],
+            "@modules/*": [
+                "src/modules/*"
+            ],
         },
         "plugins": [
         {
