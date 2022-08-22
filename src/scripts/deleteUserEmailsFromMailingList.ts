@@ -1,4 +1,4 @@
-import { removeEmailsFromMailingList } from '../schedulers/userContractEndingScheduler'
+import { removeEmailsFromMailingList } from '@schedulers/userContractEndingScheduler'
 
 const args = process.argv.slice(2);
 if (args[0]) {

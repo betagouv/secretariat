@@ -1,3 +1,3 @@
-import { createUsersByEmail } from "../schedulers/mattermostScheduler";
+import { createUsersByEmail } from "@schedulers/mattermostScheduler";
 
 createUsersByEmail();

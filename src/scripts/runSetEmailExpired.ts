@@ -1,2 +1,2 @@
-import { setEmailExpired } from "../schedulers/setEmailExpired";
+import { setEmailExpired } from "@schedulers/setEmailExpired";
 setEmailExpired()

@@ -1,2 +1,2 @@
-import { pullRequestWatcher } from "../schedulers/pullRequestWatcher";
+import { pullRequestWatcher } from "@schedulers/pullRequestWatcher";
 pullRequestWatcher()

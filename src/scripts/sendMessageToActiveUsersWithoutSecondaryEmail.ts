@@ -1,3 +1,3 @@
-import { sendMessageToActiveUsersWithoutSecondaryEmail } from "../schedulers/updateProfileScheduler";
+import { sendMessageToActiveUsersWithoutSecondaryEmail } from "@schedulers/updateProfileScheduler";
 
 sendMessageToActiveUsersWithoutSecondaryEmail()

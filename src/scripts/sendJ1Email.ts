@@ -1,4 +1,4 @@
-import { sendJ1Email } from '../schedulers/userContractEndingScheduler';
+import { sendJ1Email } from '@schedulers/userContractEndingScheduler';
 
 const args = process.argv.slice(2);
 if (args[1]) {

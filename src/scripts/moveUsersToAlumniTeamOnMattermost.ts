@@ -1,4 +1,4 @@
-import { moveUsersToAlumniTeam } from '../schedulers/mattermostScheduler';
+import { moveUsersToAlumniTeam } from '@schedulers/mattermostScheduler';
 
 const args = process.argv.slice(2);
 if (args[0]) {
