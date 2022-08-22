@@ -42,7 +42,7 @@
             "@infra/*": [
                 "src/infra/*"
             ],
-            "@infra/*": [
+            "@models/*": [
                 "src/models/*"
             ],
         },
