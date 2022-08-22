@@ -1,5 +1,5 @@
 import betagouv from "../betagouv";
-import config from "../config";
+import config from "@config";
 import { Member } from "@models/member";
 import { Startup } from "@models/startup";
 

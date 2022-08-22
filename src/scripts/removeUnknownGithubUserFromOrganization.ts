@@ -1,4 +1,4 @@
-import config from '../config';
+import config from '@config';
 import BetaGouv from '../betagouv';
 import * as github from '../lib/github';
 

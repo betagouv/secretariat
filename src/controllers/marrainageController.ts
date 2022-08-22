@@ -1,6 +1,6 @@
 import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import config from '@config';
 import BetaGouv from '../betagouv';
 import * as utils from './utils';
 import knex from '../db';

@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
 import BetaGouv from '../betagouv';
-import config from '../config';
+import config from '@config';
 import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '@models/dbUser';

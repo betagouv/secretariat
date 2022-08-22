@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
 import { Response } from 'superagent';
-import config from '../src/config';
+import config from '@config';
 import knex from '../src/db';
 import app from '../src/index';
 import * as searchCommune from '../src/lib/searchCommune';

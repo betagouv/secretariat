@@ -1,7 +1,7 @@
 import nock from 'nock';
 import rewire from 'rewire';
 import sinon from 'sinon';
-import config from '../src/config';
+import config from '@config';
 import testUsers from './users.json';
 import utils from './utils';
 import * as mattermost from '../src/lib/mattermost';

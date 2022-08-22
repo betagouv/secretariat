@@ -2,7 +2,7 @@ import nock from 'nock';
 import chai from 'chai';
 import sinon from 'sinon';
 import BetaGouv from '../src/betagouv';
-import config from '../src/config';
+import config from '@config';
 import utils from './utils';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';

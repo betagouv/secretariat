@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "@config";
 
 export function getResources(req, res) {
   res.render('resource', {

@@ -1,7 +1,7 @@
 import ejs from 'ejs';
-import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
-import BetaGouv from '../betagouv';
-import db from '../db';
+import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '@controllers/utils';
+import BetaGouv from '@/betagouv';
+import db from '@/db';
 import { Domaine, Member } from '@models/member';
 import { Job, JobWTTJ } from '@models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'

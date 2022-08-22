@@ -1,6 +1,6 @@
 import BetaGouv from '../betagouv';
-import * as utils from '../controllers/utils';
-import knex from '../db';
+import * as utils from '@controllers/utils';
+import knex from '@/db';
 import { DBUser } from '@models/dbUser';
 import { Member } from '@models/member';
 

@@ -1,6 +1,6 @@
-import betagouv from "../betagouv";
-import knex from "../db";
-import { checkUserIsExpired } from "../controllers/utils";
+import betagouv from "@/betagouv";
+import knex from "@/db";
+import { checkUserIsExpired } from "@controllers/utils";
 
 const getIntraUsersEmails = async () => {
     const users = await betagouv.usersInfos();

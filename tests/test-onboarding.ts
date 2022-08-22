@@ -6,7 +6,7 @@ import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
-import config from '../src/config';
+import config from '@config';
 import { EmailStatusCode } from '@models/dbUser';
 import betagouv from '../src/betagouv';
 import * as searchCommune from '../src/lib/searchCommune';

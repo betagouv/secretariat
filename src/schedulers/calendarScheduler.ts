@@ -1,7 +1,7 @@
 import ejs from 'ejs'
 import { getEventsForCalendarFromDateToDate } from "../lib/icalhelper"
 import betagouv from '../betagouv'
-import * as utils from '../controllers/utils';
+import * as utils from '@controllers/utils';
 
 export const postEventsOnMattermost = async () => {
     const today = new Date()

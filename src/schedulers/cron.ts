@@ -1,5 +1,5 @@
 import { CronJob } from 'cron';
-import config from '../config';
+import config from '@config';
 import {
   createEmailAddresses,
   reinitPasswordEmail,

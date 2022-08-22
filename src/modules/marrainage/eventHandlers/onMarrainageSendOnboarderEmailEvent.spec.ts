@@ -2,7 +2,7 @@ import sinon from "sinon";
 
 import { onMarrainageSendOnboarderEmail } from "./onMarrainageSendOnboarderEmailEvent";
 import { MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
-import * as Email from '../../../config/email.config'
+import * as Email from '@config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "@models/dbUser";
 import { EMAIL_TYPES, MarrainageOnboarderEmail } from "@modules/email";

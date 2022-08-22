@@ -1,7 +1,7 @@
 import axios from 'axios';
 import ovh0 from 'ovh';
-import config from './config';
-import { checkUserIsExpired } from './controllers/utils';
+import config from '@config';
+import { checkUserIsExpired } from '@controllers/utils';
 import { Incubator } from '@models/incubator';
 import { Job, JobWTTJ } from '@models/job';
 import { Member } from '@models/member';

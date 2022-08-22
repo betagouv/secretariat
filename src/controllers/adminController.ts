@@ -1,5 +1,5 @@
 import PromiseMemoize from "promise-memoize";
-import config from "../config";
+import config from "@config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import { AdminPage } from '../views';

@@ -1,10 +1,10 @@
 import { Member } from "@models/member";
 import { DBUser } from "@models/dbUser";
-import BetaGouv from "../betagouv";
-import * as utils from "../controllers/utils";
-import knex from "../db";
+import BetaGouv from "@/betagouv";
+import * as utils from "@controllers/utils";
+import knex from "@/db";
 import { EmailStatusCode } from "@models/dbUser";
-import config from "../config";
+import config from "@config";
 
 export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
     let expiredUsers: Member[] = optionalExpiredUsers;

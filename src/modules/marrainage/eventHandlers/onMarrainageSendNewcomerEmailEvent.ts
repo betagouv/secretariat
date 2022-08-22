@@ -1,4 +1,4 @@
-import { sendEmail } from "../../../config/email.config"
+import { sendEmail } from "@config/email.config"
 import { MarrainageNewcomerEmailEvent } from "@models/marrainage"
 import db from "../../../db"
 import { EMAIL_TYPES, MarrainageNewcomerEmail } from "../../email"

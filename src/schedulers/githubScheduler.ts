@@ -1,7 +1,7 @@
 import BetaGouv from '../betagouv';
-import config from '../config';
-import { checkUserIsExpired } from '../controllers/utils';
-import * as github from '../lib/github';
+import config from '@config';
+import { checkUserIsExpired } from '@controllers/utils';
+import * as github from '@/lib/github';
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUsersNotInOrganization = async (org) => {

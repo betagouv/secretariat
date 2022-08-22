@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import nock from 'nock';
 import sinon from 'sinon';
 import _ from 'lodash/array';
-import config from '../src/config';
+import config from '@config';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import app from '../src/index';

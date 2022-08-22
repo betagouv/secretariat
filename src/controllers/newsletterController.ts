@@ -1,4 +1,4 @@
-import config from "../config";
+import config from "@config";
 import * as utils from "./utils";
 import knex from "../db";
 

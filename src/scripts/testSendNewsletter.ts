@@ -1,7 +1,7 @@
 import HedgedocApi from 'hedgedoc-api';
-import config from '../config';
-import { sendMail } from '../controllers/utils';
-import { renderHtmlFromMdWithAttachements } from "../lib/mdtohtml";
+import config from '@config';
+import { sendMail } from '@controllers/utils';
+import { renderHtmlFromMdWithAttachements } from "@/lib/mdtohtml";
 
 const args = process.argv.slice(2);
 

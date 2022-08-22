@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
 import Betagouv from '../src/betagouv';
-import config from '../src/config';
+import config from '@config';
 import * as controllerUtils from '../src/controllers/utils';
 import * as mattermost from '../src/lib/mattermost';
 import knex from '../src/db';

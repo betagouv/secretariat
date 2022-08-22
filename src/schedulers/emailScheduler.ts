@@ -2,10 +2,10 @@ import crypto from 'crypto';
 import _ from 'lodash/array';
 
 import BetaGouv from '../betagouv';
-import config from '../config';
-import { createEmail, setEmailActive, setEmailSuspended } from '../controllers/usersController';
-import * as utils from '../controllers/utils';
-import knex from '../db';
+import config from '@config';
+import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
+import * as utils from '@controllers/utils';
+import knex from '@/db';
 import { DBUser, EmailStatusCode } from '@models/dbUser';
 import { Member } from '@models/member';
 

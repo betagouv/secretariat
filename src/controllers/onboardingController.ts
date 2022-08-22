@@ -1,6 +1,6 @@
 import ejs from "ejs";
 import crypto from "crypto";
-import config from "../config";
+import config from "@config";
 import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";

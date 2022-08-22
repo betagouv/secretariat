@@ -3,7 +3,7 @@ import nock from 'nock';
 import { Client } from 'pg';
 import { parse } from 'pg-connection-string';
 import { v4 as uuidv4 } from 'uuid';
-import config from '../src/config';
+import config from '@config';
 import knex from '../src/db/index';
 import testStartups from './startups.json';
 import testUsers from './users.json';
