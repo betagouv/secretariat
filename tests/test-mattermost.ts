@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import config from '@config';
 import testUsers from './users.json';
 import utils from './utils';
-import * as mattermost from '../src/lib/mattermost';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
+import * as mattermost from '@/lib/mattermost';
+import * as controllerUtils from '@/controllers/utils';
+import knex from '@/db';
 import { EmailStatusCode } from '@models/dbUser'
 
 const mattermostUsers = [

@@ -4,7 +4,7 @@ import BetaGouv from '@/betagouv';
 import db from '@/db';
 import { Domaine, Member } from '@models/member';
 import { Job, JobWTTJ } from '@models/job';
-import { getUserByEmail, MattermostUser } from '../lib/mattermost'
+import { getUserByEmail, MattermostUser } from '@/lib/mattermost'
 import { Startup, StartupInfo } from '@models/startup';
 import { DBUser } from '@models/dbUser';
 

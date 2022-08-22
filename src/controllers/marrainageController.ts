@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken';
 import config from '@config';
 import BetaGouv from '../betagouv';
 import * as utils from './utils';
-import knex from '../db';
-import { addEvent, EventCode } from '../lib/events'
+import knex from '@/db';
+import { addEvent, EventCode } from '@/lib/events'
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 import { Member } from '@models/member';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';

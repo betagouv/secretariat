@@ -2,14 +2,14 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
+import * as controllerUtils from '@/controllers/utils';
+import knex from '@/db';
+import app from '@/index';
 import utils from './utils';
 import config from '@config';
 import { EmailStatusCode } from '@models/dbUser';
-import betagouv from '../src/betagouv';
-import * as searchCommune from '../src/lib/searchCommune';
+import betagouv from '@/betagouv';
+import * as searchCommune from '@/lib/searchCommune';
 
 chai.use(chaiHttp);
 

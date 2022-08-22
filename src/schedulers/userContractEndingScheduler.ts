@@ -1,5 +1,5 @@
 import ejs from 'ejs';
-import BetaGouv, { OvhRedirection } from '../betagouv';
+import BetaGouv, { OvhRedirection } from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
 import * as mattermost from '@/lib/mattermost';

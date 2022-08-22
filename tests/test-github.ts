@@ -1,11 +1,11 @@
 import nock from 'nock';
 import sinon from 'sinon';
-import * as github from '../src/lib/github';
+import * as github from '@/lib/github';
 import testUsers from './users.json';
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
-} from '../src/schedulers/githubScheduler';
+} from '@/schedulers/githubScheduler';
 
 const githubOrganizationMembers = [
   {

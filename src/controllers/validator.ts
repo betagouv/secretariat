@@ -1,4 +1,4 @@
-import { isValidGithubUserName } from "../lib/github";
+import { isValidGithubUserName } from "@/lib/github";
 
 export const requiredError = function (field, callback) {
     callback(field, 'Le champ n‘est pas renseigné');

@@ -5,13 +5,13 @@ import nock from 'nock';
 import sinon from 'sinon';
 import _ from 'lodash/array';
 import config from '@config';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
-import { reloadMarrainages, createMarrainages } from '../src/schedulers/marrainageScheduler';
+import * as controllerUtils from '@controllers/utils';
+import knex from '@/db';
+import app from '@/index';
+import { reloadMarrainages, createMarrainages } from '@schedulers/marrainageScheduler';
 import utils from './utils';
 import { DBUser, EmailStatusCode } from '@models/dbUser';
-import betagouv from '../src/betagouv';
+import betagouv from '@/betagouv';
 import { Member } from '@models/member';
 
 chai.use(chaiHttp);

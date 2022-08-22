@@ -1,4 +1,4 @@
-import { isValidGithubUserName } from "../src/lib/github";
+import { isValidGithubUserName } from "@/lib/github";
 
 describe('Github lib', () => {
   describe('isValidGithubUserName', () => {

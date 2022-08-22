@@ -1,6 +1,6 @@
 import config from '@config';
 import BetaGouv from '../betagouv';
-import * as github from '../lib/github';
+import * as github from '@/lib/github';
 
 // get users that are members of organization but don't have matching github card
 const getUnknownGithubUsersInOrganization = async (org) => {

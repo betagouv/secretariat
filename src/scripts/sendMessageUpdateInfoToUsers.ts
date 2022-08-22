@@ -4,9 +4,9 @@ import * as utils from '@controllers/utils';
 import knex from '@/db';
 import { CommunicationEmailCode, DBUser, DBUserDetail, genderOptions, statusOptions } from '@models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
-import * as mattermost from '../lib/mattermost';
-import { fetchCommuneDetails } from '../lib/searchCommune';
-import { renderHtmlFromMd } from '../lib/mdtohtml';
+import * as mattermost from '@/lib/mattermost';
+import { fetchCommuneDetails } from '@/lib/searchCommune';
+import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { sleep } from '@controllers/utils';
 
 export async function sendMessageToUpdateInfoToAllUsers() {

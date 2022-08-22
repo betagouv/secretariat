@@ -4,9 +4,9 @@ import nock from 'nock';
 import sinon from 'sinon';
 import { Response } from 'superagent';
 import config from '@config';
-import knex from '../src/db';
-import app from '../src/index';
-import * as searchCommune from '../src/lib/searchCommune';
+import knex from '@/db';
+import app from '@/index';
+import * as searchCommune from '@/lib/searchCommune';
 import utils from './utils';
 
 chai.use(chaiHttp);

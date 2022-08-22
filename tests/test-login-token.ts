@@ -3,9 +3,9 @@ import chaiHttp from 'chai-http';
 import crypto from 'crypto';
 import sinon from 'sinon';
 import config from '@config';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
+import * as controllerUtils from '@/controllers/utils';
+import knex from '@/db';
+import app from '@/index';
 
 chai.use(chaiHttp);
 

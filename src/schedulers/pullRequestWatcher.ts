@@ -7,7 +7,7 @@ import * as mattermost from '@/lib/mattermost';
 import { CommunicationEmailCode, DBUser, EmailStatusCode } from '@models/dbUser';
 import * as utils from "@controllers/utils";
 import { Member } from '@models/member';
-import { renderHtmlFromMd } from '../lib/mdtohtml';
+import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { sleep } from '@controllers/utils';
 
 const findAuthorsInFiles = async (files) => {
