@@ -19,35 +19,23 @@ interface SendEmailFromSendinblueDeps {
     } | undefined
 }
 
-// Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
-//partnerKey.apiKeyPrefix['partner-key'] = "Token"
-
-var api = new SibApiV3Sdk.AccountApi()
-api.getAccount().then(function(data) {
-  console.log('API called successfully. Returned data: ' + data);
-}, function(error) {
-  console.error(error);
-});
-
 export const makeSendEmailFromSendinblue = (deps: SendEmailFromSendinblueDeps): SendEmail => {
 
     const { SIB_APIKEY_PRIVATE, MAIL_SENDER, htmlBuilder } = deps
 
-    var SibApiV3Sdk = require('sib-api-v3-sdk');
-
-    var defaultClient = SibApiV3Sdk.ApiClient.instance;
+    const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
     // Configure API key authorization: api-key
-    var apiKey = defaultClient.authentications['api-key'];
+    const apiKey = defaultClient.authentications['api-key'];
     apiKey.apiKey = SIB_APIKEY_PRIVATE
     // Uncomment the following line to set a prefix for the API key, e.g. "Token" (defaults to null)
     //apiKey.apiKeyPrefix['api-key'] = "Token"
 
     // Configure API key authorization: partner-key
-    var partnerKey = defaultClient.authentications['partner-key'];
+    const partnerKey = defaultClient.authentications['partner-key'];
     partnerKey.apiKey = SIB_APIKEY_PRIVATE
 
-    var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
   return async function sendEmailFromSendinblue(props: SendEmailProps): Promise<null> {
     const {
