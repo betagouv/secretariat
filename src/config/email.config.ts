@@ -45,8 +45,6 @@ if (process.env.NODE_ENV === 'production') {
   } 
 
   try {
-    console.log(`Will use send in blue as emailer : ${process.env.MAIL_USE_SIB}`)
-
     sendEmail = process.env.MAIL_USE_SIB ? makeSendEmailFromSendinblue({
       MAIL_SENDER,
       SIB_APIKEY_PUBLIC,
@@ -64,19 +62,11 @@ if (process.env.NODE_ENV === 'production') {
         MAIL_USER,
         htmlBuilder
     })
-    console.log('Emails will be sent using nodemailer')
-  } catch (e) {
-    console.error(e)
-    process.exit(1)
-  }
-  try {
-    sendEmailFromSendinblue = makeSendEmailFromSendinblue({
-      MAIL_SENDER,
-      SIB_APIKEY_PUBLIC,
-      SIB_APIKEY_PRIVATE,
-      htmlBuilder
-    })
-    console.log('Emails will be sent using nodemailer')
+    if (process.env.MAIL_USE_SIB) {
+      console.log('Emails will be sent using Sendinblue')
+    } else {
+      console.log('Emails will be sent using Nodemailer')
+    }
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -87,5 +77,4 @@ if (process.env.NODE_ENV === 'production') {
 
 export {
     sendEmail,
-    sendEmailFromSendinblue,
 }
