@@ -3,17 +3,19 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 
 import Betagouv from '@/betagouv';
+import * as Email from '@config/email.config'
 import config from '@config';
-import * as controllerUtils from '@/controllers/utils';
 import knex from '@/db';
 import app from '@/index';
+import { Domaine } from '@/models/member';
+import { SendEmailProps } from '@/modules/email';
 
 chai.use(chaiHttp);
 
 describe('Login', () => {
   let sendEmailStub;
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+    sendEmailStub = sinon.stub(Email, 'sendEmail').returns(Promise.resolve(null));
     done();
   });
 
@@ -156,7 +158,7 @@ describe('Login', () => {
           fullname: '',
           github: '',
           employer: '',
-          domaine: 'Animation',
+          domaine: Domaine.ANIMATION,
           missions: [],
           start: '',
           startups: [],
@@ -174,8 +176,8 @@ describe('Login', () => {
         .send({
           emailInput: 'membre.expiredfourdays@beta.gouv.fr',
         })
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal('membre.expiredfourdays@beta.gouv.fr');
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal('membre.expiredfourdays@beta.gouv.fr');
       sendEmailStub.calledOnce.should.be.true;
       await knex('users').where({
         username: 'membre.expiredfourdays',
@@ -216,8 +218,8 @@ describe('Login', () => {
         .send({
           emailInput: 'membre.ACTIF.perso@example.com',
         })
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal('membre.actif.perso@example.com');
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal('membre.actif.perso@example.com');
       sendEmailStub.calledOnce.should.be.true;
       await knex('users').where({
         username: 'membre.actif',
@@ -241,8 +243,8 @@ describe('Login', () => {
           .send({
             emailInput: 'membre.actif.perso@example.com',
           })
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal('membre.actif.perso@example.com');
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal('membre.actif.perso@example.com');
       sendEmailStub.calledOnce.should.be.true;
       await knex('users').where({
         username: 'membre.actif',
@@ -268,8 +270,8 @@ describe('Login', () => {
             emailInput: 'membre.actif.perso@example.com',
           })
       sendEmailStub.calledOnce.should.be.true;
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal('membre.actif.perso@example.com');
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal('membre.actif.perso@example.com');
       await knex('users').where({
         username: 'membre.actif'
       }).update({
@@ -294,8 +296,8 @@ describe('Login', () => {
           })
     
       sendEmailStub.calledOnce.should.be.true;
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal(`membre.actif@${config.domain}`);
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal(`membre.actif@${config.domain}`);
       await knex('users').where({
         username: 'membre.actif'
       }).update({
@@ -318,10 +320,10 @@ describe('Login', () => {
           })
     
       sendEmailStub.calledOnce.should.be.true;
-      sendEmailStub.args[0][2].should.include('account')
-      sendEmailStub.args[0][2].should.include('anchor=password')
-      const destinationEmail = sendEmailStub.args[0][0];
-      destinationEmail.should.equal(`membre.actif@${config.domain}`);
+      const emailArg : SendEmailProps = sendEmailStub.args[0][0]
+      emailArg.variables.loginUrlWithToken.should.include('account')
+      emailArg.variables.loginUrlWithToken.should.include('anchor=password')
+      emailArg.toEmail[0].should.equal(`membre.actif@${config.domain}`);
       await knex('users').where({
         username: 'membre.actif'
       }).update({
