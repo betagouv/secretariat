@@ -3,15 +3,16 @@ import { DBUser } from "@models/dbUser"
 
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL='MARRAINAGE_NEWCOMER_EMAIL',
-    MARRAINAGE_ONBOARDER_EMAIL='MARRAINAGE_ONBOARDER_EMAIL'
+    MARRAINAGE_ONBOARDER_EMAIL='MARRAINAGE_ONBOARDER_EMAIL',
+    LOGIN_EMAIL='LOGIN_EMAIL'
 }
 
 type BaseEmail = {
     subject?: string
     variables: Record<string, any>,
     toEmail: string[],
-    extraParams: Record<string, string>, 
-    attachments: any[]
+    extraParams?: Record<string, string>, 
+    attachments?: any[]
 }
 
 export type MarrainageOnboarderEmail = {
@@ -31,20 +32,28 @@ export type MarrainageNewcomerEmail = {
         member: DBUser
     }
 } & BaseEmail
+
+export type LoginEmail = {
+    type: EMAIL_TYPES.LOGIN_EMAIL,
+    variables: {
+        loginUrlWithToken: string
+    }
+}
    
 type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
+ | LoginEmail
 
 export type EmailProps = BaseEmail & EmailVariants
 
 export type SendEmailProps = {
     subject?: string
     type: EmailProps['type']
-    variables: Record<string, any>,
+    variables: EmailProps['variables'],
     toEmail: string[],
-    extraParams: Record<string, string>, 
-    attachments: any[]
+    extraParams?: Record<string, string>, 
+    attachments?: any[]
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>

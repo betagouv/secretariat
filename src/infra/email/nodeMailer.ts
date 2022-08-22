@@ -1,11 +1,6 @@
 import nodemailer from 'nodemailer';
 import { EmailProps, SendEmail, SendEmailProps } from '@modules/email';
 
-const TEMPLATE_URL_BY_TYPE: Record<EmailProps['type'], string> = {
-  'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageByGroupNewcomerEmail.ejs',
-  'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageByGroupOnboarderEmail.ejs',
-}
-
 interface SendEmailFromNodemailerDeps {
     MAIL_DEBUG: string,
     MAIL_HOST: string,
@@ -16,7 +11,10 @@ interface SendEmailFromNodemailerDeps {
     MAIL_IGNORE_TLS: string,
     MAIL_SERVICE_HEADERS: Record<string, string>,
     MAIL_SENDER: string,
-    htmlBuilder: any
+    htmlBuilder: {
+      renderFile (url: string, params: any): Promise<string>,
+      templates: Record<EmailProps['type'], string>
+    }
 }
 
 export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): SendEmail => {
@@ -59,7 +57,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         variables = {},
     } = props
 
-    const templateURL = TEMPLATE_URL_BY_TYPE[type]
+    const templateURL = htmlBuilder.templates[type]
     const html : string = await htmlBuilder.renderFile(templateURL, {
       ...variables
     });

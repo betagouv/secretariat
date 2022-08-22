@@ -2,8 +2,10 @@ import ejs from 'ejs'
 
 import { SendEmail } from '@modules/email'
 import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
+import { makeSendEmailFromSendinblue } from '@infra/email/sendInBlue'
 
 let sendEmail: SendEmail = fakeSendEmail
+let sendEmailFromSendinblue: SendEmail
 
 const EMAIL_CONFIG =  {
     MAIL_DEBUG: process.env.MAIL_DEBUG,
@@ -14,6 +16,8 @@ const EMAIL_CONFIG =  {
     MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
     MAIL_SERVICE: process.env.MAIL_SERVICE,
     MAIL_USER: process.env.MAIL_USER,
+    SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
+    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE
 }
 
 const {
@@ -24,17 +28,31 @@ const {
     MAIL_PORT,
     MAIL_SENDER,
     MAIL_SERVICE,
-    MAIL_USER
+    MAIL_USER,
+    SIB_APIKEY_PUBLIC,
+    SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG
 
 if (process.env.NODE_ENV === 'production') {
-  if (!process.env.MAIL_HOST) {
-    console.error('Missing MAIL_HOST env variables. Aborting.')
-    process.exit(1)
-  }
+
+  const htmlBuilder = {
+    renderFile: ejs.renderFile,
+    templates: {
+      'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageByGroupNewcomerEmail.ejs',
+      'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageByGroupOnboarderEmail.ejs',
+      'LOGIN_EMAIL': './src/views/templates/emails/login.ejs'
+    }
+  } 
 
   try {
-    sendEmail = makeSendEmailNodemailer({
+    console.log(`Will use send in blue as emailer : ${process.env.MAIL_USE_SIB}`)
+
+    sendEmail = process.env.MAIL_USE_SIB ? makeSendEmailFromSendinblue({
+      MAIL_SENDER,
+      SIB_APIKEY_PUBLIC,
+      SIB_APIKEY_PRIVATE,
+      htmlBuilder
+    }) : makeSendEmailNodemailer({
         MAIL_DEBUG,
         MAIL_HOST,
         MAIL_IGNORE_TLS,
@@ -44,7 +62,19 @@ if (process.env.NODE_ENV === 'production') {
         MAIL_SERVICE,
         MAIL_SERVICE_HEADERS: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
         MAIL_USER,
-        htmlBuilder: ejs
+        htmlBuilder
+    })
+    console.log('Emails will be sent using nodemailer')
+  } catch (e) {
+    console.error(e)
+    process.exit(1)
+  }
+  try {
+    sendEmailFromSendinblue = makeSendEmailFromSendinblue({
+      MAIL_SENDER,
+      SIB_APIKEY_PUBLIC,
+      SIB_APIKEY_PRIVATE,
+      htmlBuilder
     })
     console.log('Emails will be sent using nodemailer')
   } catch (e) {
@@ -56,5 +86,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 export {
-    sendEmail
+    sendEmail,
+    sendEmailFromSendinblue,
 }

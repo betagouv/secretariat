@@ -7,6 +7,8 @@ import knex from '../db';
 import * as utils from './utils';
 import { EmailStatusCode } from '@models/dbUser';
 import { HomePage } from '../views';
+import { sendEmail } from '@/config/email.config';
+import { EMAIL_TYPES } from '@/modules/email';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -40,12 +42,15 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
 
-  const html = await ejs.renderFile('./src/views/templates/emails/login.ejs', {
-    loginUrlWithToken,
-  });
-
   try {
-    await utils.sendMail(email, 'Connexion à l\'espace membre BetaGouv', html);
+    await sendEmail({
+      toEmail: [email],
+      type: EMAIL_TYPES.LOGIN_EMAIL,
+      subject: 'Connexion à l\'espace membre BetaGouv',
+      variables: {
+        loginUrlWithToken
+      }
+    });
   } catch (err) {
     console.error(err);
     throw new Error("Erreur d'envoi de mail à ton adresse.");
