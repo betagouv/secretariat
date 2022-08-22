@@ -1,6 +1,6 @@
 import React from 'react'
 import { hydrateOnClient } from '../hydrateOnClient'
-import { Member } from '../../models/member'
+import { Member } from '@models/member'
 
 interface Props {
   member: Member,

@@ -1,22 +1,22 @@
 import nock from 'nock';
 import chai from 'chai';
 import sinon from 'sinon';
-import BetaGouv from '../src/betagouv';
-import config from '../src/config';
+import BetaGouv from '@/betagouv';
+import config from '@config';
 import utils from './utils';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
+import * as controllerUtils from '@/controllers/utils';
+import knex from '@/db';
 import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
   deleteOVHEmailAcounts,
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
-} from '../src/schedulers/userContractEndingScheduler';
-import { EmailStatusCode } from '../src/models/dbUser';
-import { setEmailExpired } from '../src/schedulers/setEmailExpired';
-import betagouv from '../src/betagouv';
-import { Domaine } from '../src/models/member';
+} from '@schedulers/userContractEndingScheduler';
+import { EmailStatusCode } from '@models/dbUser';
+import { setEmailExpired } from '@schedulers/setEmailExpired';
+import betagouv from '@/betagouv';
+import { Domaine } from '@models/member';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';
@@ -100,7 +100,7 @@ const mattermostUsers = [
   },
 ];
 
-const userContractEndingScheduler = require('../src/schedulers/userContractEndingScheduler');
+const userContractEndingScheduler = require('@schedulers/userContractEndingScheduler');
 
 describe('send message on contract end to user', () => {
   let chat;

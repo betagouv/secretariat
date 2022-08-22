@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 import { CaptureConsole as CaptureConsoleIntegration } from "@sentry/integrations";
-import config from '../config';
+import config from '@config';
 
 export function initCaptureConsole() {
   const logLevel = ['error'];

@@ -1,12 +1,12 @@
 import PromiseMemoize from "promise-memoize";
-import config from "../config";
+import config from "@config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import { AdminPage } from '../views';
 import betagouv from "../betagouv";
-import { Domaine, Member } from "../models/member";
+import { Domaine, Member } from "@models/member";
 import db from "../db";
-import { CommunicationEmailCode, DBUser } from "../models/dbUser";
+import { CommunicationEmailCode, DBUser } from "@models/dbUser";
 
 const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
 

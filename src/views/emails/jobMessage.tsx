@@ -1,7 +1,7 @@
 import React from 'react'
 import { hydrateOnClient } from '../hydrateOnClient'
-import { Domaine, Member } from '../../models/member'
-import { Job } from '../../models/job'
+import { Domaine, Member } from '@models/member'
+import { Job } from '@models/job'
 
 interface Props {
   jobs: Job[],

@@ -1,9 +1,9 @@
 import { CronJob } from "cron";
 import ejs from "ejs";
-import config from "../config";
-import BetaGouv from "../betagouv";
-import knex from "../db";
-import * as utils from "../controllers/utils";
+import config from "@config";
+import BetaGouv from "@/betagouv";
+import knex from "@/db";
+import * as utils from "@controllers/utils";
 
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 

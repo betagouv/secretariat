@@ -1,9 +1,9 @@
-import { sendEmail } from "../../../config/email.config"
-import { MarrainageGroupMember, MarrainageOnboarderEmailEvent } from "../../../models/marrainage"
+import { sendEmail } from "@config/email.config"
+import { MarrainageGroupMember, MarrainageOnboarderEmailEvent } from "@models/marrainage"
 import db from "../../../db"
 import { EMAIL_TYPES, MarrainageOnboarderEmail } from "../../email"
-import { CommunicationEmailCode, DBUser } from "../../../models/dbUser"
-import { Member } from "../../../models/member"
+import { CommunicationEmailCode, DBUser } from "@models/dbUser"
+import { Member } from "@models/member"
 import betagouv from "../../../betagouv"
 
 export const onMarrainageSendOnboarderEmail:

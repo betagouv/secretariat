@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 import ejs from 'ejs';
-import BetaGouv from '../betagouv';
-import config from '../config';
-import * as utils from '../controllers/utils';
-import * as mattermost from '../lib/mattermost';
-import { MattermostUser } from '../lib/mattermost';
-import knex from "../db";
-import { Member, MemberWithPrimaryEmail } from '../models/member';
-import { DBUser, EmailStatusCode } from '../models/dbUser';
+import BetaGouv from '@/betagouv';
+import config from '@config';
+import * as utils from '@controllers/utils';
+import * as mattermost from '@/lib/mattermost';
+import { MattermostUser } from '@/lib/mattermost';
+import knex from "@/db";
+import { Member, MemberWithPrimaryEmail } from '@models/member';
+import { DBUser, EmailStatusCode } from '@models/dbUser';
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
   return {

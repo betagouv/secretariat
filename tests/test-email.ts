@@ -5,15 +5,15 @@ import sinon from 'sinon';
 import rewire from 'rewire';
 import testUsers from './users.json';
 import utilsTest from './utils';
-import * as utils from '../src/controllers/utils';
-import betagouv from '../src/betagouv';
-import knex from '../src/db';
-import * as controllerUtils from '../src/controllers/utils';
-import { EmailStatusCode } from '../src/models/dbUser';
+import * as utils from '@/controllers/utils';
+import betagouv from '@/betagouv';
+import knex from '@/db';
+import * as controllerUtils from '@/controllers/utils';
+import { EmailStatusCode } from '@models/dbUser';
 
 chai.use(chaiHttp);
 
-const emailScheduler = rewire('../src/schedulers/emailScheduler');
+const emailScheduler = rewire('@/schedulers/emailScheduler');
 
 describe('getUnregisteredOVHUsers', () => {
   beforeEach(async () => {

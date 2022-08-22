@@ -1,5 +1,5 @@
 import { CronJob } from 'cron';
-import config from '../config';
+import config from '@config';
 import {
   createEmailAddresses,
   reinitPasswordEmail,
@@ -35,7 +35,7 @@ import {
 import {
   pullRequestWatcher
 } from './pullRequestWatcher'
-import { setEmailExpired } from "../schedulers/setEmailExpired";
+import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
 import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';

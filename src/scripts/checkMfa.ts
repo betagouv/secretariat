@@ -1,4 +1,4 @@
-import { getUserWithParams, MattermostUser } from "../lib/mattermost";
+import { getUserWithParams, MattermostUser } from "@/lib/mattermost";
 
 const checkMFA = async() => {
     const users : MattermostUser[] = await getUserWithParams()

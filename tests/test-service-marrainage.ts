@@ -2,12 +2,12 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import _ from 'lodash/array';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
+import * as controllerUtils from '@controllers/utils';
+import knex from '@/db';
 import testUsers from './users.json';
-import { MarrainageService1v, MarrainageServiceWithGroup } from '../src/services/marrainageService';
-import { Domaine, Member } from '../src/models/member';
-import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '../src/models/marrainage';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
+import { Domaine, Member } from '@models/member';
+import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '@models/marrainage';
 
 
 chai.use(chaiHttp);

@@ -1,6 +1,6 @@
 import React from "react"
 import AsyncSelect from 'react-select/async';
-import { searchCommunes } from "../../../lib/searchCommune";
+import { searchCommunes } from "@/lib/searchCommune";
 
 import { ClientOnly } from "./ClientOnly"
 

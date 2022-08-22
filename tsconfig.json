@@ -24,15 +24,45 @@
         "sourceRoot": "/",
         "baseUrl": "./",
         "paths": {
-            "@views": [
-                "views/index.ts"
+            "@/*": [
+                "src/*"
             ],
-            "@views/*": [
-                "views/*/index.ts"
+            "@config": [
+                "src/config/index.ts"
+            ],
+            "@config/*": [
+                "src/config/*"
+            ],
+            "@controllers/*": [
+                "src/controllers/*"
+            ],
+            "@infra/*": [
+                "src/infra/*"
+            ],
+            "@lib/*": [
+                "src/lib/*"
+            ],
+            "@models/*": [
+                "src/models/*"
+            ],
+            "@modules/*": [
+                "src/modules/*"
             ],
             "@node_modules/*": [
                 "node_modules/*"
             ],
+            "@schedulers/*": [
+                "src/schedulers/*"
+            ],
+            "@services/*": [
+                "src/services/*"
+            ],
+            "@views": [
+                "src/views/index.ts"
+            ],
+            "@views/*": [
+                "src/views/*"
+            ]
         },
         "plugins": [
         {

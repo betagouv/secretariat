@@ -3,15 +3,15 @@ import chaiHttp from 'chai-http';
 import _ from 'lodash';
 import rewire from 'rewire';
 import sinon from 'sinon';
-import config from '../src/config';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
+import config from '@config';
+import * as controllerUtils from '@controllers/utils';
+import knex from '@/db';
+import app from '@/index';
 import utils from './utils';
 
 chai.use(chaiHttp);
 
-const visitScheduler = rewire('../src/schedulers/visitScheduler');
+const visitScheduler = rewire('@schedulers/visitScheduler');
 
 describe.skip('Visit', () => {
   let clock;

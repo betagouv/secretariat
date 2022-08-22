@@ -1,13 +1,13 @@
 import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
-import config from '../config';
+import config from '@config';
 import BetaGouv from '../betagouv';
 import * as utils from './utils';
-import knex from '../db';
-import { addEvent, EventCode } from '../lib/events'
-import { CommunicationEmailCode, DBUser } from '../models/dbUser';
-import { Member } from '../models/member';
-import { MarrainageService1v, MarrainageServiceWithGroup } from '../services/marrainageService';
+import knex from '@/db';
+import { addEvent, EventCode } from '@/lib/events'
+import { CommunicationEmailCode, DBUser } from '@models/dbUser';
+import { Member } from '@models/member';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
 
 const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
 const MarrainageService = useNewMarrainage

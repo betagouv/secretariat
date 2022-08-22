@@ -1,7 +1,7 @@
 import _ from 'lodash/array';
 
-import knex from '../../db';
-import { reloadMarrainage } from '../../controllers/marrainageController';
+import knex from '@/db';
+import { reloadMarrainage } from '@controllers/marrainageController';
 
 export async function reloadMarrainages() {
     console.log('Demarrage du cron job pour la relance de marrainages');

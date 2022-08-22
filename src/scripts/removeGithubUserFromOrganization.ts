@@ -1,3 +1,3 @@
-import { removeGithubUserFromOrganization } from "../schedulers/githubScheduler";
+import { removeGithubUserFromOrganization } from "@schedulers/githubScheduler";
 
 removeGithubUserFromOrganization();

@@ -1,5 +1,5 @@
 import {
     sendNewsletterAndCreateNewOne,
-} from '../schedulers/newsletterScheduler';
+} from '@schedulers/newsletterScheduler';
 
 sendNewsletterAndCreateNewOne().then()

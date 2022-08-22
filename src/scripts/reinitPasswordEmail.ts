@@ -1,3 +1,3 @@
-import { reinitPasswordEmail } from '../schedulers/emailScheduler';
+import { reinitPasswordEmail } from '@schedulers/emailScheduler';
 
 reinitPasswordEmail();

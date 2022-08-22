@@ -1,7 +1,7 @@
 import ejs from 'ejs'
 
-import { SendEmail } from '../modules/email'
-import { fakeSendEmail, makeSendEmailNodemailer } from '../infra/email'
+import { SendEmail } from '@modules/email'
+import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 
 let sendEmail: SendEmail = fakeSendEmail
 

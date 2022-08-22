@@ -1,7 +1,7 @@
 import betagouv from "../betagouv";
-import config from "../config";
-import { Member } from "../models/member";
-import { Startup } from "../models/startup";
+import config from "@config";
+import { Member } from "@models/member";
+import { Startup } from "@models/startup";
 
 export async function getStartup(req, res) {
   try {

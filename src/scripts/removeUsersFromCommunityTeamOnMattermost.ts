@@ -1,4 +1,4 @@
-import { removeUsersFromCommunityTeam } from '../schedulers/mattermostScheduler';
+import { removeUsersFromCommunityTeam } from '@schedulers/mattermostScheduler';
 
 const args = process.argv.slice(2);
 if (args[0]) {

@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 import HedgedocApi from 'hedgedoc-api';
 import BetaGouv from '../betagouv';
-import config from '../config';
-import knex from '../db';
-import * as utils from '../controllers/utils';
-import { getTitle, renderHtmlFromMdWithAttachements } from '../lib/mdtohtml';
-import { Member, MemberWithEmail } from '../models/member';
-import { JobWTTJ } from '../models/job';
-import { CommunicationEmailCode, DBUser } from '../models/dbUser';
+import config from '@config';
+import knex from '@/db';
+import * as utils from '@controllers/utils';
+import { getTitle, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
+import { Member, MemberWithEmail } from '@models/member';
+import { JobWTTJ } from '@models/job';
+import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,

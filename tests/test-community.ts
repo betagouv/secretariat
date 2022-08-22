@@ -1,8 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
-import knex from '../src/db';
-import app from '../src/index';
+import knex from '@/db';
+import app from '@/index';
 import utils from './utils';
 
 chai.use(chaiHttp);

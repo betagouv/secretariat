@@ -2,11 +2,11 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 
-import Betagouv from '../src/betagouv';
-import config from '../src/config';
-import * as controllerUtils from '../src/controllers/utils';
-import knex from '../src/db';
-import app from '../src/index';
+import Betagouv from '@/betagouv';
+import config from '@config';
+import * as controllerUtils from '@/controllers/utils';
+import knex from '@/db';
+import app from '@/index';
 
 chai.use(chaiHttp);
 

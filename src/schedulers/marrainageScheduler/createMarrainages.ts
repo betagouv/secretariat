@@ -1,8 +1,8 @@
 import _ from 'lodash/array';
 
-import knex from '../../db';
-import { createRequestForUser } from '../../controllers/marrainageController';
-import { DBUser, EmailStatusCode } from '../../models/dbUser';
+import knex from '@/db';
+import { createRequestForUser } from '@controllers/marrainageController';
+import { DBUser, EmailStatusCode } from '@models/dbUser';
 
 export async function createMarrainages() {
     console.log('Demarrage du cron job pour créer les marrainages');

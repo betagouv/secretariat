@@ -1,5 +1,5 @@
-import { addEvent, EventCode } from '../src/lib/events'
-import knex from '../src/db';
+import { addEvent, EventCode } from '@/lib/events'
+import knex from '@/db';
 
 describe('Add events', () => {
     it('should add event to db properly', async () => {

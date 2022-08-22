@@ -1,11 +1,11 @@
 import axios from 'axios';
 import ovh0 from 'ovh';
-import config from './config';
-import { checkUserIsExpired } from './controllers/utils';
-import { Incubator } from './models/incubator';
-import { Job, JobWTTJ } from './models/job';
-import { Member } from './models/member';
-import { Startup } from './models/startup';
+import config from '@config';
+import { checkUserIsExpired } from '@controllers/utils';
+import { Incubator } from '@models/incubator';
+import { Job, JobWTTJ } from '@models/job';
+import { Member } from '@models/member';
+import { Startup } from '@models/startup';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,

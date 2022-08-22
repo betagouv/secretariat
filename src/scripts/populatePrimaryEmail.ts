@@ -1,6 +1,6 @@
-import { buildBetaEmail } from '../controllers/utils';
-import Betagouv from '../betagouv'
-import knex from '../db';
+import { buildBetaEmail } from '@controllers/utils';
+import Betagouv from '@/betagouv'
+import knex from '@/db';
 
 const populatePrimaryEmail = async() => {
     const allOvhEmails = await Betagouv.getAllEmailInfos();

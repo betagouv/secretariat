@@ -1,13 +1,13 @@
 import ejs from 'ejs';
-import BetaGouv from '../betagouv';
-import * as utils from '../controllers/utils';
-import knex from '../db';
-import { DBUser } from '../models/dbUser';
-import { Member, MemberWithEmailsAndMattermostUsername } from '../models/member';
-import * as mattermost from '../lib/mattermost';
-import { makeHtmlEmail } from '../views/index.html';
-import { EmailSecondaryEmail } from '../views/emails/EmailSecondaryEmail';
-import { sleep } from '../controllers/utils';
+import BetaGouv from '@/betagouv';
+import * as utils from '@controllers/utils';
+import knex from '@/db';
+import { DBUser } from '@models/dbUser';
+import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
+import * as mattermost from '@/lib/mattermost';
+import { makeHtmlEmail } from '@views/index.html';
+import { EmailSecondaryEmail } from '@views/emails/EmailSecondaryEmail';
+import { sleep } from '@controllers/utils';
 
 export const EmailSecondaryEmailHtml = (props: Parameters<typeof EmailSecondaryEmail>[0]) =>
   makeHtmlEmail({

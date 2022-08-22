@@ -1,5 +1,5 @@
 import axios from "axios"
-import config from "../config"
+import config from "@config"
 
 export const postToHook = async (req, res) => {
     if (req.params.hookId === config.CHATWOOT_ID) {

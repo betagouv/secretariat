@@ -2,7 +2,7 @@ import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
-import { MemberWithPermission } from "../models/member";
+import { MemberWithPermission } from "@models/member";
 import { CommunityPage } from '../views';
 
 const EMAIL_STATUS_READABLE_FORMAT = {

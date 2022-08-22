@@ -1,4 +1,4 @@
-import { SendEmailProps } from "../../modules/email"
+import { SendEmailProps } from "@modules/email"
 
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
 

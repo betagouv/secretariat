@@ -1,3 +1,3 @@
-import { reactivateUsers } from "../schedulers/mattermostScheduler";
+import { reactivateUsers } from "@schedulers/mattermostScheduler";
 
 reactivateUsers();

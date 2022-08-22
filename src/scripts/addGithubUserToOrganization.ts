@@ -1,3 +1,3 @@
-import { addGithubUserToOrganization } from "../schedulers/githubScheduler";
+import { addGithubUserToOrganization } from "@schedulers/githubScheduler";
 
 addGithubUserToOrganization();

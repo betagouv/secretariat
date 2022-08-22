@@ -1,9 +1,9 @@
 import nock from 'nock';
 import sinon from 'sinon';
-import betagouv from '../src/betagouv';
-import * as controllerUtils from '../src/controllers/utils';
-import * as github from '../src/lib/github';
-import { pullRequestWatcher } from '../src/schedulers/pullRequestWatcher';
+import betagouv from '@/betagouv';
+import * as controllerUtils from '@controllers/utils';
+import * as github from '@/lib/github';
+import { pullRequestWatcher } from '@schedulers/pullRequestWatcher';
 
 describe('Pull requests watchers', () => {
   let getPullRequestsStub;

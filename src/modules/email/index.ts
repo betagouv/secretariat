@@ -1,5 +1,5 @@
-import { Member } from "../../models/member"
-import { DBUser } from "../../models/dbUser"
+import { Member } from "@models/member"
+import { DBUser } from "@models/dbUser"
 
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL='MARRAINAGE_NEWCOMER_EMAIL',
