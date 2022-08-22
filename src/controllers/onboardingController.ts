@@ -5,12 +5,12 @@ import * as utils from "./utils";
 import BetaGouv from "../betagouv";
 import knex from "../db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
-import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '../models/dbUser';
+import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@models/dbUser';
 import { renderHtmlFromMd } from "../lib/mdtohtml";
 import * as mattermost from '../lib/mattermost';
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { OnboardingPage } from '../views';
-import { Member } from '../models/member';
+import { Member } from '@models/member';
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;

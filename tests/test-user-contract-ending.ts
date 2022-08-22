@@ -13,10 +13,10 @@ import {
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '../src/schedulers/userContractEndingScheduler';
-import { EmailStatusCode } from '../src/models/dbUser';
+import { EmailStatusCode } from '@models/dbUser';
 import { setEmailExpired } from '../src/schedulers/setEmailExpired';
 import betagouv from '../src/betagouv';
-import { Domaine } from '../src/models/member';
+import { Domaine } from '@models/member';
 
 const should = chai.should();
 const fakeDate = '2020-01-01T09:59:59+01:00';

@@ -1,4 +1,4 @@
-import { MARRAINAGE_EVENT } from "../../models/marrainage";
+import { MARRAINAGE_EVENT } from "@models/marrainage";
 import EventBus from "@infra/eventBus/eventBus";
 import { onMarrainageSendNewcomerEmail, onMarrainageSendOnboarderEmail } from "./eventHandlers";
 

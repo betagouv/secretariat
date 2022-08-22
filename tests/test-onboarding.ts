@@ -7,7 +7,7 @@ import knex from '../src/db';
 import app from '../src/index';
 import utils from './utils';
 import config from '../src/config';
-import { EmailStatusCode } from '../src/models/dbUser';
+import { EmailStatusCode } from '@models/dbUser';
 import betagouv from '../src/betagouv';
 import * as searchCommune from '../src/lib/searchCommune';
 

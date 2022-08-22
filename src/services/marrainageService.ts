@@ -1,5 +1,5 @@
-import { Marrainage, MarrainageGroup, MarrainageGroupStatus } from "../models/marrainage";
-import { Domaine, Member } from '../models/member';
+import { Marrainage, MarrainageGroup, MarrainageGroupStatus } from "@models/marrainage";
+import { Domaine, Member } from '@models/member';
 import BetaGouv from '../betagouv';
 import * as utils from '../controllers/utils';
 import knex from '../db';

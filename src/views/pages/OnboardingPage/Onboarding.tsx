@@ -4,8 +4,8 @@ import type { Request } from 'express'
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
 import CitySelect from '../components/CitySelect';
-import { Member } from '../../../models/member'
-import { StartupInfo } from '../../../models/startup'
+import { Member } from '@models/member'
+import { StartupInfo } from '@models/startup'
 import MemberSelect from '../components/MemberSelect';
 import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';

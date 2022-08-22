@@ -1,5 +1,5 @@
 import knex from '../../db';
-import { MarrainageGroup, MarrainageGroupMember, MarrainageNewcomerEmailEvent, MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from '../../models/marrainage';
+import { MarrainageGroup, MarrainageGroupMember, MarrainageNewcomerEmailEvent, MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from '@models/marrainage';
 import { IEventBus } from '@infra/eventBus';
 
 interface MarrainageCreatedJob {

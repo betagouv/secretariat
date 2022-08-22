@@ -42,6 +42,9 @@
             "@infra/*": [
                 "src/infra/*"
             ],
+            "@infra/*": [
+                "src/models/*"
+            ],
         },
         "plugins": [
         {

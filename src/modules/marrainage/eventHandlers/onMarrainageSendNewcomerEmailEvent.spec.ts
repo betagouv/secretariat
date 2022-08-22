@@ -1,10 +1,10 @@
 import sinon from "sinon";
 
 import { onMarrainageSendNewcomerEmail } from "./onMarrainageSendNewcomerEmailEvent";
-import { MarrainageNewcomerEmailEvent, MARRAINAGE_EVENT } from "../../../models/marrainage/marrainageEvent";
+import { MarrainageNewcomerEmailEvent, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
 import * as Email from '../../../config/email.config'
 import db from "../../../db";
-import { CommunicationEmailCode, DBUser } from "../../../models/dbUser";
+import { CommunicationEmailCode, DBUser } from "@models/dbUser";
 import { EMAIL_TYPES, MarrainageNewcomerEmail } from "@modules/email";
 
 describe('Test marrainage send newcomer email', () => {

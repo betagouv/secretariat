@@ -6,8 +6,8 @@ import * as utils from "./utils";
 import knex from "../db/index";
 import * as mattermost from "../lib/mattermost"
 import { addEvent, EventCode } from '../lib/events'
-import { MemberWithPermission } from "../models/member";
-import { DBUser, EmailStatusCode } from "../models/dbUser";
+import { MemberWithPermission } from "@models/member";
+import { DBUser, EmailStatusCode } from "@models/dbUser";
 
 export async function createEmail(username, creator) {
   const email = utils.buildBetaEmail(username);

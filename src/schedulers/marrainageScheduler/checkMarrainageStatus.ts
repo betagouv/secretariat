@@ -1,5 +1,5 @@
 import knex from '../../db';
-import { MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from '../../models/marrainage';
+import { MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from '@models/marrainage';
 import config from '../../config';
 import { IEventBus } from '@infra/eventBus';
 

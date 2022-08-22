@@ -3,9 +3,9 @@ import config from "../config";
 import knex from "../db";
 import * as utils from "./utils";
 import { addEvent, EventCode } from '../lib/events'
-import { MemberWithPermission } from "../models/member";
-import { DBUserDetail, DBUser, statusOptions, genderOptions } from "../models/dbUser";
-import { EmailStatusCode } from "../models/dbUser";
+import { MemberWithPermission } from "@models/member";
+import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@models/dbUser";
+import { EmailStatusCode } from "@models/dbUser";
 import { fetchCommuneDetails } from "../lib/searchCommune";
 import { isValidEmail } from "./utils";
 import { InfoUpdatePage } from '../views';

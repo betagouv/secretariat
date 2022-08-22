@@ -10,9 +10,9 @@ import knex from '../src/db';
 import app from '../src/index';
 import { reloadMarrainages, createMarrainages } from '../src/schedulers/marrainageScheduler';
 import utils from './utils';
-import { DBUser, EmailStatusCode } from '../src/models/dbUser';
+import { DBUser, EmailStatusCode } from '@models/dbUser';
 import betagouv from '../src/betagouv';
-import { Member } from '../src/models/member';
+import { Member } from '@models/member';
 
 chai.use(chaiHttp);
 

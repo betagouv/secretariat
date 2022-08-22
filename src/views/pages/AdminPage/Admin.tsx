@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import type { Request } from 'express'
-import { Member } from 'src/models/member';
+import { Member } from '@models/member';
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import { hydrateOnClient } from '../../hydrateOnClient'
 

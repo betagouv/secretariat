@@ -2,11 +2,11 @@ import ejs from 'ejs';
 import { buildBetaEmail, computeHash, createDefaultObjectWithKeysAndValue, formatDateToISOString, sortASC } from '../controllers/utils';
 import BetaGouv from '../betagouv';
 import db from '../db';
-import { Domaine, Member } from '../models/member';
-import { Job, JobWTTJ } from '../models/job';
+import { Domaine, Member } from '@models/member';
+import { Job, JobWTTJ } from '@models/job';
 import { getUserByEmail, MattermostUser } from '../lib/mattermost'
-import { Startup, StartupInfo } from '../models/startup';
-import { DBUser } from '../models/dbUser';
+import { Startup, StartupInfo } from '@models/startup';
+import { DBUser } from '@models/dbUser';
 
 const convert = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
 

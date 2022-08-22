@@ -6,8 +6,8 @@ import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
 import testUsers from './users.json';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
-import { Domaine, Member } from '../src/models/member';
-import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '../src/models/marrainage';
+import { Domaine, Member } from '@models/member';
+import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '@models/marrainage';
 
 
 chai.use(chaiHttp);

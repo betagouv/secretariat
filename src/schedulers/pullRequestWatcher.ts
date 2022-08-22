@@ -4,9 +4,9 @@ import config from '../config';
 import knex from '../db';
 import * as github from '../lib/github';
 import * as mattermost from '../lib/mattermost';
-import { CommunicationEmailCode, DBUser, EmailStatusCode } from '../models/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode } from '@models/dbUser';
 import * as utils from "../controllers/utils";
-import { Member } from '../models/member';
+import { Member } from '@models/member';
 import { renderHtmlFromMd } from '../lib/mdtohtml';
 import { sleep } from '../controllers/utils';
 

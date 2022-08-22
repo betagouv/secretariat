@@ -11,7 +11,7 @@ import app from '../src/index';
 import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '../src/schedulers/emailScheduler';
 import testUsers from './users.json';
 import utils from './utils';
-import { EmailStatusCode } from '../src/models/dbUser'
+import { EmailStatusCode } from '@models/dbUser'
 
 chai.use(chaiHttp);
 

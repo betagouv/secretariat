@@ -7,7 +7,7 @@ import utils from './utils';
 import * as mattermost from '../src/lib/mattermost';
 import * as controllerUtils from '../src/controllers/utils';
 import knex from '../src/db';
-import { EmailStatusCode } from '../src/models/dbUser'
+import { EmailStatusCode } from '@models/dbUser'
 
 const mattermostUsers = [
   {

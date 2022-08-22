@@ -1,7 +1,7 @@
 import { buildBetaEmail } from '../controllers/utils';
 import Betagouv from '../betagouv'
 import knex from '../db';
-import { Member } from '../models/member';
+import { Member } from '@models/member';
 
 const createMissingActiveUserInDb = async() => {
     const activeUsers: Member[] = await Betagouv.getActiveRegisteredOVHUsers();

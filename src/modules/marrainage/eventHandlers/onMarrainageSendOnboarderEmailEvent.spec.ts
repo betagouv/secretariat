@@ -1,13 +1,13 @@
 import sinon from "sinon";
 
 import { onMarrainageSendOnboarderEmail } from "./onMarrainageSendOnboarderEmailEvent";
-import { MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from "../../../models/marrainage/marrainageEvent";
+import { MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
 import * as Email from '../../../config/email.config'
 import db from "../../../db";
-import { CommunicationEmailCode, DBUser } from "../../../models/dbUser";
+import { CommunicationEmailCode, DBUser } from "@models/dbUser";
 import { EMAIL_TYPES, MarrainageOnboarderEmail } from "@modules/email";
 import betagouv from "../../../betagouv";
-import { Member } from "../../../models/member";
+import { Member } from "@models/member";
 
 describe('Test marrainage send onboarder email', () => {
     it('should send email to onboarder email', async () => {

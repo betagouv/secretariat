@@ -5,7 +5,7 @@ import BetaGouv from '../betagouv';
 import config from '../config';
 import knex from '../db';
 import * as utils from './utils';
-import { EmailStatusCode } from '../models/dbUser';
+import { EmailStatusCode } from '@models/dbUser';
 import { HomePage } from '../views';
 
 function renderLogin(req, res, params) {
