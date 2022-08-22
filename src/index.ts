@@ -25,7 +25,7 @@ import * as usersController from './controllers/usersController';
 import * as mapController from './controllers/mapController';
 import * as hookController from './controllers/hookController';
 import * as sentry from './lib/sentry';
-import EventBus from './infra/eventBus/eventBus';
+import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from './models/marrainage';
 
 const app = express();

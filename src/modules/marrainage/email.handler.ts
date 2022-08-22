@@ -1,5 +1,5 @@
 import { MARRAINAGE_EVENT } from "../../models/marrainage";
-import EventBus from "../../infra/eventBus/eventBus";
+import EventBus from "@infra/eventBus/eventBus";
 import { onMarrainageSendNewcomerEmail, onMarrainageSendOnboarderEmail } from "./eventHandlers";
 
 export const ConsumeEmailEvent = async () => {

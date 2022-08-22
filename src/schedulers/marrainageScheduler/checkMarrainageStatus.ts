@@ -1,7 +1,7 @@
 import knex from '../../db';
 import { MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from '../../models/marrainage';
 import config from '../../config';
-import { IEventBus } from '../../infra/eventBus';
+import { IEventBus } from '@infra/eventBus';
 
 export async function checkMarrainageStatus(EventBus : IEventBus) {
     console.info('Job: CheckMarrainageStatus started')

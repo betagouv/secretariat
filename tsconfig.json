@@ -39,6 +39,9 @@
             "@services/*": [
                 "src/services/*"
             ],
+            "@infra/*": [
+                "src/infra/*"
+            ],
         },
         "plugins": [
         {
