@@ -32,7 +32,7 @@ const {
     SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'prod') {
 
   const htmlBuilder = {
     renderFile: ejs.renderFile,
