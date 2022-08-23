@@ -33,7 +33,6 @@ describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
                 startup: 'test-startup',
             }
         })
-        console.log(emailBody)
         emailBody.should.include('(Chargé de déploiement chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
 
     }) 
@@ -54,7 +53,6 @@ describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
 
 
     it('email MARRAINAGE_REQUEST_EMAIL should include startup only when role not available', async () => {
-        const newcomer = testUsers.find(user => user.id === 'membre.nouveau') as Member
         const emailBody : string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL,
             variables: {
