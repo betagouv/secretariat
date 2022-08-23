@@ -1,7 +1,7 @@
 import { sendEmail } from "@config/email.config"
 import { MarrainageNewcomerEmailEvent } from "@models/marrainage"
 import db from "../../../db"
-import { EMAIL_TYPES, MarrainageNewcomerEmail } from "../../email"
+import { EmailProps, EMAIL_TYPES } from "../../email"
 import { CommunicationEmailCode, DBUser } from "@models/dbUser"
 
 export const onMarrainageSendNewcomerEmail:
@@ -11,7 +11,7 @@ export const onMarrainageSendNewcomerEmail:
         username: evt.user
     }).first()
 
-    const email : MarrainageNewcomerEmail = {
+    const email : EmailProps = {
         type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
         toEmail: [member.communication_email === CommunicationEmailCode.PRIMARY ? member.primary_email : member.secondary_email],
         variables: {

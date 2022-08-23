@@ -1,10 +1,10 @@
 import { sendEmail } from "@config/email.config"
 import { MarrainageGroupMember, MarrainageOnboarderEmailEvent } from "@models/marrainage"
-import db from "../../../db"
-import { EMAIL_TYPES, MarrainageOnboarderEmail } from "../../email"
+import db from "@/db"
+import { EmailProps, EMAIL_TYPES } from "../../email"
 import { CommunicationEmailCode, DBUser } from "@models/dbUser"
 import { Member } from "@models/member"
-import betagouv from "../../../betagouv"
+import betagouv from "@/betagouv"
 
 export const onMarrainageSendOnboarderEmail:
     (evenement: MarrainageOnboarderEmailEvent) => Promise<void> = async (evt) => {
@@ -29,7 +29,7 @@ export const onMarrainageSendOnboarderEmail:
         .select('users.*')
 
 
-    const email : MarrainageOnboarderEmail = {
+    const email : EmailProps = {
         type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
         toEmail: [onboarder.communication_email === CommunicationEmailCode.PRIMARY ? onboarder.primary_email : onboarder.secondary_email],
         variables: {
