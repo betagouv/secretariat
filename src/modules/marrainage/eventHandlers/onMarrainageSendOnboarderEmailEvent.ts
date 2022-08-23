@@ -31,7 +31,6 @@ export const onMarrainageSendOnboarderEmail:
 
     const email : MarrainageOnboarderEmail = {
         type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
-        subject: 'Nouvelle email de parrainage pour parrain/marraine',
         toEmail: [onboarder.communication_email === CommunicationEmailCode.PRIMARY ? onboarder.primary_email : onboarder.secondary_email],
         variables: {
             member: onboarderBetaInfo,

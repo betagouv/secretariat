@@ -4,15 +4,19 @@ import jwt from 'jsonwebtoken';
 import nock from 'nock';
 import sinon from 'sinon';
 import _ from 'lodash/array';
+
 import config from '@config';
-import * as controllerUtils from '@controllers/utils';
+import * as Email from '@config/email.config'
 import knex from '@/db';
 import app from '@/index';
 import { reloadMarrainages, createMarrainages } from '@schedulers/marrainageScheduler';
-import utils from './utils';
 import { DBUser, EmailStatusCode } from '@models/dbUser';
 import betagouv from '@/betagouv';
 import { Member } from '@models/member';
+import { EMAIL_TYPES, SendEmailProps } from '@/modules/email';
+import utils from './utils';
+
+import testUsers from "./users.json"
 
 chai.use(chaiHttp);
 
@@ -23,8 +27,8 @@ describe('Marrainage', () => {
 
   beforeEach((done) => {
     sendEmailStub = sinon
-      .stub(controllerUtils, 'sendMail')
-      .returns(Promise.resolve(true));
+      .stub(Email, 'sendEmail')
+      .returns(Promise.resolve(null));
     differenceLodashSpy = sinon
       .spy(_,'differenceWith')
     
@@ -80,19 +84,10 @@ describe('Marrainage', () => {
               );
               sendEmailStub.calledTwice.should.be.true;
 
-              const subject = sendEmailStub.args[0][1];
-              const emailBody = sendEmailStub.args[0][2];
-              const subject2 = sendEmailStub.args[1][1];
-              const emailBody2 = sendEmailStub.args[1][2];
-
-              subject.should.equal('Mise en contact 👋');
-              emailBody.should.include(
-                'Tu as accepté de marrainer Membre Nouveau'
-              );
-              subject2.should.equal('Mise en contact 👋');
-              emailBody2.should.include(
-                'Membre Actif a accepté de te marrainer'
-              );
+              const email1 : SendEmailProps = sendEmailStub.args[0][0];
+              const email2 : SendEmailProps = sendEmailStub.args[1][0];
+              email1.type.should.equal(EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL)
+              email2.type.should.equal(EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL)
               done();
             });
         });
@@ -119,16 +114,9 @@ describe('Marrainage', () => {
               res.text.should.include('Votre décision a été prise en compte');
               sendEmailStub.calledOnce.should.be.true;
 
-              const newOnboarderEmailArgs = sendEmailStub.args[0];
+              const email : SendEmailProps = sendEmailStub.args[0][0];
+              email.type.should.equal(EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL)
 
-              const subject = newOnboarderEmailArgs[1];
-              const emailBody = newOnboarderEmailArgs[2];
-
-              subject.should.equal(
-                'Tu as été sélectionné·e comme marrain·e 🙌'
-              );
-              emailBody.should.include('marrainage/accept');
-              emailBody.should.include('marrainage/decline');
               done();
             });
         });
@@ -208,12 +196,9 @@ describe('Marrainage', () => {
           res.header.location.should.equal('/community/membre.actif');
           sendEmailStub.calledOnce.should.be.true;
 
-          const subject = sendEmailStub.args[0][1];
-          const emailBody = sendEmailStub.args[0][2];
+          const email : SendEmailProps = sendEmailStub.args[0][0];
+          email.type.should.equal(EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL)
 
-          subject.should.equal('Tu as été sélectionné·e comme marrain·e 🙌');
-          emailBody.should.include('marrainage/accept');
-          emailBody.should.include('marrainage/decline');
           done();
         });
     });
@@ -229,14 +214,16 @@ describe('Marrainage', () => {
         })
         .end((err, res) => {
           sendEmailStub.calledOnce.should.be.true;
-          const emailBody = sendEmailStub.args[0][2];
-          emailBody.should.include('(Chargé de déploiement chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
+          const email: SendEmailProps = sendEmailStub.args[0][0];
+          email.type.should.equal(EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL)
+          email.variables.newcomer.id.should.equal('membre.actif')
+          email.variables.startup.should.equal('test-startup')
           done();
         });
     });
 
-    it('email should include role only when startup not available', (done) => {
-      chai
+    it('email should include role only when startup not available', async () => {
+      await chai
         .request(app)
         .post('/marrainage')
         .set('Cookie', `token=${utils.getJWT('membre.plusieurs.missions')}`)
@@ -244,29 +231,11 @@ describe('Marrainage', () => {
         .send({
           newcomerId: 'membre.plusieurs.missions',
         })
-        .end((err, res) => {
-          sendEmailStub.calledOnce.should.be.true;
-          const emailBody = sendEmailStub.args[0][2];
-          emailBody.should.include('(Chargé de déploiement)');
-          done();
-        });
-    });
 
-    it('email should include startup only when role not available', (done) => {
-      chai
-        .request(app)
-        .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
-        .type('form')
-        .send({
-          newcomerId: 'membre.nouveau',
-        })
-        .end((err, res) => {
-          sendEmailStub.calledOnce.should.be.true;
-          const emailBody = sendEmailStub.args[0][2];
-          emailBody.should.include('(récemment arrivé·e chez <a href="https://beta.gouv.fr/startups/test-startup.html" target="_blank">test-startup</a>)');
-          done();
-        });
+      sendEmailStub.calledOnce.should.be.true;
+      const email : SendEmailProps = sendEmailStub.args[0][0];
+      email.type.should.equal(EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL)
+      email.variables.newcomer.role.should.equal(testUsers.find(user => user.id === 'membre.plusieurs.missions').role)
     });
 
     it('should add info in db when sollicited', (done) => {

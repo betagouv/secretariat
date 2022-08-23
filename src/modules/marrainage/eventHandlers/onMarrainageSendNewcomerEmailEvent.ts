@@ -13,7 +13,6 @@ export const onMarrainageSendNewcomerEmail:
 
     const email : MarrainageNewcomerEmail = {
         type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
-        subject: 'Nouvelle email de parrainage',
         toEmail: [member.communication_email === CommunicationEmailCode.PRIMARY ? member.primary_email : member.secondary_email],
         variables: {
             member: member

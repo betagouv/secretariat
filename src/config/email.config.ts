@@ -34,15 +34,6 @@ const {
 
 if (process.env.NODE_ENV === 'prod') {
 
-  const htmlBuilder = {
-    renderFile: ejs.renderFile,
-    templates: {
-      'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageByGroupNewcomerEmail.ejs',
-      'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageByGroupOnboarderEmail.ejs',
-      'LOGIN_EMAIL': './src/views/templates/emails/login.ejs'
-    }
-  } 
-
   try {
     sendEmail = process.env.MAIL_USE_SIB ? makeSendEmailFromSendinblue({
       MAIL_SENDER,

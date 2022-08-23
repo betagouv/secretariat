@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { EmailProps, SendEmail, SendEmailProps } from '@modules/email';
+import { HtmlBuilderType, SendEmail, SendEmailProps } from '@modules/email';
 
 interface SendEmailFromNodemailerDeps {
     MAIL_DEBUG: string,
@@ -11,10 +11,7 @@ interface SendEmailFromNodemailerDeps {
     MAIL_IGNORE_TLS: string,
     MAIL_SERVICE_HEADERS: Record<string, string>,
     MAIL_SENDER: string,
-    htmlBuilder: {
-      renderFile (url: string, params: any): Promise<string>,
-      templates: Record<EmailProps['type'], string>
-    }
+    htmlBuilder: HtmlBuilderType
 }
 
 export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): SendEmail => {
@@ -30,31 +27,33 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         MAIL_SERVICE_HEADERS,
         htmlBuilder
     } = deps
-    const mailTransport = nodemailer.createTransport({
-        debug: MAIL_DEBUG === 'true',
-        service: MAIL_SERVICE ? MAIL_SERVICE : null,
-        host: MAIL_SERVICE ? null : MAIL_HOST,
-        port: MAIL_SERVICE
-          ? null
-          : parseInt(MAIL_PORT || '25', 10),
-        ignoreTLS: MAIL_SERVICE
-          ? null
-          : MAIL_IGNORE_TLS === 'true',
-        auth: {
-          user: MAIL_USER,
-          pass: MAIL_PASS,
-        },
-    });
+    const transport = {
+      debug: MAIL_DEBUG === 'true',
+      service: MAIL_SERVICE ? MAIL_SERVICE : null,
+      host: MAIL_SERVICE ? null : MAIL_HOST,
+      port: MAIL_SERVICE
+        ? null
+        : parseInt(MAIL_PORT || '25', 10),
+      ignoreTLS: MAIL_SERVICE
+        ? null
+        : MAIL_IGNORE_TLS === 'true',
+      auth: {
+        user: MAIL_USER,
+        pass: MAIL_PASS,
+      },
+  }
+  console.log(transport)
+  const mailTransport = nodemailer.createTransport(transport);
       
 
   return async function sendMailFromNodemailer(props: SendEmailProps) {
     const {
-        subject,
         type,
         toEmail,
         extraParams = {}, 
         attachments=[],
         variables = {},
+        replyTo
     } = props
 
     const templateURL = htmlBuilder.templates[type]
@@ -64,11 +63,12 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
-      subject,
+      subject: htmlBuilder.subjects[type],
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
       headers: MAIL_SERVICE_HEADERS,
+      replyTo,
       ...extraParams,
     };
   
