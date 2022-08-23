@@ -44,6 +44,7 @@ Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes
 ```
 » npm install # Récupère les dépendances
 » npm run migrate # Applique les migrations
+» npm run seed # Ajoute des utilisateurs dans la base users. Utilisez l'un des primary_email présent dans la bdd pour vous connecter
 » npm run dev
    ...
    Running on port: 8100
