@@ -9,7 +9,7 @@ let sendEmail: SendEmail = fakeSendEmail
 const EMAIL_CONFIG =  {
     MAIL_DEBUG: process.env.MAIL_DEBUG,
     MAIL_HOST: process.env.MAIL_HOST,
-    MAIL_IGNORE_TLS: process.env.MAIL_HOST,
+    MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS,
     MAIL_PASS: process.env.MAIL_PASS,
     MAIL_PORT: process.env.MAIL_PORT,
     MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
