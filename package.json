@@ -4,7 +4,7 @@
   "description": "L'espace membre de l’incubateur",
   "main": "index.ts",
   "scripts": {
-    "start": "NODE_ENV=production node dist/src/index.js",
+    "start": "NODE_ENV=prod node dist/src/index.js",
     "migrate": "knex migrate:latest --esm",
     "makeMigration": "knex migrate:make --esm",
     "seed": "knex seed:run --esm",
