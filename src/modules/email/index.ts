@@ -9,6 +9,7 @@ export enum EMAIL_TYPES {
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL='MARRAINAGE_ACCEPT_NEWCOMER_EMAIL',
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL='MARRAINAGE_ACCEPT_ONBOARDER_EMAIL',
     MARRAINAGE_REJECT_ONBOARDER_EMAIL='MARRAINAGE_REJECT_ONBOARDER_EMAIL',
+    MARRAINAGE_REQUEST_FAILED='MARRAINAGE_REQUEST_FAILED'
 }
 
 export type HtmlBuilderType = {
@@ -78,6 +79,13 @@ export type MarrainageAcceptOnboarderEmail = {
     }
 }
 
+export type MarrainageRequestFailed = {
+    type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
+    variables: {
+        errorMessage: string
+    }
+}
+
 type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
@@ -85,6 +93,7 @@ type EmailVariants =
  | MarrainageRequestEmail
  | MarrainageAcceptNewcomerEmail
  | MarrainageAcceptOnboarderEmail
+ | MarrainageRequestFailed
 
 export type EmailProps = BaseEmail & EmailVariants
 

@@ -134,13 +134,12 @@ export async function createRequestForUser(userId) {
   if (!onboarder) {
     const recipientEmailList = [config.senderEmail];
     const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
-    const emailContent = `
-      <p>Bonjour,</p>
-      <p>Erreur de création de la demande de marrainage pour ${userId} avec l'erreur :</>
-      <p>${errorMessage}</p>`;
-    sendEmail({
+    await sendEmail({
+      type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
       toEmail: recipientEmailList,
-      subject: `La demande de marrainage pour ${userId} n'a pas fonctionné`,
+      variables: {
+        errorMessage
+      }
     },
     );
     throw new Error(errorMessage);

@@ -105,3 +105,17 @@ describe('Test MARRAINAGE_ACCEPT_NEWCOMER_EMAIL', () => {
     })
 })
 
+describe('Test MARRAINAGE_REQUEST_FAILED', () => {
+    it('email MARRAINAGE_REQUEST_FAILED', async () => {
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
+            variables: {
+                errorMessage: `Pas de parrain dispo`
+            }
+        })
+        emailBody.should.include(
+            'Pas de parrain dispo'
+        );
+    })
+})
+
