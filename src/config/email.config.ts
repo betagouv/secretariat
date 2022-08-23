@@ -1,8 +1,8 @@
-import ejs from 'ejs'
 
 import { SendEmail } from '@modules/email'
 import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendEmailFromSendinblue } from '@infra/email/sendInBlue'
+import htmlBuilder from '@/infra/email/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 
