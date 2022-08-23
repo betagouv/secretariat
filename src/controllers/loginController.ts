@@ -45,7 +45,6 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
     await sendEmail({
       toEmail: [email],
       type: EMAIL_TYPES.LOGIN_EMAIL,
-      subject: 'Connexion à l\'espace membre BetaGouv',
       variables: {
         loginUrlWithToken
       }

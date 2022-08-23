@@ -1,8 +1,8 @@
-import ejs from 'ejs'
 
 import { SendEmail } from '@modules/email'
 import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendEmailFromSendinblue } from '@infra/email/sendInBlue'
+import htmlBuilder from '@/modules/email/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 
@@ -33,15 +33,6 @@ const {
 } = EMAIL_CONFIG
 
 if (process.env.NODE_ENV === 'prod') {
-
-  const htmlBuilder = {
-    renderFile: ejs.renderFile,
-    templates: {
-      'MARRAINAGE_NEWCOMER_EMAIL': './src/views/templates/emails/marrainageByGroupNewcomerEmail.ejs',
-      'MARRAINAGE_ONBOARDER_EMAIL': './src/views/templates/emails/marrainageByGroupOnboarderEmail.ejs',
-      'LOGIN_EMAIL': './src/views/templates/emails/login.ejs'
-    }
-  } 
 
   try {
     sendEmail = process.env.MAIL_USE_SIB ? makeSendEmailFromSendinblue({

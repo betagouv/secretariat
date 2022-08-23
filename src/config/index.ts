@@ -109,4 +109,5 @@ export default {
   ONBOARDER_IN_LIST: process.env.ONBOARDER_IN_LIST ? JSON.parse(process.env.ONBOARDER_IN_LIST) : [],
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
+  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379'
 };

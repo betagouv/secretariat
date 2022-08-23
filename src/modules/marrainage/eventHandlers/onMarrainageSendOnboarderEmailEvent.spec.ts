@@ -5,7 +5,7 @@ import { MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from "@models/marrain
 import * as Email from '@config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "@models/dbUser";
-import { EMAIL_TYPES, MarrainageOnboarderEmail } from "@modules/email";
+import { EmailProps, EMAIL_TYPES } from "@modules/email";
 import betagouv from "../../../betagouv";
 import { Member } from "@models/member";
 
@@ -21,7 +21,7 @@ describe('Test marrainage send onboarder email', () => {
         }
         await onMarrainageSendOnboarderEmail(evt)
         const sendEmail = sinon.spy(Email, 'sendEmail');
-        const email : MarrainageOnboarderEmail = {
+        const email : EmailProps = {
             type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
             variables: {
                 member: {

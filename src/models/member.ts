@@ -26,6 +26,7 @@ export interface Member {
   end: string;
   employer: string;
   domaine: Domaine;
+  role: string;
 }
 
 export interface MemberWithPrimaryEmail extends Member {

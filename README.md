@@ -41,6 +41,7 @@ L'espace membre de l’incubateur
 
 Une fois Postgres lancé, vous pouvez démarrer l'application avec ces commandes :
 
+- Créer le fichier de configuration : `cp .env.example .env` et le remplir avec les identifiants OVH obtenus plus haut.
 ```
 » npm install # Récupère les dépendances
 » npm run migrate # Applique les migrations

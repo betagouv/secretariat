@@ -1,4 +1,3 @@
-import ejs from 'ejs';
 import jwt from 'jsonwebtoken';
 import config from '@config';
 import BetaGouv from '../betagouv';
@@ -8,6 +7,8 @@ import { addEvent, EventCode } from '@/lib/events'
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 import { Member } from '@models/member';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
+import { sendEmail } from '@/config/email.config';
+import { EMAIL_TYPES } from '@/modules/email';
 
 const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
 const MarrainageService = useNewMarrainage
@@ -59,25 +60,24 @@ async function sendOnboarderRequestEmail(newcomer: Member, onboarder: Member) {
     config.host
   }/marrainage/decline?details=${encodeURIComponent(token)}`;
 
-  const startup = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
+  const startup : string | null = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
 
-  const html = await ejs.renderFile('./src/views/templates/emails/marrainageRequest.ejs', {
-    newcomer,
-    onboarder,
-    marrainageAcceptUrl,
-    marrainageDeclineUrl,
-    startup,
-  });
   const dbOnboarder: DBUser = await knex('users').where({
     username: onboarder.id
   }).first()
   try {
     const email = dbOnboarder.communication_email === CommunicationEmailCode.SECONDARY && dbOnboarder.secondary_email ? dbOnboarder.secondary_email : dbOnboarder.primary_email
-    return await utils.sendMail(
-      [email],
-      'Tu as été sélectionné·e comme marrain·e 🙌',
-      html
-    );
+    return await sendEmail({
+      toEmail: [email],
+      type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL,
+      variables: {
+        newcomer,
+        onboarder,
+        marrainageAcceptUrl,
+        marrainageDeclineUrl,
+        startup,
+      }
+    });
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
   }
@@ -134,14 +134,13 @@ export async function createRequestForUser(userId) {
   if (!onboarder) {
     const recipientEmailList = [config.senderEmail];
     const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
-    const emailContent = `
-      <p>Bonjour,</p>
-      <p>Erreur de création de la demande de marrainage pour ${userId} avec l'erreur :</>
-      <p>${errorMessage}</p>`;
-    utils.sendMail(
-      recipientEmailList,
-      `La demande de marrainage pour ${userId} n'a pas fonctionné`,
-      emailContent
+    await sendEmail({
+      type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
+      toEmail: recipientEmailList,
+      variables: {
+        errorMessage
+      }
+    },
     );
     throw new Error(errorMessage);
   }
@@ -224,14 +223,7 @@ export async function acceptRequest(req, res) {
       created_by_username: onboarder.id,
       action_on_username: onboarder.id
     })
-    const htmlOnboarder = await ejs.renderFile('./src/views/templates/emails/marrainageAcceptOnboarder.ejs', {
-      newcomer,
-      onboarder,
-    });
-    const htmlNewcomer = await ejs.renderFile('./src/views/templates/emails/marrainageAcceptNewcomer.ejs', {
-      newcomer,
-      onboarder,
-    });
+
     const dbUsers: DBUser[] = await knex('users').whereIn(
       'username', [onboarder.id, newcomer.id]
     )
@@ -240,19 +232,26 @@ export async function acceptRequest(req, res) {
     try {
       const emailOnboarder = dbOnboarder.communication_email === CommunicationEmailCode.SECONDARY && dbOnboarder.secondary_email ? dbOnboarder.secondary_email : dbOnboarder.primary_email
       const emailNewcomer = dbNewcomer.communication_email === CommunicationEmailCode.SECONDARY && dbNewcomer.secondary_email ? dbNewcomer.secondary_email : dbNewcomer.primary_email
+      await sendEmail({
+        type: EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL,
+        toEmail: [emailOnboarder],
+        replyTo: emailNewcomer,
+        variables: {
+          newcomer,
+          onboarder
+        }
+      })
 
-      await utils.sendMail(
-        emailOnboarder,
-        'Mise en contact 👋',
-        htmlOnboarder,
-        { replyTo: emailNewcomer}
-      );
-      await utils.sendMail(
-        emailNewcomer,
-        'Mise en contact 👋',
-        htmlNewcomer,
-        { replyTo: emailOnboarder}
-      );
+      await sendEmail({
+        type: EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL,
+        toEmail: [emailNewcomer],
+        replyTo: emailOnboarder,
+        variables: {
+          newcomer,
+          onboarder
+        }
+      })
+
     } catch (err) {
       throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }

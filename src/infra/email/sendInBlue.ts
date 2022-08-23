@@ -4,9 +4,13 @@ import SibApiV3Sdk from 'sib-api-v3-sdk'
 import { EmailProps, SendEmail, SendEmailProps } from '@modules/email';
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
-    'MARRAINAGE_NEWCOMER_EMAIL': 3075029,
-    'MARRAINAGE_ONBOARDER_EMAIL': 2047347,
-    'LOGIN_EMAIL': 245512
+    MARRAINAGE_NEWCOMER_EMAIL: 3075029,
+    MARRAINAGE_ONBOARDER_EMAIL: 2047347,
+    LOGIN_EMAIL: 245512,
+    MARRAINAGE_REQUEST_EMAIL: 0,
+    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: 0,
+    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: 0,
+    MARRAINAGE_REQUEST_FAILED: 0
 }
 
 interface SendEmailFromSendinblueDeps {
@@ -43,6 +47,7 @@ export const makeSendEmailFromSendinblue = (deps: SendEmailFromSendinblueDeps): 
         type,
         toEmail,
         variables = {},
+        replyTo
     } = props
 
     let templateId: number
@@ -72,6 +77,7 @@ export const makeSendEmailFromSendinblue = (deps: SendEmailFromSendinblueDeps): 
       params: variables,
       templateId,
       htmlContent: html,
+      replyTo,
       subject: subject,
     })
   }
