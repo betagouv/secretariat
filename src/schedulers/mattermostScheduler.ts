@@ -8,6 +8,8 @@ import { MattermostUser } from '@/lib/mattermost';
 import knex from "@/db";
 import { Member, MemberWithPrimaryEmail } from '@models/member';
 import { DBUser, EmailStatusCode } from '@models/dbUser';
+import { sendEmail } from '@/config/email.config';
+import { EMAIL_TYPES } from '@/modules/email';
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
   return {
@@ -210,10 +212,13 @@ export async function createUsersByEmail() {
           password,
         });
 
-        const html = await ejs.renderFile('./src/views/templates/emails/mattermost.ejs', {
-          resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
-        });
-        await utils.sendMail(email, 'Inscription à mattermost', html);
+        await sendEmail({
+          toEmail: [email],
+          type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED,
+          variables: {
+            resetPasswordLink: 'https://mattermost.incubateur.net/reset_password',
+          }
+        })
       } catch (err) {
         console.error(
           "Erreur d'ajout des utilisateurs à mattermost", err

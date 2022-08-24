@@ -1,16 +1,22 @@
 import { Member } from "@models/member"
 import { DBUser } from "@models/dbUser"
 
+
+
+
 export enum EMAIL_TYPES {
-    MARRAINAGE_NEWCOMER_EMAIL='MARRAINAGE_NEWCOMER_EMAIL',
-    MARRAINAGE_ONBOARDER_EMAIL='MARRAINAGE_ONBOARDER_EMAIL',
-    LOGIN_EMAIL='LOGIN_EMAIL',
-    MARRAINAGE_REQUEST_EMAIL='MARRAINAGE_REQUEST_EMAIL',
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL='MARRAINAGE_ACCEPT_NEWCOMER_EMAIL',
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL='MARRAINAGE_ACCEPT_ONBOARDER_EMAIL',
-    MARRAINAGE_REJECT_ONBOARDER_EMAIL='MARRAINAGE_REJECT_ONBOARDER_EMAIL',
-    MARRAINAGE_REQUEST_FAILED='MARRAINAGE_REQUEST_FAILED',
-    ONBOARDING_REFERENT_EMAIL='ONBOARDING_REFERENT_EMAIL'
+  MARRAINAGE_NEWCOMER_EMAIL = 'MARRAINAGE_NEWCOMER_EMAIL',
+  MARRAINAGE_ONBOARDER_EMAIL = 'MARRAINAGE_ONBOARDER_EMAIL',
+  LOGIN_EMAIL = 'LOGIN_EMAIL',
+  MARRAINAGE_REQUEST_EMAIL = 'MARRAINAGE_REQUEST_EMAIL',
+  MARRAINAGE_ACCEPT_NEWCOMER_EMAIL = 'MARRAINAGE_ACCEPT_NEWCOMER_EMAIL',
+  MARRAINAGE_ACCEPT_ONBOARDER_EMAIL = 'MARRAINAGE_ACCEPT_ONBOARDER_EMAIL',
+  MARRAINAGE_REJECT_ONBOARDER_EMAIL = 'MARRAINAGE_REJECT_ONBOARDER_EMAIL',
+  MARRAINAGE_REQUEST_FAILED = 'MARRAINAGE_REQUEST_FAILED',
+  ONBOARDING_REFERENT_EMAIL = 'ONBOARDING_REFERENT_EMAIL',
+  EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
+  EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
+  EMAIL_PR_PENDING = 'EMAIL_PR_PENDING'
 }
 
 export type SubjectFunction = {
@@ -103,6 +109,30 @@ export type EmailOnboardingReferent = {
     }
 }
 
+export type EmailCreatedEmail = {
+    type: EMAIL_TYPES.EMAIL_CREATED_EMAIL,
+    variables: {
+        email: string,
+        secondaryEmail: string,
+        secretariatUrl : string,
+        mattermostInvitationLink: string,
+    }
+}
+
+export type EmailMattermostAccountCreated = {
+    type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED,
+    variables: {
+        resetPasswordLink: string
+    }
+}
+
+export type EmailPRPending = {
+    type: EMAIL_TYPES.EMAIL_PR_PENDING,
+    variables: {
+
+    }
+}
+
 type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
@@ -112,6 +142,9 @@ type EmailVariants =
  | MarrainageAcceptOnboarderEmail
  | MarrainageRequestFailed
  | EmailOnboardingReferent
+ | EmailCreatedEmail
+ | EmailMattermostAccountCreated
+ | EmailPRPending
 
 export type EmailProps = BaseEmail & EmailVariants
 

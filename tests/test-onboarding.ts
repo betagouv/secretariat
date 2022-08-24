@@ -471,6 +471,7 @@ describe('Onboarding', () => {
           isEmailBetaAsked: false
         })
         .end((err, res) => {
+          console.log(getGithubMasterSha.args)
           getGithubMasterSha.calledOnce.should.be.true;
           createGithubBranch.calledOnce.should.be.true;
           createGithubFile.calledOnce.should.be.true;

@@ -11,7 +11,10 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: './src/views/templates/emails/marrainageAcceptNewcomer.ejs',
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: './src/views/templates/emails/marrainageAcceptOnboarder.ejs',
     MARRAINAGE_REQUEST_FAILED: './src/views/templates/emails/marrainageRequestFailed.ejs',
-    ONBOARDING_REFERENT_EMAIL: './src/views/templates/emails/onboardingReferent.ejs'
+    ONBOARDING_REFERENT_EMAIL: './src/views/templates/emails/onboardingReferent.ejs',
+    EMAIL_CREATED_EMAIL: './src/views/templates/emails/createEmail.ejs',
+    EMAIL_MATTERMOST_ACCOUNT_CREATED: './src/views/templates/emails/mattermost.ejs',
+    EMAIL_PR_PENDING: `./src/views/templates/emails/pendingGithubAuthorPR.ejs`
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -22,9 +25,12 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: 'Mise en contact 👋',
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: 'Mise en contact 👋',
     MARRAINAGE_REQUEST_FAILED: `La demande de marrainage n'a pas fonctionné`,
-    ONBOARDING_REFERENT_EMAIL: ({ name } : EmailOnboardingReferent['variables']) => {
+    ONBOARDING_REFERENT_EMAIL: ({ name }: EmailOnboardingReferent['variables']) => {
         return `${name} vient de créer sa fiche Github`
-    }
+    },
+    EMAIL_CREATED_EMAIL: 'Bienvenue chez BetaGouv 🙂',
+    EMAIL_MATTERMOST_ACCOUNT_CREATED: 'Inscription à mattermost',
+    EMAIL_PR_PENDING: `PR en attente`
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -35,7 +41,10 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: false,
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: false,
     MARRAINAGE_REQUEST_FAILED: false,
-    ONBOARDING_REFERENT_EMAIL: true
+    ONBOARDING_REFERENT_EMAIL: true,
+    EMAIL_CREATED_EMAIL: false,
+    EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
+    EMAIL_PR_PENDING: true
 }
 
 const htmlBuilder : HtmlBuilderType = {

@@ -9,6 +9,8 @@ import * as utils from "@controllers/utils";
 import { Member } from '@models/member';
 import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { sleep } from '@controllers/utils';
+import { EMAIL_TYPES } from '@/modules/email';
+import { sendEmail } from '@/config/email.config';
 
 const findAuthorsInFiles = async (files) => {
     const authors = [];
@@ -32,20 +34,16 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
         console.log(`L'utilisateur n'existe pas, ou n'a ni email actif, ni d'email secondaire`)
     } else {
         const member: Member = await Betagouv.userInfosById(author)
-        const messageContent = await ejs.renderFile(
-            `./src/views/templates/emails/pendingGithubAuthorPR.ejs`,
-            {
-              username: member ? member.fullname : author,
-              pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
-            }
-        );
         const primary_email_active = user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
 
-        await utils.sendMail(
-            primary_email_active && user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email,
-            `PR en attente`,
-            renderHtmlFromMd(messageContent)
-        );
+        await sendEmail({
+            type: EMAIL_TYPES.EMAIL_PR_PENDING,
+            toEmail: primary_email_active && user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email,
+            variables: {
+                username: member ? member.fullname : author,
+                pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
+            }
+        });
         console.log(`Message de rappel de pr envoyé par email à ${user.username}`)
     }
 }

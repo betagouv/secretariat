@@ -8,7 +8,7 @@ import utilsTest from './utils';
 import * as utils from '@/controllers/utils';
 import betagouv from '@/betagouv';
 import knex from '@/db';
-import * as controllerUtils from '@/controllers/utils';
+import * as email from '@/config/email.config'
 import { EmailStatusCode } from '@models/dbUser';
 
 chai.use(chaiHttp);
@@ -83,7 +83,7 @@ describe('Set email active', () => {
   let sendEmailStub;
 
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+    sendEmailStub = sinon.stub(email, 'sendEmail').returns(Promise.resolve(true));
     utilsTest.cleanMocks();
     utilsTest.mockOvhTime();
     done();

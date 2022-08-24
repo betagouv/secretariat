@@ -8,6 +8,8 @@ import * as mattermost from "@/lib/mattermost"
 import { addEvent, EventCode } from '@/lib/events'
 import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@models/dbUser";
+import { EMAIL_TYPES } from "@/modules/email";
+import { sendEmail } from "@/config/email.config";
 
 export async function createEmail(username, creator) {
   const email = utils.buildBetaEmail(username);
@@ -83,15 +85,17 @@ export async function sendEmailCreatedEmail(username) {
   })
   const secretariatUrl = `${config.protocol}://${config.host}`;
 
-  const html = await ejs.renderFile('./src/views/templates/emails/createEmail.ejs', {
-    email: user.primary_email,
-    secondaryEmail: user.secondary_email,
-    secretariatUrl,
-    mattermostInvitationLink: config.mattermostInvitationLink,
-  });
-
   try {
-    await utils.sendMail(user.secondary_email, 'Bienvenue chez BetaGouv 🙂', html);
+    await sendEmail({
+      type: EMAIL_TYPES.EMAIL_CREATED_EMAIL,
+      toEmail: [user.secondary_email],
+      variables: {
+        email: user.primary_email,
+        secondaryEmail: user.secondary_email,
+        secretariatUrl,
+        mattermostInvitationLink: config.mattermostInvitationLink,
+      }
+    })
     console.log(
       `Email de bienvenue pour ${user.username} envoyé`,
     );
