@@ -6,11 +6,14 @@ import BetaGouv from "@/betagouv";
 import knex from "@/db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "./validator"
 import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@models/dbUser';
-import { renderHtmlFromMd } from "@/lib/mdtohtml";
 import * as mattermost from '@/lib/mattermost';
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { Member } from '@models/member';
+import { sendEmail } from "@/config/email.config";
+import { EMAIL_TYPES } from "@/modules/email";
+import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
+import { sendInfoToChat } from "@/infra/chat";
 
 function createBranchName(username) {
   const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -54,27 +57,37 @@ interface IMessageInfo {
 }
 
 async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAsked, name }: IMessageInfo) {
-  const dbReferent = await knex('users').where({ username: referent }).first();
-  const prUrl = prInfo.data.html_url;
-  const userUrl = `${config.protocol}://${config.host}/community/${username}`;
-  const messageContent = await ejs.renderFile('./src/views/templates/emails/onboardingReferent.ejs', {
-    referent: referent, prUrl, name, userUrl, isEmailBetaAsked
-  });
+  const dbReferent = await knex('users').where({ username: referent }).first()
+  const prUrl = prInfo.data.html_url
   const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
-  await utils.sendMail(
-    email,
-    `${name} vient de créer sa fiche Github`,
-    renderHtmlFromMd(messageContent)
-  );
+  await sendEmail({
+    toEmail: [email],
+    type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+    variables: {
+      referent,
+      prUrl,
+      name,
+      isEmailBetaAsked
+    }
+  })
   try {
     const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
       term: referent
     })
-    await BetaGouv.sendInfoToChat(
-      messageContent,
-      'secretariat',
-      mattermostUser.username
-    );
+    const messageContent = await htmlBuilder.renderContentForTypeAsMarkdown({
+      type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+      variables: {
+        referent,
+        prUrl,
+        name,
+        isEmailBetaAsked
+      }
+    })
+    await sendInfoToChat({
+      text: messageContent,
+      channel: 'secretariat',
+      username: mattermostUser.username
+    })
   } catch (e) {
     console.error('It was not able to send message to referent on mattermost', e)
   }

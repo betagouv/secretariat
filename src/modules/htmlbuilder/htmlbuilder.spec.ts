@@ -2,6 +2,8 @@ import { EMAIL_TYPES } from "@/modules/email"
 import htmlBuilder from "./htmlbuilder"
 import testUsers from "../../../tests/users.json"
 import { Member } from "@/models/member"
+import * as mdtohtml from '@/lib/mdtohtml';
+import sinon from "sinon";
 
 describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
     it('should build ARRAINAGE_REQUEST_EMAIL', async () => {
@@ -116,6 +118,41 @@ describe('Test MARRAINAGE_REQUEST_FAILED', () => {
         emailBody.should.include(
             'Pas de parrain dispo'
         );
+    })
+})
+
+
+describe('Test ONBOARDING_REFERENT_EMAIL', () => {
+    it('email ONBOARDING_REFERENT_EMAIL', async () => {
+        const prUrl = 'http://github.com/uneurl'
+        const name = 'Paul'
+        const isEmailBetaAsked = false
+        const referent = 'Lucas'
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+            variables: {
+                referent,
+                prUrl,
+                name,
+                isEmailBetaAsked
+            }
+        })
+        const emailSubject : string = await htmlBuilder.renderSubjectForType({
+            type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+            variables: {
+                referent,
+                prUrl,
+                name,
+                isEmailBetaAsked
+            }
+        })
+  
+        emailBody.should.include(prUrl)
+        emailBody.should.include(name)
+        emailSubject.should.equal(`${name} vient de créer sa fiche Github`)
+        renderHtmlFromMd.called.should.be.true
     })
 })
 
