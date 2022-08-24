@@ -9,18 +9,25 @@ export enum EMAIL_TYPES {
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL='MARRAINAGE_ACCEPT_NEWCOMER_EMAIL',
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL='MARRAINAGE_ACCEPT_ONBOARDER_EMAIL',
     MARRAINAGE_REJECT_ONBOARDER_EMAIL='MARRAINAGE_REJECT_ONBOARDER_EMAIL',
-    MARRAINAGE_REQUEST_FAILED='MARRAINAGE_REQUEST_FAILED'
+    MARRAINAGE_REQUEST_FAILED='MARRAINAGE_REQUEST_FAILED',
+    ONBOARDING_REFERENT_EMAIL='ONBOARDING_REFERENT_EMAIL'
+}
+
+export type SubjectFunction = {
+    (variables: EmailProps['variables']) : string
 }
 
 export type HtmlBuilderType = {
     renderFile (url: string, params: any): Promise<string>,
     templates: Record<EmailProps['type'], string>,
-    subjects: Record<EmailProps['type'], string>,
+    subjects: Record<EmailProps['type'], string | SubjectFunction>,
     renderContentForType: (params: EmailVariants) => Promise<string>,
+    renderSubjectForType: (params: EmailVariants) => string,
+    renderContentForTypeAsMarkdown: (params: EmailVariants) => Promise<string>,
 }
 
 type BaseEmail = {
-    subject?: string
+    subject?: string,
     variables: Record<string, any>,
     toEmail: string[],
     extraParams?: Record<string, string>, 
@@ -86,6 +93,16 @@ export type MarrainageRequestFailed = {
     }
 }
 
+export type EmailOnboardingReferent = {
+    type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+    variables: {
+        referent: string,
+        prUrl: string,
+        name: string,
+        isEmailBetaAsked: boolean
+    }
+}
+
 type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
@@ -94,6 +111,7 @@ type EmailVariants =
  | MarrainageAcceptNewcomerEmail
  | MarrainageAcceptOnboarderEmail
  | MarrainageRequestFailed
+ | EmailOnboardingReferent
 
 export type EmailProps = BaseEmail & EmailVariants
 

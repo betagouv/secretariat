@@ -10,6 +10,8 @@ import config from '@config';
 import { EmailStatusCode } from '@models/dbUser';
 import betagouv from '@/betagouv';
 import * as searchCommune from '@/lib/searchCommune';
+import * as email from '@config/email.config'
+import { SendEmailProps } from '@/modules/email';
 
 chai.use(chaiHttp);
 
@@ -66,8 +68,8 @@ describe('Onboarding', () => {
         .resolves({ headers: null, url: null, status: 201, data: { html_url: 'https://example.com/' } });
 
       sendEmailStub = sinon
-        .stub(controllerUtils, 'sendMail')
-        .returns(Promise.resolve(true));
+        .stub(email, 'sendEmail')
+        .returns(Promise.resolve(null));
 
       isPublicServiceEmailStub = sinon
         .stub(controllerUtils, 'isPublicServiceEmail')
@@ -617,8 +619,8 @@ describe('Onboarding', () => {
           console.log(e)
         }
         sendEmailStub.calledOnce.should.be.true;
-        const toEmail = sendEmailStub.args[0][0];
-        toEmail.should.equal(`membre.actif@${config.domain}`);
+        const email : SendEmailProps = sendEmailStub.args[0][0];
+        email.toEmail[0].should.equal(`membre.actif@${config.domain}`);
     });
 
     it('special characters should be replaced with dashes in the filename', (done) => {

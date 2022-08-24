@@ -1,7 +1,6 @@
 
+import { EmailProps, SendEmail, SendEmailProps } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
-
-import { EmailProps, SendEmail, SendEmailProps } from '@modules/email';
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     MARRAINAGE_NEWCOMER_EMAIL: 3075029,
@@ -10,7 +9,8 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     MARRAINAGE_REQUEST_EMAIL: 0,
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: 0,
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: 0,
-    MARRAINAGE_REQUEST_FAILED: 0
+    MARRAINAGE_REQUEST_FAILED: 0,
+    ONBOARDING_REFERENT_EMAIL: 0
 }
 
 interface SendEmailFromSendinblueDeps {
