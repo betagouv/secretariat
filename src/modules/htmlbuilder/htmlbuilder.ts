@@ -14,7 +14,12 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     ONBOARDING_REFERENT_EMAIL: './src/views/templates/emails/onboardingReferent.ejs',
     EMAIL_CREATED_EMAIL: './src/views/templates/emails/createEmail.ejs',
     EMAIL_MATTERMOST_ACCOUNT_CREATED: './src/views/templates/emails/mattermost.ejs',
-    EMAIL_PR_PENDING: `./src/views/templates/emails/pendingGithubAuthorPR.ejs`
+    EMAIL_PR_PENDING: `./src/views/templates/emails/pendingGithubAuthorPR.ejs`,
+    EMAIL_ENDING_CONTRACT_2_DAYS: './src/views/templates/emails/mail2days.ejs',
+    EMAIL_ENDING_CONTRACT_15_DAYS: './src/views/templates/emails/mail15days.ejs',
+    EMAIL_ENDING_CONTRACT_30_DAYS: './src/views/templates/emails/mail30days.ejs',
+    EMAIL_NO_MORE_CONTRACT_1_DAY: './src/views/templates/emails/mailExpired1day.ejs',
+    EMAIL_NO_MORE_CONTRACT_30_DAY: './src/views/templates/emails/mailExpired30days.ejs',
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -30,7 +35,12 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     },
     EMAIL_CREATED_EMAIL: 'Bienvenue chez BetaGouv 🙂',
     EMAIL_MATTERMOST_ACCOUNT_CREATED: 'Inscription à mattermost',
-    EMAIL_PR_PENDING: `PR en attente`
+    EMAIL_PR_PENDING: `PR en attente`,
+    EMAIL_ENDING_CONTRACT_2_DAYS: 'Départ dans 2 jours 🙂',
+    EMAIL_ENDING_CONTRACT_15_DAYS: 'Départ dans 15 jours 🙂',
+    EMAIL_ENDING_CONTRACT_30_DAYS: 'Départ dans 30 jours 🙂',
+    EMAIL_NO_MORE_CONTRACT_1_DAY: 'A bientôt 🙂',
+    EMAIL_NO_MORE_CONTRACT_30_DAY: 'A bientôt 🙂'
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -44,15 +54,18 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     ONBOARDING_REFERENT_EMAIL: true,
     EMAIL_CREATED_EMAIL: false,
     EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
-    EMAIL_PR_PENDING: true
+    EMAIL_PR_PENDING: true,
+    EMAIL_ENDING_CONTRACT_2_DAYS: true,
+    EMAIL_ENDING_CONTRACT_15_DAYS: true,
+    EMAIL_ENDING_CONTRACT_30_DAYS: true,
+    EMAIL_NO_MORE_CONTRACT_1_DAY: false,
+    EMAIL_NO_MORE_CONTRACT_30_DAY: false
 }
 
 const htmlBuilder : HtmlBuilderType = {
     renderContentForType: async ({ type, variables }) => {
         let content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables)
-        console.log('USE RENDER HTML FROM MD', MARKDOWN_BY_TYPE[type], type)
         if (MARKDOWN_BY_TYPE[type]) {
-            console.log('USE RENDER HTML FROM MD')
             content = mdtohtml.renderHtmlFromMd(content)
         }
         return content
@@ -62,7 +75,7 @@ const htmlBuilder : HtmlBuilderType = {
     renderContentForTypeAsMarkdown: (params) => {
         const { type } = params;
         if(!MARKDOWN_BY_TYPE[type]) {
-            throw new Error(`There is no a markdown file for ${type}`)
+            throw new Error(`There is no markdown file for ${type}`)
         }
         return htmlBuilder.renderContentForType(params)
     },

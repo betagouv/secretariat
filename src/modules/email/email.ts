@@ -1,5 +1,10 @@
 import { Member } from "@models/member"
 import { DBUser } from "@models/dbUser"
+import { Job } from "@/models/job"
+
+
+
+
 
 
 
@@ -16,7 +21,12 @@ export enum EMAIL_TYPES {
   ONBOARDING_REFERENT_EMAIL = 'ONBOARDING_REFERENT_EMAIL',
   EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
   EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
-  EMAIL_PR_PENDING = 'EMAIL_PR_PENDING'
+  EMAIL_PR_PENDING = 'EMAIL_PR_PENDING',
+  EMAIL_ENDING_CONTRACT_2_DAYS = 'EMAIL_ENDING_CONTRACT_2_DAYS',
+  EMAIL_ENDING_CONTRACT_15_DAYS = 'EMAIL_ENDING_CONTRACT_15_DAYS',
+  EMAIL_ENDING_CONTRACT_30_DAYS = 'EMAIL_ENDING_CONTRACT_30_DAYS',
+  EMAIL_NO_MORE_CONTRACT_1_DAY = 'EMAIL_NO_MORE_CONTRACT_1_DAY',
+  EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY"
 }
 
 export type SubjectFunction = {
@@ -129,7 +139,23 @@ export type EmailMattermostAccountCreated = {
 export type EmailPRPending = {
     type: EMAIL_TYPES.EMAIL_PR_PENDING,
     variables: {
+        username: string,
+        pr_link: string
+    }
+}
 
+export type EmailEndingContract = {
+    type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS,
+    variables: {
+        user: Member,
+        jobs: Job[]
+    }
+}
+
+export type EmailNoMoreContract = {
+    type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY,
+    variables: {
+        user: Member
     }
 }
 
@@ -145,6 +171,8 @@ type EmailVariants =
  | EmailCreatedEmail
  | EmailMattermostAccountCreated
  | EmailPRPending
+ | EmailEndingContract
+ | EmailNoMoreContract
 
 export type EmailProps = BaseEmail & EmailVariants
 

@@ -12,6 +12,8 @@ import betagouv from '@/betagouv';
 import * as searchCommune from '@/lib/searchCommune';
 import * as email from '@config/email.config'
 import { SendEmailProps } from '@/modules/email';
+import * as mattermost from '@/lib/mattermost'
+import { MattermostUser } from '@/lib/mattermost';
 
 chai.use(chaiHttp);
 
@@ -41,14 +43,7 @@ describe('Onboarding', () => {
     let isPublicServiceEmailStub;
     let mattermostMessageStub;
     let searchCommuneStub;
-
-    nock(
-      'https://mattermost.incubateur.net/api/v4/users/search'
-    )
-    .post(/.*/)
-    .reply(200, [{
-      username: 'toto'
-    }]).persist;
+    let mattermostSearchUser;
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
@@ -78,6 +73,10 @@ describe('Onboarding', () => {
       searchCommuneStub = sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
 
       mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
+      const mattermostUsers : MattermostUser[] = [{
+        username: 'toto'
+      }] as MattermostUser[]
+      mattermostSearchUser = sinon.stub(mattermost, 'searchUsers').returns(Promise.resolve(mattermostUsers))
 
       // reset the test user to avoid duplicates in db
       knex('users')
@@ -98,6 +97,7 @@ describe('Onboarding', () => {
       isPublicServiceEmailStub.restore();
       mattermostMessageStub.restore();
       searchCommuneStub.restore();
+      mattermostSearchUser.restore();
     });
 
     it('should not call Github API if a mandatory field is missing', async () => {
