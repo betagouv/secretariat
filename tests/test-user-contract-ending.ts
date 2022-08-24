@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import BetaGouv from '@/betagouv';
 import config from '@config';
 import utils from './utils';
-import * as controllerUtils from '@/controllers/utils';
+import * as email from '@config/email.config';
 import knex from '@/db';
 import {
   sendInfoToSecondaryEmailAfterXDays,
@@ -117,8 +117,8 @@ describe('send message on contract end to user', () => {
     utils.mockOvhUserEmailInfos();
     utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon
-      .stub(controllerUtils, 'sendMail')
-      .returns(Promise.resolve(true));
+      .stub(email, 'sendEmail')
+      .returns(Promise.resolve(null));
     jobsStub = sinon
       .stub(BetaGouv, 'getJobs').returns(Promise.resolve(
         [{
@@ -390,8 +390,8 @@ describe('After quitting', () => {
     utils.mockOvhUserEmailInfos();
     utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon
-      .stub(controllerUtils, 'sendMail')
-      .returns(Promise.resolve(true));
+      .stub(email, 'sendEmail')
+      .returns(Promise.resolve(null));
     clock = sinon.useFakeTimers(new Date(fakeDate));
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
     nock(url)

@@ -1,9 +1,11 @@
 import { EMAIL_TYPES } from "@/modules/email"
 import htmlBuilder from "./htmlbuilder"
 import testUsers from "../../../tests/users.json"
-import { Member } from "@/models/member"
+import { Domaine, Member } from "@/models/member"
 import * as mdtohtml from '@/lib/mdtohtml';
 import sinon from "sinon";
+import { Job } from "@/models/job";
+import { DBUser } from "@/models/dbUser";
 
 describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
     it('should build ARRAINAGE_REQUEST_EMAIL', async () => {
@@ -189,3 +191,93 @@ describe('Test EMAIL_MATTERMOST_ACCOUNT_CREATED', () => {
         emailBody.should.include(resetPasswordLink)
     })
 })
+
+describe('Test EMAIL_ENDING_CONTRACT', () => {
+    it('email EMAIL_ENDING_CONTRACT_2_DAYS', async () => {
+        const job : Job = {
+            id: 'test',
+            url: 'http://urldejob',
+            domaine: Domaine.ANIMATION,
+            title: 'Un job'
+        } as unknown as Job
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS,
+            variables: {
+                user: testUsers.find(user => user.id === 'julien.dauphant') as Member,
+                jobs: [job]
+            }
+        })
+        emailBody.should.include(job.url)
+        emailBody.should.include('prévu pour dans 2 jours')
+    })
+
+    it('email EMAIL_ENDING_CONTRACT_15_DAYS', async () => {
+        const job : Job = {
+            id: 'test',
+            url: 'http://urldejob',
+            domaine: Domaine.ANIMATION,
+            title: 'Un job'
+        } as unknown as Job
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS,
+            variables: {
+                user: testUsers.find(user => user.id === 'julien.dauphant') as Member,
+                jobs: [job]
+            }
+        })
+        emailBody.should.include(job.url)
+        emailBody.should.include('Un petit mot pour te rappeler')
+    })
+
+    it('email EMAIL_ENDING_CONTRACT_30_DAYS', async () => {
+        const job : Job = {
+            id: 'test',
+            url: 'http://urldejob',
+            domaine: Domaine.ANIMATION,
+            title: 'Un job'
+        } as unknown as Job
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS,
+            variables: {
+                user: testUsers.find(user => user.id === 'julien.dauphant') as Member,
+                jobs: [job]
+            }
+        })
+  
+        emailBody.should.include('Un petit mot pour te rappeler')
+        emailBody.should.include(job.url)
+    })
+})
+
+describe('Test EMAIL_NO_MORE_CONTRACT', () => {
+    it('email EMAIL_NO_MORE_CONTRACT_1_DAY', async () => {
+        const user : Member = {
+            username: 'jean.paul',
+            fullname: 'Jean Paul'
+        } as unknown as Member
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
+            variables: {
+                user
+            }
+        })
+        emailBody.should.include(user.fullname)
+        emailBody.should.include('Un petit mot pour te rappeler')
+    })
+
+    it('email EMAIL_NO_MORE_CONTRACT_30_DAY', async () => {
+        const user : Member = {
+            username: 'jean.paul',
+            fullname: 'Jean Paul'
+        } as unknown as Member
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY,
+            variables: {
+                user
+            }
+        })
+        emailBody.should.include(user.fullname)
+        emailBody.should.include('Un petit mot pour te rappeler')
+    })
+})
+

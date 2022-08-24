@@ -9,11 +9,9 @@ import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import betagouv from '@/betagouv';
 import { sleep } from '@controllers/utils';
 import { Job } from '@models/job';
-
-interface MessageConfig {
-  days: number,
-  emailFile: string,
-}
+import { EmailEndingContract, EmailNoMoreContract, EMAIL_TYPES } from '@/modules/email';
+import { sendEmail } from '@/config/email.config';
+import htmlBuilder from '@/modules/htmlbuilder/htmlbuilder';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<MemberWithEmailsAndMattermostUsername[]> => {
@@ -60,44 +58,48 @@ const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<Memb
   ) as MemberWithEmailsAndMattermostUsername[];
 };
 
-const CONFIG_MESSAGE = {
-  mail15days: {
-    emailFile: 'mail15days.ejs',
-    days: 15,
-  },
+
+const CONFIG_ENDING_CONTRACT_MESSAGE : Record<string, {
+  type: EmailEndingContract['type'],
+  days: number
+}> = {
   mail2days: {
-    emailFile: 'mail2days.ejs',
-    days: 2,
+    type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS,
+    days: 2
+  },
+  mail15days: {
+    type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS,
+    days: 15
   },
   mail30days: {
-    emailFile: 'mail30days.ejs',
+    type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS,
     days: 30
   }
 };
 
-const EMAIL_FILES = {
-  'j+1': 'mailExpired1day',
-  'j+30': 'mailExpired30days',
-};
+const CONFIG_NO_MORE_CONTRACT_MESSAGE : Record<string, EmailNoMoreContract['type']> = {
+  'j+1': EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
+  'j+30': EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY
+} ; 
 
 const sendMessageOnChatAndEmail = async ({
   user,
-  messageConfig,
+  messageType,
   jobs,
   sendToSecondary
 }:{
   user: MemberWithEmailsAndMattermostUsername,
-  messageConfig: MessageConfig,
+  messageType: EmailEndingContract['type'],
   jobs: Job[],
   sendToSecondary: boolean}) => {
-
-  const messageContent = await ejs.renderFile(
-    `./src/views/templates/emails/${messageConfig.emailFile}`,
-    {
+  const contentProps = {
+    type: messageType,
+    variables: {
       user,
       jobs: user.domaine ? jobs.filter(job => job.domaines.includes(user.domaine)).slice(0, 3) : [],
     }
-  );
+  }
+  const messageContent = await htmlBuilder.renderContentForTypeAsMarkdown(contentProps)    
   try {
     await BetaGouv.sendInfoToChat(
       messageContent,
@@ -105,7 +107,7 @@ const sendMessageOnChatAndEmail = async ({
       user.mattermostUsername
     );
     console.log(
-      `Send ending contract (${messageConfig.days} days) message on mattermost to ${user.mattermostUsername}`
+      `Send ending contract (${messageType} days) message on mattermost to ${user.mattermostUsername}`
     );
     sleep(1000)
   } catch (err) {
@@ -116,13 +118,12 @@ const sendMessageOnChatAndEmail = async ({
     if ((sendToSecondary || user.communication_email === CommunicationEmailCode.SECONDARY) && user.secondary_email) {
       email = `${email},${user.secondary_email}`
     }
-    await utils.sendMail(
-      email,
-      `Départ dans ${messageConfig.days} jours 🙂`,
-      renderHtmlFromMd(messageContent)
-    );
+    await sendEmail({
+      ...contentProps,
+      toEmail: email.split(','),
+    })
     console.log(
-      `Send ending contract (${messageConfig.days} days) email to ${email}`
+      `Send ending contract (${messageType} days) email to ${email}`
     );
   } catch (err) {
     throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
@@ -135,7 +136,7 @@ export async function sendContractEndingMessageToUsers(
   users = null
 ) {
   console.log('Run send contract ending message to users');
-  const messageConfig = CONFIG_MESSAGE[configName];
+  const messageConfig = CONFIG_ENDING_CONTRACT_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays : MemberWithEmailsAndMattermostUsername[];
   if (users) {
     registeredUsersWithEndingContractInXDays = users;
@@ -148,7 +149,7 @@ export async function sendContractEndingMessageToUsers(
     registeredUsersWithEndingContractInXDays.map(async (user) => {
       await sendMessageOnChatAndEmail({
         user, 
-        messageConfig,
+        messageType: messageConfig.type,
         sendToSecondary,
         jobs
       });
@@ -173,13 +174,13 @@ export async function sendInfoToSecondaryEmailAfterXDays(
           .where({ username: user.id });
         if (dbResponse.length === 1 && dbResponse[0].secondary_email) {
           const email = dbResponse[0].secondary_email;
-          const messageContent = await ejs.renderFile(
-            `./src/views/templates/emails/${EMAIL_FILES[`j+${nbDays}`]}.ejs`,
-            {
-              user,
+          await sendEmail({
+            type: CONFIG_NO_MORE_CONTRACT_MESSAGE[nbDays],
+            toEmail: [email], 
+            variables: {
+              user
             }
-          );
-          await utils.sendMail(email, 'A bientôt 🙂', messageContent);
+          });
           console.log(`Envoie du message fin de contrat +${nbDays} à ${email}`);
         } else {
           console.error(`Le compte ${user.id} n'a pas d'adresse secondaire`);
