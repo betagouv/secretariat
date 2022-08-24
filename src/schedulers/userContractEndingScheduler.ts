@@ -1,9 +1,7 @@
-import ejs from 'ejs';
 import BetaGouv, { OvhRedirection } from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
 import * as mattermost from '@/lib/mattermost';
-import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { CommunicationEmailCode, DBUser, EmailStatusCode } from '@models/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import betagouv from '@/betagouv';
