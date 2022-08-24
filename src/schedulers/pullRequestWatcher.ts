@@ -38,7 +38,7 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
 
         await sendEmail({
             type: EMAIL_TYPES.EMAIL_PR_PENDING,
-            toEmail: primary_email_active && user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email,
+            toEmail: [primary_email_active && user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email],
             variables: {
                 username: member ? member.fullname : author,
                 pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`
