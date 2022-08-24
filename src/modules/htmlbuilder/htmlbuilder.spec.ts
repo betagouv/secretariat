@@ -121,7 +121,6 @@ describe('Test MARRAINAGE_REQUEST_FAILED', () => {
     })
 })
 
-
 describe('Test ONBOARDING_REFERENT_EMAIL', () => {
     it('email ONBOARDING_REFERENT_EMAIL', async () => {
         const prUrl = 'http://github.com/uneurl'

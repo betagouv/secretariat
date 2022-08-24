@@ -1,4 +1,3 @@
-import ejs from "ejs";
 import crypto from "crypto";
 import config from "@config";
 import BetaGouv from "@/betagouv";
