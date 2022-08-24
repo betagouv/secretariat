@@ -59,7 +59,6 @@ interface IMessageInfo {
 async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAsked, name }: IMessageInfo) {
   const dbReferent = await knex('users').where({ username: referent }).first()
   const prUrl = prInfo.data.html_url
-  const userUrl = `${config.protocol}://${config.host}/community/${username}`
   const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
   await sendEmail({
     toEmail: [email],
@@ -68,7 +67,6 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
       referent,
       prUrl,
       name,
-      userUrl,
       isEmailBetaAsked
     }
   })
@@ -82,7 +80,6 @@ async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAs
         referent,
         prUrl,
         name,
-        userUrl,
         isEmailBetaAsked
       }
     })
