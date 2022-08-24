@@ -121,7 +121,6 @@ describe('Test MARRAINAGE_REQUEST_FAILED', () => {
     })
 })
 
-
 describe('Test ONBOARDING_REFERENT_EMAIL', () => {
     it('email ONBOARDING_REFERENT_EMAIL', async () => {
         const prUrl = 'http://github.com/uneurl'
@@ -153,6 +152,40 @@ describe('Test ONBOARDING_REFERENT_EMAIL', () => {
         emailBody.should.include(name)
         emailSubject.should.equal(`${name} vient de créer sa fiche Github`)
         renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
     })
 })
 
+describe('Test EMAIL_PR_PENDING', () => {
+    it('email EMAIL_PR_PENDING', async () => {
+        const pr_link = 'http://github.com/uneurl'
+        const username = 'Paul'
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_PR_PENDING,
+            variables: {
+                username,
+                pr_link
+            }
+        })
+  
+        emailBody.should.include(username)
+        emailBody.should.include(pr_link)
+        renderHtmlFromMd.called.should.be.true
+    })
+})
+
+describe('Test EMAIL_MATTERMOST_ACCOUNT_CREATED', () => {
+    it('email EMAIL_MATTERMOST_ACCOUNT_CREATED', async () => {
+        const resetPasswordLink = 'https://mattermost-reset-link'
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED,
+            variables: {
+                resetPasswordLink
+            }
+        })
+  
+        emailBody.should.include(resetPasswordLink)
+    })
+})

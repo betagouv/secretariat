@@ -1,7 +1,7 @@
 import nock from 'nock';
 import sinon from 'sinon';
 import betagouv from '@/betagouv';
-import * as controllerUtils from '@controllers/utils';
+import * as email from '@/config/email.config';
 import * as github from '@/lib/github';
 import { pullRequestWatcher } from '@schedulers/pullRequestWatcher';
 
@@ -40,7 +40,7 @@ describe('Pull requests watchers', () => {
         }]
     }));
     sendEmailStub = sinon
-      .stub(controllerUtils, 'sendMail')
+      .stub(email, 'sendEmail')
       .returns(Promise.resolve(true));
     mattermostMessageStub = sinon.stub(betagouv, 'sendInfoToChat')
     done()

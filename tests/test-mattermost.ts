@@ -5,7 +5,7 @@ import config from '@config';
 import testUsers from './users.json';
 import utils from './utils';
 import * as mattermost from '@/lib/mattermost';
-import * as controllerUtils from '@/controllers/utils';
+import * as email from '@/config/email.config';
 import knex from '@/db';
 import { EmailStatusCode } from '@models/dbUser'
 
@@ -166,8 +166,8 @@ describe('invite users to mattermost', () => {
       .reply(200, [])
       .persist();
     const sendEmailStub = sinon
-      .stub(controllerUtils, 'sendMail')
-      .returns(Promise.resolve(true));
+      .stub(email, 'sendEmail')
+      .returns(Promise.resolve(null));
     const mattermostCreateUser = sinon.spy(mattermost, 'createUser');
 
     const url = process.env.USERS_API || 'https://beta.gouv.fr';
