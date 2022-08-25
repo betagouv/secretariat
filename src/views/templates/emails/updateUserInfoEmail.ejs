@@ -6,7 +6,7 @@ Voici les infos que nous avons sur ton profil.
 
 - les Startups sur lesquelles tu travailles :
 <% for(var i=0; i < user.startups.length; i++) { %>
-    - {{ user.startups[0] }}
+    - <%= user.startups[0] %>
 <% } %>
 <% if (!user.startups.length) { %>
 *aucune startup renseignée*

@@ -1,11 +1,11 @@
-import { EMAIL_TYPES } from "@/modules/email"
+import { EmailUserShouldUpdateInfo, EMAIL_TYPES } from "@/modules/email"
 import htmlBuilder from "./htmlbuilder"
 import testUsers from "../../../tests/users.json"
 import { Domaine, Member } from "@/models/member"
 import * as mdtohtml from '@/lib/mdtohtml';
 import sinon from "sinon";
 import { Job } from "@/models/job";
-import { DBUser } from "@/models/dbUser";
+import { CommunicationEmailCode, DBUser, EmailStatusCode, GenderCode, LegalStatus } from "@/models/dbUser";
 
 describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
     it('should build ARRAINAGE_REQUEST_EMAIL', async () => {
@@ -175,6 +175,7 @@ describe('Test EMAIL_PR_PENDING', () => {
         emailBody.should.include(username)
         emailBody.should.include(pr_link)
         renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
     })
 })
 
@@ -279,5 +280,39 @@ describe('Test EMAIL_NO_MORE_CONTRACT', () => {
         emailBody.should.include(user.fullname)
         emailBody.should.include('Un petit mot pour te rappeler')
     })
+})
+
+describe('Test EMAIL_USER_SHOULD_UPDATE_INFO', () => {
+    it('email EMAIL_USER_SHOULD_UPDATE_INFO', async () => {
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const user: EmailUserShouldUpdateInfo['variables']['user'] = {
+            fullname: 'jean.paul',
+            secondary_email: "paul@beta.gouv.fr",
+            workplace_insee_code: "75012",
+            tjm: '125 euros',
+            gender: 'Ne se prononce pas',
+            startups: ['aide-jaune'],
+            legal_status: 'Auto-entreprise',
+        } as EmailUserShouldUpdateInfo['variables']['user']
+        const secretariatUrl : string = 'http://secretariat-url'
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO,
+            variables: {
+                user,
+                secretariatUrl
+            }
+        })
+        emailBody.should.include(user.fullname)
+        emailBody.should.include(user.tjm)
+        emailBody.should.include(user.gender)
+        emailBody.should.include(user.legal_status)
+        emailBody.should.include(user.startups[0])
+        emailBody.should.include(secretariatUrl)
+        renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
+    })
+
+
 })
 
