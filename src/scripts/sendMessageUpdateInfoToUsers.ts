@@ -8,6 +8,9 @@ import * as mattermost from '@/lib/mattermost';
 import { fetchCommuneDetails } from '@/lib/searchCommune';
 import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { sleep } from '@controllers/utils';
+import { sendEmail } from '@/config/email.config';
+import { EmailUserShouldUpdateInfo, EMAIL_TYPES } from '@/modules/email';
+import htmlBuilder from '@/modules/htmlbuilder/htmlbuilder';
 
 export async function sendMessageToUpdateInfoToAllUsers() {
     const allMattermostUsers = await mattermost.getUserWithParams();
@@ -43,9 +46,9 @@ export async function sendMessageToUpdateInfoToAllUsers() {
             hash: utils.computeHash(user.id)
         }).then(res => res[0])
         const secretariatUrl = `https://espace-membre.incubateur.net/`;
-        const messageContent = await ejs.renderFile(
-            `./src/views/templates/emails/updateUserInfoEmail.ejs`,
-            {
+        const contentParams : EmailUserShouldUpdateInfo = {
+            type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO,
+            variables: {
                 secretariatUrl,
                 user: {
                     ...user,
@@ -57,7 +60,9 @@ export async function sendMessageToUpdateInfoToAllUsers() {
                     secondary_email: user.secondary_email || 'Non renseigné'
                 }
             }
-        );
+        }
+        const messageContent = await htmlBuilder.renderContentForTypeAsMarkdown(contentParams)
+        
         if (process.env.FEATURE_SEND_MESSAGE_UPDATE_INFO) {
             try {
                 
@@ -70,7 +75,11 @@ export async function sendMessageToUpdateInfoToAllUsers() {
             } catch (e) {
                 console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
             }
-            utils.sendMail(user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email, 'Mise à jour de tes informations', renderHtmlFromMd(messageContent))
+            const toEmail = [user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email]
+            await sendEmail({
+                ...contentParams,
+                toEmail,
+            })
         }
         console.log(`Message d'update des info utilisateur envoyé à ${user.mattermostUsername}`)        
     }

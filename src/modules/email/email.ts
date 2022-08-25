@@ -1,5 +1,5 @@
 import { Member } from "@models/member"
-import { DBUser } from "@models/dbUser"
+import { DBUser, DBUserDetail } from "@models/dbUser"
 import { Job } from "@/models/job"
 
 
@@ -26,7 +26,8 @@ export enum EMAIL_TYPES {
   EMAIL_ENDING_CONTRACT_15_DAYS = 'EMAIL_ENDING_CONTRACT_15_DAYS',
   EMAIL_ENDING_CONTRACT_30_DAYS = 'EMAIL_ENDING_CONTRACT_30_DAYS',
   EMAIL_NO_MORE_CONTRACT_1_DAY = 'EMAIL_NO_MORE_CONTRACT_1_DAY',
-  EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY"
+  EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY",
+  EMAIL_USER_SHOULD_UPDATE_INFO = 'EMAIL_USER_SHOULD_UPDATE_INFO'
 }
 
 export type SubjectFunction = {
@@ -159,6 +160,21 @@ export type EmailNoMoreContract = {
     }
 }
 
+export type EmailUserShouldUpdateInfo = {
+    type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO,
+    variables: {
+        user: Member & {
+            startups: string[],
+            tjm: string,
+            gender: string,
+            legal_status: string,
+            workplace_insee_code: string,
+            secondary_email: string
+        },
+        secretariatUrl: string
+    }
+}
+
 type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
@@ -173,6 +189,7 @@ type EmailVariants =
  | EmailPRPending
  | EmailEndingContract
  | EmailNoMoreContract
+ | EmailUserShouldUpdateInfo
 
 export type EmailProps = BaseEmail & EmailVariants
 
