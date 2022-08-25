@@ -1,4 +1,3 @@
-import ejs from 'ejs';
 import BetaGouv from '../betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
@@ -6,7 +5,6 @@ import { CommunicationEmailCode, DBUser, DBUserDetail, genderOptions, statusOpti
 import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import * as mattermost from '@/lib/mattermost';
 import { fetchCommuneDetails } from '@/lib/searchCommune';
-import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { sleep } from '@controllers/utils';
 import { sendEmail } from '@/config/email.config';
 import { EmailUserShouldUpdateInfo, EMAIL_TYPES } from '@/modules/email';
