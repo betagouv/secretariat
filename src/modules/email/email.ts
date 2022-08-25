@@ -1,13 +1,6 @@
 import { Member } from "@models/member"
-import { DBUser, DBUserDetail } from "@models/dbUser"
+import { DBUser } from "@models/dbUser"
 import { Job } from "@/models/job"
-
-
-
-
-
-
-
 
 export enum EMAIL_TYPES {
   MARRAINAGE_NEWCOMER_EMAIL = 'MARRAINAGE_NEWCOMER_EMAIL',
