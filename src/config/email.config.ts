@@ -32,7 +32,7 @@ const {
     SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG
 
-if (process.env.NODE_ENV === 'prod') {
+if (process.env.NODE_ENV !== 'test') {
 
   try {
     sendEmail = process.env.MAIL_USE_SIB ? makeSendEmailFromSendinblue({
