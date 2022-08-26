@@ -80,7 +80,8 @@ const htmlBuilder : HtmlBuilderType = {
         if(!MARKDOWN_BY_TYPE[type]) {
             throw new Error(`There is no markdown file for ${type}`)
         }
-        return htmlBuilder.renderContentForType(params)
+        let content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables)
+        return content
     },
     renderSubjectForType: ({ type, variables }) => {
         let subject = ''
