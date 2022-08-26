@@ -63,7 +63,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
-      subject: htmlBuilder.subjects[type],
+      subject: htmlBuilder.renderSubjectForType(type),
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
