@@ -46,15 +46,14 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
   const mailTransport = nodemailer.createTransport(transport);
       
 
-  return async function sendMailFromNodemailer(props: SendEmailProps) {
-    const {
+  return async function sendMailFromNodemailer( {
         type,
         toEmail,
         extraParams = {}, 
         attachments=[],
         variables = {},
         replyTo
-    } = props
+    }: SendEmailProps) {
 
     const html : string = await htmlBuilder.renderContentForType({type, variables});
     const mail = {
