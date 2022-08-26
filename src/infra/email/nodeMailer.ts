@@ -57,13 +57,11 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
     } = props
 
     const templateURL = htmlBuilder.templates[type]
-    const html : string = await htmlBuilder.renderFile(templateURL, {
-      ...variables
-    });
+    const html : string = await htmlBuilder.renderContentForType({type, variables});
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
-      subject: htmlBuilder.renderSubjectForType(type),
+      subject: htmlBuilder.renderSubjectForType({type, variables}),
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
