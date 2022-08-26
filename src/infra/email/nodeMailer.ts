@@ -56,7 +56,6 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         replyTo
     } = props
 
-    const templateURL = htmlBuilder.templates[type]
     const html : string = await htmlBuilder.renderContentForType({type, variables});
     const mail = {
       to: toEmail,
