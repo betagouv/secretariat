@@ -75,8 +75,8 @@ const htmlBuilder : HtmlBuilderType = {
     },
     renderFile: ejs.renderFile,
     templates: TEMPLATES_BY_TYPE,
-    renderContentForTypeAsMarkdown: (params) => {
-        const { type } = params;
+    renderContentForTypeAsMarkdown: async (params) => {
+        const { type, variables } = params;
         if(!MARKDOWN_BY_TYPE[type]) {
             throw new Error(`There is no markdown file for ${type}`)
         }
