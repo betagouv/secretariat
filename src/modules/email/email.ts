@@ -168,7 +168,7 @@ export type EmailUserShouldUpdateInfo = {
     }
 }
 
-type EmailVariants =
+export type EmailVariants =
  | MarrainageNewcomerEmail
  | MarrainageOnboarderEmail
  | LoginEmail
