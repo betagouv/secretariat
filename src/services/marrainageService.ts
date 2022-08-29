@@ -58,7 +58,7 @@ export class MarrainageService1v implements MarrainageService {
         .update({ last_onboarder: onboarderId, last_updated: knex.fn.now() });
     }
 
-    async getUsersWithoutMarrainage() {
+    async getUsersWithoutMarrainage() : Promise<DBUser[]> {
         const dateFeatureAdded = new Date('01/23/2022');
         const users : DBUser[] = await knex('users').where({
           primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
