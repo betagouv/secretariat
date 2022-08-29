@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { EmailProps, EmailVariants, HtmlBuilderType, SendEmail, SendEmailProps } from '@modules/email';
+import { EmailVariants, HtmlBuilderType, SendEmail, SendEmailProps } from '@modules/email';
 
 interface SendEmailFromNodemailerDeps {
     MAIL_DEBUG: string,
