@@ -1,8 +1,9 @@
-import { Marrainage, MarrainageGroup, MarrainageGroupStatus } from "@models/marrainage";
+import { Marrainage, MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from "@models/marrainage";
 import { Domaine, Member } from '@models/member';
 import BetaGouv from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
+import EventBus from "@/infra/eventBus/eventBus";
 
 interface MarrainageService {
     selectRandomOnboarder(newcomerId: string, domaine: string): Promise<Member>
@@ -58,13 +59,18 @@ export class MarrainageService1v implements MarrainageService {
 export class MarrainageServiceWithGroup implements MarrainageService {
     users: Member[];
     MARRAINAGE_GROUP_LIMIT: number;
+    MARRAINAGE_GROUP_WEEK_LIMIT: number;
 
-    constructor(users: Member[], marrainage_group_limit: number) {
+    constructor(
+        users: Member[],
+        marrainage_group_limit: number,
+        marrainage_group_week_limit?: number) {
         this.users = users
         this.MARRAINAGE_GROUP_LIMIT = marrainage_group_limit || 5
+        this.MARRAINAGE_GROUP_WEEK_LIMIT = marrainage_group_week_limit || 2
     }
 
-    async selectRandomOnboarder(newcomerId, domaine) {
+    async selectRandomOnboarder(newcomerId: string, domaine: string) {
         let pendingMarrainageGroup: any = await knex('marrainage_groups').where({
             status: MarrainageGroupStatus.PENDING
         }).first()
@@ -74,7 +80,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         } else {
             const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups').whereNotIn('status', [
                 MarrainageGroupStatus.DOING,
-                MarrainageGroupStatus.DONE
+                MarrainageGroupStatus.DONE,
             ])
             const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(function(a, b){return a-b})
@@ -108,15 +114,38 @@ export class MarrainageServiceWithGroup implements MarrainageService {
             const updateParams = {
                 count: marrainage_group.count + 1
             }
-            if (marrainage_group.count + 1 >= this.MARRAINAGE_GROUP_LIMIT) {
-                updateParams['status'] = MarrainageGroupStatus.DOING
-            }
             await trx('marrainage_groups')
                 .where({
                     id: marrainage_group.id
                 })
                 .update(updateParams)
         })
+    }
+
+    async _setMarrainageToDoing(marrainage_group_id) {
+        await knex('marrainage_groups')
+            .where({
+            id: marrainage_group_id
+        })
+        .update({
+            status: MarrainageGroupStatus.DOING
+        })
+        console.info(`MarrainageGroup ${marrainage_group_id} status set to DOING`)
+        EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_IS_DOING_EVENT, { marrainage_group_id: marrainage_group_id })
+    }
+
+    async checkAndUpdateMarrainagesStatus() {
+        const todayLessXdays = new Date()
+        todayLessXdays.setDate(todayLessXdays.getDate() - (this.MARRAINAGE_GROUP_WEEK_LIMIT * 7))
+        const marrainage_groups : MarrainageGroup[] = await knex('marrainage_groups')
+        .where({
+          status: MarrainageGroupStatus.PENDING,
+        })
+        .where('count', '>=', this.MARRAINAGE_GROUP_LIMIT)
+        .orWhere('created_at', '<=', todayLessXdays)
+        for(const marrainage_group of marrainage_groups) {
+          await this._setMarrainageToDoing(marrainage_group.id)
+        }
     }
 
 }

@@ -1,6 +1,5 @@
-import EventBus from "@infra/eventBus/eventBus";
-import { checkMarrainageStatus } from "@schedulers/marrainageScheduler";
+import { checkMarrainageStatus } from "@/schedulers/marrainageScheduler"
 
-checkMarrainageStatus(EventBus).then(() => {
+checkMarrainageStatus().then(() => {
     console.log('Done')
 })
