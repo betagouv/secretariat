@@ -9,12 +9,22 @@ export const postEventsOnMattermost = async () => {
     dayInSixDays.setDate(today.getDate() + 6)
     const calendarURL = process.env.CALENDAR_URL
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
-    const readableEvents = events.sort(event => event.startDate).map(event => ({
+    const titles = []
+    let readableEvents = events.sort(event => event.startDate).map(event => ({
         startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
         endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
         location: event.location,
         title: event.title
     }))
+    .filter((event) => {
+      // hack to prevent duplicate
+      if (!titles.includes(event.title)) {
+        titles.push(event.title)
+        return true
+      } else {
+        return false
+      }
+    })  
     
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
