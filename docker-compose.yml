@@ -45,6 +45,7 @@ services:
       REDIS_HOST: localhost
       REDIS_PASSWORD: localpwd
       REDIS_EVENT_BUS_STREAM_NAME: potentiel-eventbus-local
+      HASH_SALT: "FakeHashSaltToChangeInProduction"
     ports:
       - "8100:8100"
       - "9229:9229"
