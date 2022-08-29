@@ -30,13 +30,19 @@ export function generateToken() {
 
 async function sendLoginEmail(email: string, username: string, loginUrlWithToken: string) {
   const user = await BetaGouv.userInfosById(username);
-
   if (!user) {
     throw new Error(
       `Membre ${username} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
     );
   }
-
+  const dbUser = await knex('users').where({
+    username
+  }).first()
+  if (!dbUser) {
+    throw new Error(
+      `Membre ${username} n'est pas dans la base de donnée. Demandez à un admin de vous y ajouter.`
+    );
+  }
   if (utils.checkUserIsExpired(user, 5)) {
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
