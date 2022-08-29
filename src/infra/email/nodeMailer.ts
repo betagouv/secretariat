@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { HtmlBuilderType, SendEmail, SendEmailProps } from '@modules/email';
+import { EmailVariants, HtmlBuilderType, SendEmail, SendEmailProps } from '@modules/email';
 
 interface SendEmailFromNodemailerDeps {
     MAIL_DEBUG: string,
@@ -42,28 +42,27 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         pass: MAIL_PASS,
       },
   }
-  console.log(transport)
   const mailTransport = nodemailer.createTransport(transport);
       
 
-  return async function sendMailFromNodemailer(props: SendEmailProps) {
+  return async function sendMailFromNodemailer(params: SendEmailProps) {
     const {
-        type,
-        toEmail,
-        extraParams = {}, 
-        attachments=[],
-        variables = {},
-        replyTo
-    } = props
-
-    const templateURL = htmlBuilder.templates[type]
-    const html : string = await htmlBuilder.renderFile(templateURL, {
-      ...variables
-    });
+      type,
+      toEmail,
+      extraParams = {}, 
+      attachments=[],
+      variables,
+      replyTo
+  } = params;
+    const paramsToRenderContent = {
+      variables,
+      type
+    } as EmailVariants
+    const html : string = await htmlBuilder.renderContentForType(paramsToRenderContent);
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
-      subject: htmlBuilder.subjects[type],
+      subject: htmlBuilder.renderSubjectForType(paramsToRenderContent),
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
