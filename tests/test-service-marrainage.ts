@@ -85,8 +85,14 @@ describe('Marrainage Service test', () => {
         }).first()  
         chai.should().equal(marrainageGroup.count, 2)
         chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.PENDING)
-        knex('marrainage_groups').truncate()
-        knex('marrainage_groups_members').truncate()
+        await knex('marrainage_groups_members').where({
+          marrainage_group_id: marrainageGroup.id
+        }).delete()
+        await knex('marrainage_groups').where({
+          id: marrainageGroup.id
+        }).delete()
+        const test = await knex('marrainage_groups_members').select('*')
+        const test2 = await knex('marrainage_groups').select('*')
     });
 
     it('should set pending marrainage to status DOING if count > 1', async () => {
@@ -96,24 +102,26 @@ describe('Marrainage Service test', () => {
       let marrainageGroup = await knex('marrainage_groups')
       .insert({
           onboarder,
-          status: MarrainageGroupStatus.PENDING
+          status: MarrainageGroupStatus.PENDING,
+          count: 1
       }).returning('*').then(res => res[0])
       await knex('marrainage_groups_members')
         .insert({
             username: newcomer,
-            marrainage_group_id: marrainageGroup.id
+            marrainage_group_id: marrainageGroup.id,
         })
-      await marrainageService.createMarrainage(newcomer, onboarder)
 
+      await marrainageService.checkAndUpdateMarrainagesStatus()
       marrainageGroup = await knex('marrainage_groups').where({
         onboarder
       }).first()  
-      chai.should().equal(marrainageGroup.count, 1)
-      chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.PENDING)
-      await marrainageService.checkAndUpdateMarrainagesStatus()
       chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.DOING)
-      knex('marrainage_groups').truncate()
-      knex('marrainage_groups_members').truncate()
+      await knex('marrainage_groups_members').where({
+        marrainage_group_id: marrainageGroup.id,
+      }).delete()
+      await knex('marrainage_groups').where({
+        id: marrainageGroup.id
+      }).delete()
     });
 
     it('should set pending marrainage to status DOING if created_date was 2 weeks ago', async () => {
@@ -123,26 +131,31 @@ describe('Marrainage Service test', () => {
       const onboarder : string = 'julien.dauphant'
       const newcomer : string = 'membre.actif'
       const todayLessXdays = new Date()
-      todayLessXdays.setDate(todayLessXdays.getDate() - (MARRAINAGE_GROUP_WEEK_LIMIT + 1) * 7)
-      const marrainageGroup = await knex('marrainage_groups')
+      todayLessXdays.setDate(todayLessXdays.getDate() - ((MARRAINAGE_GROUP_WEEK_LIMIT * 7) + 1))
+      let marrainageGroup = await knex('marrainage_groups')
         .insert({
             onboarder,
             status: MarrainageGroupStatus.PENDING,
-            created_at: new Date()
+            created_at: todayLessXdays,
+            count: 1
         }).returning('*').then(res => res[0])
         await knex('marrainage_groups_members')
           .insert({
               username: newcomer,
               marrainage_group_id: marrainageGroup.id
           })
-
       
-      chai.should().equal(marrainageGroup.count, 1)
-      chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.PENDING)
       await marrainageService.checkAndUpdateMarrainagesStatus()
+      marrainageGroup = await knex('marrainage_groups').where({
+        onboarder
+      }).first()  
       chai.should().equal(marrainageGroup.status, MarrainageGroupStatus.DOING)
-      knex('marrainage_groups').truncate()
-      knex('marrainage_groups_members').truncate()
+      await knex('marrainage_groups_members').where({
+        marrainage_group_id: marrainageGroup.id,
+      }).delete()
+      await knex('marrainage_groups').where({
+        id: marrainageGroup.id
+      }).delete()
     });
   })
 });
