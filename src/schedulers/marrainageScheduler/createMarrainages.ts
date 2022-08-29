@@ -1,18 +1,16 @@
-import _ from 'lodash/array';
-
-import knex from '@/db';
+import config from '@/config';
+import { MarrainageService1v, MarrainageServiceWithGroup } from '@/services/marrainageService';
 import { createRequestForUser } from '@controllers/marrainageController';
-import { DBUser, EmailStatusCode } from '@models/dbUser';
+import { DBUser } from '@models/dbUser';
 
 export async function createMarrainages() {
+  const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+const MarrainageService = useNewMarrainage
+   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
+
     console.log('Demarrage du cron job pour créer les marrainages');
     // before this date not every user had marrainage but we don't need to create for them now
-    const dateFeatureAdded = new Date('01/23/2022');
-    const users : DBUser[] = await knex('users').where({
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-    }).andWhere('created_at', '>', dateFeatureAdded)
-    const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
-    const userWithoutMarrainage = _.differenceWith(users, marrainages, (user, marrainage) => user.username === marrainage.username)
+    const userWithoutMarrainage = await MarrainageService.getUsersWithoutMarrainage()
     const createMarrainagePromises = await userWithoutMarrainage.map(async(user: DBUser) => {
       try {
         // create marrainage request
