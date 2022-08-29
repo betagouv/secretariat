@@ -1,9 +1,12 @@
+import _ from 'lodash/array';
+
 import { Marrainage, MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from "@models/marrainage";
 import { Domaine, Member } from '@models/member';
 import BetaGouv from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
 import EventBus from "@/infra/eventBus/eventBus";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
 
 interface MarrainageService {
     selectRandomOnboarder(newcomerId: string, domaine: string): Promise<Member>
@@ -53,6 +56,15 @@ export class MarrainageService1v implements MarrainageService {
         .where({ username: newcomerId })
         .increment('count', 1)
         .update({ last_onboarder: onboarderId, last_updated: knex.fn.now() });
+    }
+
+    async getUsersWithoutMarrainage() : Promise<DBUser[]> {
+        const dateFeatureAdded = new Date('01/23/2022');
+        const users : DBUser[] = await knex('users').where({
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        }).andWhere('created_at', '>', dateFeatureAdded)
+        const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
+        return _.differenceWith(users, marrainages, (user, marrainage) => user.username === marrainage.username)
     }
 }
 
@@ -146,6 +158,15 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         for(const marrainage_group of marrainage_groups) {
           await this._setMarrainageToDoing(marrainage_group.id)
         }
+    }
+
+    async getUsersWithoutMarrainage(): Promise<DBUser[]> {
+        const dateFeatureAdded = new Date('01/23/2022');
+        const users : DBUser[] = await knex('users').where({
+          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+        }).andWhere('created_at', '>', dateFeatureAdded)
+        const marrainages = await knex('marrainage_groups_members').whereIn('username', users.map(user => user.username))
+        return _.differenceWith(users, marrainages, (user, marrainage) => user.username === marrainage.username)
     }
 
 }
