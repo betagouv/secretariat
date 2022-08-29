@@ -40,30 +40,30 @@ app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use(
   '/datagouvfr',
   express.static(
-    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/template.data.gouv.fr/dist')
+    path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/template.data.gouv.fr/dist')
   )
 ); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
 app.use(
   '/react-datepicker/react-datepicker.css',
   express.static(
-    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-datepicker/dist/react-datepicker.css')
+    path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/react-datepicker/dist/react-datepicker.css')
   )
 )
 app.use(
   '/react-tabulator/styles.css',
   express.static(
-    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-tabulator/lib/styles.css')
+    path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/react-tabulator/lib/styles.css')
   )
 );
 app.use(
   '/react-tabulator/tabulator.min.css',
   express.static(
-    path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/react-tabulator/lib/css/tabulator.min.css')
+    path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/react-tabulator/lib/css/tabulator.min.css')
   )
 ); 
 app.use(
   '/topbar.js',
-  express.static(path.join(__dirname, process.env.NODE_ENV === 'prod' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
+  express.static(path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
 );
 
 app.use(cookieParser(config.secret));
