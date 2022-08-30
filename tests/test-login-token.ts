@@ -6,6 +6,8 @@ import config from '@config';
 import * as controllerUtils from '@/controllers/utils';
 import knex from '@/db';
 import app from '@/index';
+import db from '@/db';
+import { EmailStatusCode } from '@/models/dbUser';
 
 chai.use(chaiHttp);
 
@@ -24,6 +26,12 @@ describe('Login token', () => {
 
   it('should be stored after login request', async () => {
     const userEmail = `membre.nouveau@${config.domain}`;
+    await db('users').insert({
+      primary_email: userEmail,
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).onConflict('username').merge()
+    
     // Make a login request to generate a token
     await chai.request(app)
       .post('/login')
@@ -32,11 +40,10 @@ describe('Login token', () => {
         emailInput: userEmail,
       })
     
-    await knex('login_tokens').select().where({ email: userEmail }).then((dbRes) => {
-      dbRes.length.should.equal(1);
-      dbRes[0].email.should.equal(userEmail);
-      dbRes[0].username.should.equal('membre.nouveau');
-    })
+    const dbRes = await knex('login_tokens').select().where({ email: userEmail })
+    dbRes.length.should.equal(1);
+    dbRes[0].email.should.equal(userEmail);
+    dbRes[0].username.should.equal('membre.nouveau');
   });
 
   it('should be deleted after use', async () => {
