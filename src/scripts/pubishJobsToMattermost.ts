@@ -1,4 +1,4 @@
-import { publishJobsToMattermost } from "@schedulers/syncBetagouvAPIScheduler/publishJobsToMattermost";
+import { publishJobsToMattermost } from "@schedulers/syncBetagouvAPIScheduler";
 
 const args = process.argv.slice(2);
 if (args[0]) {
