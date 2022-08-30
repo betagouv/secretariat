@@ -322,7 +322,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Nombre de jours moyen travaillé par semaine</strong><br />
                         (tu pourras changer plus tard)<br />
                         <input
-                            defaultValue={state.formData.averageNbOfDays || 0}
+                            defaultValue={state.formData.average_nb_of_days || 0}
                             id="averageNbOfDays"
                             name="average_nb_of_days"
                             type="number"
