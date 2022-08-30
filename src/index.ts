@@ -18,7 +18,7 @@ import * as loginController from '@controllers/loginController';
 import * as logoutController from '@controllers/logoutController';
 import * as marrainageController from '@controllers/marrainageController';
 import * as newsletterController from '@controllers/newsletterController';
-import * as onboardingController from '@controllers/onboardingController';
+import * as onboardingController from '@controllers/onboarding';
 import * as resourceController from '@controllers/resourceController';
 import * as startupController from '@controllers/startupController';
 import * as usersController from '@controllers/usersController';
@@ -27,6 +27,7 @@ import * as hookController from '@controllers/hookController';
 import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
+import routes from './routes';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -88,7 +89,8 @@ app.use(
       '/marrainage/accept',
       '/marrainage/decline',
       '/notifications/github',
-      '/onboarding',
+      routes.ONBOARDING,
+      routes.ONBOARDING_ACTION,
       /hook\/*/,
       /onboardingSuccess\/*/,
     ],
@@ -163,8 +165,8 @@ app.post('/account/info', accountController.updateCurrentInfo);
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
 app.get('/admin', adminController.getEmailLists);
-app.get('/onboarding', onboardingController.getForm);
-app.post('/onboarding', onboardingController.postForm);
+app.get(routes.ONBOARDING, onboardingController.getForm);
+app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post('/account/set_email_responder', accountController.setEmailResponder);
 app.post('/account/delete_email_responder', accountController.deleteEmailResponder);
