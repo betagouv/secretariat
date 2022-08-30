@@ -22,6 +22,7 @@ interface FormData {
     tjm: number,
     secondary_email: string,
     osm_city: string,
+    average_nb_of_days: number
 }
 
 interface InfoUpdateProps {
@@ -184,6 +185,20 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                         onChange={handleTJMChange}
                                         value={state.formData.tjm || 0}
                                         id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
+                                </label>
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="averageNbOfDays">
+                                    <strong>Nombre de jours moyen travaillés par semaine</strong><br />
+                                        <input
+                                        defaultValue={state.formData.average_nb_of_days || 0}
+                                        id="averageNbOfDays"
+                                        name="average_nb_of_days"
+                                        type="number"
+                                        step="0.5"
+                                        placeholder="Nombre de jours moyen"
+                                        min={0}
+                                        max={5}/>
                                 </label>
                             </div>
                             <div className="form__group">

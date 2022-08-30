@@ -35,14 +35,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
       `Membre ${username} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
     );
   }
-  const dbUser = await knex('users').where({
-    username
-  }).first()
-  if (!dbUser) {
-    throw new Error(
-      `Membre ${username} n'est pas dans la base de donnée. Demandez à un admin de vous y ajouter.`
-    );
-  }
+
   if (utils.checkUserIsExpired(user, 5)) {
     throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
   }
@@ -110,22 +103,20 @@ export async function postLogin(req, res) {
       );
       return res.redirect(`/login${next}`);
     }
-  } else {
-      try {
-        const dbResponse = await knex('users')
-        .select()
-        .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-        .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
-        username = dbResponse[0].username;
-      } catch (e) {
-        req.flash(
-          'error',
-          `L'adresse email ${emailInput} n'est pas connue.`
-        );
-        return res.redirect(`/login${next}`);
-      }
   }
-
+  try {
+    const dbResponse = await knex('users')
+    .select()
+    .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+    .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
+    username = dbResponse[0].username;
+  } catch (e) {
+    req.flash(
+      'error',
+      `L'adresse email ${emailInput} n'est pas connue.`
+    );
+    return res.redirect(`/login${next}`);
+  }
 
   try {
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
