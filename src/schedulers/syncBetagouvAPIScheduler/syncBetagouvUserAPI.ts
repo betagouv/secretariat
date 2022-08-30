@@ -10,15 +10,13 @@ export async function syncBetagouvUserAPI() {
     await db('users_startups').truncate()
     await db('missions').truncate()
     for (const member of members) {
-      const [user] : DBUser[] = await db('users').insert({
+      const [user] : DBUser[] = await db('users').update({
         domaine: member.domaine,
         missions: JSON.stringify(member.missions),
-        startups: member.startups,
+        startups: member.startups
+      }).where({
         username: member.id
-      })
-      .onConflict('username')
-      .merge()
-      .returning('*')
+      }).returning('*')
       const startups = member.startups || []
       for (const startup of startups) {
         await db('users_startups').insert({
