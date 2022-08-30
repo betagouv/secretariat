@@ -8,6 +8,7 @@ import { DBMission, Mission } from "@/models/mission"
 export async function syncBetagouvUserAPI() {
     const members : Member[] = await betagouv.usersInfos()
     await db('users_startups').truncate()
+    await db('missions').truncate()
     for (const member of members) {
       const [user] : DBUser[] = await db('users').insert({
         domaine: member.domaine,
