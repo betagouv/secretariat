@@ -120,10 +120,6 @@ export const Onboarding = PageLayout(function (props: Props) {
         }
     }
 
-    const handleAverageNbOfDaysChange = (e) => {
-        changeFormData('average_nb_of_days', e.currentTarget.value)
-    }
-
     const getDefaultValue = () => {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
@@ -326,10 +322,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Nombre de jours moyen travaillé par semaine</strong><br />
                         (tu pourras changer plus tard)<br />
                         <input
-                            onChange={handleAverageNbOfDaysChange}
                             defaultValue={state.formData.averageNbOfDays || 0}
                             id="averageNbOfDays"
-                            name="averageNbOfDays"
+                            name="average_nb_of_days"
                             type="number"
                             step="0.5"
                             placeholder="Nombre de jours moyen"
