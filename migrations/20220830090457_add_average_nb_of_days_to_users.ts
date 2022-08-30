@@ -1,7 +1,7 @@
 
 export async function up(knex) {
     return knex.schema.table('users', (table) => {
-        table.integer('average_nb_of_days')
+        table.float('average_nb_of_days')
     })
 }
 
