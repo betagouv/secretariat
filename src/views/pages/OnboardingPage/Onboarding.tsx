@@ -36,7 +36,8 @@ interface FormData {
     secondary_email: string,
     osm_city: string,
     start?: string,
-    end?: string
+    end?: string,
+    average_nb_of_days?: number
 }
 
 interface Props {
@@ -117,6 +118,10 @@ export const Onboarding = PageLayout(function (props: Props) {
             changeFormData('workplace_insee_code', newValue.value)
             changeFormData('osm_city', '')
         }
+    }
+
+    const handleAverageNbOfDaysChange = (e) => {
+        changeFormData('average_nb_of_days', e.currentTarget.value)
     }
 
     const getDefaultValue = () => {
@@ -315,6 +320,21 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <input name="end"
                         value={state.formData.end ? formatDate(state.formData.end) : ''}
                         required hidden/>
+                </div>
+                <div className="form__group">
+                    <label htmlFor="end">
+                        <strong>Nombre de jours moyen travaillé par semaine</strong><br />
+                        (tu pourras changer plus tard)<br />
+                        <input
+                            onChange={handleAverageNbOfDaysChange}
+                            defaultValue={state.formData.averageNbOfDays || 0}
+                            id="averageNbOfDays"
+                            name="averageNbOfDays"
+                            type="number"
+                            placeholder="Nombre de jours moyen"
+                            min={0}
+                            max={5}/>
+                    </label>
                 </div>
                 <div className="form__group">
                     <label htmlFor="status">

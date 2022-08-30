@@ -13,6 +13,33 @@ export enum Domaine {
   AUTRE = 'Autre',
 }
 
+export const DOMAINE_OPTIONS = [{
+  key: "ANIMATION",
+  name: "Animation"
+}, {
+  key: "COACHING",
+  name: "Coaching"
+}, {
+  key: "DEPLOIEMENT",
+  name: "Déploiement"
+}, {
+  key: "DESIGN",
+  name: "Design"
+}, {
+  key: "DEVELOPPEMENT",
+  name: "Développement"
+}, {
+  key: "INTRAPRENARIAT",
+  name: "Intraprenariat"
+}, {
+  key: "PRODUIT",
+  name: "Produit"
+}, {
+  key: "AUTRE",
+  name: "Autre"
+}
+]
+
 
 export interface Member {
   id: string;

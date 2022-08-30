@@ -224,12 +224,16 @@ export async function isPublicServiceEmail (email) {
   if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
     return true
   }
-  const data = await axios.get(config.tchap_api + String(email).toLowerCase()).then((x) => x.data);
-    if (data.hs === "agent.externe.tchap.gouv.fr") {
-      return false;
-    } else {
-      return true
-    }
+  try {
+    const data = await axios.get(config.tchap_api + String(email).toLowerCase()).then((x) => x.data);
+      if (data.hs === "agent.externe.tchap.gouv.fr") {
+        return false;
+      } else {
+        return true
+      }
+  } catch(e) {
+    throw new Error('Get response from tchap error')
+  }
 }
 
 

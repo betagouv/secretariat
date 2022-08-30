@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=production node dist/src/index.js",
     "migrate": "knex migrate:latest --esm",
-    "makeMigration": "knex migrate:make --esm",
+    "makeMigration": "knex migrate:make -x ts --esm",
     "seed": "knex seed:run --esm",
     "rolldown": "knex migrate:down --esm",
     "lint": "eslint . --fix",
