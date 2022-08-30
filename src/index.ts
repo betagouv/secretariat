@@ -18,7 +18,7 @@ import * as loginController from '@controllers/loginController';
 import * as logoutController from '@controllers/logoutController';
 import * as marrainageController from '@controllers/marrainageController';
 import * as newsletterController from '@controllers/newsletterController';
-import * as onboardingController from '@controllers/onboarding';
+import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
 import * as startupController from '@controllers/startupController';
 import * as usersController from '@controllers/usersController';

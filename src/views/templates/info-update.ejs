@@ -76,6 +76,20 @@
                         id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros">
                 </label>
             </div>
+            <div className="form__group">
+                <label htmlFor="end">
+                    <strong>Nombre de jours moyen travaillés par semaine</strong><br />
+                        <input
+                        defaultValue={state.formData.average_nb_of_days || 0}
+                        id="averageNbOfDays"
+                        name="average_nb_of_days"
+                        type="number"
+                        step="0.5"
+                        placeholder="Nombre de jours moyen"
+                        min={0}
+                        max={5}/>
+                </label>
+            </div>
             <div class="form__group">
                 <label for="secondary_email">
                     <strong>Email de récupération</strong><br />
