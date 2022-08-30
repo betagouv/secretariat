@@ -331,6 +331,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                             id="averageNbOfDays"
                             name="averageNbOfDays"
                             type="number"
+                            step="0.5"
                             placeholder="Nombre de jours moyen"
                             min={0}
                             max={5}/>
