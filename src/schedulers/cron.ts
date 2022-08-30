@@ -37,8 +37,9 @@ import {
 } from './pullRequestWatcher'
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
-import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
+import { publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
+import { publishJobsToMattermost } from './syncBetagouvAPIScheduler/publishJobsToMattermost';
 
 interface Job {
   cronTime: string;
