@@ -46,9 +46,11 @@ export interface DBUser {
     legal_status: LegalStatus;
     communication_email: CommunicationEmailCode;
     osm_city: string;
+    average_nb_of_days: number;
 }
 
 export interface DBUserDetail {
+  average_nb_of_days: number;
   hash: string;
   tjm: number;
   gender: GenderCode;
