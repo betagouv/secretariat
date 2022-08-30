@@ -4,16 +4,10 @@ export async function up(knex){
     .createTable('missions', (table) => {
         table.increments('id').defaultTo('primary')
         table.string('startup')
-            .index()
-            .references('id')
-            .inTable('startups');
         table.string('status');
         table.text('role');
         table.string('employer');
-        table.string('username')
-        .index()
-        .references('username')
-        .inTable('users');
+        table.string('username');
         table.date('start');
         table.date('end');
     });
