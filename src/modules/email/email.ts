@@ -1,5 +1,4 @@
 import { Member } from "@models/member"
-import { DBUser } from "@models/dbUser"
 import { Job } from "@/models/job"
 
 export enum EMAIL_TYPES {
