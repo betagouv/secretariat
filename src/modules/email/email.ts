@@ -1,5 +1,4 @@
 import { Member } from "@models/member"
-import { DBUser } from "@models/dbUser"
 import { Job } from "@/models/job"
 
 export enum EMAIL_TYPES {
@@ -44,7 +43,7 @@ type BaseEmail = {
     attachments?: any[]
 }
 
-export type MarrainageOnboarderEmail = {
+export type EmailMarrainageOnboarder = {
     type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL
     variables: {
         member: Member,
@@ -55,10 +54,13 @@ export type MarrainageOnboarderEmail = {
     }
 }
 
-export type MarrainageNewcomerEmail = {
+export type EmailMarrainageNewcomer = {
     type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
     variables: {
-        member: DBUser
+        member: Member,
+        onboarder: {
+            fullname: string,
+        }
     }
 }
 
@@ -169,8 +171,8 @@ export type EmailUserShouldUpdateInfo = {
 }
 
 export type EmailVariants =
- | MarrainageNewcomerEmail
- | MarrainageOnboarderEmail
+ | EmailMarrainageNewcomer
+ | EmailMarrainageOnboarder
  | LoginEmail
  | MarrainageRequestEmail
  | MarrainageAcceptNewcomerEmail

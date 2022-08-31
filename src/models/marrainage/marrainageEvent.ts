@@ -15,13 +15,13 @@ type BaseEvent = {
     user: string
 }
 
-export type MarrainageOnboarderEmailEvent = {
+export type EventEmailMarrainageOnboarder = {
     type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL,
     marrainage_group_id: number
 } & BaseEvent
 
-export type MarrainageNewcomerEmailEvent  = {
+export type EventEmailMarrainageNewcomer  = {
     type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
-    marrainage_group_id: number
+    marrainage_group_id: number,
 } & BaseEvent
 

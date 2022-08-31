@@ -1,14 +1,13 @@
-import { EmailUserShouldUpdateInfo, EMAIL_TYPES } from "@/modules/email"
+import { EmailMarrainageNewcomer, EmailMarrainageOnboarder, EmailUserShouldUpdateInfo, EMAIL_TYPES } from "@/modules/email"
 import htmlBuilder from "./htmlbuilder"
 import testUsers from "../../../tests/users.json"
 import { Domaine, Member } from "@/models/member"
 import * as mdtohtml from '@/lib/mdtohtml';
 import sinon from "sinon";
 import { Job } from "@/models/job";
-import { CommunicationEmailCode, DBUser, EmailStatusCode, GenderCode, LegalStatus } from "@/models/dbUser";
 
 describe('Test MARRAINAGE_REQUEST_EMAIL', async () => {
-    it('should build ARRAINAGE_REQUEST_EMAIL', async () => {
+    it('should build MARRAINAGE_REQUEST_EMAIL', async () => {
         const emailBody : string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL,
             variables: {
@@ -312,7 +311,59 @@ describe('Test EMAIL_USER_SHOULD_UPDATE_INFO', () => {
         renderHtmlFromMd.called.should.be.true
         renderHtmlFromMd.restore()
     })
-
-
 })
+
+describe(`Test MARRAINAGE_NEWCOMER_EMAIL`, () => {
+    it(`email MARRAINAGE_NEWCOMER_EMAIL`, async () => {
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const onboarder: EmailMarrainageNewcomer['variables']['onboarder'] = {
+            fullname: 'Jean Paul',
+        } as EmailMarrainageNewcomer['variables']['onboarder']
+        const member: EmailMarrainageNewcomer['variables']['member'] = {
+            fullname: 'Paul-Erick Tarantule',
+        } as EmailMarrainageNewcomer['variables']['member']
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
+            variables: {
+                member,
+                onboarder
+            }
+        })
+        emailBody.should.include('Bonjour Paul-Erick')
+        emailBody.should.include(`Jean Paul`)
+        renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
+    })
+})
+
+describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
+    it(`email MARRAINAGE_ONBOARDER_EMAIL`, async () => {
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const member: EmailMarrainageOnboarder['variables']['member'] = {
+            fullname: 'Paul-Erick Tarantule',
+        } as EmailMarrainageOnboarder['variables']['member']
+        const newcomers: EmailMarrainageOnboarder['variables']['newcomers'] = [{
+            fullname: 'Jean Paul',
+            email: 'jean.paul@beta.gouv.fr'
+        }, {
+            fullname: 'Arnaud Lagarde',
+            email: 'arnaud.lagarde@gmail.com'
+        }] as EmailMarrainageOnboarder['variables']['newcomers']
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
+            variables: {
+                member,
+                newcomers
+            }
+        })
+        console.log(emailBody)
+        emailBody.should.include(`Jean Paul`)
+        emailBody.should.include(`Arnaud Lagarde`)
+        renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
+    })
+})
+
 
