@@ -1,4 +1,4 @@
-import { EmailUserShouldUpdateInfo, EMAIL_TYPES } from "@/modules/email"
+import { EmailMarrainageNewcomer, EmailMarrainageOnboarder, EmailUserShouldUpdateInfo, EMAIL_TYPES } from "@/modules/email"
 import htmlBuilder from "./htmlbuilder"
 import testUsers from "../../../tests/users.json"
 import { Domaine, Member } from "@/models/member"
@@ -313,62 +313,54 @@ describe('Test EMAIL_USER_SHOULD_UPDATE_INFO', () => {
     })
 })
 
-describe(`Test ${EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL}`, () => {
-    it(`email ${EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL}`, async () => {
+describe(`Test MARRAINAGE_NEWCOMER_EMAIL`, () => {
+    it(`email MARRAINAGE_NEWCOMER_EMAIL`, async () => {
         const renderHtmlFromMd = sinon
             .spy(mdtohtml, 'renderHtmlFromMd') 
-        const user: EmailUserShouldUpdateInfo['variables']['user'] = {
-            fullname: 'jean.paul',
-            secondary_email: "paul@beta.gouv.fr",
-            workplace_insee_code: "75012",
-            tjm: '125 euros',
-            gender: 'Ne se prononce pas',
-            startups: ['aide-jaune'],
-            legal_status: 'Auto-entreprise',
-        } as EmailUserShouldUpdateInfo['variables']['user']
-        const secretariatUrl : string = 'http://secretariat-url'
+        const onboarder: EmailMarrainageNewcomer['variables']['onboarder'] = {
+            fullname: 'Jean Paul',
+        } as EmailMarrainageNewcomer['variables']['onboarder']
+        const member: EmailMarrainageNewcomer['variables']['member'] = {
+            fullname: 'Paul-Erick Tarantule',
+        } as EmailMarrainageNewcomer['variables']['member']
         const emailBody : string = await htmlBuilder.renderContentForType({
-            type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO,
+            type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
             variables: {
-                user,
-                secretariatUrl
+                member,
+                onboarder
             }
         })
-        emailBody.should.include(user.fullname)
-        emailBody.should.include(user.tjm)
-        emailBody.should.include(user.gender)
-        emailBody.should.include(user.legal_status)
-        emailBody.should.include(user.startups[0])
-        emailBody.should.include(secretariatUrl)
+        emailBody.should.include('Bonjour Paul-Erick')
+        emailBody.should.include(`Jean Paul`)
         renderHtmlFromMd.called.should.be.true
         renderHtmlFromMd.restore()
     })
 })
 
-describe(`Test ${EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL}`, () => {
-    it(`email ${EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL}`, async () => {
+describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
+    it(`email MARRAINAGE_ONBOARDER_EMAIL`, async () => {
         const renderHtmlFromMd = sinon
             .spy(mdtohtml, 'renderHtmlFromMd') 
-        const onboarder: EmailMarrainageOnboarder['variables']['onboarder'] = {
-            fullname: 'jean.paul',
-        } as EmailMarrainageOnboarder['variables']['onboarder']
-        const onboarder: EmailMarrainageOnboarder['variables']['newcomer'] = {
-            fullname: 'jean.paul',
-        } as EmailMarrainageOnboarder['variables']['newcomer']
-        const secretariatUrl : string = 'http://secretariat-url'
+        const member: EmailMarrainageOnboarder['variables']['member'] = {
+            fullname: 'Paul-Erick Tarantule',
+        } as EmailMarrainageOnboarder['variables']['member']
+        const newcomers: EmailMarrainageOnboarder['variables']['newcomers'] = [{
+            fullname: 'Jean Paul',
+            email: 'jean.paul@beta.gouv.fr'
+        }, {
+            fullname: 'Arnaud Lagarde',
+            email: 'arnaud.lagarde@gmail.com'
+        }] as EmailMarrainageOnboarder['variables']['newcomers']
         const emailBody : string = await htmlBuilder.renderContentForType({
-            type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO,
+            type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
             variables: {
-                user,
-                secretariatUrl
+                member,
+                newcomers
             }
         })
-        emailBody.should.include(user.fullname)
-        emailBody.should.include(user.tjm)
-        emailBody.should.include(user.gender)
-        emailBody.should.include(user.legal_status)
-        emailBody.should.include(user.startups[0])
-        emailBody.should.include(secretariatUrl)
+        console.log(emailBody)
+        emailBody.should.include(`- Jean Paul`)
+        emailBody.should.include(`- Arnaud Lagarde`)
         renderHtmlFromMd.called.should.be.true
         renderHtmlFromMd.restore()
     })

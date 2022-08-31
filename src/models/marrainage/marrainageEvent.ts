@@ -22,6 +22,6 @@ export type EventEmailMarrainageOnboarder = {
 
 export type EventEmailMarrainageNewcomer  = {
     type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
-    marrainage_group_id: number
+    marrainage_group_id: number,
 } & BaseEvent
 

@@ -58,7 +58,10 @@ export type EmailMarrainageOnboarder = {
 export type EmailMarrainageNewcomer = {
     type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
     variables: {
-        member: DBUser
+        member: Member,
+        onboarder: {
+            fullname: string,
+        }
     }
 }
 
@@ -169,8 +172,8 @@ export type EmailUserShouldUpdateInfo = {
 }
 
 export type EmailVariants =
- | MarrainageNewcomerEmail
- | MarrainageOnboarderEmail
+ | EmailMarrainageNewcomer
+ | EmailMarrainageOnboarder
  | LoginEmail
  | MarrainageRequestEmail
  | MarrainageAcceptNewcomerEmail

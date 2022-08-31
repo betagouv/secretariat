@@ -2,10 +2,10 @@ Chère marraine, cher parrain,
 
 Tu t'es porté·e volontaire afin d'accueillir les nouveaux arrivants chez Beta et nous t'en remercions. 
 
-Ça y est ils sont là ! Un groupe de <%= newcomers.length =%> personnes vient de t'être attribué afin que tu facilites leur arrivée dans la communauté. 
+Ça y est ils sont là ! Un groupe de <%= newcomers.length %> personnes vient de t'être attribué afin que tu facilites leur arrivée dans la communauté. 
 
-<% for (var i=0; i< newcomers.length; i++) { %>
-    <%= newcomers[i].fullname %> (<%= newcomers[i].email %>)<br>
+<% for (var i=0; i < newcomers.length; i++) { %>
+- <%= newcomers[i].fullname %> (<%= newcomers[i].email %>)
 <% }%>
 
 Tu peux d'ores et déjà les contacter par email et/ou en créant un groupe sur Mattermost afin de trouver une date pour votre première rencontre. 

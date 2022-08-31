@@ -24,7 +24,7 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
       for (const marrainage of marrainageGroup) {
         EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL, {
           user: marrainage.username,
-          type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL
+          type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
         } as EventEmailMarrainageNewcomer) 
       }
     } else {
