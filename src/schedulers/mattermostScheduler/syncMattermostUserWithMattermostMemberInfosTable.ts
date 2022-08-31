@@ -1,7 +1,6 @@
 import config from "@/config";
 import db from "@/db";
-import mattermost from "@/lib/mattermost";
-import { MattermostUser } from "@/lib/mattermost/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";
 import knex from "knex";
 
@@ -11,12 +10,12 @@ interface MattermostMemberInfo {
     last_active_at?: Date
 }
 
-const isSameUser = (mattermostUser: MattermostUser, dbUser: DBUser) => {
+const isSameUser = (mattermostUser: mattermost.MattermostUser, dbUser: DBUser) => {
     return mattermostUser.email === dbUser.primary_email || mattermostUser.email === dbUser.secondary_email
 }
 
 export async function syncMattermostUserWithMattermostMemberInfosTable () {
-    const mattermostUsers : MattermostUser[] = await mattermost.getInactiveMattermostUsers({
+    const mattermostUsers : mattermost.MattermostUser[] = await mattermost.getInactiveMattermostUsers({
         in_team: config.mattermostTeamId
     })
     const mattermostUserEmails : string[] = mattermostUsers.map(user => user.email)

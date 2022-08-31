@@ -2,6 +2,8 @@ import crypto from 'crypto'
 import { MemberWithPrimaryEmail } from "@/models/member";
 import { EMAIL_TYPES } from "@/modules/email";
 import * as mattermost from '@/lib/mattermost';
+import { sendEmail } from '@/config/email.config';
+import { getActiveGithubUsersUnregisteredOnMattermost } from '.';
 
 export async function createUsersByEmail() {
     let activeGithubUsersUnregisteredOnMattermost : MemberWithPrimaryEmail[] =
@@ -41,11 +43,3 @@ export async function createUsersByEmail() {
     return results;
   }
 
-function getActiveGithubUsersUnregisteredOnMattermost(): MemberWithPrimaryEmail[] | PromiseLike<MemberWithPrimaryEmail[]> {
-    throw new Error("Function not implemented.");
-}
-
-
-function sendEmail(arg0: { toEmail: any[]; type: any; variables: { resetPasswordLink: string; }; }) {
-    throw new Error("Function not implemented.");
-}
