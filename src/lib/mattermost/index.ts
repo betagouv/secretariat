@@ -1,5 +1,5 @@
-import axios from 'axios';
 import config from '@config';
+import axios from 'axios';
 
 export interface MattermostUser {
   id: string,
@@ -18,21 +18,6 @@ export interface MattermostUser {
   mfa_active: boolean,
   last_activity_at: string,
 }
-
-
-const getMattermostConfig = () => {
-  if (!config.mattermostBotToken) {
-    const errorMessage =
-      'Unable to launch mattermost api calls without env var mattermostBotToken';
-    console.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-  return {
-    headers: {
-      Authorization: `Bearer ${config.mattermostBotToken}`,
-    },
-  };
-};
 
 export async function getUserWithParams(params = {}, i = 0) {
   const mattermostUsers = await axios
@@ -221,3 +206,21 @@ export async function changeUserEmail(id: string, email: string) {
     return false;
   }
 }
+
+
+export const getMattermostConfig = () => {
+  if (!config.mattermostBotToken) {
+    const errorMessage =
+      'Unable to launch mattermost api calls without env var mattermostBotToken';
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+  return {
+    headers: {
+      Authorization: `Bearer ${config.mattermostBotToken}`,
+    },
+  };
+};
+
+export * from './getActiveMattermostUsers'
+export * from './getMattermostUsersStatus'
