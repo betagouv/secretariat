@@ -1,7 +1,7 @@
 import sinon from "sinon";
 
 import { onMarrainageSendNewcomerEmail } from "./onMarrainageSendNewcomerEmailEvent";
-import { MarrainageNewcomerEmailEvent, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
+import { EventEmailMarrainageNewcomer, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
 import * as Email from '@config/email.config'
 import db from "../../../db";
 import { CommunicationEmailCode, DBUser } from "@models/dbUser";
@@ -11,7 +11,7 @@ describe('Test marrainage send newcomer email', () => {
     it('should send email to newcomer email', async () => {
         const newcomer = 'membre.nouveau'
         const [user] : DBUser[] = await db('users').where({ username: newcomer })
-        const evt : MarrainageNewcomerEmailEvent = {
+        const evt : EventEmailMarrainageNewcomer = {
             type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
             user: user.username,
             marrainage_group_id: 1

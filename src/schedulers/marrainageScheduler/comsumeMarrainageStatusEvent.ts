@@ -1,5 +1,5 @@
 import knex from '../../db';
-import { MarrainageGroup, MarrainageGroupMember, MarrainageNewcomerEmailEvent, MarrainageOnboarderEmailEvent, MARRAINAGE_EVENT } from '@models/marrainage';
+import { MarrainageGroup, MarrainageGroupMember, EventEmailMarrainageOnboarder, EventEmailMarrainageNewcomer, MARRAINAGE_EVENT } from '@models/marrainage';
 import { IEventBus } from '@infra/eventBus';
 
 interface MarrainageCreatedJob {
@@ -19,13 +19,13 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
         user: marrainageGroup[0].username,
         marrainage_group_id: marrainage_group_id,
         type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL
-      } as MarrainageOnboarderEmailEvent)
+      } as EventEmailMarrainageOnboarder)
 
       for (const marrainage of marrainageGroup) {
         EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL, {
           user: marrainage.username,
           type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL
-        } as MarrainageNewcomerEmailEvent) 
+        } as EventEmailMarrainageNewcomer) 
       }
     } else {
       console.error(`No marrainage group found for id : ${marrainage_group_id}`)

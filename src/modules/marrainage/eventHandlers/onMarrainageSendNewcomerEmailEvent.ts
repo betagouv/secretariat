@@ -1,11 +1,11 @@
 import { sendEmail } from "@config/email.config"
-import { MarrainageNewcomerEmailEvent } from "@models/marrainage"
+import { EventEmailMarrainageNewcomer } from "@models/marrainage"
 import db from "../../../db"
 import { EmailProps, EMAIL_TYPES } from "../../email"
 import { CommunicationEmailCode, DBUser } from "@models/dbUser"
 
 export const onMarrainageSendNewcomerEmail:
-    (evenement: MarrainageNewcomerEmailEvent) => Promise<void> = async (evt) => {
+    (evenement: EventEmailMarrainageNewcomer) => Promise<void> = async (evt) => {
     
     const member : DBUser = await db('users').where({
         username: evt.user
