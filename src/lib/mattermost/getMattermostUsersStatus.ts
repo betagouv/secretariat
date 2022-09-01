@@ -13,7 +13,7 @@ export async function getMattermostUsersStatus(userIds : string[]) : Promise<Use
     const mattermostUsersStatus = await axios
       .post(`${config.mattermostURL}/api/v4/users/status/ids`,
         {
-            user_ids: userIds
+            userIds: userIds
         },
         getMattermostConfig(),
       )
