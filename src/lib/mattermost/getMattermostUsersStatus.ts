@@ -12,9 +12,7 @@ interface UserStatus {
 export async function getMattermostUsersStatus(userIds : string[]) : Promise<UserStatus[]> {
     const mattermostUsersStatus = await axios
       .post(`${config.mattermostURL}/api/v4/users/status/ids`,
-        {
-            userIds: userIds
-        },
+        userIds,
         getMattermostConfig(),
       )
     .then((response) => response.data);
