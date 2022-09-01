@@ -9,7 +9,7 @@ export async function syncMattermostUserStatusWithMattermostMemberInfosTable() {
     
     for (const status of mattermostUsersStatus) {
         await db('mattermost_member_infos').update({
-            last_activity_at: status.last_activity_at ? new Date(status.last_activity_at) : undefined
+            last_activity_at: status.last_activity_at ? new Date(status.last_activity_at) : null
         })
         .where({
             mattermost_user_id: status.user_id
