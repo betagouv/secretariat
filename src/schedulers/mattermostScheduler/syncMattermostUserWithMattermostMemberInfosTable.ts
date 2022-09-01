@@ -2,7 +2,6 @@ import config from "@/config";
 import db from "@/db";
 import * as mattermost from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";
-import knex from "knex";
 
 interface MattermostMemberInfo {
     username: string
@@ -29,6 +28,6 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
             username: dbUser.username,
             mattermost_user_id: mattermostUser.id,
         }
-        await knex('mattermost_member_infos').insert(mattermostMemberInfo)
+        await db('mattermost_member_infos').insert(mattermostMemberInfo)
     }
 }
