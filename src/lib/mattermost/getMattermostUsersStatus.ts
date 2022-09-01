@@ -11,13 +11,12 @@ interface UserStatus {
 
 export async function getMattermostUsersStatus(userIds : string[]) : Promise<UserStatus[]> {
     const mattermostUsersStatus = await axios
-      .get(`${config.mattermostURL}/api/v4/users/status/ids`, {
-        params: {
+      .post(`${config.mattermostURL}/api/v4/users/status/ids`,
+        {
             ids: userIds
         },
-        ...getMattermostConfig(),
-      }
-    )
+        getMattermostConfig(),
+      )
     .then((response) => response.data);
     return mattermostUsersStatus
 }
