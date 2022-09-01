@@ -148,8 +148,15 @@ export async function createEmailForUser(req, res) {
         throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
       }
     }
-    await updateSecondaryEmail(username, req.body.to_email)
-    await createEmail(username, req.auth.id);
+    if (dbUser) {
+      await updateSecondaryEmail(username, req.body.to_email)
+    } else {
+      await knex('users').insert({
+        username,
+        primary_email_status: EmailStatusCode.EMAIL_UNSET
+      })
+    }
+      await createEmail(username, req.auth.id);
 
     req.flash('message', 'Le compte email a bien été créé.');
     res.redirect(`/community/${username}`);
