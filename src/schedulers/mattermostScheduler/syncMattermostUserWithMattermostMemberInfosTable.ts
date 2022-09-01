@@ -14,7 +14,7 @@ const isSameUser = (mattermostUser: mattermost.MattermostUser, dbUser: DBUser) =
 }
 
 export async function syncMattermostUserWithMattermostMemberInfosTable () {
-    const mattermostUsers : mattermost.MattermostUser[] = await mattermost.getInactiveMattermostUsers({
+    const mattermostUsers : mattermost.MattermostUser[] = await mattermost.getActiveMattermostUsers({
         in_team: config.mattermostTeamId
     })
     const mattermostUserEmails : string[] = mattermostUsers.map(user => user.email)
