@@ -2,12 +2,7 @@ import config from "@/config";
 import db from "@/db";
 import * as mattermost from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";
-
-interface MattermostMemberInfo {
-    username: string
-    mattermost_user_id: string
-    last_active_at?: Date
-}
+import { MattermostMemberInfo } from "@/models/mattermostMemberInfo";
 
 const isSameUser = (mattermostUser: mattermost.MattermostUser, dbUser: DBUser) => {
     return mattermostUser.email === dbUser.primary_email || mattermostUser.email === dbUser.secondary_email
