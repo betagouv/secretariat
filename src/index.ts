@@ -126,26 +126,16 @@ app.post('/login', loginController.postLogin);
 app.get('/signin', loginController.getSignIn);
 app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
-app.post('/users/:username/email', usersController.createEmailForUser);
-app.post('/users/:username/email/delete', usersController.deleteEmailForUser);
-app.post(
-  '/users/:username/redirections',
-  usersController.createRedirectionForUser
-);
-app.post(
-  '/users/:username/redirections/:email/delete',
-  usersController.deleteRedirectionForUser
-);
-app.post('/users/:username/password', usersController.updatePasswordForUser);
-app.post(
-  '/users/:username/secondary_email',
-  usersController.manageSecondaryEmailForUser
-);
-app.post(
-  '/users/:username/primary_email',
-  usersController.managePrimaryEmailForUser
-);
-app.post('/users/:username/end-date', usersController.updateEndDateForUser);
+// users
+app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
+app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
+app.post(routes.USER_CREATE_REDIRECTION, usersController.createRedirectionForUser);
+app.post(routes.USER_DELETE_REDIRECTION, usersController.deleteRedirectionForUser);
+app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
+app.post(routes.USER_UPDATE_SECONDARY_EMAIL, usersController.manageSecondaryEmailForUser);
+app.post(routes.USER_UPDATE_PRIMARY_EMAIL, usersController.managePrimaryEmailForUser);
+app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
+//
 app.post(
   '/notifications/github',
   githubNotificationController.processNotification
