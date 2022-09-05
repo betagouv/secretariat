@@ -1,17 +1,11 @@
 import _ from 'lodash/array';
-
-import { Marrainage, MarrainageGroup, MarrainageGroupStatus, MARRAINAGE_EVENT } from "@models/marrainage";
-import { Domaine, Member } from '@models/member';
-import BetaGouv from '@/betagouv';
-import * as utils from '@controllers/utils';
-import knex from '@/db';
+import betagouv from "@/betagouv";
 import EventBus from "@/infra/eventBus/eventBus";
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
-import betagouv from '@/betagouv';
-
-interface MarrainageService {
-    selectRandomOnboarder(newcomerId: string, domaine: string): Promise<Member>
-}
+import { MarrainageGroupStatus, MarrainageGroup, MARRAINAGE_EVENT } from "@/models/marrainage";
+import { Member } from "@/models/member";
+import knex from "@/db";
+import { MarrainageService } from ".";
 
 const countNumberOfMarrainage = (onboarders) => {
     const count = {};
@@ -30,45 +24,6 @@ const countNumberOfMarrainage = (onboarders) => {
     })
 }
 
-export class MarrainageService1v implements MarrainageService {
-    async selectRandomOnboarder(newcomerId: string, domaine: string) {
-            const users: Member[] = await BetaGouv.usersInfos();
-        const minimumSeniority = new Date().setMonth(new Date().getMonth() - 6);
-        const existingCandidates: string[] = await knex('marrainage')
-            .select('last_onboarder')
-            .where({ completed: false })
-            .distinct()
-            .then((marrainages: Marrainage[]) => marrainages.map((x) => x.last_onboarder));
-
-        const onboarders = users.filter((x) => {
-            const existingCandidate = existingCandidates.includes(x.id);
-            const senior = new Date(minimumSeniority) > new Date(x.start);
-            const stillActive = !utils.checkUserIsExpired(x);
-            const isRequester = x.id === newcomerId;
-            return !existingCandidate && senior && stillActive && !isRequester;
-        });
-        const onboardersFromDomaine = onboarders.filter(onboarder => onboarder.domaine === domaine)
-        const onboarderPool = (domaine === Domaine.AUTRE || !onboardersFromDomaine.length) ? onboarders : onboardersFromDomaine
-        return onboarderPool[Math.floor(Math.random() * onboarderPool.length)];
-    }
-
-    async createMarrainage(newcomerId, onboarderId) {
-        return await knex('marrainage')
-        .where({ username: newcomerId })
-        .increment('count', 1)
-        .update({ last_onboarder: onboarderId, last_updated: knex.fn.now() });
-    }
-
-    async getUsersWithoutMarrainage() : Promise<DBUser[]> {
-        const dateFeatureAdded = new Date('01/23/2022');
-        const users : DBUser[] = await knex('users').where({
-          primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        }).andWhere('created_at', '>', dateFeatureAdded)
-        const marrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
-        return _.differenceWith(users, marrainages, (user, marrainage) => user.username === marrainage.username)
-    }
-}
-
 export class MarrainageServiceWithGroup implements MarrainageService {
     users: string[];
     MARRAINAGE_GROUP_LIMIT: number;
@@ -84,7 +39,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         this.MARRAINAGE_GROUP_WEEK_LIMIT = marrainage_group_week_limit || 2
     }
 
-    async selectRandomOnboarder(newcomerId: string, domaine: string) {
+    async selectRandomOnboarder() {
         let pendingMarrainageGroup: any = await knex('marrainage_groups').where({
             status: MarrainageGroupStatus.PENDING
         }).first()

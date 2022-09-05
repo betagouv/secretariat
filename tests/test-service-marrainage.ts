@@ -6,8 +6,9 @@ import * as controllerUtils from '@controllers/utils';
 import knex from '@/db';
 import testUsers from './users.json';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
-import { Domaine, Member } from '@models/member';
+import { Domaine } from '@models/member';
 import { MarrainageGroup, MarrainageGroupMember, MarrainageGroupStatus } from '@models/marrainage';
+import { sendOnboarderRequestEmail } from '@/modules/marrainage/eventHandlers';
 
 
 chai.use(chaiHttp);
@@ -40,7 +41,7 @@ describe('Marrainage Service test', () => {
 
     describe('Test marrainage service v1', () => {
         it('should get an onboarder using selectRandomOnBoarderFunction v1', async () => {
-            const marrainageService = new MarrainageService1v()
+            const marrainageService = new MarrainageService1v('secretariat@betagouv.ovh', sendOnboarderRequestEmail)
             const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
             onboarder.should.not.be.equals(undefined)
         });
@@ -49,7 +50,7 @@ describe('Marrainage Service test', () => {
     describe('Test marrainage service with group', () => {
       it('should get an onboarder using selectRandomOnBoarderFunction with group', async () => {
         const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), 2)
-        const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
+        const onboarder = await marrainageService.selectRandomOnboarder()
         onboarder.should.not.equals(undefined)
       });
 
@@ -91,8 +92,8 @@ describe('Marrainage Service test', () => {
         await knex('marrainage_groups').where({
           id: marrainageGroup.id
         }).delete()
-        const test = await knex('marrainage_groups_members').select('*')
-        const test2 = await knex('marrainage_groups').select('*')
+        await knex('marrainage_groups_members').select('*')
+        await knex('marrainage_groups').select('*')
     });
 
     it('should set pending marrainage to status DOING if count > 1', async () => {
