@@ -48,13 +48,13 @@ describe('Marrainage Service test', () => {
 
     describe('Test marrainage service with group', () => {
       it('should get an onboarder using selectRandomOnBoarderFunction with group', async () => {
-        const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], 2)
+        const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), 2)
         const onboarder = await marrainageService.selectRandomOnboarder('lucas.charrier', Domaine.DEVELOPPEMENT)
         onboarder.should.not.equals(undefined)
       });
 
       it('should create marrainage', async () => {
-        const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], 2)
+        const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), 2)
         const onboarder : string = 'julien.dauphant'
         const newcomer : string = 'membre.nouveau'
         const newcomer2 : string = 'membre.actif'
@@ -96,7 +96,7 @@ describe('Marrainage Service test', () => {
     });
 
     it('should set pending marrainage to status DOING if count > 1', async () => {
-      const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], 1)
+      const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), 1)
       const onboarder : string = 'julien.dauphant'
       const newcomer : string = 'membre.nouveau'
       let marrainageGroup = await knex('marrainage_groups')
@@ -127,7 +127,7 @@ describe('Marrainage Service test', () => {
     it('should set pending marrainage to status DOING if created_date was 2 weeks ago', async () => {
       const MARRAINAGE_GROUP_LIMIT = 10
       const MARRAINAGE_GROUP_WEEK_LIMIT = 2
-      const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], MARRAINAGE_GROUP_LIMIT, MARRAINAGE_GROUP_WEEK_LIMIT)
+      const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), MARRAINAGE_GROUP_LIMIT, MARRAINAGE_GROUP_WEEK_LIMIT)
       const onboarder : string = 'julien.dauphant'
       const newcomer : string = 'membre.actif'
       const todayLessXdays = new Date()
@@ -161,7 +161,7 @@ describe('Marrainage Service test', () => {
     it('should set pending marrainage to status DOING if created_date was 2 weeks ago', async () => {
       const MARRAINAGE_GROUP_LIMIT = 10
       const MARRAINAGE_GROUP_WEEK_LIMIT = 2
-      const marrainageService = new MarrainageServiceWithGroup(testUsers as Member[], MARRAINAGE_GROUP_LIMIT, MARRAINAGE_GROUP_WEEK_LIMIT)
+      const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), MARRAINAGE_GROUP_LIMIT, MARRAINAGE_GROUP_WEEK_LIMIT)
       const onboarder : string = 'julien.dauphant'
       const newcomer : string = 'membre.actif'
       let users = await marrainageService.getUsersWithoutMarrainage()

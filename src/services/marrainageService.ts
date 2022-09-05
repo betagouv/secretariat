@@ -7,6 +7,7 @@ import * as utils from '@controllers/utils';
 import knex from '@/db';
 import EventBus from "@/infra/eventBus/eventBus";
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import betagouv from '@/betagouv';
 
 interface MarrainageService {
     selectRandomOnboarder(newcomerId: string, domaine: string): Promise<Member>
@@ -69,12 +70,12 @@ export class MarrainageService1v implements MarrainageService {
 }
 
 export class MarrainageServiceWithGroup implements MarrainageService {
-    users: Member[];
+    users: string[];
     MARRAINAGE_GROUP_LIMIT: number;
     MARRAINAGE_GROUP_WEEK_LIMIT: number;
 
     constructor(
-        users: Member[],
+        users: string[],
         marrainage_group_limit: number,
         marrainage_group_week_limit?: number) {
         this.users = users
@@ -95,7 +96,9 @@ export class MarrainageServiceWithGroup implements MarrainageService {
                 MarrainageGroupStatus.DONE,
             ])
             const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
-            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(function(a, b){return a-b})
+            const userInfos : Member[] = await betagouv.usersInfos()
+            const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, users]).sort(function(a, b){return a-b})
             onboarder = sortedOnboarder[0]
         }
         return onboarder

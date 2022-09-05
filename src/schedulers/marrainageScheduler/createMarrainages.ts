@@ -4,9 +4,9 @@ import { createRequestForUser } from '@controllers/marrainageController';
 import { DBUser } from '@models/dbUser';
 
 export async function createMarrainages() {
-  const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+  const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.MARRAINAGE_ONBOARDER_LIST
 const MarrainageService = useNewMarrainage
-   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
+   ? new MarrainageServiceWithGroup(config.MARRAINAGE_ONBOARDER_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
 
     console.log('Demarrage du cron job pour créer les marrainages');
     // before this date not every user had marrainage but we don't need to create for them now

@@ -10,9 +10,9 @@ import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marra
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
 
-const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.MARRAINAGE_ONBOARDER_LIST
 const MarrainageService = useNewMarrainage
-   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
+   ? new MarrainageServiceWithGroup(config.MARRAINAGE_ONBOARDER_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
 
 async function getMarrainageTokenData(token) {
   if (!token) {
