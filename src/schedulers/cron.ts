@@ -40,6 +40,7 @@ import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileSc
 import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
 import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
+import EventBus from '@/infra/eventBus/eventBus';
 
 interface Job {
   cronTime: string;
@@ -72,7 +73,9 @@ const marrainageJobs: Job[] = [
   },
   {
     cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
-    onTick: comsumeMarrainageStatusEvent,
+    onTick: async () => {
+      return comsumeMarrainageStatusEvent(EventBus)
+    },
     isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
     name: 'comsumeMarrainageStatusEvent',
   },
