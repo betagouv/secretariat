@@ -1,8 +1,6 @@
 import { MARRAINAGE_EVENT } from "@models/marrainage";
 import EventBus from "@infra/eventBus/eventBus";
 import { onMarrainageSendNewcomerEmail, onMarrainageSendOnboarderEmail } from "./eventHandlers";
-import betagouv from "@/betagouv";
-import { Member } from "@/models/member";
 
 export const ConsumeEmailEvent = async () => {
     return Promise.all([

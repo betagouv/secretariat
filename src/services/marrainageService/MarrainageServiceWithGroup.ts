@@ -60,7 +60,9 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         return onboarder
     }
 
-    async createMarrainage(newcomerId, onboarderId) {
+    async createMarrainage(newcomerId) : Promise<Member> {
+        const onboarder = await this.selectRandomOnboarder()
+        const onboarderId = onboarder.id
         await knex.transaction(async (trx) => {
             let marrainage_group = await trx('marrainage_groups')
                 .where({
@@ -91,6 +93,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
                 })
                 .update(updateParams)
         })
+        return onboarder
     }
 
     async _setMarrainageToDoing(marrainage_group_id) {

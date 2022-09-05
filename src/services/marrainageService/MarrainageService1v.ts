@@ -44,7 +44,7 @@ export class MarrainageService1v implements MarrainageService {
         return onboarderPool[Math.floor(Math.random() * onboarderPool.length)];
     }
 
-    async createMarrainage(newcomerId: string, domaine: string) {
+    async createMarrainage(newcomerId: string, domaine: string) : Promise<Member> {
         const onboarder = await this.selectRandomOnboarder(newcomerId, domaine)
         if (!onboarder) {
             const recipientEmailList = [this.senderEmail];
@@ -65,6 +65,7 @@ export class MarrainageService1v implements MarrainageService {
             last_onboarder: onboarder.id,
           });
           await this._sendOnboarderRequestEmail(newcomerId, onboarder.id);
+          return onboarder
     }
 
     async updateMarrainage(newcomer: Member) : Promise<Member> {
