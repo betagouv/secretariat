@@ -185,6 +185,24 @@ describe('User', () => {
         user.secondary_email.should.equal('test@example.com')
     });
 
+    it('should create email and insert user in database if user on github', async () => {
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+      await knex('users').where({ username: 'membre.actif'}).delete()
+      await chai
+        .request(app)
+        .post('/users/membre.actif/email')
+        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
+        .type('form')
+        .send({
+          to_email: 'test@example.com',
+        })
+        ovhEmailCreation.isDone().should.be.true;
+        const user = await knex('users').where({ username: 'membre.actif' }).first()
+        user.secondary_email.should.equal('test@example.com')
+    });8
+
   });
 
   describe('POST /users/:username/redirections unauthenticated', () => {
