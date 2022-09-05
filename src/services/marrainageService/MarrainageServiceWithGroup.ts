@@ -39,13 +39,13 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         this.MARRAINAGE_GROUP_WEEK_LIMIT = marrainage_group_week_limit || 2
     }
 
-    async selectRandomOnboarder() {
-        let pendingMarrainageGroup: any = await knex('marrainage_groups').where({
+    async selectRandomOnboarder() : Promise<Member> {
+        let pendingMarrainageGroup: MarrainageGroup = await knex('marrainage_groups').where({
             status: MarrainageGroupStatus.PENDING
         }).first()
-        let onboarder
+        let onboarder : Member
         if (pendingMarrainageGroup) {
-            onboarder = pendingMarrainageGroup.onboarder
+            onboarder = await betagouv.userInfosById(pendingMarrainageGroup.onboarder)
         } else {
             const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups').whereNotIn('status', [
                 MarrainageGroupStatus.DOING,
@@ -54,14 +54,14 @@ export class MarrainageServiceWithGroup implements MarrainageService {
             const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             const userInfos : Member[] = await betagouv.usersInfos()
             const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
-            const sortedOnboarder = countNumberOfMarrainage([...onboarders, users]).sort(function(a, b){return a-b})
-            onboarder = sortedOnboarder[0]
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(function(a, b){return a.count-b.count})
+            onboarder = sortedOnboarder[0].onboarder
         }
         return onboarder
     }
 
     async createMarrainage(newcomerId) : Promise<Member> {
-        const onboarder = await this.selectRandomOnboarder()
+        const onboarder : Member = await this.selectRandomOnboarder()
         const onboarderId = onboarder.id
         await knex.transaction(async (trx) => {
             let marrainage_group = await trx('marrainage_groups')

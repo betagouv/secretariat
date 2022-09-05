@@ -54,9 +54,9 @@ describe('Marrainage Service test', () => {
         onboarder.should.not.equals(undefined)
       });
 
-      it('should create marrainage', async () => {
-        const marrainageService = new MarrainageServiceWithGroup(testUsers.map(u => u.id), 2)
+      it('should create marrainage with service group', async () => {
         const onboarder : string = 'julien.dauphant'
+        let marrainageService = new MarrainageServiceWithGroup(testUsers.filter(u => u.id === onboarder).map(u => u.id), 2)
         const newcomer : string = 'membre.nouveau'
         const newcomer2 : string = 'membre.actif'
 
@@ -66,8 +66,8 @@ describe('Marrainage Service test', () => {
         }).first()
         chai.should().not.exist(marrainageGroup)
 
-        // marrainage goup with onboader should be created
-        await marrainageService.createMarrainage(newcomer, onboarder)
+        // marrainage goup with onboarder should be created
+        await marrainageService.createMarrainage(newcomer)
         marrainageGroup = await knex('marrainage_groups').where({
           onboarder
         }).first()
@@ -78,9 +78,9 @@ describe('Marrainage Service test', () => {
           username: newcomer
         }).first()
         chai.should().exist(marrainage_groups_members)
-
-        // marrainage goup with onboarder should be increments by 1
-        await marrainageService.createMarrainage(newcomer2, onboarder)
+        // previous marrainage goup with onboarder should be increments by 1, and should not create new marrainage group
+        marrainageService = new MarrainageServiceWithGroup(testUsers.filter(u => u.id === 'hela.ghariani').map(u => u.id), 2)
+        await marrainageService.createMarrainage(newcomer2)
         marrainageGroup = await knex('marrainage_groups').where({
           onboarder
         }).first()  
