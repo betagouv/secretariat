@@ -20,12 +20,14 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
         marrainage_group_id: marrainage_group_id,
         type: MARRAINAGE_EVENT.MARRAINAGE_SEND_ONBOARDER_EMAIL
       } as EventEmailMarrainageOnboarder)
+      console.info(`Event send onboarder email for ${marrainageGroup[0].username} produced`)
 
       for (const marrainage of marrainageGroup) {
         EventBus.produce(MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL, {
           user: marrainage.username,
           type: MARRAINAGE_EVENT.MARRAINAGE_SEND_NEWCOMER_EMAIL,
         } as EventEmailMarrainageNewcomer) 
+        console.info(`Event send newcomer email for ${marrainage.username} produced`)
       }
     } else {
       console.error(`No marrainage group found for id : ${marrainage_group_id}`)
