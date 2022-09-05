@@ -39,6 +39,7 @@ import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
 import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
+import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
 
 interface Job {
   cronTime: string;
@@ -77,6 +78,15 @@ const marrainageJobs: Job[] = [
   },
 ]
 
+const emailJobs: Job[] = [
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: ConsumeEmailEvent,
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'ConsumeEmailEvent'
+  }
+]
+
 const jobs: Job[] = [
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
@@ -110,6 +120,7 @@ const jobs: Job[] = [
   },
   //
   ...marrainageJobs,
+  ...emailJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
