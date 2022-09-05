@@ -78,6 +78,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         users: string[],
         marrainage_group_limit: number,
         marrainage_group_week_limit?: number) {
+        console.log('Marrainage service with group initiated')
         this.users = users
         this.MARRAINAGE_GROUP_LIMIT = marrainage_group_limit || 5
         this.MARRAINAGE_GROUP_WEEK_LIMIT = marrainage_group_week_limit || 2
