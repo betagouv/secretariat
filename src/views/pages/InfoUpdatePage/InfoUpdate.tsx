@@ -103,7 +103,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
 
                         <div className="beta-banner"></div>
                         <form action="/account/info" method="POST">
-                            <h4>Tes infos persos</h4>
+                            <h4>Participer à notre observatoire statisique </h4>
+                            ⚠️ À aucun moment nous n'afficherons vos nom ou prénom.
                             <div className="form__group">
                                 <p>
                                     
@@ -132,11 +133,53 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     }
                                 </div>
                             </div>
+                            <div className="form__group">
+                                <label htmlFor="legal_status">
+                                    <strong>Ton statut legal de ton entreprise ou de ton post</strong><br />
+                                </label>
+                                { props.statusOptions.map((legal_status) => {
+                                    
+                                    return (<span key={legal_status.key}><input type="radio" name="legal_status"
+                                        value={legal_status.key}
+                                        onChange={handleLegalStatusChange}
+                                        checked={legal_status.key === state.formData.legal_status}
+                                        required/>{legal_status.name}<br/></span>)
 
+                                })}
+                                { !!props.formValidationErrors['legal_statut'] && 
+                                    <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
+                                }
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="tjm">
+                                    <strong>TJM  HT (si tu es indépendant)</strong><br />
+                                    Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
+                                    <input
+                                        onChange={handleTJMChange}
+                                        value={state.formData.tjm || 0}
+                                        id="tjm" name="tjm" type="number" placeholder="TJM  ht en euros"/>
+                                </label>
+                            </div>
+                            <div className="form__group">
+                                <label htmlFor="averageNbOfDays">
+                                    <strong>Nombre de jours moyen travaillés par semaine</strong><br />
+                                        <input
+                                        defaultValue={state.formData.average_nb_of_days || 0}
+                                        id="averageNbOfDays"
+                                        name="average_nb_of_days"
+                                        type="number"
+                                        step="0.5"
+                                        placeholder="Nombre de jours moyen"
+                                        min={0}
+                                        max={5}/>
+                                </label>
+                            </div>
+
+                            <h4>Participe à la carte des membres (non anonyme)</h4>
                             <div className="form__group">
                                 <label htmlFor="workplace_insee_code">
-                                    <strong>Lieu de travail</strong><br />
-                                    Cette information est utilisée pour faire une carte des membres de la communauté 
+                                    <strong>Ton lieu de travail</strong><br />
+                                    Cette information est utilisée pour faire une carte des membres de la communauté et découvrir qui travail dans la même ville
                                     <br></br>
                                     <CitySelect
                                         defaultValue={getDefaultValue()}
@@ -160,47 +203,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                         value={state.formData.osm_city} hidden/>
                                 </label>
                             </div>
-                            <div className="form__group">
-                                <label htmlFor="legal_status">
-                                    <strong>Statut legal de ton entreprise</strong><br />
-                                </label>
-                                { props.statusOptions.map((legal_status) => {
-                                    
-                                    return (<span key={legal_status.key}><input type="radio" name="legal_status"
-                                        value={legal_status.key}
-                                        onChange={handleLegalStatusChange}
-                                        checked={legal_status.key === state.formData.legal_status}
-                                        required/>{legal_status.name}<br/></span>)
-
-                                })}
-                                { !!props.formValidationErrors['legal_statut'] && 
-                                    <p className="text-small text-color-red">{props.formValidationErrors['legal_statut']}</p>
-                                }
-                            </div>
-                            <div className="form__group">
-                                <label htmlFor="tjm">
-                                    <strong>TJM moyen HT (si tu es indépendant)</strong><br />
-                                    Cette information est utilisée uniquement pour faire des statistiques. Elle n'est pas affichée.
-                                    <input
-                                        onChange={handleTJMChange}
-                                        value={state.formData.tjm || 0}
-                                        id="tjm" name="tjm" type="number" placeholder="TJM moyen ht en euros"/>
-                                </label>
-                            </div>
-                            <div className="form__group">
-                                <label htmlFor="averageNbOfDays">
-                                    <strong>Nombre de jours moyen travaillés par semaine</strong><br />
-                                        <input
-                                        defaultValue={state.formData.average_nb_of_days || 0}
-                                        id="averageNbOfDays"
-                                        name="average_nb_of_days"
-                                        type="number"
-                                        step="0.5"
-                                        placeholder="Nombre de jours moyen"
-                                        min={0}
-                                        max={5}/>
-                                </label>
-                            </div>
+                            <h4>Autre</h4>
                             <div className="form__group">
                                 <label htmlFor="secondary_email">
                                     <strong>Email de récupération</strong><br />
@@ -214,7 +217,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
                                 }
                             </div>
-                            <button className="button" type="submit">Changer ces informations</button>
+                            <button className="button" type="submit">Enregistrer</button>
                         </form>
                     </div>
                 </div>
