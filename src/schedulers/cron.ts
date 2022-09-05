@@ -11,7 +11,7 @@ import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from './githubScheduler';
-import { reloadMarrainages, createMarrainages } from './marrainageScheduler';
+import { reloadMarrainages, createMarrainages, checkMarrainageStatus, comsumeMarrainageStatusEvent } from './marrainageScheduler';
 import {
   createUsersByEmail,
   moveUsersToAlumniTeam,
@@ -50,6 +50,33 @@ interface Job {
   start?: boolean;
 }
 
+const marrainageJobs: Job[] = [
+  {
+    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    onTick: reloadMarrainages,
+    isActive: true,
+    name: 'reloadMarrainageJob',
+  },
+  {
+    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
+    onTick: createMarrainages,
+    isActive: true,
+    name: 'createMarrainages',
+  },
+  {
+    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    onTick: checkMarrainageStatus,
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'checkMarrainageStatus',
+  },
+  {
+    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
+    onTick: comsumeMarrainageStatusEvent,
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'comsumeMarrainageStatusEvent',
+  },
+]
+
 const jobs: Job[] = [
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
@@ -81,18 +108,8 @@ const jobs: Job[] = [
     isActive: true,
     name: 'Post event of the week from betagouv calendar',
   },
-  {
-    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
-    onTick: reloadMarrainages,
-    isActive: true,
-    name: 'reloadMarrainageJob',
-  },
-  {
-    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
-    onTick: createMarrainages,
-    isActive: true,
-    name: 'createMarrainages',
-  },
+  //
+  ...marrainageJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
