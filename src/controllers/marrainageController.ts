@@ -9,10 +9,14 @@ import { Member } from '@models/member';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@services/marrainageService';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
+import { sendOnboarderRequestEmail } from '@/modules/marrainage/eventHandlers';
 
-const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.ONBOARDER_IN_LIST
+const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.MARRAINAGE_ONBOARDER_LIST
 const MarrainageService = useNewMarrainage
-   ? new MarrainageServiceWithGroup(config.ONBOARDER_IN_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v()
+   ? new MarrainageServiceWithGroup(config.MARRAINAGE_ONBOARDER_LIST, config.MARRAINAGE_GROUP_LIMIT) : new MarrainageService1v(
+    config.senderEmail,
+    sendOnboarderRequestEmail
+  )
 
 async function getMarrainageTokenData(token) {
   if (!token) {
@@ -43,46 +47,6 @@ async function getMarrainageTokenData(token) {
   };
 }
 
-async function sendOnboarderRequestEmail(newcomer: Member, onboarder: Member) {
-  const token = jwt.sign(
-    {
-      newcomerId: newcomer.id,
-      onboarderId: onboarder.id,
-    },
-    config.secret,
-    { expiresIn: 7 * 24 * 3600 }
-  );
-
-  const marrainageAcceptUrl = `${config.protocol}://${
-    config.host
-  }/marrainage/accept?details=${encodeURIComponent(token)}`;
-  const marrainageDeclineUrl = `${config.protocol}://${
-    config.host
-  }/marrainage/decline?details=${encodeURIComponent(token)}`;
-
-  const startup : string | null = newcomer.startups && newcomer.startups.length > 0 ? newcomer.startups[0] : null;
-
-  const dbOnboarder: DBUser = await knex('users').where({
-    username: onboarder.id
-  }).first()
-  try {
-    const email = dbOnboarder.communication_email === CommunicationEmailCode.SECONDARY && dbOnboarder.secondary_email ? dbOnboarder.secondary_email : dbOnboarder.primary_email
-    return await sendEmail({
-      toEmail: [email],
-      type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL,
-      variables: {
-        newcomer,
-        onboarder,
-        marrainageAcceptUrl,
-        marrainageDeclineUrl,
-        startup,
-      }
-    });
-  } catch (err) {
-    throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
-  }
-}
-
 function redirectOutdatedMarrainage(req, res) {
   req.flash(
     'message',
@@ -99,29 +63,9 @@ export async function reloadMarrainage(newcomerId) {
       `${newcomerId} ne fais pas partie de la communauté beta.gouv`
     );
   }
-
-  const marrainageDetailsReponse = await knex('marrainage')
-    .select()
-    .where({ username: newcomer.id, completed: false });
-
-  if (marrainageDetailsReponse.length !== 1) {
-    throw new Error(
-      "Il n'y a pas de demande de marrainage existant pour cette personne."
-    );
-  }
-  const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
-
-  if (!onboarder) {
-    throw new Error(
-      `Erreur lors de la relance de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`
-    );
-  }
-  console.log(`Select ${onboarder.id} (${onboarder.domaine} for ${newcomer.id} (${newcomer.domaine}))`)
-  await MarrainageService.createMarrainage(newcomer.id, onboarder.id);
-
-  await sendOnboarderRequestEmail(newcomer, onboarder);
+  const onboarder : Member = await (MarrainageService as MarrainageService1v).updateMarrainage(newcomer);
   console.log(
-    `Marrainage relancé pour ${newcomer.id}. Ancien·e marrain·e : ${marrainageDetailsReponse[0].last_onboarder}. Nouvel.le marrain·e : ${onboarder.id}`
+    `Marrainage relancé pour ${newcomer.id}. Nouvel.le marrain·e : ${onboarder.id}`
   );
   return { newcomer, onboarder };
 }
@@ -129,27 +73,7 @@ export async function reloadMarrainage(newcomerId) {
 export async function createRequestForUser(userId) {
   console.log('Creating marrainage request for', userId)
   const newcomer: Member = await BetaGouv.userInfosById(userId);
-  const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
-
-  if (!onboarder) {
-    const recipientEmailList = [config.senderEmail];
-    const errorMessage = "Aucun·e marrain·e n'est disponible pour le moment";
-    await sendEmail({
-      type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
-      toEmail: recipientEmailList,
-      variables: {
-        errorMessage
-      }
-    },
-    );
-    throw new Error(errorMessage);
-  }
-
-  await knex('marrainage').insert({
-    username: newcomer.id,
-    last_onboarder: onboarder.id,
-  });
-  await sendOnboarderRequestEmail(newcomer, onboarder);
+  const onboarder = await MarrainageService.createMarrainage(newcomer.id, newcomer.domaine);
   return {
     newcomer,
     onboarder,
@@ -293,30 +217,6 @@ export async function declineRequest(req, res) {
       );
       return redirectOutdatedMarrainage(req, res);
     }
-
-    const onboarder = await MarrainageService.selectRandomOnboarder(newcomer.id, newcomer.domaine);
-
-    if (!onboarder) {
-      console.log(
-        `Erreur lors du refus de marrainage pour ${newcomer.id} : Aucun·e marrain·e n'est disponible pour le moment.`
-      );
-      req.flash(
-        'error',
-        "Aucun·e autre marrain·e n'est disponible pour le moment"
-      );
-      return res.redirect('/');
-    }
-
-    await knex('marrainage')
-      .where({ username: newcomer.id })
-      .increment('count', 1)
-      .update({ last_onboarder: onboarder.id, last_updated: knex.fn.now() });
-
-    await sendOnboarderRequestEmail(newcomer, onboarder);
-
-    console.log(
-      `Marrainage décliné pour ${newcomer.id}. Ancien·e marrain·e : ${declinedOnboarder.id}. Nouvel.le marrain·e : ${onboarder.id}`
-    );
 
     return res.render('marrainage', { errors: undefined, accepted: false });
   } catch (err) {

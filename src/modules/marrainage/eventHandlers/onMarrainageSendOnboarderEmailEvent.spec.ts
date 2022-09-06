@@ -24,7 +24,7 @@ describe('Test marrainage send onboarder email', () => {
         const email : EmailProps = {
             type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
             variables: {
-                onboarder: {
+                member: {
                     ...member
                 },
                 newcomers: [{

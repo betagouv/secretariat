@@ -11,7 +11,7 @@ import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from './githubScheduler';
-import { reloadMarrainages, createMarrainages } from './marrainageScheduler';
+import { reloadMarrainages, createMarrainages, checkMarrainageStatus, comsumeMarrainageStatusEvent } from './marrainageScheduler';
 import {
   createUsersByEmail,
   moveUsersToAlumniTeam,
@@ -39,6 +39,8 @@ import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
 import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
+import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
+import EventBus from '@/infra/eventBus/eventBus';
 
 interface Job {
   cronTime: string;
@@ -49,6 +51,42 @@ interface Job {
   timeZone?: string;
   start?: boolean;
 }
+
+const marrainageJobs: Job[] = [
+  {
+    cronTime: '0 0 10 * * 1-5',
+    onTick: reloadMarrainages,
+    isActive: true,
+    name: 'reloadMarrainageJob',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: createMarrainages,
+    isActive: true,
+    name: 'createMarrainages',
+  },
+  {
+    cronTime: '0 */6 * * * 1-5',
+    onTick: checkMarrainageStatus,
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'checkMarrainageStatus',
+  },
+  {
+    cronTime: '0 */6 * * * *',
+    onTick: () => comsumeMarrainageStatusEvent(EventBus),
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'comsumeMarrainageStatusEvent',
+  },
+]
+
+const emailJobs: Job[] = [
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: ConsumeEmailEvent,
+    isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
+    name: 'ConsumeEmailEvent'
+  }
+]
 
 const jobs: Job[] = [
   {
@@ -81,18 +119,9 @@ const jobs: Job[] = [
     isActive: true,
     name: 'Post event of the week from betagouv calendar',
   },
-  {
-    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
-    onTick: reloadMarrainages,
-    isActive: true,
-    name: 'reloadMarrainageJob',
-  },
-  {
-    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
-    onTick: createMarrainages,
-    isActive: true,
-    name: 'createMarrainages',
-  },
+  //
+  ...marrainageJobs,
+  ...emailJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
