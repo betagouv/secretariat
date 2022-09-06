@@ -128,7 +128,9 @@ export class MarrainageServiceWithGroup implements MarrainageService {
           primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         }).andWhere('created_at', '>', dateFeatureAdded)
         const marrainages = await knex('marrainage_groups_members').whereIn('username', users.map(user => user.username))
-        return _.differenceWith(users, marrainages, (user, marrainage) => user.username === marrainage.username)
+        const oldMarrainages = await knex('marrainage').whereIn('username', users.map(user => user.username))
+
+        return _.differenceWith(users, [...marrainages, ...oldMarrainages], (user, marrainage) => user.username === marrainage.username)
     }
 
 }
