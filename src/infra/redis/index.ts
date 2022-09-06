@@ -57,24 +57,23 @@ const makeRedisEventBus = ({
       try {
         const resp = await EventQueue.receiveMessageAsync({ qname: eventMessageType, vt: 60 * 15 })
         if (resp.id) {
-          const message = JSON.parse(resp.message)
           try {
+            const message = JSON.parse(resp.message)
             await messageHandler(message)
-          } catch(e) {
-            console.error(`Cannot consumme message for ${eventMessageType} with args ${resp.message}`)
-            return
+            // do lots of processing here
+            // when we are done we can delete it
+            await EventQueue.deleteMessageAsync({ qname: eventMessageType, id: resp.id })
+            console.log("deleted message with id", resp.id);
+          } catch (e) {
+            console.error(`Error while dealing with message ${resp.message} : ${e}`)
           }
-          // do lots of processing here
-          // when we are done we can delete it
-          await EventQueue.deleteMessageAsync({ qname: eventMessageType, id: resp.id })
-          console.log("deleted message with id", resp.id);
         } else {
           console.log("no message in queue");
         }
         return resp.id
       } catch (err) {
         console.error(`queue ${eventMessageType} : ${err}`);
-        return;
+        return
       }
     }
     
