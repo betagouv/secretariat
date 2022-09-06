@@ -66,7 +66,8 @@ const makeRedisEventBus = ({
           try {
             await messageHandler(message)
           } catch(e) {
-            throw new Error(`Cannot consumme message for ${eventMessageType} with args ${resp.message}`)
+            console.error(`Cannot consumme message for ${eventMessageType} with args ${resp.message}`)
+            return
           }
           // do lots of processing here
           // when we are done we can delete it
