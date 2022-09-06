@@ -18,6 +18,10 @@ describe('Marrainage Service test', () => {
   let sendEmailStub;
   let differenceLodashSpy;
 
+  before(async () => {
+    await knex.raw('TRUNCATE TABLE marrainage_groups CASCADE')
+  })
+
   beforeEach((done) => {
     sendEmailStub = sinon
       .stub(controllerUtils, 'sendMail')

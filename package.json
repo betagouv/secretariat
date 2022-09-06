@@ -10,7 +10,7 @@
     "seed": "knex seed:run --esm",
     "rolldown": "knex migrate:down --esm",
     "lint": "eslint . --fix",
-    "test": "NODE_ENV=test ts-mocha  --paths -p tsconfig.json --icu-data-dir=./node_modules/full-icu src/**/*.spec.ts tests/*.ts tests/*.ts --exit --require ./tests/env-setup.ts --timeout 3000",
+    "test": "NODE_ENV=test ts-mocha  --paths -p tsconfig.json --icu-data-dir=./node_modules/full-icu src/**/*.spec.ts tests/*.ts tests/*.ts --exit --require ./tests/env-setup.ts --timeout 5000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "dev": "concurrently \"npm run watch:back\" \"npm run watch:front\"",
