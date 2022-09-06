@@ -113,7 +113,8 @@ describe('Test MARRAINAGE_REQUEST_FAILED', () => {
         const emailBody : string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
             variables: {
-                errorMessage: `Pas de parrain dispo`
+                errorMessage: `Pas de parrain dispo`,
+                userId: 'mathilde.dupont'
             }
         })
         emailBody.should.include(

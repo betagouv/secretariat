@@ -101,7 +101,8 @@ export type MarrainageAcceptOnboarderEmail = {
 export type MarrainageRequestFailed = {
     type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
     variables: {
-        errorMessage: string
+        errorMessage: string,
+        userId: string
     }
 }
 

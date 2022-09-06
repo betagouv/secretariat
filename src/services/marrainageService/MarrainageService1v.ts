@@ -53,7 +53,8 @@ export class MarrainageService1v implements MarrainageService {
               type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED,
               toEmail: recipientEmailList,
               variables: {
-                errorMessage
+                errorMessage,
+                userId: newcomerId
               }
             },
             );
