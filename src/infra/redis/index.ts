@@ -52,31 +52,45 @@ const makeRedisEventBus = ({
           }
       });
     }
-    
-    async function consume(eventMessageType, messageHandler) {
-      // check for new messages on a delay
-      console.log(`Checking for job in queue ${eventMessageType}`);
-      return EventQueue.receiveMessage({ qname: eventMessageType }, async (err, resp) => {
-        if (err) {
-          console.error(`queue ${eventMessageType} : ${err}`);
-          return;
-        }
+
+    async function _consumeLastMessage(eventMessageType, messageHandler) {
+      try {
+        const resp = await EventQueue.receiveMessageAsync({ qname: eventMessageType, vt: 60 * 15 })
         if (resp.id) {
-          const message = JSON.parse(resp.message)
-          await messageHandler(message)
-          // do lots of processing here
-          // when we are done we can delete it
-          EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {
-            if (err) {
-              console.error(err);
-              return;
-            }
+          console.log(`Queue ${eventMessageType} dealing with ${resp.message}`)
+          try {
+            const message = JSON.parse(resp.message)
+            await messageHandler(message)
+            // do lots of processing here
+            // when we are done we can delete it
+            await EventQueue.deleteMessageAsync({ qname: eventMessageType, id: resp.id })
             console.log("deleted message with id", resp.id);
-          });
+          } catch (e) {
+            console.error(`Error while dealing with message ${resp.message} : ${e}`)
+          }
         } else {
           console.log("no message in queue");
         }
-  })};
+        return resp.id
+      } catch (err) {
+        console.error(`queue ${eventMessageType} : ${err}`);
+        return
+      }
+    }
+    
+    async function consume(eventMessageType, messageHandler) {
+      // check for new messages on a delay
+      let newMessage = true
+      let count = 0;
+      console.log(`=== Start checking for jobs in queue ${eventMessageType} ===`);
+      while (newMessage) {
+        newMessage = await _consumeLastMessage(eventMessageType, messageHandler)
+        if (newMessage) {
+          count = count + 1
+        }
+      }
+      console.log(`=== End checking for jobs in queue ${eventMessageType} : ${count} mss ===`);
+    };
 
   const RedisConfig : IEventBus = {
     init: init,

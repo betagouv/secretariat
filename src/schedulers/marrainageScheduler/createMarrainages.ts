@@ -11,8 +11,8 @@ export async function createMarrainages() {
 
   console.log('Demarrage du cron job pour créer les marrainages');
   // before this date not every user had marrainage but we don't need to create for them now
-  const userWithoutMarrainage = await MarrainageService.getUsersWithoutMarrainage()
-  const createMarrainagePromises = await userWithoutMarrainage.map(async (user: DBUser) => {
+  const userWithoutMarrainage : DBUser[] = await MarrainageService.getUsersWithoutMarrainage()
+  for(const user of userWithoutMarrainage) {
     try {
       // create marrainage request
       await createRequestForUser(user.username);
@@ -21,9 +21,6 @@ export async function createMarrainages() {
       // marrainage may fail if no member available
       console.warn(e);
     }
-  })
-
-  return Promise.all(createMarrainagePromises)
-    .then(() => console.log('Cron de création de marrainage terminé'))
-    .catch(console.error);
+  }
+  console.log('Cron de création de marrainage terminé')
 }
