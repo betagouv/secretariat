@@ -10,6 +10,7 @@ export async function comsumeMarrainageStatusEvent(EventBus: IEventBus) {
   console.info('Job: comsumeMarrainageStatusEvent started')
 
   const messageHandler = async ({ marrainage_group_id } : MarrainageCreatedJob) => {
+    console.log(`Message marrainage pour ${marrainage_group_id}`)
     const marrainageGroup : (Pick<MarrainageGroup, "onboarder"> & Pick<MarrainageGroupMember, "username">)[] = await knex('marrainage_groups')
       .where({ id: marrainage_group_id })
       .join('marrainage_groups_members', 'marrainage_groups.id', 'marrainage_groups_members.marrainage_group_id')
