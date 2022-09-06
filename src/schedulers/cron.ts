@@ -54,25 +54,25 @@ interface Job {
 
 const marrainageJobs: Job[] = [
   {
-    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    cronTime: '0 0 10 * * 1-5',
     onTick: reloadMarrainages,
     isActive: true,
     name: 'reloadMarrainageJob',
   },
   {
-    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
+    cronTime: '0 */4 * * * *',
     onTick: createMarrainages,
     isActive: true,
     name: 'createMarrainages',
   },
   {
-    cronTime: '0 0 10 * * 1-5', // monday through friday at 10:00:00
+    cronTime: '0 */6 * * * 1-5',
     onTick: checkMarrainageStatus,
     isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
     name: 'checkMarrainageStatus',
   },
   {
-    cronTime: '0 */4 * * * *', // monday through friday at 10:00:00
+    cronTime: '0 */4 * * * *',
     onTick: async () => {
       return comsumeMarrainageStatusEvent(EventBus)
     },
