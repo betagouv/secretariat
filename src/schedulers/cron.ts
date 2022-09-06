@@ -73,9 +73,7 @@ const marrainageJobs: Job[] = [
   },
   {
     cronTime: '0 */4 * * * *',
-    onTick: async () => {
-      return comsumeMarrainageStatusEvent(EventBus)
-    },
+    onTick: () => comsumeMarrainageStatusEvent(EventBus),
     isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
     name: 'comsumeMarrainageStatusEvent',
   },
