@@ -72,7 +72,7 @@ const marrainageJobs: Job[] = [
     name: 'checkMarrainageStatus',
   },
   {
-    cronTime: '0 */4 * * * *',
+    cronTime: '0 */6 * * * *',
     onTick: () => comsumeMarrainageStatusEvent(EventBus),
     isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
     name: 'comsumeMarrainageStatusEvent',
