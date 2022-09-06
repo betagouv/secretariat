@@ -52,10 +52,8 @@ const makeRedisEventBus = ({
           }
       });
     }
-    
-    async function consume(eventMessageType, messageHandler) {
-      // check for new messages on a delay
-      console.log(`Checking for job in queue ${eventMessageType}`);
+
+    async function _consumeLastMessage(eventMessageType, messageHandler) {
       try {
         const resp = await EventQueue.receiveMessageAsync({ qname: eventMessageType, vt: 60 * 15 })
         if (resp.id) {
@@ -77,6 +75,15 @@ const makeRedisEventBus = ({
       } catch (err) {
         console.error(`queue ${eventMessageType} : ${err}`);
         return;
+      }
+    }
+    
+    async function consume(eventMessageType, messageHandler) {
+      // check for new messages on a delay
+      let newMessage = true
+      while (newMessage) {
+        console.log(`Checking for jobs in queue ${eventMessageType}`);
+        newMessage = await _consumeLastMessage(eventMessageType, messageHandler)
       }
     };
 
