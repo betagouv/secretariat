@@ -54,12 +54,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
   }
 }
 
-export async function saveToken(username, token) {
-  const email = await knex('users').where({
-    username
-  }).then(dbResponse => {
-    return dbResponse[0].primary_email
-  });
+export async function saveToken(username: string, token: string, email: string) {
   try {
     const expirationDate = new Date();
     expirationDate.setHours(expirationDate.getHours() + 1);
@@ -127,7 +122,7 @@ export async function postLogin(req, res) {
     }
     loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
     await sendLoginEmail(emailInput, username, loginUrl.toString());
-    await saveToken(username, token);
+    await saveToken(username, token, emailInput);
 
     return renderLogin(req, res, {
       messages: req.flash(
