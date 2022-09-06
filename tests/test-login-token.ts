@@ -110,6 +110,48 @@ describe('Login token', () => {
     res2.should.not.have.cookie('token');
   });
 
+  it('should work if user has no primary_email', async () => {
+
+    const userEmail = `membre.actif@email.toto`;
+
+    await db('users').insert({
+      primary_email: null,
+      secondary_email: userEmail,
+      username: 'membre.nouveau',
+      primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING
+    }).onConflict('username').merge()
+    
+    // Make a login request to generate a token
+    await chai.request(app)
+      .post('/login')
+      .type('form')
+      .send({
+        emailInput: userEmail,
+      })
+
+      // Extract token from the DB
+    const token = await knex('login_tokens').select().where({ email: userEmail }).then((dbRes) => dbRes[0].token)
+      // Use the token making a GET request
+    await chai.request(app).get(`/signin?next=users&token=${encodeURIComponent(token)}`)
+    await chai.request(app).post(`/signin`)
+    .type('form')
+    .send({
+      next: '/community',
+      token: encodeURIComponent(token)
+    })
+    const dbRes = await knex('login_tokens').select().where({ email: userEmail })
+    dbRes.length.should.equal(0);
+
+    await db('users').update({
+      primary_email: `membre.nouveau@${config.domain}`,
+      secondary_email: null,
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
+    }).where({
+      username: 'membre.nouveau'
+    })
+  });
+
+
   it('should not be used if expired', async () => {
     // Create expired token
     const userEmail = `membre.actif@${config.domain}`;
