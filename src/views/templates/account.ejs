@@ -14,11 +14,11 @@
     <div class="row">
         <div class="panel panel-full-width">
             <h3>
-                Mon compte
+                Mon compte beta.gouv
             </h3>
             <div class="account-split-panel">
                 <div style="width: 45%">
-                    <h6>Info sur ma fiche github</h6>
+                    <h6>Mes infos</h6>
                     <% if (userInfos) { %>
                         <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
                     <% } %>
@@ -105,7 +105,7 @@
         <!-- </div>
         <div class="panel panel-partial-width margin-top-0"> -->
             <div style="width: 45%">
-                <h6>Info en base de données</h6>
+                <h6>Observatoire de la Communauté</h6>
                 <p>
                     <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
                 </p>
@@ -122,7 +122,7 @@
                 <p>
                     <span class="font-weight-bold">Statut Legal : </span><nobr><%= legal_status || 'Non renseigné' %></nobr>
                 </p>
-                <a href="/account/info">Mettre à jour mes infos en base de données</a>
+                <a class="button" href="/account/info">Participer</a>  <a class="button secondary" target="_blank" href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5">Consulter</a>
                 <br/>
                 <br/>
             </div>

@@ -26,43 +26,43 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                         <li>
                             <a href="/account" id="account" 
                                 className={`nav-item ${props.activeTab === 'account' ? 'active' : ''}`}>
-                                Mon compte
+                                🔓 Mon compte
                             </a>
                         </li>
                         <li>
                             <a href="/community" id="community"
                                 className={`nav-item ${props.activeTab === 'community' ? 'active' : ''}`}>
-                                Communauté
+                                <img src="/static/favicon/favicon-16x16.png" /> Communauté
                             </a>
                         </li>
                         <li>
                             <a href="/startups" id="startups"
                                 className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
-                                Startups
+                                🚀 Startups
                             </a>
                         </li>
                         <li>
                             <a href="/admin" id="admin" 
                                 className={`nav-item ${props.activeTab === 'administration' ? 'active' : ''}`}>
-                                Administration
+                                ⚙️ Administration
                             </a>
                         </li>
                         <li>
                             <a href="/newsletters" id="newsletter" 
                                 className={`nav-item ${props.activeTab === 'newsletter' ? 'active' : ''}`}>
-                                Infolettres internes
+                                ✉️ Infolettres internes
                             </a>
                         </li>
                         <li>
                             <a href="/resources" id="resources"
                                 className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>
-                                Ressources
+                                📕 Ressources
                             </a>
                         </li>
                         <li>
                             <a href="/map" id="map" 
                                 className={`nav-item ${props.activeTab === 'map' ? 'active' : ''}`}>
-                                Carte des membres
+                                📍 Carte des membres
                             </a>
                         </li>
                         <li className="nav-end">
