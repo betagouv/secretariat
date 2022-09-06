@@ -57,6 +57,7 @@ const makeRedisEventBus = ({
       try {
         const resp = await EventQueue.receiveMessageAsync({ qname: eventMessageType, vt: 60 * 15 })
         if (resp.id) {
+          console.log(`Queue ${eventMessageType} dealing with ${resp.message}`)
           try {
             const message = JSON.parse(resp.message)
             await messageHandler(message)
@@ -80,10 +81,15 @@ const makeRedisEventBus = ({
     async function consume(eventMessageType, messageHandler) {
       // check for new messages on a delay
       let newMessage = true
+      let count = 0;
+      console.log(`=== Start checking for jobs in queue ${eventMessageType} ===`);
       while (newMessage) {
-        console.log(`Checking for jobs in queue ${eventMessageType}`);
         newMessage = await _consumeLastMessage(eventMessageType, messageHandler)
+        if (newMessage) {
+          count = count + 1
+        }
       }
+      console.log(`=== End checking for jobs in queue ${eventMessageType} : ${count} mss ===`);
     };
 
   const RedisConfig : IEventBus = {
