@@ -62,9 +62,7 @@ const makeRedisEventBus = ({
           return;
         }
         if (resp.id) {
-          console.log('Job value message is', resp.message)
           const message = JSON.parse(resp.message)
-          console.log('Job value message is', message)
           await messageHandler(message)
           // do lots of processing here
           // when we are done we can delete it
