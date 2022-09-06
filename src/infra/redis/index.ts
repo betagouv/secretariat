@@ -56,11 +56,8 @@ const makeRedisEventBus = ({
     async function consume(eventMessageType, messageHandler) {
       // check for new messages on a delay
       console.log(`Checking for job in queue ${eventMessageType}`);
-      return EventQueue.receiveMessage({ qname: eventMessageType }, async (err, resp) => {
-        if (err) {
-          console.error(`queue ${eventMessageType} : ${err}`);
-          return;
-        }
+      try {
+        const resp = await EventQueue.receiveMessageAsync({ qname: eventMessageType, vt: 60 * 15 })
         if (resp.id) {
           const message = JSON.parse(resp.message)
           try {
@@ -71,17 +68,17 @@ const makeRedisEventBus = ({
           }
           // do lots of processing here
           // when we are done we can delete it
-          EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {
-            if (err) {
-              console.error(err);
-              return;
-            }
-            console.log("deleted message with id", resp.id);
-          });
+          await EventQueue.deleteMessageAsync({ qname: eventMessageType, id: resp.id })
+          console.log("deleted message with id", resp.id);
         } else {
           console.log("no message in queue");
         }
-  })};
+        return resp.id
+      } catch (err) {
+        console.error(`queue ${eventMessageType} : ${err}`);
+        return;
+      }
+    };
 
   const RedisConfig : IEventBus = {
     init: init,
