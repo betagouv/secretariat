@@ -63,7 +63,11 @@ const makeRedisEventBus = ({
         }
         if (resp.id) {
           const message = JSON.parse(resp.message)
-          await messageHandler(message)
+          try {
+            await messageHandler(message)
+          } catch(e) {
+            throw new Error(`Cannot consumme message for ${eventMessageType} with args ${resp.message}`)
+          }
           // do lots of processing here
           // when we are done we can delete it
           EventQueue.deleteMessage({ qname: eventMessageType, id: resp.id }, (err) => {
