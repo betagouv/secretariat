@@ -24,6 +24,8 @@ const countNumberOfMarrainage = (onboarders) => {
     })
 }
 
+const sortAscending = function(a, b){return a.count-b.count}
+
 export class MarrainageServiceWithGroup implements MarrainageService {
     users: string[];
     MARRAINAGE_GROUP_LIMIT: number;
@@ -54,7 +56,8 @@ export class MarrainageServiceWithGroup implements MarrainageService {
             const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             const userInfos : Member[] = await betagouv.usersInfos()
             const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
-            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(function(a, b){return a.count-b.count})
+            // we take the onboarder with less marrainages
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(sortAscending)
             onboarder = sortedOnboarder[0].onboarder
         }
         return onboarder
