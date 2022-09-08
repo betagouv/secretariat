@@ -1,11 +1,13 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import nock from 'nock';
 import app from '@/index';
 import utils from './utils';
 
 chai.use(chaiHttp);
 
 describe('Resource', () => {
+
   describe('GET /resources unauthenticated', () => {
     it('should redirect to login', (done) => {
       chai.request(app)
