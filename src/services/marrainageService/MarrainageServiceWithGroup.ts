@@ -42,8 +42,10 @@ export class MarrainageServiceWithGroup implements MarrainageService {
 
     async selectRandomOnboarder() : Promise<Member> {
         let pendingMarrainageGroup: MarrainageGroup = await knex('marrainage_groups').where({
-            status: MarrainageGroupStatus.PENDING
-        }).first()
+            status: MarrainageGroupStatus.PENDING,
+        })
+        .where('count', '<', this.MARRAINAGE_GROUP_LIMIT)
+        .first()
         let onboarder : Member
         if (pendingMarrainageGroup) {
             onboarder = await betagouv.userInfosById(pendingMarrainageGroup.onboarder)
