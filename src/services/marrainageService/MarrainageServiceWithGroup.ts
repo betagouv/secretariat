@@ -9,20 +9,21 @@ import { MarrainageService } from ".";
 
 const countNumberOfMarrainage = (onboarders) => {
     const count = {};
-    for (const  onboarder of onboarders) {
-        if (count[ onboarder]) {
-          count[ onboarder] += 1;
+    for (const onboarder of onboarders) {
+        if (onboarder in count) {
+          count[onboarder] += 1;
         } else {
           count[onboarder] = 0;
         }
     }
-    return onboarders.map(onboarder => {
-        return {
-            onboarder,
-            count: count[onboarder]
-        }
-    })
+    const onboarderKeys = Object.keys(count)
+    return onboarderKeys.map(onboarder => ({
+        onboarder,
+        count: count[onboarder]
+    }))
 }
+
+const sortAscending = function(a, b){return a.count-b.count}
 
 export class MarrainageServiceWithGroup implements MarrainageService {
     users: string[];
@@ -41,29 +42,28 @@ export class MarrainageServiceWithGroup implements MarrainageService {
 
     async selectRandomOnboarder() : Promise<Member> {
         let pendingMarrainageGroup: MarrainageGroup = await knex('marrainage_groups').where({
-            status: MarrainageGroupStatus.PENDING
-        }).first()
+            status: MarrainageGroupStatus.PENDING,
+        })
+        .where('count', '<', this.MARRAINAGE_GROUP_LIMIT)
+        .first()
         let onboarder : Member
         if (pendingMarrainageGroup) {
             onboarder = await betagouv.userInfosById(pendingMarrainageGroup.onboarder)
         } else {
-            const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups').whereNotIn('status', [
-                MarrainageGroupStatus.DOING,
-                MarrainageGroupStatus.DONE,
-            ])
-            const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
-            const userInfos : Member[] = await betagouv.usersInfos()
-            const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
-            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(function(a, b){return a.count-b.count})
-            onboarder = sortedOnboarder[0].onboarder
+            const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups')
+            const onboarders : string[] = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
+            // we take the onboarder with less marrainages
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(sortAscending)
+            onboarder = await betagouv.userInfosById(sortedOnboarder[0].onboarder)
         }
         return onboarder
     }
 
     async createMarrainage(newcomerId) : Promise<Member> {
-        const onboarder : Member = await this.selectRandomOnboarder()
-        const onboarderId = onboarder.id
+        let onboarder : Member
         await knex.transaction(async (trx) => {
+            onboarder = await this.selectRandomOnboarder()
+            const onboarderId = onboarder.id
             let marrainage_group = await trx('marrainage_groups')
                 .where({
                     onboarder: onboarderId,
