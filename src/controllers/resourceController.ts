@@ -1,10 +1,15 @@
+import { getAllChannels } from "@/lib/mattermost";
 import config from "@config";
 
-export function getResources(req, res) {
+export async function getResources(req, res) {
+
+  const channels = await getAllChannels()
+
   res.render('resource', {
     title: 'Ressources',
     activeTab: 'resources',
     currentUserId: req.auth.id,
+    channels,
     errors: req.flash('error'),
     messages: req.flash('message'),
     investigationReportsIframeURL: config.investigationReportsIframeURL,

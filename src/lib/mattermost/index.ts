@@ -224,3 +224,4 @@ export const getMattermostConfig = () => {
 
 export * from './getActiveMattermostUsers'
 export * from './getMattermostUsersStatus'
+export * from './getAllChannels'
