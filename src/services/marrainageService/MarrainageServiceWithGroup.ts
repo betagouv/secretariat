@@ -9,9 +9,9 @@ import { MarrainageService } from ".";
 
 const countNumberOfMarrainage = (onboarders) => {
     const count = {};
-    for (const  onboarder of onboarders) {
-        if (count[ onboarder]) {
-          count[ onboarder] += 1;
+    for (const onboarder of onboarders) {
+        if (count[onboarder]) {
+          count[onboarder] += 1;
         } else {
           count[onboarder] = 0;
         }
@@ -53,13 +53,11 @@ export class MarrainageServiceWithGroup implements MarrainageService {
                 MarrainageGroupStatus.DOING,
                 MarrainageGroupStatus.DONE,
             ])
-            const onboarders = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
-            const userInfos : Member[] = await betagouv.usersInfos()
-            const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
+            const onboarders : string[] = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             // we take the onboarder with less marrainages
-            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(sortAscending)
+            const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(sortAscending)
             console.log('-- ONBOARDER LIST --', sortedOnboarder)
-            onboarder = sortedOnboarder[0].onboarder
+            onboarder = await betagouv.userInfosById(sortedOnboarder[0].onboarder)
         }
         return onboarder
     }
