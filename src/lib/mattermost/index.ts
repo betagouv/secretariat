@@ -143,28 +143,6 @@ export async function getInactiveMattermostUsers(params = {}, i = 0) {
   return [...mattermostUsers, ...nextPageMattermostUsers];
 }
 
-export async function getAllChannels(params = {}, i = 0) {
-  const mattermostUsers = await axios
-    .get(`${config.mattermostURL}/api/v4/channels`, {
-      params: {
-        ...params,
-        per_page: 200,
-        page: i,
-        inactive: true,
-      },
-      ...getMattermostConfig(),
-    })
-    .then((response) => response.data);
-  if (!mattermostUsers.length) {
-    return [];
-  }
-  const nextPageMattermostUsers = await getInactiveMattermostUsers(
-    params,
-    i + 1
-  );
-  return [...mattermostUsers, ...nextPageMattermostUsers];
-}
-
 export async function activeUsers(userId) {
   try {
     const payload = { active: true };
@@ -246,3 +224,4 @@ export const getMattermostConfig = () => {
 
 export * from './getActiveMattermostUsers'
 export * from './getMattermostUsersStatus'
+export * from './getAllChannels'
