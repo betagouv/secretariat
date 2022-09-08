@@ -10,18 +10,17 @@ import { MarrainageService } from ".";
 const countNumberOfMarrainage = (onboarders) => {
     const count = {};
     for (const onboarder of onboarders) {
-        if (count[onboarder]) {
+        if (onboarder in count) {
           count[onboarder] += 1;
         } else {
           count[onboarder] = 0;
         }
     }
-    return onboarders.map(onboarder => {
-        return {
-            onboarder,
-            count: count[onboarder]
-        }
-    })
+    const onboarderKeys = Object.keys(count)
+    return onboarderKeys.map(onboarder => ({
+        onboarder,
+        count: count[onboarder]
+    }))
 }
 
 const sortAscending = function(a, b){return a.count-b.count}
@@ -53,7 +52,6 @@ export class MarrainageServiceWithGroup implements MarrainageService {
             const onboarders : string[] = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             // we take the onboarder with less marrainages
             const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(sortAscending)
-            console.log('-- ONBOARDER LIST --', sortedOnboarder)
             onboarder = await betagouv.userInfosById(sortedOnboarder[0].onboarder)
         }
         return onboarder
