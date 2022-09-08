@@ -49,10 +49,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         if (pendingMarrainageGroup) {
             onboarder = await betagouv.userInfosById(pendingMarrainageGroup.onboarder)
         } else {
-            const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups').whereNotIn('status', [
-                MarrainageGroupStatus.DOING,
-                MarrainageGroupStatus.DONE,
-            ])
+            const marrainageGroups : MarrainageGroup[] = await knex('marrainage_groups')
             const onboarders : string[] = marrainageGroups.map(marrainageGroup => marrainageGroup.onboarder)
             // we take the onboarder with less marrainages
             const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...this.users]).sort(sortAscending)
