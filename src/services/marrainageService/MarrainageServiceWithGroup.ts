@@ -58,6 +58,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
             const users : Member[] = this.users.map(id => userInfos.find(user => user.id === id))
             // we take the onboarder with less marrainages
             const sortedOnboarder = countNumberOfMarrainage([...onboarders, ...users]).sort(sortAscending)
+            console.log('-- ONBOARDER LIST --', sortedOnboarder)
             onboarder = sortedOnboarder[0].onboarder
         }
         return onboarder
