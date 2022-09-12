@@ -103,8 +103,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
 
                         <div className="beta-banner"></div>
                         <form action="/account/info" method="POST">
-                            <h4>Participer à notre observatoire statisique </h4>
-                            ⚠️ À aucun moment nous n'afficherons vos nom ou prénom.
+                            <h4>Participez à notre observatoire statisique </h4>
+                            ⚠️ À aucun moment nous n'afficherons vos nom et prénom.
                             <div className="form__group">
                                 <p>
                                     
