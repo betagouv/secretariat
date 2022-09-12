@@ -3,7 +3,7 @@ import config from "@config";
 
 export async function getResources(req, res) {
 
-  const channels = await getAllChannels(config.mattermostTeamId)
+  const channels = await getAllChannels()
 
   res.render('resource', {
     title: 'Ressources',

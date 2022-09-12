@@ -2,14 +2,10 @@ import config from "@/config";
 import axios from "axios";
 import { getMattermostConfig } from ".";
 
-export async function getAllChannels(i = 0) {
+export async function getAllChannels() {
   try {
     const mattermostChannels = await axios
       .get(`${config.mattermostURL}/api/v4/channels/`, {
-        params: {
-          per_page: 200,
-          page: i
-        },
         ...getMattermostConfig(),
       })
       .then((response) => response.data);
