@@ -2,13 +2,13 @@ import config from "@/config";
 import axios from "axios";
 import { getMattermostConfig } from ".";
 
-export async function getAllChannels(teamId : string, i : number = 0) {
+export async function getAllChannels(i = 0) {
+  try {
     const mattermostChannels = await axios
-      .get(`${config.mattermostURL}/api/v4/sharedchannels/${teamId}`, {
+      .get(`${config.mattermostURL}/api/v4/channels/`, {
         params: {
           per_page: 200,
-          page: i,
-          team_id: teamId
+          page: i
         },
         ...getMattermostConfig(),
       })
@@ -16,11 +16,11 @@ export async function getAllChannels(teamId : string, i : number = 0) {
     if (!mattermostChannels.length) {
       return [];
     }
-    const nextPageMattermostChannels = await getAllChannels(
-      teamId,
-      i + 1
-    );
-    return [...mattermostChannels, ...nextPageMattermostChannels];
+    return mattermostChannels
+    } catch(e) {
+      console.log(`Mattermost : Errors while gettings channels ${e}`)
+      return []
+    }
   }
 
   
