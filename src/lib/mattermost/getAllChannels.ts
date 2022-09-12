@@ -7,7 +7,8 @@ export async function getAllChannels(teamId : string, i : number = 0) {
       .get(`${config.mattermostURL}/api/v4/sharedchannels/${teamId}`, {
         params: {
           per_page: 200,
-          page: i
+          page: i,
+          team_id: teamId
         },
         ...getMattermostConfig(),
       })
