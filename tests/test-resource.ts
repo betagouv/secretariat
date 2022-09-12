@@ -25,7 +25,7 @@ describe('Resource', () => {
   describe('GET /resources authenticated', () => {
     it('should return a valid page', (done) => {
       nock(/.*mattermost.incubateur.net/)
-      .get(/^.*api\/v4\/channels.*/)
+      .get(/^.*api\/v4\/sharedchannels.*/)
       .reply(200, [
         {
           id: 265695,
@@ -37,7 +37,7 @@ describe('Resource', () => {
         },
       ])
       nock(/.*mattermost.incubateur.net/)
-      .get(/^.*api\/v4\/channels.*/)
+      .get(/^.*api\/v4\/sharedchannels.*/)
       .reply(200, [
       ])
       chai.request(app)
