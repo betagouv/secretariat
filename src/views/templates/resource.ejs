@@ -22,9 +22,8 @@
                     <thead>
                         <tr>
                             <th>Nom du Canal</th>
-                            <th>Nom affiché</th>
                             <th>But du Canal</th>
-                            <th>Dernier message le</th>
+                            <th>Date Dernier message</th>
                             <th>Nb messages</th>
                         </tr>
                     </thead>
@@ -32,7 +31,6 @@
                         <% channels.forEach(function(channel) { %>
                             <tr>
                                 <td><a href="https://mattermost.incubateur.net/betagouv/channels/<%= channel.name %>">~<%= channel.name %></a></td>
-                                <td><%= channel.display_name %></td>
                                 <td><%= channel.purpose %></td>
                                 <td><%= channel.last_post_at %></td>
                                 <td><%= channel.total_msg_count %></td>
