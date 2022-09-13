@@ -1,10 +1,14 @@
 import { getAllChannels } from "@/lib/mattermost";
 import config from "@config";
+import { formatDateToReadableFormat } from "./utils";
 
 export async function getResources(req, res) {
 
-  const channels = await getAllChannels(config.mattermostTeamId)
-
+  let channels = await getAllChannels(config.mattermostTeamId) 
+  channels = channels.map(channel => ({
+    ...channel,
+    last_post_at: `le ${formatDateToReadableFormat(new Date(channel.last_post_at))}`
+  }))
   res.render('resource', {
     title: 'Ressources',
     activeTab: 'resources',
