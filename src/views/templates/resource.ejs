@@ -34,7 +34,7 @@
                         <% channels.forEach(function(channel) { %>
                             <tr>
                                 <td><a href="https://mattermost.incubateur.net/betagouv/channels/<%= channel.name %>">~<%= channel.display_name %></a></td>
-                                <td><%= channel.purpose %></td>
+                                <td><%= channel.purpose %> <%= channel.header %></td>
                                 <td><%= channel.last_post_at %></td>
                                 <td><%= channel.total_msg_count %></td>
 
