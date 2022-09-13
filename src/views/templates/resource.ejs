@@ -1,10 +1,50 @@
 <%- include('partials/nav-header'); -%>
 
 <link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<link rel="stylesheet" media="screen,print" href='/static/sortable/sortable.css'>
+<script src="/static/sortable/sortable.js"></script>
 <script src="/static/collapse/collapse.js"></script>
+<style media="screen">
+  .panel { overflow: scroll; }
+</style>
 
 <div class="module">
+    <div class="panel panel-full-width">
+        <div class="collapse">
+            <h6 class="margin-10-0 collapse-header">
+                <button aria-expanded="true">
+                    Canaux Mattermost
+                    <div class="icon fa fa-chevron-up"></div>
+                </button>
+            </h6>
+            <div>
+                <table class="sortable">
+                    <thead>
+                        <tr>
+                            <th>Nom du Canal</th>
+                            <th>Nom affiché</th>
+                            <th>But du Canal</th>
+                            <th>Dernier message le</th>
+                            <th>Nb messages</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% channels.forEach(function(channel) { %>
+                            <tr>
+                                <td><a href="https://mattermost.incubateur.net/betagouv/channels/<%= channel.name %>">~<%= channel.name %></a></td>
+                                <td><%= channel.display_name %></td>
+                                <td><%= channel.purpose %></td>
+                                <td><%= channel.last_post_at %></td>
+                                <td><%= channel.total_msg_count %></td>
 
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+                <hr />
+            </div>
+        </div>
+    </div>
     <div class="panel panel-full-width">
         <h3>
             Ressources
@@ -33,12 +73,11 @@
                 <% } %>
             </div>
         </div>
-
-
     </div>
 
 </div>
 <%- include('partials/nav-footer'); -%>
 <script>
-    var channels = <%= channels %>
+    var channels = <%- JSON.stringify(channels) %>; // test is now a valid js object
+    console.log(channels)
 </script>
