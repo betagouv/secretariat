@@ -62,7 +62,7 @@ const marrainageJobs: Job[] = [
   {
     cronTime: '0 */2 * * * *',
     onTick: createMarrainages,
-    isActive: config.FEATURE_CREATE_MARRAINAGE,
+    isActive: !!config.FEATURE_CREATE_MARRAINAGE,
     name: 'createMarrainages',
   },
   {
