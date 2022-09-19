@@ -209,8 +209,8 @@ describe('invite users to mattermost', () => {
     mattermostCreateUser.calledOnce.should.be.true;
     sendEmailStub.calledOnce.should.be.true;
     sendEmailStub.restore();
-    mattermostCreateUser.get.firstCall.args[0].email.should.equal(`mattermost.newuser@${config.domain}`);
-    mattermostCreateUser.get.firstCall.args[0].username.should.equal('mattermost.newuser');
+    mattermostCreateUser.firstCall.args[0].email.should.equal(`mattermost.newuser@${config.domain}`);
+    mattermostCreateUser.firstCall.args[0].username.should.equal('mattermost.newuser');
   });
 });
 
