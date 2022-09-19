@@ -203,20 +203,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                         value={state.formData.osm_city} hidden/>
                                 </label>
                             </div>
-                            <h4>Autre</h4>
-                            <div className="form__group">
-                                <label htmlFor="secondary_email">
-                                    <strong>Email de récupération</strong><br />
-                                    L'email de récupération est utile pour récupérer son mot de passe ou garder contact après ton départ.
-                                    <input
-                                        onChange={handleSecondaryEmail}
-                                        value={state.formData.secondary_email || ''}
-                                        id="secondary_email" name="secondary_email" type="email" placeholder="un email de recupération"/>
-                                </label>
-                                { !!props.formValidationErrors['secondary_email'] &&
-                                    <p className="text-small text-color-red">{props.formValidationErrors['secondary_email']}</p>
-                                }
-                            </div>
                             <button className="button" type="submit">Enregistrer</button>
                         </form>
                     </div>

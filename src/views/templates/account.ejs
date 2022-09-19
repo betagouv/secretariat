@@ -44,7 +44,9 @@
                             <% } %>
                         </p>
                     <% } %>
-
+                    <p>
+                        <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
+                    </p>
                 <div class="collapse">
                     <h6 class="margin-10-0 collapse-header">
                         <button aria-expanded="false" id="update-end-date">
@@ -108,9 +110,6 @@
                 <h6>Observatoire de la Communauté</h6>
                 <p>
                     <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
-                </p>
-                <p>
-                    <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
                 </p>
                 <p>
                     <span class="font-weight-bold">Genre : </span> <%= gender || 'Non renseigné' %>
