@@ -69,7 +69,7 @@ export default {
   mattermostAlumniTeamId:
     process.env.MATTERMOST_ALUMNI_TEAM_ID || 'testalumniteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
-  mattermostInviteId: process.env.MATTERMOST_INVITE_ID,
+  MATTERMOST_INVITE_ID: process.env.MATTERMOST_INVITE_ID,
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',

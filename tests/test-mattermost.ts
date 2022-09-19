@@ -53,6 +53,15 @@ describe('invite users to mattermost', () => {
       );
 
     nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/teams.*/)
+    .reply(
+      200,
+      {
+        invite_id: 'uninviteid'
+      }
+    ).persist();
+
+    nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
       .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
@@ -113,12 +122,22 @@ describe('invite users to mattermost', () => {
       primary_email_status_updated_at: new Date()
     })
 
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/teams.*/)
+    .reply(
+      200,
+      {
+        invite_id: 'uninviteid'
+      }
+    ).persist();
+
     nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)
       .reply(
         200,
         testUsers.map((user) => user.id)
       );
+
 
     nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
@@ -155,6 +174,15 @@ describe('invite users to mattermost', () => {
         testUsers.map((user) => user.id)
       );
 
+      nock(/.*mattermost.incubateur.net/)
+      .get(/^.*api\/v4\/teams.*/)
+      .reply(
+        200,
+        {
+          invite_id: 'uninviteid'
+        }
+      ).persist();  
+
     nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
       .reply(200, [...mattermostUsers]);
@@ -181,8 +209,8 @@ describe('invite users to mattermost', () => {
     mattermostCreateUser.calledOnce.should.be.true;
     sendEmailStub.calledOnce.should.be.true;
     sendEmailStub.restore();
-    mattermostCreateUser.firstCall.args[0].email = `mattermost.newuser@${config.domain}`;
-    mattermostCreateUser.firstCall.args[0].username = 'mattermost.newuser';
+    mattermostCreateUser.firstCall.args[0].email.should.equal(`mattermost.newuser@${config.domain}`);
+    mattermostCreateUser.firstCall.args[0].username.should.equal('mattermost.newuser');
   });
 });
 

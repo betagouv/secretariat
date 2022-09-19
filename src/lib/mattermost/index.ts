@@ -1,3 +1,4 @@
+import { getMattermostConfig } from '@/config/mattermost.config';
 import config from '@config';
 import axios from 'axios';
 
@@ -158,33 +159,6 @@ export async function activeUsers(userId) {
   }
 }
 
-export async function createUser({ email, username, password }, teamId = null) {
-  if (!config.mattermostInviteId) {
-    const errorMessage =
-      'Unable to launch createUser without env var mattermostInviteId';
-    console.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-  let res;
-  try {
-    res = await axios
-      .post(
-        `${config.mattermostURL}/api/v4/users?iid=${config.mattermostInviteId}`,
-        {
-          email,
-          username,
-          password,
-        },
-        getMattermostConfig()
-      )
-      .then((response) => response.data);
-  } catch (err) {
-    throw new Error(`Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`)
-  }
-  console.log("Ajout de l'utilisateur", email, username);
-  return res;
-}
-
 export async function changeUserEmail(id: string, email: string) {
   try {
     const res: MattermostUser = await axios
@@ -207,21 +181,34 @@ export async function changeUserEmail(id: string, email: string) {
   }
 }
 
-
-export const getMattermostConfig = () => {
-  if (!config.mattermostBotToken) {
+export const createUser = async function createUser({ email, username, password }, inviteId) {
+  if (!inviteId) {
     const errorMessage =
-      'Unable to launch mattermost api calls without env var mattermostBotToken';
+      'Unable to launch createUser without env var MATTERMOST_INVITE_ID';
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
-  return {
-    headers: {
-      Authorization: `Bearer ${config.mattermostBotToken}`,
-    },
-  };
-};
+  let res;
+  try {
+    res = await axios
+      .post(
+        `${config.mattermostURL}/api/v4/users?iid=${inviteId}`,
+        {
+          email,
+          username,
+          password,
+        },
+        getMattermostConfig()
+      )
+      .then((response) => response.data);
+  } catch (err) {
+    throw new Error(`Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`)
+  }
+  console.log("Ajout de l'utilisateur", email, username);
+  return res;
+}
 
 export * from './getActiveMattermostUsers'
 export * from './getMattermostUsersStatus'
 export * from './getAllChannels'
+export * from './getTeam'
