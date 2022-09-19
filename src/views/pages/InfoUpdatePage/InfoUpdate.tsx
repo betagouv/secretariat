@@ -70,11 +70,6 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
         changeFormData('tjm', e.currentTarget.value)
     }
 
-    const handleSecondaryEmail = (e) => {
-        changeFormData('secondary_email', e.currentTarget.value)
-
-    }
-
     const handleCitySelect = (newValue) => {
         if (newValue.isOSM) {
             changeFormData('osm_city', JSON.stringify(newValue))
