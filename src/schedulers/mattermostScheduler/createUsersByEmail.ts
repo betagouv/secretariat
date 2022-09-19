@@ -4,6 +4,7 @@ import { EMAIL_TYPES } from "@/modules/email";
 import * as mattermost from '@/lib/mattermost';
 import { sendEmail } from '@/config/email.config';
 import { getActiveGithubUsersUnregisteredOnMattermost } from '.';
+import config from '@/config';
 
 export async function createUsersByEmail() {
     let activeGithubUsersUnregisteredOnMattermost : MemberWithPrimaryEmail[] =
@@ -14,6 +15,7 @@ export async function createUsersByEmail() {
         // filter user that have have been created after implementation of this function
         return userStartDate >= new Date('2021-07-08').getTime();
       });
+    const mattermostTeam : { invite_id: string } = await mattermost.getTeam(config.mattermostTeamId)
     const results = await Promise.all(
       activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
         const email = user.primary_email;
@@ -24,7 +26,9 @@ export async function createUsersByEmail() {
             username: user.id,
             // mattermost spec : password must contain at least 20 characters
             password,
-          });
+          },
+            mattermostTeam.invite_id
+          );
   
           await sendEmail({
             toEmail: [email],

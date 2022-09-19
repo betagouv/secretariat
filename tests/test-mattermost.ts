@@ -53,6 +53,15 @@ describe('invite users to mattermost', () => {
       );
 
     nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/teams.*/)
+    .reply(
+      200,
+      {
+        inviteId: 'uninviteid'
+      }
+    ).persist();
+
+    nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
       .reply(200, [...mattermostUsers]);
     nock(/.*mattermost.incubateur.net/)
@@ -113,12 +122,22 @@ describe('invite users to mattermost', () => {
       primary_email_status_updated_at: new Date()
     })
 
+    nock(/.*mattermost.incubateur.net/)
+    .get(/^.*api\/v4\/teams.*/)
+    .reply(
+      200,
+      {
+        inviteId: 'uninviteid'
+      }
+    ).persist();
+
     nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)
       .reply(
         200,
         testUsers.map((user) => user.id)
       );
+
 
     nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
