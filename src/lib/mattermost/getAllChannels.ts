@@ -1,6 +1,6 @@
 import config from "@/config";
 import axios from "axios";
-import { getMattermostConfig } from ".";
+import { getMattermostConfig } from "@/config/mattermost.config";
 
 export async function getAllChannels(teamId: string, i : number = 0) {
   try {

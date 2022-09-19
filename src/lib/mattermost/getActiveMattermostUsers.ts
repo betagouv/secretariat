@@ -1,6 +1,6 @@
 import axios from "axios";
 import config from "@/config";
-import { getMattermostConfig } from ".";
+import { getMattermostConfig } from "@/config/mattermost.config";
 
 interface ParamsType {
     in_team?: string

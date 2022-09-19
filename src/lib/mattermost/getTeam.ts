@@ -1,6 +1,6 @@
 import config from "@/config";
+import { getMattermostConfig } from "@/config/mattermost.config";
 import axios from "axios";
-import { getMattermostConfig } from ".";
 
 export async function getTeam(teamId : string) {
     try {
