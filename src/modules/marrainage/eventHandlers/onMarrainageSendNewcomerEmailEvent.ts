@@ -22,7 +22,7 @@ export const onMarrainageSendNewcomerEmail:
 
     const email : EmailProps = {
         type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL,
-        toEmail: [dbUser.communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email],
+        toEmail: [dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email],
         variables: {
             member: member,
             onboarder: {
