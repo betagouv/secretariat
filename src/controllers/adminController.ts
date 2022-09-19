@@ -128,7 +128,7 @@ export async function getUsers(req, res) {
           ...user,
           primaryEmail: dbUser ? dbUser.primary_email : '',
           secondaryEmail: dbUser ? dbUser.secondary_email : '',
-          communicationEmail: dbUser ? (dbUser.communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email) : ''
+          communicationEmail: dbUser ? (dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email) : ''
         }
       })
     }

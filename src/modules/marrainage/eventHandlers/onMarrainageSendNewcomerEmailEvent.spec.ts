@@ -37,7 +37,7 @@ describe('Test marrainage send newcomer email', () => {
             },
             extraParams: {},
             attachments: [],
-            toEmail: [dbUser.communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email],
+            toEmail: [dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email],
         }
         sendEmail.calledOnceWith(email)
         sendEmail.restore()

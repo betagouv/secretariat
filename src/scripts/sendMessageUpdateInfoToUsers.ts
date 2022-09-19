@@ -73,7 +73,7 @@ export async function sendMessageToUpdateInfoToAllUsers() {
             } catch (e) {
                 console.log(`Erreur lors de l'envoie à ${user.mattermostUsername}`, e)
             }
-            const toEmail = [user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email]
+            const toEmail = [user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ? user.secondary_email : user.primary_email]
             await sendEmail({
                 ...contentParams,
                 toEmail,

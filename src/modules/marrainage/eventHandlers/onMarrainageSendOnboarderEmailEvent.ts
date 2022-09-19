@@ -31,7 +31,7 @@ export const onMarrainageSendOnboarderEmail:
 
     const email : EmailProps = {
         type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
-        toEmail: [onboarder.communication_email === CommunicationEmailCode.PRIMARY ? onboarder.primary_email : onboarder.secondary_email],
+        toEmail: [onboarder.communication_email === CommunicationEmailCode.SECONDARY && onboarder.secondary_email ? onboarder.secondary_email : onboarder.primary_email],
         variables: {
             member: onboarderBetaInfo,
             newcomers: newcomers.map(newcomer => ({

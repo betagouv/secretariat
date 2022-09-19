@@ -34,7 +34,7 @@ describe('Test marrainage send onboarder email', () => {
             },
             extraParams: {},
             attachments: [],
-            toEmail: [user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email],
+            toEmail: [user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email],
         }
         sendEmail.calledOnceWith(email)
         sendEmail.restore()
