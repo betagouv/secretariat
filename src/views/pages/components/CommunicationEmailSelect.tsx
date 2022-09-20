@@ -15,10 +15,7 @@ export default({ defaultValue, onChange, email, value } : { defaultValue?: strin
 
     return <ClientOnly><Select
         options={options}
-        defaultValue={{
-            value: 'secondary',
-            label: `mon adresse pro/perso ${email ? `: ${email}` : ''}`
-        }}
+        defaultValue={options.find(opt => opt.value === 'secondary')}
         value={options.find(opt => opt.value === value)}
         onChange={onChange}
         name={'communication_email'}
