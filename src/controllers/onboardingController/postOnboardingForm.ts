@@ -14,7 +14,7 @@ import * as mattermost from '@/lib/mattermost';
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendInfoToChat } from "@/infra/chat";
 import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
-import { Domaine, DOMAINE_OPTIONS } from "@/models/member";
+import { DOMAINE_OPTIONS } from "@/models/member";
 
 interface IMessageInfo {
     prInfo,

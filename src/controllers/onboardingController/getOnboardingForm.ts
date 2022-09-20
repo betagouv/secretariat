@@ -34,7 +34,8 @@ export async function getForm(req, res) {
             tjm: 0,
             secondary_email: '',
             osm_city: '',
-            average_nb_of_days: 0
+            average_nb_of_days: 0,
+            communication_email: 'secondary',
           },
           communeInfo: null,
           errors: req.flash('error'),
