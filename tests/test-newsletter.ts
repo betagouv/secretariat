@@ -26,9 +26,8 @@ const {
 } = controllerUtils;
 
 const NEWSLETTER_TITLE =
-  '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
+  '📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
-  Les nouvelles pourront être lu à l'hebdo beta.gouv le jeudi à 12h (pour rappel l'adresse du point hebdomadaire http://invites.standup.incubateur.net/ )
   Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
   ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
   ## Nouveautés transverses
