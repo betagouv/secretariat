@@ -14,7 +14,7 @@ import * as mattermost from '@/lib/mattermost';
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendInfoToChat } from "@/infra/chat";
 import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
-import { Domaine, DOMAINE_OPTIONS } from "@/models/member";
+import { DOMAINE_OPTIONS } from "@/models/member";
 
 interface IMessageInfo {
     prInfo,
@@ -201,23 +201,26 @@ export async function postForm(req, res) {
           name
         })
       }
-      let primaryEmail, secondaryEmail;
+      let primary_email, secondary_email;
       if (isEmailBetaAsked) {
         // primaryEmail sera l'email beta qui sera créé en asynchrone
-        secondaryEmail = inputEmail;
+        secondary_email = inputEmail;
       } else {
-        primaryEmail = inputEmail;
+        primary_email = inputEmail;
       }
+      const hasChosenSecondaryEmail = req.body.communication_email === CommunicationEmailCode.SECONDARY && secondary_email
+      const communication_email = hasChosenSecondaryEmail ? CommunicationEmailCode.SECONDARY : CommunicationEmailCode.PRIMARY
+
       await knex('users')
         .insert({
           username,
-          primary_email: primaryEmail,
+          primary_email,
           tjm,
           gender,
           workplace_insee_code,
           legal_status,
-          secondary_email: secondaryEmail,
-          communication_email: domaine === Domaine.INTRAPRENARIAT && secondaryEmail ? CommunicationEmailCode.SECONDARY : CommunicationEmailCode.PRIMARY,
+          secondary_email,
+          communication_email,
           primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
           primary_email_status_updated_at: new Date(),
           osm_city,
