@@ -9,6 +9,7 @@ import { StartupInfo } from '@models/startup'
 import MemberSelect from '../components/MemberSelect';
 import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';
+import CommunicationEmailSelect from '../components/CommunicationEmailSelect';
 
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
@@ -37,7 +38,8 @@ interface FormData {
     osm_city: string,
     start?: string,
     end?: string,
-    average_nb_of_days?: number
+    average_nb_of_days?: number,
+    communication_email: 'primary' | 'secondary'
 }
 
 interface Props {
@@ -432,7 +434,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 <h4>Ton email</h4>
                 <div className="form__group">
                     <label htmlFor="email">
-                        <strong>Email pro/perso (obligatoire)</strong><br />
+                        <strong>Email pro (obligatoire)</strong><br />
                         Ton email nous servira pour t'envoyer les informations relatives à ton compte
                     </label>
                         <input
@@ -457,7 +459,16 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </label>
                 { props.formValidationErrors['email public'] &&
                     <p className="text-small text-color-red">{ props.formValidationErrors['email public']}</p>
-                } 
+                }
+                { !!state.formData.isEmailBetaAsked && <label htmlFor="communication_email" className="padding-10-0">
+                    <strong>Tes préférences de communication</strong><br />
+                    Sur quel email préfères-tu recevoir les communications beta.gouv.fr ? (Newsletter, Rappel de mise-à-jour de tes info, ...)
+                    Tu pourras changer ultérieurement.
+                    <CommunicationEmailSelect
+                        email={state.formData.email}
+                        value={state.formData.communication_email}
+                        onChange={(e) => changeFormData('communication_email', e.value)}></CommunicationEmailSelect>
+                </label>}
             </div>
             <button className="button" type="submit">Changer ces informations</button>
         </form>
