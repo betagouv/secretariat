@@ -76,7 +76,6 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
             startupPhases
         }
         const queryParamsString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
-        console.log(queryParamsString)
         const data = await axios.get(`/api/get-users?${queryParamsString}`).then(response => response.data);
         setState({
             ...state,
@@ -89,8 +88,8 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
         const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
         const header = Object.keys(rows[0])
         const csv = [
-        header.join(','), // header row first
-        ...rows.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+        header.join(';'), // header row first
+        ...rows.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(';'))
         ].join('\r\n')
 
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
