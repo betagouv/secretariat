@@ -8,6 +8,7 @@ import { getTitle, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
 import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
+import { sendInfoToChat } from '@/infra/chat';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -77,20 +78,47 @@ const createNewsletter = async () => {
   await knex('newsletters').insert({
     url: padUrl,
   });
-  await BetaGouv.sendInfoToChat(message);
-
+  await sendInfoToChat({
+    text: message
+  })
   return padUrl;
 };
 
 const computeMessageReminder = (reminder, newsletter) => {
   let message;
+  // curl -d "{\"text\":\"#Participez à la newsletter interne beta.gouv.fr ! ** :loudspeaker: : \n Bonjour, tout le monde ! Voici le pad de la semaine https://pad.incubateur.net/infolettre-2b2c25e4.\n Demande d'aide, de contribution, un événements, des annonces concernant une formation ? Ajouter les au pad de cette semaine ! \n Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté ! \", \"channel\":\"communautexp\", \"username\":\"Florence Lebot (équipe Communauté beta.gouv.fr)\", \"icon_url\":\"https://upload.wikimedia.org/wikipedia/commons/2/27/Florence_Foresti_2011_2_%28cropped%29.jpg\"}" -H "Content-Type: application/json" -X POST https://mattermost.incubateur.net/hooks/m1ci6yau8jy788td4cmz9zo84r
   if (reminder === 'FIRST_REMINDER') {
-    message = `*Newsletter interne* :loudspeaker: : voici le pad de la semaine ${newsletter.url}.
-      Remplissez le pad avec vos news/annonces/événements qui seront présentées à l'hebdo beta.gouv.
-      Le contenu du pad sera envoyé jeudi, sous forme d'infolettre à la communauté.`;
+    message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
+    :wave:  Bonjour, tout le monde ! 
+    
+     Voici le pad de la semaine ${newsletter.url} !
+    
+    Ce que tu peux partager : 
+    
+    - demandes d'aide ou de contribution
+    - des événements
+    - des formations
+    - des nouveautés transverses
+
+    Ajoute les au pad de cette semaine !
+
+    Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté !`;
   } else if (reminder === 'SECOND_REMINDER') {
-    message = `*:wave: Remplissez le pad avec vos news/annonces/événements ${newsletter.url}.
-      Le pad sera envoyé à 16 h, sous forme d'infolettre à la communauté.`;
+    message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
+    :wave:  Bonjour, tout le monde ! 
+    
+    Voici le pad de la semaine ${newsletter.url} !
+   
+   Ce que tu peux partager : 
+   
+   - demandes d'aide ou de contribution
+   - des événements
+   - des formations
+   - des nouveautés transverses
+
+   Ajoute les au pad de cette semaine !
+
+   Le pad sera envoyé à 16h, sous forme d'infolettre à la communauté !`;
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
       Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il sera envoyé à la communauté.`;
@@ -106,10 +134,14 @@ export async function newsletterReminder(reminder) {
     .first();
 
   if (currentNewsletter) {
-    await BetaGouv.sendInfoToChat(
-      computeMessageReminder(reminder, currentNewsletter),
-      'general'
-    );
+    await sendInfoToChat({
+      text: computeMessageReminder(reminder, currentNewsletter),
+      channel: 'general',
+      extra: {
+        username: 'Florence (équipe Communauté beta.gouv.fr)',
+        icon_url: config.NEWSLETTER_BOT_ICON_URL
+      }
+    });
   }
 }
 
