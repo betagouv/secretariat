@@ -40,6 +40,7 @@ export default {
   newsletterCronTime: process.env.NEWSLETTER_CRON_TIME || '0 4 * * 5',
   newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
   newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
+  NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
   mattermostURL: process.env.MATTERMOST_URL || 'https://mattermost.incubateur.net',
   senderEmail: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
   slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,

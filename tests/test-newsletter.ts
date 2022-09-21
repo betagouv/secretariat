@@ -12,7 +12,7 @@ import app from '@/index';
 import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { createNewsletter, getJobOfferContent } from '@schedulers/newsletterScheduler';
 import utils from './utils';
-
+import * as chat from '@/infra/chat';
 chai.use(chaiHttp);
 
 const should = chai.should();
@@ -26,9 +26,8 @@ const {
 } = controllerUtils;
 
 const NEWSLETTER_TITLE =
-  '📰 Infolettre interne de la communauté beta.gouv.fr du __REMPLACER_PAR_DATE__';
+  '📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__';
 const NEWSLETTER_TEMPLATE_CONTENT = `# ${NEWSLETTER_TITLE}
-  Les nouvelles pourront être lu à l'hebdo beta.gouv le jeudi à 12h (pour rappel l'adresse du point hebdomadaire http://invites.standup.incubateur.net/ )
   Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
   ### Modèle d'annonce d'une Startup (Présenté par Jeanne Doe)
   ## Nouveautés transverses
@@ -135,7 +134,7 @@ describe('Newsletter', () => {
     let slack;
     let jobsStub;
     beforeEach((done) => {
-      slack = sinon.spy(BetaGouv, 'sendInfoToChat');
+      slack = sinon.spy(chat, 'sendInfoToChat');
       jobsStub = sinon
       .stub(BetaGouv, 'getJobsWTTJ').returns(Promise.resolve(
         [{
@@ -235,7 +234,7 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       clock = sinon.useFakeTimers(new Date('2021-03-01T07:59:59+01:00'));
       await newsletterReminder('FIRST_REMINDER');
-      slack.firstCall.args[0].should.equal(
+      slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('FIRST_REMINDER', mockNewsletter)
       );
       clock.restore();
@@ -247,7 +246,7 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       clock = sinon.useFakeTimers(new Date('2021-03-04T07:59:59+01:00'));
       await newsletterReminder('SECOND_REMINDER');
-      slack.firstCall.args[0].should.equal(
+      slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('SECOND_REMINDER', mockNewsletter)
       );
       clock.restore();
@@ -259,7 +258,7 @@ describe('Newsletter', () => {
       await knex('newsletters').insert([mockNewsletter]);
       clock = sinon.useFakeTimers(new Date('2021-03-04T17:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
-      slack.firstCall.args[0].should.equal(
+      slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('THIRD_REMINDER', mockNewsletter)
       );
       clock.restore();

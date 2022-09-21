@@ -3,7 +3,12 @@ import axios from "axios"
 interface SendInfoToChatProps {
     text: string,
     channel?: string,
-    username?: string
+    username?: string,
+    extra?: {
+      username?: string,	// Overrides the username the message posts as. Defaults to the username set during webhook creation or the webhook creator’s username if the former was not set.
+      icon_url?: string, //	Overrides the profile picture the message posts with.
+      icon_emoji?: string, // Overrides the profile picture and icon_url parameter.The expected content is an emoji name, as typed in a messageattachments	Message attachments used for richer formatting options.	If text is not set, yes
+    }
 }
 
 enum WEEBHOOK_CHANNEL_TYPE {
@@ -15,7 +20,7 @@ interface SendIntoToChatFromMattermostDeps {
     config: Record<WEEBHOOK_CHANNEL_TYPE, string>
 }
 
-export type SendInfoToChat = (email: SendInfoToChatProps) => Promise<null>
+export type SendInfoToChat = (props: SendInfoToChatProps) => Promise<null>
 
 export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMattermostDeps): SendInfoToChat => {
     const { config } = deps
@@ -24,15 +29,28 @@ export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMatterm
             text,
             channel,
             username,
+            extra
         } = props
 
         let hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_SECRETARIAT]
-        const params: any = { text, channel: channel === 'general' ? 'town-square' : channel };
+        let params: {
+          text: string,
+          channel: string,
+          username?: string,
+          icon_url?: string,
+          icon_emoji?: string,
+        } = { text, channel: channel === 'general' ? 'town-square' : channel };
         if (channel && channel !== 'secretariat') {
           hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_GENERAL]
         }
         if (username) {
           params.channel = `@${username}`;
+        }
+        if (extra) {
+          params = {
+            ...params,
+            ...extra
+          }
         }
         try {
           return await axios.post(hookURL, params);
