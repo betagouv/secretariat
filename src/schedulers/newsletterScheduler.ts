@@ -89,39 +89,39 @@ const computeMessageReminder = (reminder, newsletter) => {
   // curl -d "{\"text\":\"#Participez à la newsletter interne beta.gouv.fr ! ** :loudspeaker: : \n Bonjour, tout le monde ! Voici le pad de la semaine https://pad.incubateur.net/infolettre-2b2c25e4.\n Demande d'aide, de contribution, un événements, des annonces concernant une formation ? Ajouter les au pad de cette semaine ! \n Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté ! \", \"channel\":\"communautexp\", \"username\":\"Florence Lebot (équipe Communauté beta.gouv.fr)\", \"icon_url\":\"https://upload.wikimedia.org/wikipedia/commons/2/27/Florence_Foresti_2011_2_%28cropped%29.jpg\"}" -H "Content-Type: application/json" -X POST https://mattermost.incubateur.net/hooks/m1ci6yau8jy788td4cmz9zo84r
   if (reminder === 'FIRST_REMINDER') {
     message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
-    :wave:  Bonjour, tout le monde ! 
-    
-     Voici le pad de la semaine ${newsletter.url} !
-    
-    Ce que tu peux partager : 
-    
-    - demandes d'aide ou de contribution
-    - des événements
-    - des formations
-    - des nouveautés transverses
+:wave:  Bonjour, tout le monde ! 
 
-    Ajoute les au pad de cette semaine !
+Voici le pad de la semaine ${newsletter.url} !
 
-    Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté !`;
+Ce que tu peux partager : 
+
+- demandes d'aide ou de contribution
+- des événements
+- des formations
+- des nouveautés transverses
+
+Ajoute les au pad de cette semaine !
+
+Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté !`;
   } else if (reminder === 'SECOND_REMINDER') {
     message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
-    :wave:  Bonjour, tout le monde ! 
-    
-    Voici le pad de la semaine ${newsletter.url} !
-   
-   Ce que tu peux partager : 
-   
-   - demandes d'aide ou de contribution
-   - des événements
-   - des formations
-   - des nouveautés transverses
+:wave:  Bonjour, tout le monde ! 
 
-   Ajoute les au pad de cette semaine !
+Voici le pad de la semaine ${newsletter.url} !
 
-   Le pad sera envoyé à 16h, sous forme d'infolettre à la communauté !`;
+Ce que tu peux partager : 
+
+- demandes d'aide ou de contribution
+- des événements
+- des formations
+- des nouveautés transverses
+
+Ajoute les au pad de cette semaine !
+
+Le pad sera envoyé à 16h, sous forme d'infolettre à la communauté !`;
   } else {
     message = `*:rolled_up_newspaper: La newsletter va bientôt partir !*
-      Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il sera envoyé à la communauté.`;
+Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il sera envoyé à la communauté.`;
   }
   return message;
 };
