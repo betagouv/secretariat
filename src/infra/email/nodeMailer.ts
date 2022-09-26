@@ -52,21 +52,24 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       extraParams = {}, 
       attachments=[],
       variables,
-      replyTo
+      replyTo,
+      headers,
+      htmlContent,
+      subject
   } = params;
     const paramsToRenderContent = {
       variables,
       type
     } as EmailVariants
-    const html : string = await htmlBuilder.renderContentForType(paramsToRenderContent);
+    const html : string = htmlContent || await htmlBuilder.renderContentForType(paramsToRenderContent);
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
-      subject: htmlBuilder.renderSubjectForType(paramsToRenderContent),
+      subject: subject || htmlBuilder.renderSubjectForType(paramsToRenderContent),
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
-      headers: MAIL_SERVICE_HEADERS,
+      headers: headers || MAIL_SERVICE_HEADERS,
       replyTo,
       ...extraParams,
     };

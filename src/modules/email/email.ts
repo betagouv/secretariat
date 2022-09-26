@@ -19,7 +19,8 @@ export enum EMAIL_TYPES {
   EMAIL_ENDING_CONTRACT_30_DAYS = 'EMAIL_ENDING_CONTRACT_30_DAYS',
   EMAIL_NO_MORE_CONTRACT_1_DAY = 'EMAIL_NO_MORE_CONTRACT_1_DAY',
   EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY",
-  EMAIL_USER_SHOULD_UPDATE_INFO = 'EMAIL_USER_SHOULD_UPDATE_INFO'
+  EMAIL_USER_SHOULD_UPDATE_INFO = 'EMAIL_USER_SHOULD_UPDATE_INFO',
+  EMAIL_NEWSLETTER = "EMAIL_NEWSLETTER"
 }
 
 export type SubjectFunction = {
@@ -171,6 +172,14 @@ export type EmailUserShouldUpdateInfo = {
     }
 }
 
+export type EmailNewsletter = {
+    type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+    variables: {
+        body: string,
+        subject: string
+    }
+}
+
 export type EmailVariants =
  | EmailMarrainageNewcomer
  | EmailMarrainageOnboarder
@@ -186,6 +195,7 @@ export type EmailVariants =
  | EmailEndingContract
  | EmailNoMoreContract
  | EmailUserShouldUpdateInfo
+ | EmailNewsletter 
 
 export type EmailProps = BaseEmail & EmailVariants
 
@@ -197,6 +207,9 @@ export type SendEmailProps = {
     extraParams?: Record<string, string>, 
     attachments?: any[],
     replyTo?: string,
+    headers?: Record<string, string|number>,
+    bbc?: string[],
+    htmlContent?: string,
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>

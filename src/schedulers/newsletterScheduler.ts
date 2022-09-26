@@ -9,6 +9,8 @@ import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
+import { sendEmail } from '@/config/email.config';
+import { EMAIL_TYPES } from '@/modules/email';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -193,19 +195,35 @@ export async function sendNewsletterAndCreateNewOne() {
     }
 
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
-    await utils.sendMail(
-      [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
-      `${getTitle(newsletterContent)}`,
-      html,
-      {
-        headers: {
-          'X-Mailjet-Campaign': newsletterCurrentId,
-          'X-Mailjet-TrackOpen': '1',
-          'X-Mailjet-TrackClick': '1',
-        },
+    await sendEmail({
+      toEmail: [...config.newsletterBroadcastList.split(',')],
+      bbc: usersEmails,
+      headers: {
+        'X-Mailjet-Campaign': newsletterCurrentId,
+        'X-Mailjet-TrackOpen': '1',
+        'X-Mailjet-TrackClick': '1',
       },
-      attachments
-    );
+      attachments,
+      type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+      variables: {
+        body: html,
+        subject: `${getTitle(newsletterContent)}`,
+      }
+    })
+    
+    // await utils.sendMail(
+    //   [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
+    //   `${getTitle(newsletterContent)}`,
+    //   html,
+    //   {
+    //     headers: {
+    //       'X-Mailjet-Campaign': newsletterCurrentId,
+    //       'X-Mailjet-TrackOpen': '1',
+    //       'X-Mailjet-TrackClick': '1',
+    //     },
+    //   },
+    //   attachments
+    // );
     await knex('newsletters')
       .where({
         id: currentNewsletter.id,
