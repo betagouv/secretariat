@@ -88,7 +88,6 @@ const createNewsletter = async () => {
 
 const computeMessageReminder = (reminder, newsletter) => {
   let message;
-  // curl -d "{\"text\":\"#Participez à la newsletter interne beta.gouv.fr ! ** :loudspeaker: : \n Bonjour, tout le monde ! Voici le pad de la semaine https://pad.incubateur.net/infolettre-2b2c25e4.\n Demande d'aide, de contribution, un événements, des annonces concernant une formation ? Ajouter les au pad de cette semaine ! \n Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté ! \", \"channel\":\"communautexp\", \"username\":\"Florence Lebot (équipe Communauté beta.gouv.fr)\", \"icon_url\":\"https://upload.wikimedia.org/wikipedia/commons/2/27/Florence_Foresti_2011_2_%28cropped%29.jpg\"}" -H "Content-Type: application/json" -X POST https://mattermost.incubateur.net/hooks/m1ci6yau8jy788td4cmz9zo84r
   if (reminder === 'FIRST_REMINDER') {
     message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
 :wave:  Bonjour, tout le monde ! 
@@ -211,19 +210,6 @@ export async function sendNewsletterAndCreateNewOne() {
       }
     })
     
-    // await utils.sendMail(
-    //   [...config.newsletterBroadcastList.split(','), ...usersEmails].join(','),
-    //   `${getTitle(newsletterContent)}`,
-    //   html,
-    //   {
-    //     headers: {
-    //       'X-Mailjet-Campaign': newsletterCurrentId,
-    //       'X-Mailjet-TrackOpen': '1',
-    //       'X-Mailjet-TrackClick': '1',
-    //     },
-    //   },
-    //   attachments
-    // );
     await knex('newsletters')
       .where({
         id: currentNewsletter.id,
