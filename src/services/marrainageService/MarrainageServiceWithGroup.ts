@@ -113,10 +113,11 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         todayLessXdays.setDate(todayLessXdays.getDate() - (this.MARRAINAGE_GROUP_WEEK_LIMIT * 7))
         const marrainage_groups : MarrainageGroup[] = await knex('marrainage_groups')
         .where({
-          status: MarrainageGroupStatus.PENDING,
+            status: MarrainageGroupStatus.PENDING,
+        }).andWhere((builder) => {
+            builder.where('count', '>=', this.MARRAINAGE_GROUP_LIMIT)
+            .orWhere('created_at', '<=', todayLessXdays)
         })
-        .where('count', '>=', this.MARRAINAGE_GROUP_LIMIT)
-        .orWhere('created_at', '<=', todayLessXdays)
         for(const marrainage_group of marrainage_groups) {
           await this._setMarrainageToDoing(marrainage_group.id)
         }
