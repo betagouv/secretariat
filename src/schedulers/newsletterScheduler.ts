@@ -158,7 +158,7 @@ export async function getJobOfferContent() {
 
 export { createNewsletter };
 
-export async function sendNewsletterAndCreateNewOne() {
+export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
   const date = new Date();
   const currentNewsletter = await knex('newsletters')
     .where({
@@ -217,6 +217,8 @@ export async function sendNewsletterAndCreateNewOne() {
       .update({
         sent_at: date,
       });
-    await createNewsletter();
+    if (shouldCreatedNewone) {
+      await createNewsletter();
+    }
   }
 }

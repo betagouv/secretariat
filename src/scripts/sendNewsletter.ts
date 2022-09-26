@@ -2,4 +2,4 @@ import {
     sendNewsletterAndCreateNewOne,
 } from '@schedulers/newsletterScheduler';
 
-sendNewsletterAndCreateNewOne().then()
+sendNewsletterAndCreateNewOne(false).then()
