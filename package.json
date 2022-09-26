@@ -102,7 +102,7 @@
     "@types/chai": "^4.3.3",
     "@types/marked": "^4.0.7",
     "@types/mocha": "^9.1.1",
-    "@types/node": "^18.7.18",
+    "@types/node": "^18.7.21",
     "@types/sinon": "^10.0.13",
     "@typescript-eslint/eslint-plugin": "^5.38.0",
     "@typescript-eslint/parser": "^5.37.0",
