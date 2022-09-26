@@ -13,6 +13,7 @@ import { renderHtmlFromMd } from '@/lib/mdtohtml';
 import { createNewsletter, getJobOfferContent } from '@schedulers/newsletterScheduler';
 import utils from './utils';
 import * as chat from '@/infra/chat';
+import * as Email from '@/config/email.config';
 chai.use(chaiHttp);
 
 const should = chai.should();
@@ -338,8 +339,8 @@ describe('Newsletter', () => {
         },
       ]);
       const sendEmailStub = sinon
-        .stub(controllerUtils, 'sendMail')
-        .returns(Promise.resolve(true));
+        .stub(Email, 'sendEmail')
+        .returns(Promise.resolve(null));
       clock = sinon.useFakeTimers(date);
       await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.true;
@@ -347,15 +348,16 @@ describe('Newsletter', () => {
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
       sendEmailStub.calledOnce.should.be.true;
-      sendEmailStub.firstCall.args[1].should.equal(
+      sendEmailStub.firstCall.args[0].variables.subject.should.equal(
         replaceMacroInContent(NEWSLETTER_TITLE, {
           __REMPLACER_PAR_DATE__: dateAsString,
         })
       );
-      sendEmailStub.firstCall.args[0].should.equal(
-        `secretariat@beta.gouv.fr,membre.actif@${config.domain},membre.parti@${config.domain},membre.nouveau@${config.domain},membre.plusieurs.missions@${config.domain},julien.dauphant@${config.domain},laurent.bossavit@${config.domain},loup.wolff@${config.domain},mattermost.newuser@${config.domain}`
+      sendEmailStub.firstCall.args[0].toEmail.join(',').should.equal('secretariat@beta.gouv.fr')
+      sendEmailStub.firstCall.args[0].bbc.join(',').should.equal(
+        `membre.actif@${config.domain},membre.parti@${config.domain},membre.nouveau@${config.domain},membre.plusieurs.missions@${config.domain},julien.dauphant@${config.domain},laurent.bossavit@${config.domain},loup.wolff@${config.domain},mattermost.newuser@${config.domain}`
       );
-      sendEmailStub.firstCall.args[2].should.equal(
+      sendEmailStub.firstCall.args[0].variables.body.should.equal(
         renderHtmlFromMd(contentWithMacro)
       );
       slack.called.should.be.true;

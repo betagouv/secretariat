@@ -367,4 +367,95 @@ describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
     })
 })
 
+describe(`Test EMAIL_NEWSLETTER`, () => {
+    it(`email EMAIL_NEWSLETTER`, async () => {
+        const renderHtmlFromMd = sinon
+            .spy(mdtohtml, 'renderHtmlFromMd') 
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+            variables: {
+                body: `# 📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__
+<!-- 
+Envoi de l'infolettre, le jeudi à ***15h***.
 
+Bonnes pratiques de rédaction : 
+- Écrire du contenu concis et lisible
+- Utiliser des phrases (avec une majuscule, un verbe et un point)
+- Éviter les abréviations.
+
+-->
+
+Vous pouvez consulter cette infolettre [en ligne](__REMPLACER_PAR_LIEN_DU_PAD__).
+
+[TOC]
+
+## Nouveautés transverses
+
+*Documentation : [Comment lancer ou participer à un sujet transverse](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/actions-transverses)*
+
+<!-- 
+### Modèle d'une annonce transverse (Présenté par John Doe)
+
+Ici un petit paragraphe de ce qui c'est passé. Par exemple, qu'un chocolat chaud a été servi à 20 personnes la semaine dernière. Tout le monde est content.
+
+Et là, une invitation à une action : par exemple, répondre sur le Slack #domaine-chocolat.
+-->
+
+
+## Annonces des recrutements
+
+*Votre mission prend bientôt fin? Retrouvez l'ensemble des offres sur https://beta.gouv.fr/recrutement/*
+
+### Les offres de la semaine
+__REMPLACER_PAR_OFFRES__
+
+<!--
+> ### Modèle d'expression d'un besoin de recrutement
+> 
+> Ici un petit texte pour présenter le poste qui vient de s'ouvrir
+> 
+> Et là, un lien vers l'annonce ou une personne à contacter.
+-->
+
+## 📅 Evénements à venir
+
+*Par ordre chronologique*
+
+<!--
+> ### Modèle d'un événement, jour de la semaine date et heure
+> 
+> Ici un petit paragraphe sur l'événement.
+> 
+> Et là, un lien vers l'annonce de recrutement ou la personne à contacter.
+-->
+
+
+
+## Qui a écrit cette infolettre ? 
+
+Cette infolettre est collaborative. Elle a été écrite par les membres de la communauté dont vous faites partie.
+
+La prochaine sera envoyée jeudi prochain. Vous avez connaissance de news ou d'événements ?
+Vous pouvez écrire la nouvelle infolettre dès maintenant en vous connectant au secretariat : https://secretariat.incubateur.net/newsletters
+
+Vous avez raté les infolettres précédentes ? [vous pouvez les lire sur le secretariat](https://secretariat.incubateur.net/newsletters)
+
+---
+[Se désinscrire de l'infolettre]([[UNSUB_LINK_FR]])`,
+        subject: `# 📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__`
+            }
+        })
+
+        emailBody.should.include(`A ne pas rater chez beta.gouv.fr`)
+        const emailTitle = await htmlBuilder.renderSubjectForType({
+            type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+            variables: {
+                subject: `# 📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__`,
+                body: ''
+            }
+        })
+        emailTitle.should.include(`A ne pas rater chez beta.gouv.fr`)
+        renderHtmlFromMd.called.should.be.true
+        renderHtmlFromMd.restore()
+    })
+})

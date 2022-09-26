@@ -1,6 +1,6 @@
 import ejs from 'ejs'
 
-import { EmailOnboardingReferent, EmailProps, HtmlBuilderType, SubjectFunction } from "@/modules/email"
+import { EmailOnboardingReferent, EmailNewsletter, EmailProps, HtmlBuilderType, SubjectFunction } from "@/modules/email"
 import * as mdtohtml from '@/lib/mdtohtml'
 
 const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
@@ -20,7 +20,8 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_ENDING_CONTRACT_30_DAYS: './src/views/templates/emails/mail30days.ejs',
     EMAIL_NO_MORE_CONTRACT_1_DAY: './src/views/templates/emails/mailExpired1day.ejs',
     EMAIL_NO_MORE_CONTRACT_30_DAY: './src/views/templates/emails/mailExpired30days.ejs',
-    EMAIL_USER_SHOULD_UPDATE_INFO: `./src/views/templates/emails/updateUserInfoEmail.ejs`
+    EMAIL_USER_SHOULD_UPDATE_INFO: `./src/views/templates/emails/updateUserInfoEmail.ejs`,
+    EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs'
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -42,7 +43,10 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     EMAIL_ENDING_CONTRACT_30_DAYS: 'Départ dans 30 jours 🙂',
     EMAIL_NO_MORE_CONTRACT_1_DAY: 'A bientôt 🙂',
     EMAIL_NO_MORE_CONTRACT_30_DAY: 'A bientôt 🙂',
-    EMAIL_USER_SHOULD_UPDATE_INFO: 'Mise à jour de tes informations'
+    EMAIL_USER_SHOULD_UPDATE_INFO: 'Mise à jour de tes informations',
+    EMAIL_NEWSLETTER: ({ subject }: EmailNewsletter['variables']) => {
+        return `${subject}`
+    }
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -62,7 +66,8 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_ENDING_CONTRACT_30_DAYS: true,
     EMAIL_NO_MORE_CONTRACT_1_DAY: false,
     EMAIL_NO_MORE_CONTRACT_30_DAY: false,
-    EMAIL_USER_SHOULD_UPDATE_INFO: true
+    EMAIL_USER_SHOULD_UPDATE_INFO: true,
+    EMAIL_NEWSLETTER: true
 }
 
 const htmlBuilder : HtmlBuilderType = {

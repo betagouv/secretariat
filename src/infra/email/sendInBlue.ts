@@ -19,7 +19,8 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     EMAIL_ENDING_CONTRACT_30_DAYS: 0,
     EMAIL_NO_MORE_CONTRACT_1_DAY: 0,
     EMAIL_NO_MORE_CONTRACT_30_DAY: 0,
-    EMAIL_USER_SHOULD_UPDATE_INFO: 0
+    EMAIL_USER_SHOULD_UPDATE_INFO: 0,
+    EMAIL_NEWSLETTER: 0
 }
 
 interface SendEmailFromSendinblueDeps {
