@@ -445,7 +445,6 @@ Vous avez raté les infolettres précédentes ? [vous pouvez les lire sur le sec
         subject: `# 📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__`
             }
         })
-        console.log(emailBody)
 
         emailBody.should.include(`A ne pas rater chez beta.gouv.fr`)
         const emailTitle = await htmlBuilder.renderSubjectForType({
