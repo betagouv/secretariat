@@ -9,7 +9,7 @@ import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
-import { sendEmail } from '@/config/email.config';
+import { buildEmailHeader, EMAIL_CONFIG, sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
 
 const {
@@ -197,11 +197,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     await sendEmail({
       toEmail: [...config.newsletterBroadcastList.split(',')],
       bbc: usersEmails,
-      headers: {
-        'X-Mailjet-Campaign': newsletterCurrentId,
-        'X-Mailjet-TrackOpen': '1',
-        'X-Mailjet-TrackClick': '1',
-      },
+      headers: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['campaign'](newsletterCurrentId),
       attachments,
       type: EMAIL_TYPES.EMAIL_NEWSLETTER,
       variables: {

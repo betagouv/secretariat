@@ -6,17 +6,36 @@ import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 
-const EMAIL_CONFIG =  {
+enum MAIL_SERVICES {
+  mailjet='mailjet',
+  sendinblue='sendinblue'
+}
+
+export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaign', any>> = {
+  mailjet: {
+    standart: () => ({ 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' }),
+    campaign: (id) => {
+      return {
+        'X-Mailjet-Campaign': id,
+        'X-Mailjet-TrackOpen': '1',
+        'X-Mailjet-TrackClick': '1',
+      }
+    }
+  },
+  sendinblue: undefined
+}
+
+export const EMAIL_CONFIG =  {
     MAIL_DEBUG: process.env.MAIL_DEBUG,
     MAIL_HOST: process.env.MAIL_HOST,
     MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS,
     MAIL_PASS: process.env.MAIL_PASS,
     MAIL_PORT: process.env.MAIL_PORT,
     MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
-    MAIL_SERVICE: process.env.MAIL_SERVICE,
+    MAIL_SERVICE: process.env.MAIL_SERVICE || 'mailjet',
     MAIL_USER: process.env.MAIL_USER,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
-    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE
+    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
 }
 
 const {
@@ -48,7 +67,7 @@ if (process.env.NODE_ENV !== 'test') {
         MAIL_PORT,
         MAIL_SENDER,
         MAIL_SERVICE,
-        MAIL_SERVICE_HEADERS: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
+        MAIL_SERVICE_HEADERS: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['standart'](),
         MAIL_USER,
         htmlBuilder
     })
