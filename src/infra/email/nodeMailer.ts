@@ -41,9 +41,9 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         user: MAIL_USER,
         pass: MAIL_PASS,
       },
-  }
+    }
   const mailTransport = nodemailer.createTransport(transport);
-      
+  console.info(`Mail setting : ${transport}`)      
 
   return async function sendMailFromNodemailer(params: SendEmailProps) {
     const {
