@@ -112,5 +112,5 @@ export default {
   MARRAINAGE_ONBOARDER_LIST: process.env.MARRAINAGE_ONBOARDER_LIST ? process.env.MARRAINAGE_ONBOARDER_LIST.split(',') : undefined,
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
-  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379'
+  REDIS_URL: process.env.REDIS_URL
 };
