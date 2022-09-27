@@ -39,7 +39,6 @@ jobs:
         MATTERMOST_BOT_TOKEN: faketoken
         MATTERMOST_INVITE_ID: fakeid
         MAIL_PASS: fakepass
-        MAIL_SERVICE: debug
         MAIL_USER: fakeuser
         MAIL_SENDER: fake@localhost
         DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
