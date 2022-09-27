@@ -43,7 +43,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       },
     }
   const mailTransport = nodemailer.createTransport(transport);
-  console.info(`Mail setting : ${transport}`)      
+  console.info(`Mail setting : ${JSON.stringify(transport)}`)      
 
   return async function sendMailFromNodemailer(params: SendEmailProps) {
     const {
