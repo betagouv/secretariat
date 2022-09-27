@@ -29,7 +29,8 @@ describe('Test marrainage send onboarder email', () => {
                 },
                 newcomers: [{
                     fullname: 'membre.nouveau',
-                    email: 'membre.nouveau@beta.gouv.fr'
+                    email: 'membre.nouveau@beta.gouv.fr',
+                    secondary_email: ''
                 }]
             },
             extraParams: {},

@@ -347,10 +347,12 @@ describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
         } as EmailMarrainageOnboarder['variables']['member']
         const newcomers: EmailMarrainageOnboarder['variables']['newcomers'] = [{
             fullname: 'Jean Paul',
-            email: 'jean.paul@beta.gouv.fr'
+            email: 'jean.paul@beta.gouv.fr',
+            secondary_email: ''
         }, {
             fullname: 'Arnaud Lagarde',
-            email: 'arnaud.lagarde@gmail.com'
+            email: 'arnaud.lagarde@gmail.com',
+            secondary_email: ''
         }] as EmailMarrainageOnboarder['variables']['newcomers']
         const emailBody : string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL,
