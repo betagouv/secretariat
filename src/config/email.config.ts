@@ -6,7 +6,12 @@ import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 
-export const buildEmailHeader = {
+enum MAIL_SERVICES {
+  mailjet='mailjet',
+  sendinblue='sendinblue'
+}
+
+export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaign', any>> = {
   mailjet: {
     standart: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
     campaign: (id) => {
@@ -16,7 +21,8 @@ export const buildEmailHeader = {
         'X-Mailjet-TrackClick': '1',
       }
     }
-  }
+  },
+  sendinblue: undefined
 }
 
 export const EMAIL_CONFIG =  {
@@ -26,7 +32,7 @@ export const EMAIL_CONFIG =  {
     MAIL_PASS: process.env.MAIL_PASS,
     MAIL_PORT: process.env.MAIL_PORT,
     MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
-    MAIL_SERVICE: process.env.MAIL_SERVICE,
+    MAIL_SERVICE: process.env.MAIL_SERVICE || 'mailjet',
     MAIL_USER: process.env.MAIL_USER,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
