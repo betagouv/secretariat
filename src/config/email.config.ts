@@ -13,7 +13,7 @@ enum MAIL_SERVICES {
 
 export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaign', any>> = {
   mailjet: {
-    standart: { 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' },
+    standart: () => ({ 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' }),
     campaign: (id) => {
       return {
         'X-Mailjet-Campaign': id,
