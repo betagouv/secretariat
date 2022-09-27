@@ -7,7 +7,6 @@ export interface IEventBus {
     produce: any
 }
 
-console.log(process.env.REDIS_URL)
 const EventBus : IEventBus = process.env.NODE_ENV === 'test' || process.env.CI ? new InMemoryEventBus() : makeRedisEventBus({ REDIS_URL: process.env.REDIS_URL })
 
 export default EventBus
