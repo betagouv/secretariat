@@ -36,7 +36,8 @@ export const onMarrainageSendOnboarderEmail:
             member: onboarderBetaInfo,
             newcomers: newcomers.map(newcomer => ({
                 fullname: newcomer.username,
-                email: newcomer.communication_email ? newcomer.primary_email : newcomer.secondary_email
+                email: newcomer.communication_email ? newcomer.primary_email : newcomer.secondary_email,
+                secondary_email: newcomer.secondary_email
             }))
         },
         extraParams: {},

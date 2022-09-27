@@ -50,7 +50,8 @@ export type EmailMarrainageOnboarder = {
         member: Member,
         newcomers: {
             fullname: string,
-            email: string
+            email: string,
+            secondary_email: string
         }[]
     }
 }
