@@ -92,25 +92,25 @@ const jobs: Job[] = [
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
     onTick: () => newsletterReminder('FIRST_REMINDER'),
-    isActive: true,
+    isActive: config.FEATURE_NEWSLETTER,
     name: 'newsletterMondayReminderJob',
   },
   {
     cronTime: '0 0 8 * * 4',
     onTick: () => newsletterReminder('SECOND_REMINDER'),
-    isActive: true,
+    isActive: config.FEATURE_NEWSLETTER,
     name: 'newsletterThursdayMorningReminderJob',
   },
   {
     cronTime: '0 0 14 * * 4', // every week a 14:00 on thursday
     onTick: () => newsletterReminder('THIRD_REMINDER'),
-    isActive: true,
+    isActive: config.FEATURE_NEWSLETTER,
     name: 'newsletterThursdayEveningReminderJob',
   },
   {
     cronTime: config.newsletterSendTime || '0 16 * * 4', // run on thursday et 4pm,
     onTick: sendNewsletterAndCreateNewOne,
-    isActive: true,
+    isActive: config.FEATURE_NEWSLETTER,
     name: 'sendNewsletterAndCreateNewOneJob',
   },
   {
