@@ -164,7 +164,7 @@ describe('Newsletter', () => {
         'createNewNoteWithContentAndAlias'
       );
       const date = new Date('2021-03-04T07:59:59+01:00');
-      const newsletterDate = addDays(getMonday(date), 7);
+      const newsletterDate = addDays(getMonday(date), 14);
       clock = sinon.useFakeTimers(date);
       const newsletterName = `infolettre-${computeId(
         newsletterDate.toISOString().split('T')[0]
@@ -219,7 +219,7 @@ describe('Newsletter', () => {
           __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
           __REMPLACER_PAR_DATE__:
             controllerUtils.formatDateToFrenchTextReadableFormat(
-              addDays(date, NUMBER_OF_DAY_IN_A_WEEK)
+              addDays(date, NUMBER_OF_DAY_IN_A_WEEK*2)
             ),
         })
       );

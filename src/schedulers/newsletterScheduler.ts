@@ -136,6 +136,7 @@ export async function newsletterReminder(reminder) {
   
   const lastSentNewsletter = await knex('newsletters')
   .orderBy('sent_at', 'desc')
+  .whereNotNull('sent_at')
   .first();
 
   if (lastSentNewsletter) {
@@ -179,6 +180,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
 
   const lastSentNewsletter = await knex('newsletters')
   .orderBy('sent_at', 'desc')
+  .whereNotNull('sent_at')
   .first();
 
   if (lastSentNewsletter) {
