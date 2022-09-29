@@ -38,7 +38,7 @@ const computeId = (dateAsString) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
-  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK); // get next monday (date + 7 days)
+  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK*2); // get next monday (date + 14 days)
   const pad = new HedgedocApi(
     config.padEmail,
     config.padPassword,
@@ -133,7 +133,18 @@ export async function newsletterReminder(reminder) {
       sent_at: null,
     })
     .first();
+  
+  const lastSentNewsletter = await knex('newsletters')
+  .orderBy('sent_at', 'desc')
+  .first();
 
+  if (lastSentNewsletter) {
+    const nbOfDays = utils.nbOfDaysBetweenDate(lastSentNewsletter.sent_at, new Date())
+    if (nbOfDays < 7) {
+      return
+    }
+  }
+  
   if (currentNewsletter) {
     await sendInfoToChat({
       text: computeMessageReminder(reminder, currentNewsletter),
@@ -165,6 +176,17 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
       sent_at: null,
     })
     .first();
+
+  const lastSentNewsletter = await knex('newsletters')
+  .orderBy('sent_at', 'desc')
+  .first();
+
+  if (lastSentNewsletter) {
+    const nbOfDays = utils.nbOfDaysBetweenDate(lastSentNewsletter.sent_at, new Date())
+    if (nbOfDays < 7) {
+      return
+    }
+  }
 
   if (currentNewsletter) {
     const pad = new HedgedocApi(
