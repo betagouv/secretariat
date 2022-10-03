@@ -26,7 +26,7 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
   }
 
-  export const getMattermostUsersWithoutAppropriateEmails = async(teamId: string) : Promise<void> => {
+  export const sendMessageToMattermostUsersWithUnallowedEmails = async(teamId: string) : Promise<void> => {
     const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({
       in_team: teamId,
       active: true
