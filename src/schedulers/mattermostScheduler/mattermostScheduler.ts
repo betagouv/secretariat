@@ -27,12 +27,14 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
 
   export const sendMessageToMattermostUsersWithUnallowedEmails = async(teamId: string) : Promise<void> => {
     const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({
-      in_team: teamId
+      in_team: teamId,
+      active: true
     });
-    const usersWithUnallowedEmails = allMattermostUsers.filter(async user => {
+    const usersWithUnallowedEmails = await utils.asyncFilter(allMattermostUsers, async user => {
       const isPublicServiceEmail = await utils.isPublicServiceEmail(user.email)
       return !isPublicServiceEmail
     })
+    
     console.log('Users with unallowed emails', usersWithUnallowedEmails);
     if (process.env.FEATURE_SHOULD_SEND_MESSAGE_TO_USER_WITH_UNALLOWED_EMAIL) {
       for (const user of usersWithUnallowedEmails) {
