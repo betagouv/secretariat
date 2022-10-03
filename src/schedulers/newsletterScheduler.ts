@@ -152,7 +152,7 @@ export async function newsletterReminder(reminder) {
       text: computeMessageReminder(reminder, currentNewsletter),
       channel: 'general',
       extra: {
-        username: 'Florence (équipe Communauté beta.gouv.fr)',
+        username: 'Pikachu (équipe Communauté beta.gouv.fr)',
         icon_url: config.NEWSLETTER_BOT_ICON_URL
       }
     });
