@@ -28,7 +28,8 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
 
   export const getMattermostUsersWithoutAppropriateEmails = async(teamId: string) : Promise<void> => {
     const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({
-      in_team: teamId
+      in_team: teamId,
+      active: true
     });
     const usersWithNonAppropriateEmails = allMattermostUsers.filter(user => {
       const domain = user.email.split('@')[0]
