@@ -70,7 +70,7 @@
     "juice": "^8.1.0",
     "knex": "^2.3.0",
     "lodash": "^4.17.21",
-    "marked": "^4.1.0",
+    "marked": "^4.1.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
     "nodemailer": "^6.8.0",
