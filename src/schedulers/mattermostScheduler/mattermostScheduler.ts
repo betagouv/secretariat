@@ -38,10 +38,11 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     console.log('Users with non appropriate emails', usersWithNonAppropriateEmails);
     for (const user of usersWithNonAppropriateEmails) {
       await sendInfoToChat({
-        text: `Bonjour, cette espace mattermost (espace Communauté) n'est autorisé que pour les personnes ayant une adresse d'agent public.
-  Généralement une adresse @beta.gouv.fr. Tu as probablement changée ton adresse sans le savoir. 
-  Nous t'invitons à utiliser ton adresse d'agent public, sinon ton compte risque d'être désactivé.`,
-        username: user.username
+        text: `Bonjour, cet espace mattermost (espace Communauté) n'est autorisé que pour les personnes ayant une adresse d'agent public.
+  Généralement une adresse @beta.gouv.fr. Tu as probablement changé ton adresse sans le savoir. 
+  Nous t'invitons à utiliser ton adresse d'agent public, sinon ton compte risque d'être désactivé la semaine prochaine.`,
+        username: user.username,
+        channel: 'secretariat',
       })
     }
   }
