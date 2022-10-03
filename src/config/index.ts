@@ -71,6 +71,7 @@ export default {
     process.env.MATTERMOST_ALUMNI_TEAM_ID || 'testalumniteam',
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   MATTERMOST_INVITE_ID: process.env.MATTERMOST_INVITE_ID,
+  MATTERMOST_ALLOWED_DOMAINS: process.env.MATTERMOST_ALLOWED_DOMAINS || 'beta.gouv.fr',
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',
