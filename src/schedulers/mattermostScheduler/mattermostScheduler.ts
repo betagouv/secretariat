@@ -32,8 +32,8 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
       active: true
     });
     const usersWithNonAppropriateEmails = allMattermostUsers.filter(user => {
-      const domain = user.email.split('@')[0]
-      return (config.MATTERMOST_ALLOWED_DOMAINS).split(',').includes(domain)
+      const domain = user.email.split('@')[1]
+      return !(config.MATTERMOST_ALLOWED_DOMAINS).split(',').includes(domain)
     })
     console.log('Users with non appropriate emails', usersWithNonAppropriateEmails);
     for (const user of usersWithNonAppropriateEmails) {
