@@ -73,7 +73,7 @@
     "marked": "^4.1.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
-    "nodemailer": "^6.7.8",
+    "nodemailer": "^6.8.0",
     "ovh": "^2.0.1",
     "path-browserify": "^1.0.1",
     "pg": "^8.8.0",
