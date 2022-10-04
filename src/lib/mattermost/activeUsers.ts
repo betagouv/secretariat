@@ -16,3 +16,4 @@ export async function activeUsers(userId) {
       console.error("Erreur d'activation de l‘utilisateurs à mattermost", err);
     }
   }
+  
