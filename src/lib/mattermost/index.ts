@@ -144,21 +144,6 @@ export async function getInactiveMattermostUsers(params = {}, i = 0) {
   return [...mattermostUsers, ...nextPageMattermostUsers];
 }
 
-export async function activeUsers(userId) {
-  try {
-    const payload = { active: true };
-    const response = await axios.put(
-      `${config.mattermostURL}/api/v4/users/${userId}/active`,
-      payload,
-      getMattermostConfig()
-    );
-    console.log(`Le compte mattermost ${userId} a été activé`);
-    return response.data;
-  } catch (err) {
-    console.error("Erreur d'activation de l‘utilisateurs à mattermost", err);
-  }
-}
-
 export async function changeUserEmail(id: string, email: string) {
   try {
     const res: MattermostUser = await axios
@@ -212,3 +197,5 @@ export * from './getActiveMattermostUsers'
 export * from './getMattermostUsersStatus'
 export * from './getAllChannels'
 export * from './getTeam'
+export * from './deactiveUsers'
+export * from './activeUsers'

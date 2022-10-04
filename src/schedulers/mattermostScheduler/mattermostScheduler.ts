@@ -26,17 +26,21 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
   }
 
-  export const sendMessageToMattermostUsersWithUnallowedEmails = async(teamId: string) : Promise<void> => {
+  const getUnallowedEmails = async (teamId) => {
     const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({
       in_team: teamId,
       active: true
     });
-    const usersWithNonAppropriateEmails = allMattermostUsers.filter(user => {
+    const usersWithUnallowedEmails = allMattermostUsers.filter(user => {
       const domain = user.email.split('@')[1]
       return !(config.MATTERMOST_ALLOWED_DOMAINS).split(',').includes(domain)
     })
-    console.log('Users with non appropriate emails', usersWithNonAppropriateEmails);
-    for (const user of usersWithNonAppropriateEmails) {
+    return usersWithUnallowedEmails
+  }
+
+  export const sendMessageToMattermostUsersWithUnallowedEmails = async(teamId: string) : Promise<void> => {
+    const usersWithUnallowedEmails = await getUnallowedEmails(teamId)
+    for (const user of usersWithUnallowedEmails) {
       await sendInfoToChat({
         text: `Bonjour, cet espace mattermost (espace Communauté) n'est autorisé que pour les personnes ayant une adresse d'agent public.
   Généralement une adresse @beta.gouv.fr. Tu as probablement changé ton adresse sans le savoir. 
@@ -44,6 +48,13 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
         username: user.username,
         channel: 'secretariat',
       })
+    }
+  }
+
+  export const deactivateMattermostUsersWithUnallowedEmails =  async(teamId: string) : Promise<void> => {
+    const usersWithUnallowedEmails = await getUnallowedEmails(teamId)
+    for (const user of usersWithUnallowedEmails) {
+      await mattermost.deactiveUsers(user.id)
     }
   }
 
