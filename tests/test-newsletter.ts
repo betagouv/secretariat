@@ -354,7 +354,7 @@ describe('Newsletter', () => {
         })
       );
       sendEmailStub.firstCall.args[0].toEmail.join(',').should.equal('secretariat@beta.gouv.fr')
-      sendEmailStub.firstCall.args[0].bbc.join(',').should.equal(
+      sendEmailStub.firstCall.args[0].bcc.join(',').should.equal(
         `membre.actif@${config.domain},membre.parti@${config.domain},membre.nouveau@${config.domain},membre.plusieurs.missions@${config.domain},julien.dauphant@${config.domain},laurent.bossavit@${config.domain},loup.wolff@${config.domain},mattermost.newuser@${config.domain}`
       );
       sendEmailStub.firstCall.args[0].variables.body.should.equal(

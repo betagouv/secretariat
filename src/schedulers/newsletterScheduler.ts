@@ -221,7 +221,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
     await sendEmail({
       toEmail: [...config.newsletterBroadcastList.split(',')],
-      bbc: usersEmails,
+      bcc: usersEmails,
       headers: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['campaign'](newsletterCurrentId),
       attachments,
       type: EMAIL_TYPES.EMAIL_NEWSLETTER,

@@ -209,7 +209,7 @@ export type SendEmailProps = {
     attachments?: any[],
     replyTo?: string,
     headers?: Record<string, string|number>,
-    bbc?: string[],
+    bcc?: string[],
     htmlContent?: string,
 }
 
