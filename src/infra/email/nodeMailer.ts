@@ -55,7 +55,8 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       replyTo,
       headers,
       htmlContent,
-      subject
+      subject,
+      bcc
   } = params;
     const paramsToRenderContent = {
       variables,
@@ -71,6 +72,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       attachments,
       headers: headers || MAIL_SERVICE_HEADERS,
       replyTo,
+      bcc,
       ...extraParams,
     };
     console.log(extraParams)
