@@ -83,7 +83,7 @@ if (process.env.NODE_ENV !== 'test') {
         MAIL_PORT,
         MAIL_SENDER,
         MAIL_SERVICE,
-        MAIL_SERVICE_HEADERS: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['standart'](),
+        MAIL_SERVICE_HEADERS: MAIL_SERVICE ? buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['standart']() : {},
         MAIL_USER,
         htmlBuilder
     })
