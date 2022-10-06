@@ -8,7 +8,8 @@ let sendEmail: SendEmail = fakeSendEmail
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
-  SendinBlue='SendinBlue'
+  SendinBlue='SendinBlue',
+  malspons='mailspons'
 }
 
 export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaign', any>> = {
@@ -31,6 +32,12 @@ export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaig
         'X-Mailjet-TrackClick': '1',
       }
     }
+  },
+  mailspons: {
+    standart: () => ({}),
+    campaign: () => {
+      return {}
+    }
   }
 }
 
@@ -41,7 +48,7 @@ export const EMAIL_CONFIG =  {
     MAIL_PASS: process.env.MAIL_PASS,
     MAIL_PORT: process.env.MAIL_PORT,
     MAIL_SENDER: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
-    MAIL_SERVICE: process.env.MAIL_SERVICE || 'mailjet',
+    MAIL_SERVICE: process.env.MAIL_SERVICE,
     MAIL_USER: process.env.MAIL_USER,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
@@ -76,7 +83,7 @@ if (process.env.NODE_ENV !== 'test') {
         MAIL_PORT,
         MAIL_SENDER,
         MAIL_SERVICE,
-        MAIL_SERVICE_HEADERS: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['standart'](),
+        MAIL_SERVICE_HEADERS: MAIL_SERVICE ? buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['standart']() : {},
         MAIL_USER,
         htmlBuilder
     })
