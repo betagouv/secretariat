@@ -222,7 +222,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     await sendEmail({
       toEmail: [...config.newsletterBroadcastList.split(',')],
       bcc: usersEmails,
-      headers: buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['campaign'](newsletterCurrentId),
+      headers: EMAIL_CONFIG.MAIL_SERVICE ? buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['campaign'](newsletterCurrentId) : {},
       attachments,
       type: EMAIL_TYPES.EMAIL_NEWSLETTER,
       variables: {
