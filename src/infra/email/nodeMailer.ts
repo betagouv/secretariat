@@ -73,8 +73,8 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       replyTo,
       ...extraParams,
     };
-
-    var mail = new nodemailer.MailComposer(mailOptions).compile()
+    const MailComposer = require("nodemailer/lib/mail-composer");
+    var mail = new MailComposer(mailOptions).compile()
     mail.keepBcc = true
     mail.build(function(err, message){
         process.stdout.write(message);
