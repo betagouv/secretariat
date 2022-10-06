@@ -28,8 +28,6 @@ export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaig
     campaign: (id) => {
       return {
         'X-Mailjet-Campaign': id,
-        'X-Mailjet-TrackOpen': '1',
-        'X-Mailjet-TrackClick': '1',
       }
     }
   },
