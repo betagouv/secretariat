@@ -62,7 +62,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       type
     } as EmailVariants
     const html : string = htmlContent || await htmlBuilder.renderContentForType(paramsToRenderContent);
-    const mail = {
+    const mailOptions = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
       subject: subject || htmlBuilder.renderSubjectForType(paramsToRenderContent),
@@ -73,6 +73,12 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       replyTo,
       ...extraParams,
     };
+
+    var mail = new nodemailer.MailComposer(mailOptions).compile()
+    mail.keepBcc = true
+    mail.build(function(err, message){
+        process.stdout.write(message);
+    });
   
     return new Promise((resolve, reject) => {
       mailTransport.sendMail(mail, (error, info) =>
