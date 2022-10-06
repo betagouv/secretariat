@@ -26,9 +26,7 @@ export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaig
   SendinBlue: {
     standart: () => ({ 'X-Mailjet-TrackOpen': '0', 'X-Mailjet-TrackClick': '0' }),
     campaign: (id) => {
-      return {
-        'X-Mailjet-Campaign': id,
-      }
+      return {}
     }
   },
   mailspons: {
