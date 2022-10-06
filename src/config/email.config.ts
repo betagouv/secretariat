@@ -8,7 +8,8 @@ let sendEmail: SendEmail = fakeSendEmail
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
-  SendinBlue='SendinBlue'
+  SendinBlue='SendinBlue',
+  malspons='mailspons'
 }
 
 export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaign', any>> = {
@@ -30,6 +31,12 @@ export const buildEmailHeader : Record<MAIL_SERVICES, Record<'standart'|'campaig
         'X-Mailjet-TrackOpen': '1',
         'X-Mailjet-TrackClick': '1',
       }
+    }
+  },
+  mailspons: {
+    standart: () => ({}),
+    campaign: () => {
+      return {}
     }
   }
 }
