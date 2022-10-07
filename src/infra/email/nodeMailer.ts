@@ -24,7 +24,6 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
         MAIL_PASS,
         MAIL_IGNORE_TLS,
         MAIL_SENDER,
-        MAIL_SERVICE_HEADERS,
         htmlBuilder
     } = deps
     const transport = {
@@ -53,16 +52,15 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       attachments=[],
       variables,
       replyTo,
-      headers,
       htmlContent,
       subject,
+      bcc
   } = params;
     const paramsToRenderContent = {
       variables,
       type
     } as EmailVariants
     const html : string = htmlContent || await htmlBuilder.renderContentForType(paramsToRenderContent);
-    console.log(headers || MAIL_SERVICE_HEADERS)
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
@@ -70,11 +68,12 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       html,
       text: html.replace(/<(?:.|\n)*?>/gm, ''),
       attachments,
-      headers: headers || MAIL_SERVICE_HEADERS,
+      // headers: headers || MAIL_SERVICE_HEADERS,
       replyTo,
+      bcc,
       ...extraParams,
     };
-    console.log(extraParams)
+    console.log(JSON.stringify(mail))
     return new Promise((resolve, reject) => {
       mailTransport.sendMail(mail, (error, info) =>
         error ? reject(error) : resolve(info)
