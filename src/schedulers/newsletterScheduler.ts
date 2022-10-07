@@ -221,7 +221,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
     console.log([...config.newsletterBroadcastList.split(','), ...usersEmails])
     console.log(html)
-    if (process.env.SHOULD_SEND_NL)
+    if (process.env.SHOULD_SEND_NL) {
       await sendEmail({
         toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
         attachments,
