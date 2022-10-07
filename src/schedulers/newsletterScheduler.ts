@@ -219,26 +219,29 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     }
 
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
-    await sendEmail({
-      toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
-      headers: EMAIL_CONFIG.MAIL_SERVICE ? buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]['campaign'](newsletterCurrentId) : {},
-      attachments,
-      type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-      variables: {
-        body: html,
-        subject: `${getTitle(newsletterContent)}`,
-      }
-    })
-    
-    await knex('newsletters')
-      .where({
-        id: currentNewsletter.id,
+    console.log([...config.newsletterBroadcastList.split(','), ...usersEmails])
+    console.log(html)
+    if (process.env.SHOULD_SEND_NL)
+      await sendEmail({
+        toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
+        attachments,
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+        variables: {
+          body: html,
+          subject: `${getTitle(newsletterContent)}`,
+        }
       })
-      .update({
-        sent_at: date,
-      });
-    if (shouldCreatedNewone) {
-      await createNewsletter();
+      
+      await knex('newsletters')
+        .where({
+          id: currentNewsletter.id,
+        })
+        .update({
+          sent_at: date,
+        });
+      if (shouldCreatedNewone) {
+        await createNewsletter();
+      }
     }
   }
 }
