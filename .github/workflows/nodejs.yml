@@ -30,6 +30,7 @@ jobs:
         CI: true
         FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
         NEWSLETTER_HASH_SECRET: fakenewslettersecret
+        SHOULD_SEND_NL: true
         OVH_APP_KEY: fakeovhkey
         OVH_APP_SECRET: fakeovhsecret
         OVH_CONSUMER_KEY: fakeconsumerkey
