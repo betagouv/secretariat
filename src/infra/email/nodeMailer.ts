@@ -63,6 +63,7 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       type
     } as EmailVariants
     const html : string = htmlContent || await htmlBuilder.renderContentForType(paramsToRenderContent);
+    console.log(headers || MAIL_SERVICE_HEADERS)
     const mail = {
       to: toEmail,
       from: `Espace Membre BetaGouv <${MAIL_SENDER}>`,
@@ -72,7 +73,6 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       attachments,
       headers: headers || MAIL_SERVICE_HEADERS,
       replyTo,
-      bcc,
       ...extraParams,
     };
     console.log(extraParams)
