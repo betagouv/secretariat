@@ -9,7 +9,7 @@ import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
 import { CommunicationEmailCode, DBUser } from '@models/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
-import { buildEmailHeader, EMAIL_CONFIG, sendEmail } from '@/config/email.config';
+import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
 
 const {
