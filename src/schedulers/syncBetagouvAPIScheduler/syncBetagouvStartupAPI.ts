@@ -1,12 +1,22 @@
 import betagouv from "@/betagouv";
 import db from "@/db";
-import { StartupInfo } from "@/models/startup";
+import { DBStartup, StartupInfo } from "@/models/startup";
+
+function getCurrentPhase(startup : StartupInfo) {
+  return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
+}
+
+function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
+  if (newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
+    console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
+  }
+}
 
 export async function syncBetagouvStartupAPI() {
     const startups : StartupInfo[] = await betagouv.startupsInfos();
-    await db('startups').truncate()
     for (const startup of startups) {
-      await db('startups').insert({
+      const previousStartupInfo : DBStartup = await db('startups').where({ id: startup.id }).first()
+      const newStartupInfo = {
         id: startup.id,
         name: startup.attributes.name,
         pitch: startup.attributes.pitch,
@@ -15,10 +25,17 @@ export async function syncBetagouvStartupAPI() {
         repository: startup.attributes.repository,
         contact: startup.attributes.contact,
         phases: JSON.stringify(startup.attributes.phases),
-        current_phase: startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined,
+        current_phase: getCurrentPhase(startup),
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+      }
+      await db('startups').upsert(newStartupInfo)
+      .where({
+        id: startup.id
       })
-      .onConflict('id')
-      .merge();
+      .returning('*')
+      compareAndTriggerChange({
+        ...newStartupInfo,
+        phases: startup.attributes.phases,
+      }, previousStartupInfo)
     }
   }

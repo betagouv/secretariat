@@ -51,5 +51,5 @@ export interface DBStartup {
     contact: string;
     phases: Phase[];
     current_phase: string;
-    incubators: string;
+    incubator: string;
 }
