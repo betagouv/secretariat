@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 import betagouv from "@/betagouv"
 import { computeHash } from "@/controllers/utils"
 import db from "@/db"
@@ -5,11 +7,20 @@ import { DBUser } from "@/models/dbUser"
 import { Member } from "@/models/member"
 import { DBMission, Mission } from "@/models/mission"
 
+function compareUserAndTriggerOnChange(newUserInfo: DBUser, previousUserInfo: DBUser) {
+  if (previousUserInfo && !_.isEqual((newUserInfo.startups || []).sort(), (previousUserInfo.startups || []).sort())) {
+    console.info(`Changement de startups pour ${newUserInfo.username}`)
+  }
+}
+
 export async function syncBetagouvUserAPI() {
     const members : Member[] = await betagouv.usersInfos()
     await db('users_startups').truncate()
     await db('missions').truncate()
     for (const member of members) {
+      const previousUserInfo : DBUser = await db('users').where({
+        username: member.id
+      }).first()
       const [user] : DBUser[] = await db('users').update({
         domaine: member.domaine,
         missions: JSON.stringify(member.missions),
@@ -58,6 +69,7 @@ export async function syncBetagouvUserAPI() {
         .onConflict('hash')
         .merge();
       }
+      compareUserAndTriggerOnChange(previousUserInfo, user)
     }
   }
   
