@@ -47,6 +47,7 @@ export interface DBUser {
     communication_email: CommunicationEmailCode;
     osm_city: string;
     average_nb_of_days: number;
+    startups: string[];
 }
 
 export interface DBUserDetail {
