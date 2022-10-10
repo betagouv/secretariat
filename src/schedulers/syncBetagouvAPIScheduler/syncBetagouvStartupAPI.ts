@@ -7,7 +7,7 @@ function getCurrentPhase(startup : StartupInfo) {
 }
 
 function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
-  if (newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
+  if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
     console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
   }
 }
@@ -28,11 +28,14 @@ export async function syncBetagouvStartupAPI() {
         current_phase: getCurrentPhase(startup),
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
       }
-      await db('startups').upsert(newStartupInfo)
-      .where({
-        id: startup.id
-      })
-      .returning('*')
+      if (previousStartupInfo) {
+        await db('startups').update(newStartupInfo)
+        .where({
+          id: startup.id
+        })
+      } else {
+        await db('startups').insert(newStartupInfo)
+      }
       compareAndTriggerChange({
         ...newStartupInfo,
         phases: startup.attributes.phases,
