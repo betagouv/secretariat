@@ -1,4 +1,4 @@
-import _ from 'lodash/array'
+import _ from 'lodash'
 
 import betagouv from "@/betagouv"
 import { computeHash } from "@/controllers/utils"
