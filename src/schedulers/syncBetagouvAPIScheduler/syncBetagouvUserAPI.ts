@@ -8,7 +8,7 @@ import { Member } from "@/models/member"
 import { DBMission, Mission } from "@/models/mission"
 
 function compareUserAndTriggerOnChange(newUserInfo: DBUser, previousUserInfo: DBUser) {
-  if (previousUserInfo && _.isEqual(newUserInfo.startups.sort(), previousUserInfo.startups.sort())) {
+  if (previousUserInfo && !_.isEqual((newUserInfo.startups || []).sort(), (previousUserInfo.startups || []).sort())) {
     console.info(`Changement de startups pour ${newUserInfo.username}`)
   }
 }
