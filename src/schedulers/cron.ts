@@ -18,6 +18,8 @@ import {
   reactivateUsers,
   removeUsersFromCommunityTeam,
   addUsersNotInCommunityToCommunityTeam,
+  syncMattermostUserStatusWithMattermostMemberInfosTable,
+  syncMattermostUserWithMattermostMemberInfosTable,
 } from './mattermostScheduler';
 import {
   newsletterReminder,
@@ -316,7 +318,23 @@ const jobs: Job[] = [
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_SEND_MESSAGE_TO_TEAM_FOR_JOB_OPENED_FOR_A_LONG_TIME,
     name: "Send message to team to remind them to close job offer",
-  }
+  },
+  {
+    cronTime: "0 0 10 * * *",
+    onTick: syncMattermostUserWithMattermostMemberInfosTable,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: true,
+    name: "Add new mattermost user to mattermost_member_info table",
+  },
+  {
+    cronTime: "0 5 10 * * *",
+    onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: true,
+    name: "Get mattermost user activity info from api and sync with mattermost_member_info table",
+  },
 ];
 
 let activeJobs = 0;
