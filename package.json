@@ -83,7 +83,7 @@
     "react": "^18.2.0",
     "react-datepicker": "^4.8.0",
     "react-dom": "^18.2.0",
-    "react-select": "^5.4.0",
+    "react-select": "^5.5.1",
     "react-tabulator": "^0.18.1",
     "redis-smq": "^7.1.1",
     "rsmq": "^0.12.4",
