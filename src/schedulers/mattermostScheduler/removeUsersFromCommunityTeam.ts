@@ -1,5 +1,5 @@
 import { MattermostUser } from "@/lib/mattermost";
-import { DBUser } from "@/models/dbUser";
+import { DBUser } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import knex from "@/db";
 import config from '@config';

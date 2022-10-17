@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import betagouv from "@/betagouv";
 import { sendEmail } from "@/config/email.config";
-import { DBUser, CommunicationEmailCode } from "@/models/dbUser";
+import { DBUser, CommunicationEmailCode } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import { EMAIL_TYPES } from "@/modules/email";
 import config from "@config";

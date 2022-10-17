@@ -13,7 +13,7 @@ import {
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
 } from '@schedulers/userContractEndingScheduler';
-import { EmailStatusCode } from '@models/dbUser';
+import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import { setEmailExpired } from '@schedulers/setEmailExpired';
 import betagouv from '@/betagouv';
 import { Domaine } from '@models/member';

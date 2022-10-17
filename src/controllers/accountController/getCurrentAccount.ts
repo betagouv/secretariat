@@ -3,8 +3,8 @@ import knex from "@/db";
 import * as utils from "@controllers/utils";
 import { addEvent, EventCode } from '@lib/events'
 import { MemberWithPermission } from "@models/member";
-import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@models/dbUser";
-import { EmailStatusCode } from "@models/dbUser";
+import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 
 export async function getCurrentAccount(req, res) {

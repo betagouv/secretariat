@@ -3,7 +3,7 @@ import BetaGouv from "@/betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
 import { addEvent, EventCode } from '@/lib/events'
-import { DBUser, EmailStatusCode } from "@models/dbUser";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 
 export async function updatePasswordForUser(req, res) {
   const { username } = req.params;

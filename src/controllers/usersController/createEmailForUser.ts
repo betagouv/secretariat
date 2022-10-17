@@ -4,7 +4,7 @@ import BetaGouv from "@/betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
 import { MemberWithPermission } from "@models/member";
-import { DBUser, EmailStatusCode } from "@models/dbUser";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
 
 

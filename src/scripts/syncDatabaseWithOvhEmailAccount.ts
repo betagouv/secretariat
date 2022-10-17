@@ -1,6 +1,6 @@
 import betagouv from "../betagouv";
 import knex from "../db";
-import { DBUser, EmailStatusCode } from "@models/dbUser";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { Member } from "@models/member";
 
 const syncDatabaseWithOvhEmailAccount = async () => {

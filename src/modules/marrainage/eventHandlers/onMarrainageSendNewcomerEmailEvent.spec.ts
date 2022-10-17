@@ -4,7 +4,7 @@ import { onMarrainageSendNewcomerEmail } from "./onMarrainageSendNewcomerEmailEv
 import { EventEmailMarrainageNewcomer, MARRAINAGE_EVENT } from "@models/marrainage/marrainageEvent";
 import * as Email from '@config/email.config'
 import db from "../../../db";
-import { CommunicationEmailCode, DBUser } from "@models/dbUser";
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
 import { EmailProps, EMAIL_TYPES } from "@modules/email";
 import betagouv from "@/betagouv";
 import { Member } from "@/models/member";

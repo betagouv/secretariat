@@ -1,5 +1,5 @@
 import BetaGouv from "@/betagouv";
-import { genderOptions, statusOptions } from '@models/dbUser';
+import { genderOptions, statusOptions } from '@/models/dbUser/dbUser';
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS, Member } from '@models/member';
 import config from "@/config";

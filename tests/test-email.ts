@@ -9,7 +9,7 @@ import * as utils from '@/controllers/utils';
 import betagouv from '@/betagouv';
 import knex from '@/db';
 import * as email from '@/config/email.config'
-import { EmailStatusCode } from '@models/dbUser';
+import { EmailStatusCode } from '@/models/dbUser/dbUser';
 
 chai.use(chaiHttp);
 

@@ -1,7 +1,7 @@
 import _ from 'lodash/array';
 import betagouv from "@/betagouv";
 import EventBus from "@/infra/eventBus/eventBus";
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { MarrainageGroupStatus, MarrainageGroup, MARRAINAGE_EVENT } from "@/models/marrainage";
 import { Member } from "@/models/member";
 import knex from "@/db";

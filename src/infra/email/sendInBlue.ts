@@ -1,5 +1,5 @@
 
-import { EmailProps, SendEmail, SendEmailProps } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactToMailingListsProps, AddContactToMailingLists  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -23,7 +23,7 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     EMAIL_NEWSLETTER: 0
 }
 
-interface SendEmailFromSendinblueDeps {
+type SendEmailFromSendinblueDeps = {
     SIB_APIKEY_PUBLIC?: string
     SIB_APIKEY_PRIVATE: string
     MAIL_SENDER: string,
@@ -33,9 +33,91 @@ interface SendEmailFromSendinblueDeps {
     } | undefined
 }
 
-export const makeSendEmailFromSendinblue = (deps: SendEmailFromSendinblueDeps): SendEmail => {
+type SendinblueDeps = {
+    SIB_APIKEY_PUBLIC?: string
+    SIB_APIKEY_PRIVATE: string
+    MAIL_SENDER: string,
+    htmlBuilder: {
+        renderFile (url: string, params: any): Promise<string>,
+        templates: Record<EmailProps['type'], string>
+    } | undefined
+}
 
-    const { SIB_APIKEY_PRIVATE, MAIL_SENDER, htmlBuilder } = deps
+export function addContactToMailingLists({
+        email,
+        listIds
+    }: AddContactToMailingListsProps): Promise<null> {
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+
+    let createContact = new SibApiV3Sdk.CreateContact();
+    createContact.email = email
+    createContact.listIds = listIds
+
+    return apiInstance.createContact(createContact).then(function(data) {
+        console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+        }, function(error) {
+        console.error(error);
+    });
+}
+
+export const makeSendEmailFromSendinblue = ({
+    MAIL_SENDER,
+    htmlBuilder,
+} : {
+    MAIL_SENDER: SendEmailFromSendinblueDeps['MAIL_SENDER'],
+    htmlBuilder: SendEmailFromSendinblueDeps['htmlBuilder'],
+}) : SendEmail =>  {
+    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
+
+    return async function sendEmailFromSendinblue(props: SendEmailProps): Promise<null> {
+        const {
+            subject,
+            type,
+            toEmail,
+            variables = {},
+            replyTo
+        } = props
+    
+        let templateId: number
+        let html: string
+        if (!htmlBuilder) {
+            templateId = TEMPLATE_ID_BY_TYPE[type]
+            if (!templateId) {
+                return Promise.reject(new Error('Cannot find template for type ' + type))
+            }
+        } else {
+            const templateURL = htmlBuilder.templates[type]
+            html = await htmlBuilder.renderFile(templateURL, {
+              ...variables
+            });
+        }
+    
+        return apiInstance.sendTransacEmail({
+          sender: {
+              name: "Espace Membre BetaGouv",
+              email: MAIL_SENDER
+          },
+          to: toEmail.map(email => (
+              {  
+                 "email": email,
+              }
+          )),
+          params: variables,
+          templateId,
+          htmlContent: html,
+          replyTo,
+          subject: subject,
+        })
+    }
+}
+
+
+export const makeSendinblue = (deps: SendinblueDeps): {
+    sendEmail: SendEmail,
+    addContactToMailingLists: AddContactToMailingLists
+} => {
+
+    const { SIB_APIKEY_PRIVATE, htmlBuilder, MAIL_SENDER } = deps
 
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
@@ -49,46 +131,8 @@ export const makeSendEmailFromSendinblue = (deps: SendEmailFromSendinblueDeps): 
     const partnerKey = defaultClient.authentications['partner-key'];
     partnerKey.apiKey = SIB_APIKEY_PRIVATE
 
-    const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
-  return async function sendEmailFromSendinblue(props: SendEmailProps): Promise<null> {
-    const {
-        subject,
-        type,
-        toEmail,
-        variables = {},
-        replyTo
-    } = props
-
-    let templateId: number
-    let html: string
-    if (!htmlBuilder) {
-        templateId = TEMPLATE_ID_BY_TYPE[type]
-        if (!templateId) {
-            return Promise.reject(new Error('Cannot find template for type ' + type))
-        }
-    } else {
-        const templateURL = htmlBuilder.templates[type]
-        html = await htmlBuilder.renderFile(templateURL, {
-          ...variables
-        });
+    return {
+        sendEmail: makeSendEmailFromSendinblue({ MAIL_SENDER, htmlBuilder }),
+        addContactToMailingLists
     }
-
-    return apiInstance.sendTransacEmail({
-      sender: {
-          name: "Espace Membre BetaGouv",
-          email: MAIL_SENDER
-      },
-      to: toEmail.map(email => (
-          {  
-             "email": email,
-          }
-      )),
-      params: variables,
-      templateId,
-      htmlContent: html,
-      replyTo,
-      subject: subject,
-    })
-  }
 }
