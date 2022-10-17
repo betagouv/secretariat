@@ -6,7 +6,7 @@ import * as utils from "@controllers/utils";
 import BetaGouv from "@/betagouv";
 import knex from "@/db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "@controllers/validator"
-import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@models/dbUser';
+import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@/models/dbUser/dbUser';
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { sendEmail } from "@/config/email.config";

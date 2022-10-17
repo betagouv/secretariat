@@ -7,7 +7,7 @@ import * as utils from '@controllers/utils';
 import { getTitle, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
 import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
-import { CommunicationEmailCode, DBUser } from '@models/dbUser';
+import { CommunicationEmailCode, DBUser } from '@/models/dbUser/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
@@ -221,7 +221,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
     console.log([...config.newsletterBroadcastList.split(','), ...usersEmails])
     console.log(html)
-    if (process.env.SHOULD_SEND_NL) {
+    if (process.env.SHOULD_SEND_NL || process.env.NODE_ENV === 'test') {
       await sendEmail({
         toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
         attachments,

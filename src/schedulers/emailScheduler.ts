@@ -6,8 +6,10 @@ import config from '@config';
 import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { DBUser, EmailStatusCode } from '@models/dbUser';
+import { DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
+import { IEventBus } from '@/infra/eventBus';
+import { IMailingService } from '@/modules/email';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -159,6 +161,26 @@ export async function unsubscribeEmailAddresses() {
     })
   );
 }
+
+export async function consumePrimaryEmailStatusEvent(EventBus: IEventBus) {
+    const messageHandler = async ({ user_id } : { user_id: string }) => {
+      EventBus.produce(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, { user_id })
+      // potentialy other events toproduce
+    };
+    EventBus.consume(USER_EVENT.USER_EMAIL_ACTIVATED, messageHandler)
+}
+
+export async function addUserToOnboardingMailingList(EventBus: IEventBus, MailingService: IMailingService) {
+  const messageHandler = async ({ email } : { email: string }) => {
+    MailingService.addContactToMailingLists({
+      listIds: ['onboarding'],
+      email
+    })
+  };
+  EventBus.consume(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, messageHandler)
+}
+
+
 
 export async function setEmailStatusActiveForUsers() {
   const dbUsers : DBUser[] = await knex('users')

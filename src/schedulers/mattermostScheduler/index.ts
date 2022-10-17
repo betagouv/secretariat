@@ -2,7 +2,7 @@
 
 import betagouv from '@/betagouv';
 import { MattermostUser } from '@/lib/mattermost';
-import { DBUser, EmailStatusCode } from '@/models/dbUser';
+import { DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
 import { MemberWithPrimaryEmail, Member } from '@/models/member';
 import knex from '@/db';
 import * as utils from '@controllers/utils';

@@ -1,7 +1,7 @@
 import BetaGouv from '../betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { CommunicationEmailCode, DBUser, DBUserDetail, genderOptions, statusOptions } from '@models/dbUser';
+import { CommunicationEmailCode, DBUser, DBUserDetail, genderOptions, statusOptions } from '@/models/dbUser/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import * as mattermost from '@/lib/mattermost';
 import { fetchCommuneDetails } from '@/lib/searchCommune';

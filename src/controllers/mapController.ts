@@ -1,5 +1,5 @@
 import knex from "../db";
-import { DBUser } from "@models/dbUser";
+import { DBUser } from "@/models/dbUser/dbUser";
 
 export async function getUsersLocation(req, res) {
     const users : DBUser[] = await knex('users').whereNotNull('workplace_insee_code')

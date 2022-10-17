@@ -213,4 +213,18 @@ export type SendEmailProps = {
     htmlContent?: string,
 }
 
+export type AddContactToMailingListsProps = {
+    listIds: string[],
+    email: string
+}
+
 export type SendEmail = (email: SendEmailProps) => Promise<null>
+
+export type AddContactToMailingLists = (email: AddContactToMailingListsProps) => Promise<null>
+
+export interface IMailingService {
+    sendEmail: SendEmail,
+    addContactToMailingLists: AddContactToMailingLists
+}
+
+

@@ -1,9 +1,9 @@
 import { Member } from "@models/member";
-import { DBUser } from "@models/dbUser";
+import { DBUser } from "@/models/dbUser/dbUser";
 import BetaGouv from "@/betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@/db";
-import { EmailStatusCode } from "@models/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@config";
 
 export async function setEmailExpired(optionalExpiredUsers?: Member[]) {

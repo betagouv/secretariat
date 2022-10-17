@@ -6,7 +6,7 @@ import { Marrainage } from "@models/marrainage";
 import { Domaine, Member } from '@models/member';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import betagouv from '@/betagouv';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';

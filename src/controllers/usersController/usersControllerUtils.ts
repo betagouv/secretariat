@@ -2,9 +2,10 @@ import crypto from "crypto";
 import config from "@config";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
-import { DBUser, EmailStatusCode } from "@models/dbUser";
+import { DBUser, EmailStatusCode, USER_EVENT } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendEmail } from "@/config/email.config";
+import EventBus from "@/infra/eventBus/eventBus";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
@@ -28,6 +29,7 @@ export async function setEmailActive(username) {
     if (shouldSendEmailCreatedEmail) {
         await sendEmailCreatedEmail(username)
     }
+    EventBus.produce(USER_EVENT.USER_EMAIL_ACTIVATED, { user_id: user.username })
 }
 
 export async function setEmailSuspended(username) {

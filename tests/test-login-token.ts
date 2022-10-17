@@ -7,7 +7,7 @@ import * as controllerUtils from '@/controllers/utils';
 import knex from '@/db';
 import app from '@/index';
 import db from '@/db';
-import { EmailStatusCode } from '@/models/dbUser';
+import { EmailStatusCode } from '@/models/dbUser/dbUser';
 
 chai.use(chaiHttp);
 

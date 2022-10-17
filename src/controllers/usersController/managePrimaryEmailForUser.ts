@@ -3,7 +3,7 @@ import knex from "@/db/index";
 import * as mattermost from "@/lib/mattermost"
 import { addEvent, EventCode } from '@/lib/events'
 import { MemberWithPermission } from "@models/member";
-import { DBUser } from "@models/dbUser";
+import { DBUser } from "@/models/dbUser/dbUser";
 
 export async function managePrimaryEmailForUser(req, res) {
     const { username } = req.params;

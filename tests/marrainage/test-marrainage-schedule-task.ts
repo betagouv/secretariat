@@ -4,7 +4,7 @@ import _ from 'lodash/array';
 
 import knex from '@/db';
 import { reloadMarrainages, createMarrainages } from '@schedulers/marrainageScheduler';
-import { DBUser, EmailStatusCode } from '@models/dbUser';
+import { DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
 import betagouv from '@/betagouv';
 import { Member } from '@models/member';
 import * as Email from '@config/email.config'

@@ -2,7 +2,7 @@ import { sendEmail } from "@config/email.config"
 import { MarrainageGroupMember, EventEmailMarrainageOnboarder } from "@models/marrainage"
 import db from "@/db"
 import { EmailProps, EMAIL_TYPES } from "../../email"
-import { CommunicationEmailCode, DBUser } from "@models/dbUser"
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser"
 import { Member } from "@models/member"
 import betagouv from "@/betagouv"
 

@@ -2,7 +2,7 @@ import config from '@/config';
 import { sendOnboarderRequestEmail } from '@/modules/marrainage/eventHandlers';
 import { MarrainageService1v, MarrainageServiceWithGroup } from '@/services/marrainageService';
 import { createRequestForUser } from '@controllers/marrainageController';
-import { DBUser } from '@models/dbUser';
+import { DBUser } from '@/models/dbUser/dbUser';
 
 export async function createMarrainages() {
   const useNewMarrainage = config.FEATURE_USE_NEW_MARRAINAGE && config.MARRAINAGE_ONBOARDER_LIST

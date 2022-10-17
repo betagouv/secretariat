@@ -1,7 +1,7 @@
 import betagouv from "@/betagouv";
 import knex from "@/db";
 import * as utils from "@controllers/utils";
-import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@models/dbUser";
+import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 import { InfoUpdatePage } from '@views';
 

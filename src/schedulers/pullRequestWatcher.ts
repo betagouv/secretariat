@@ -4,7 +4,7 @@ import config from '@config';
 import knex from '@/db';
 import * as github from '@/lib/github';
 import * as mattermost from '@/lib/mattermost';
-import { CommunicationEmailCode, DBUser, EmailStatusCode } from '@models/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
 import { sleep } from '@controllers/utils';
 import { EMAIL_TYPES } from '@/modules/email';

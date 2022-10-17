@@ -2,7 +2,7 @@ import ejs from 'ejs';
 import BetaGouv from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { DBUser } from '@models/dbUser';
+import { DBUser } from '@/models/dbUser/dbUser';
 import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import * as mattermost from '@/lib/mattermost';
 import { makeHtmlEmail } from '@views/index.html';
