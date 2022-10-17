@@ -1,7 +1,7 @@
 import config from "@/config";
 import db from "@/db";
 import * as mattermost from "@/lib/mattermost";
-import { DBUser } from "@/models/dbUser";
+import { DBUser } from "@/models/dbUser/dbUser";
 import { MattermostMemberInfo } from "@/models/mattermostMemberInfo";
 
 const isSameUser = (mattermostUser: mattermost.MattermostUser, dbUser: DBUser) => {
@@ -16,6 +16,8 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
     const dbUsers : DBUser[] = await db('users')
         .whereIn('secondary_email', mattermostUserEmails)
         .orWhereIn('primary_email', mattermostUserEmails)
+        .join('mattermost_member_infos as mattermost', 'users.username', '=', 'mattermost.username')
+        .whereNull('mattermost.username')
     
     for (const dbUser of dbUsers) {
         const mattermostUser = mattermostUsers.find(mUser => isSameUser(mUser, dbUser))
@@ -24,5 +26,6 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
             mattermost_user_id: mattermostUser.id,
         }
         await db('mattermost_member_infos').insert(mattermostMemberInfo)
+        console.log(`Ajoute ${dbUser.username} à la table mattermost`)
     }
 }
