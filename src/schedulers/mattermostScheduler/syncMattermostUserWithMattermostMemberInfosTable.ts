@@ -1,7 +1,7 @@
 import config from "@/config";
 import db from "@/db";
 import * as mattermost from "@/lib/mattermost";
-import { DBUser } from "@/models/dbUser/dbUser";
+import { DBUser } from "@/models/dbUser";
 import { MattermostMemberInfo } from "@/models/mattermostMemberInfo";
 
 const isSameUser = (mattermostUser: mattermost.MattermostUser, dbUser: DBUser) => {
