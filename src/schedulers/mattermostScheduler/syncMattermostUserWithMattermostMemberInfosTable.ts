@@ -16,6 +16,8 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
     const dbUsers : DBUser[] = await db('users')
         .whereIn('secondary_email', mattermostUserEmails)
         .orWhereIn('primary_email', mattermostUserEmails)
+        .join('mattermost_member_infos as mattermost', 'users.username', '=', 'mattermost.username')
+        .whereNull('mattermost.username')
     
     for (const dbUser of dbUsers) {
         const mattermostUser = mattermostUsers.find(mUser => isSameUser(mUser, dbUser))
@@ -24,5 +26,6 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
             mattermost_user_id: mattermostUser.id,
         }
         await db('mattermost_member_infos').insert(mattermostMemberInfo)
+        console.log(`Ajoute ${dbUser.username} à la table mattermost`)
     }
 }
