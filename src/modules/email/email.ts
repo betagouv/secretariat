@@ -214,7 +214,7 @@ export type SendEmailProps = {
 }
 
 export type AddContactToMailingListsProps = {
-    listIds: string[],
+    listTypes: MAILING_LIST_TYPE[],
     email: string
 }
 
@@ -224,7 +224,11 @@ export type AddContactToMailingLists = (email: AddContactToMailingListsProps) =>
 
 export interface IMailingService {
     sendEmail: SendEmail,
-    addContactToMailingLists: AddContactToMailingLists
+    addContactToMailingLists?: AddContactToMailingLists
 }
 
+export enum MAILING_LIST_TYPE {
+    ONBOARDING="ONBOARDING",
+    NEWSLETTER="NEWSLETTER"
+}
 

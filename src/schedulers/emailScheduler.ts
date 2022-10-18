@@ -9,7 +9,7 @@ import knex from '@/db';
 import { DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
-import { IMailingService } from '@/modules/email';
+import { IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -173,14 +173,19 @@ export async function consumePrimaryEmailStatusEvent(EventBus: IEventBus) {
 export async function addUserToOnboardingMailingList(EventBus: IEventBus, MailingService: IMailingService) {
   const messageHandler = async ({ email } : { email: string }) => {
     MailingService.addContactToMailingLists({
-      listIds: ['onboarding'],
+      listTypes: [MAILING_LIST_TYPE.ONBOARDING],
       email
     })
   };
   EventBus.consume(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, messageHandler)
 }
 
-
+export async function addUserToNewsletterMailingList(MailingService: IMailingService, email: string) {
+  MailingService.addContactToMailingLists({
+    listTypes: [MAILING_LIST_TYPE.NEWSLETTER],
+    email
+  })
+}
 
 export async function setEmailStatusActiveForUsers() {
   const dbUsers : DBUser[] = await knex('users')
