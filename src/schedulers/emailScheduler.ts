@@ -174,7 +174,7 @@ export async function addUserToOnboardingMailingList(EventBus: IEventBus, Mailin
   const messageHandler = async ({ email } : { email: string }) => {
     MailingService.addContactsToMailingLists({
       listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-      email
+      emails: [email]
     })
   };
   EventBus.consume(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, messageHandler)
@@ -183,7 +183,7 @@ export async function addUserToOnboardingMailingList(EventBus: IEventBus, Mailin
 export async function addUserToNewsletterMailingList(MailingService: IMailingService, email: string) {
   MailingService.addContactsToMailingLists({
     listTypes: [MAILING_LIST_TYPE.NEWSLETTER],
-    email
+    emails: [email]
   })
 }
 
