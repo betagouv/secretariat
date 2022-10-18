@@ -213,18 +213,18 @@ export type SendEmailProps = {
     htmlContent?: string,
 }
 
-export type AddContactToMailingListsProps = {
+export type AddContactsToMailingListsProps = {
     listTypes: MAILING_LIST_TYPE[],
-    email: string
+    emails: string[]
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>
 
-export type AddContactToMailingLists = (email: AddContactToMailingListsProps) => Promise<null>
+export type AddContactsToMailingLists = (email: AddContactsToMailingListsProps) => Promise<null>
 
 export interface IMailingService {
     sendEmail: SendEmail,
-    addContactToMailingLists?: AddContactToMailingLists
+    addContactsToMailingLists?: AddContactsToMailingLists
 }
 
 export enum MAILING_LIST_TYPE {

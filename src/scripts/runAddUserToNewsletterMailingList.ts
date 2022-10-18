@@ -16,9 +16,9 @@ const addUsersToSendInBlueMailingList = async () => {
         htmlBuilder: null
     })
     for (const communication_email of communication_emails) {
-        await mailingService.addContactToMailingLists({
+        await mailingService.addContactsToMailingLists({
             listTypes: [MAILING_LIST_TYPE.NEWSLETTER], 
-            email: communication_email
+            emails: [communication_email]
         })
         console.log(`Email ${communication_email} added to mailing list`)
     }
