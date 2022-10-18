@@ -72,7 +72,7 @@ export async function addContactsToMailingLists({
 
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
     const chunkSize = 150;
-    for (const listId in listIds) {
+    for (const listId of listIds) {
         for (let i = 0; i < emails.length; i += chunkSize) {
             const emailsChunk = emails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
