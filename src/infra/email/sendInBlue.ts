@@ -72,19 +72,27 @@ export async function addContactsToMailingLists({
 
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
     const chunkSize = 150;
+    let newContacts = []
     for (const listId of listIds) {
         for (let i = 0; i < emails.length; i += chunkSize) {
             const emailsChunk = emails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
             contactEmails.emails = emailsChunk
             try {
-                const data = await apiInstance.addContactToList(listId, contactEmails)
-                console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+                const data : { contacts : { failure: string[] }} = await apiInstance.addContactToList(listId, contactEmails)
+                newContacts = [...newContacts, ...data.contacts.failure]
+                console.log('API called successfully. Returned data: ' + emailsChunk);
             } catch (error) {
                 console.error(error);
             }
             // do whatever
         }
+    }
+    for (const newContact of newContacts) {
+        await createContact({
+            email: newContact,
+            listIds
+        })
     }
     return
 }
