@@ -48,7 +48,7 @@ type SendinblueDeps = {
     } | undefined
 }
 
-function createContact({ email, listIds }:{
+export function createContact({ email, listIds }:{
     email: string,
     listIds: number[]
 }) {
