@@ -9,6 +9,7 @@ const addUsersToSendInBlueMailingList = async () => {
     })
     let communication_emails = dbUsers.map(user => user.communication_email === CommunicationEmailCode.PRIMARY ? user.primary_email : user.secondary_email)
     communication_emails = communication_emails.filter(communication_email => communication_email)
+    communication_emails = communication_emails.map(communication_email => communication_email.toLowerCase())
     const mailingService = makeSendinblue({
         MAIL_SENDER: process.env.MAIL_SENDER,
         SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
