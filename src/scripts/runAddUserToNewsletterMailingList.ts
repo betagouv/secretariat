@@ -15,13 +15,10 @@ const addUsersToSendInBlueMailingList = async () => {
         SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
         htmlBuilder: null
     })
-    for (const communication_email of communication_emails) {
-        await mailingService.addContactsToMailingLists({
-            listTypes: [MAILING_LIST_TYPE.NEWSLETTER], 
-            emails: [communication_email]
-        })
-        console.log(`Email ${communication_email} added to mailing list`)
-    }
+    await mailingService.addContactsToMailingLists({
+        listTypes: [MAILING_LIST_TYPE.NEWSLETTER], 
+        emails: communication_emails
+    })
 }
 
 addUsersToSendInBlueMailingList().then(() => {

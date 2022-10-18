@@ -64,7 +64,7 @@ function createContact({ email, listIds }:{
     });
 }
 
-export function addContactsToMailingLists({
+export async function addContactsToMailingLists({
         emails,
         listTypes
     }: AddContactsToMailingListsProps): Promise<null> {
@@ -77,11 +77,12 @@ export function addContactsToMailingLists({
             const emailsChunk = emails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
             contactEmails.emails = emailsChunk
-            apiInstance.addContactToList(listId, contactEmails).then(function(data) {
+            try {
+                const data = await apiInstance.addContactToList(listId, contactEmails)
                 console.log('API called successfully. Returned data: ' + JSON.stringify(data));
-            }, function(error) {
+            } catch (error) {
                 console.error(error);
-            });
+            }
             // do whatever
         }
     }
