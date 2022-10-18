@@ -91,6 +91,7 @@ export async function addContactsToMailingLists({
     let newContacts = []
     for (const listId of listIds) {
         const contacts : { email: string }[] = getAllContactsFromList({ listId })
+        console.log('Contacts', contacts)
         const listEmails = contacts.map(contact => contact.email)
         const concernedEmails = listEmails
             .filter(x => !emails.includes(x))
