@@ -64,6 +64,22 @@ export function createContact({ email, listIds }:{
     });
 }
 
+export async function getAllContactsFromList({ listId, opts} : {listId: number, opts?: { limit: number, offset: number }}) {
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+    opts = opts || {
+        limit: 500,
+        offset: 0
+    }
+    const data = await apiInstance.getContactsFromList(listId, opts).then(data => data.contacts)
+    if (data.length < 500) {
+        return data
+    }
+    return [...data, ...getAllContactsFromList({ listId, opts: {
+        limit: 500,
+        offset: 500
+    }})]
+}
+
 export async function addContactsToMailingLists({
         emails,
         listTypes
@@ -74,14 +90,19 @@ export async function addContactsToMailingLists({
     const chunkSize = 150;
     let newContacts = []
     for (const listId of listIds) {
-        for (let i = 0; i < emails.length; i += chunkSize) {
-            const emailsChunk = emails.slice(i, i + chunkSize);
+        const contacts : { email: string }[] = getAllContactsFromList({ listId })
+        const listEmails = contacts.map(contact => contact.email)
+        const concernedEmails = listEmails
+            .filter(x => !emails.includes(x))
+            .concat(emails.filter(x => !listEmails.includes(x)));
+        for (let i = 0; i < concernedEmails.length; i += chunkSize) {
+            const concernedEmailsChunk = concernedEmails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
-            contactEmails.emails = emailsChunk
+            contactEmails.emails = concernedEmailsChunk
             try {
                 const data : { contacts : { failure: string[] }} = await apiInstance.addContactToList(listId, contactEmails)
                 newContacts = [...newContacts, ...data.contacts.failure]
-                console.log('API called successfully. Returned data: ' + emailsChunk);
+                console.log('API called successfully. Returned data: ' + concernedEmails);
             } catch (error) {
                 console.error('Cannot add users');
             }
