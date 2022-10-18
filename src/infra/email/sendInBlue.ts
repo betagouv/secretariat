@@ -74,10 +74,11 @@ export async function getAllContactsFromList({ listId, opts} : {listId: number, 
     if (data.length < 500) {
         return data
     }
-    return [...data, ...getAllContactsFromList({ listId, opts: {
+    const nextData = await getAllContactsFromList({ listId, opts: {
         limit: 500,
         offset: 500
-    }})]
+    }})
+    return [...data, ...nextData]
 }
 
 export async function addContactsToMailingLists({
