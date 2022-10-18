@@ -1,5 +1,5 @@
 
-import { EmailProps, SendEmail, SendEmailProps, AddContactToMailingListsProps, AddContactToMailingLists  } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactToMailingListsProps, AddContactToMailingLists, MAILING_LIST_TYPE  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -33,6 +33,11 @@ type SendEmailFromSendinblueDeps = {
     } | undefined
 }
 
+const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
+    NEWSLETTER: 332,
+    ONBOARDING: 333
+} 
+
 type SendinblueDeps = {
     SIB_APIKEY_PUBLIC?: string
     SIB_APIKEY_PRIVATE: string
@@ -45,13 +50,13 @@ type SendinblueDeps = {
 
 export function addContactToMailingLists({
         email,
-        listIds
+        listTypes
     }: AddContactToMailingListsProps): Promise<null> {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
     let createContact = new SibApiV3Sdk.CreateContact();
     createContact.email = email
-    createContact.listIds = listIds
+    createContact.listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
 
     return apiInstance.createContact(createContact).then(function(data) {
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));

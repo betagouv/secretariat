@@ -1,5 +1,5 @@
 
-import { SendEmail } from '@modules/email'
+import { IMailingService, SendEmail } from '@modules/email'
 import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
@@ -67,7 +67,7 @@ const {
 if (process.env.NODE_ENV !== 'test') {
 
   try {
-    const emailer = process.env.MAIL_USE_SIB ? makeSendinblue({
+    const emailer : IMailingService = process.env.MAIL_USE_SIB ? makeSendinblue({
       MAIL_SENDER,
       SIB_APIKEY_PUBLIC,
       SIB_APIKEY_PRIVATE,
@@ -91,6 +91,7 @@ if (process.env.NODE_ENV !== 'test') {
       console.log('Emails will be sent using Nodemailer')
     }
     sendEmail = emailer.sendEmail
+    addContactToMailingLists = emailer.addContactToMailingLists
   } catch (e) {
     console.error(e)
     process.exit(1)
