@@ -83,11 +83,12 @@ export async function addContactsToMailingLists({
                 newContacts = [...newContacts, ...data.contacts.failure]
                 console.log('API called successfully. Returned data: ' + emailsChunk);
             } catch (error) {
-                console.error(error);
+                console.error('Cannot add users');
             }
             // do whatever
         }
     }
+    console.log(`${newContacts.length} new users to add`)
     for (const newContact of newContacts) {
         await createContact({
             email: newContact,
