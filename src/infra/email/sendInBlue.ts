@@ -60,7 +60,7 @@ export function createContact({ email, listIds }:{
     return apiInstance.createContact(createContact).then(function(data) {
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));
         }, function(error) {
-        console.error(error);
+        console.error(`Cannot add ${email}`, email);
     });
 }
 
@@ -106,7 +106,7 @@ export async function addContactsToMailingLists({
                 newContacts = [...newContacts, ...data.contacts.failure]
                 console.log('API called successfully. Returned data: ' + concernedEmails);
             } catch (error) {
-                console.error('Cannot add users');
+                console.error('Cannot add users', concernedEmailsChunk);
             }
             // do whatever
         }
