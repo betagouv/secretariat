@@ -5,7 +5,7 @@ import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
-let addContactToMailingLists
+let addContactsToMailingLists
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -91,7 +91,7 @@ if (process.env.NODE_ENV !== 'test') {
       console.log('Emails will be sent using Nodemailer')
     }
     sendEmail = emailer.sendEmail
-    addContactToMailingLists = emailer.addContactToMailingLists
+    addContactsToMailingLists = emailer.addContactsToMailingLists
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -102,5 +102,5 @@ if (process.env.NODE_ENV !== 'test') {
 
 export {
     sendEmail,
-    addContactToMailingLists
+    addContactsToMailingLists
 }

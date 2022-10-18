@@ -1,5 +1,5 @@
 
-import { EmailProps, SendEmail, SendEmailProps, AddContactToMailingListsProps, AddContactToMailingLists, MAILING_LIST_TYPE  } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, AddContactsToMailingLists, MAILING_LIST_TYPE  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -48,21 +48,45 @@ type SendinblueDeps = {
     } | undefined
 }
 
-export function addContactToMailingLists({
-        email,
-        listTypes
-    }: AddContactToMailingListsProps): Promise<null> {
+export function createContact({ email, listIds }:{
+    email: string,
+    listIds: number[]
+}) {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
-
     let createContact = new SibApiV3Sdk.CreateContact();
     createContact.email = email
-    createContact.listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
+    createContact.listIds = listIds
 
     return apiInstance.createContact(createContact).then(function(data) {
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));
         }, function(error) {
         console.error(error);
     });
+}
+
+export async function addContactsToMailingLists({
+        emails,
+        listTypes
+    }: AddContactsToMailingListsProps): Promise<null> {
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+
+    const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
+    const chunkSize = 150;
+    for (const listId in listIds) {
+        for (let i = 0; i < emails.length; i += chunkSize) {
+            const emailsChunk = emails.slice(i, i + chunkSize);
+            let contactEmails = new SibApiV3Sdk.AddContactToList();
+            contactEmails.emails = emailsChunk
+            try {
+                const data = await apiInstance.addContactToList(listId, contactEmails)
+                console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+            } catch (error) {
+                console.error(error);
+            }
+            // do whatever
+        }
+    }
+    return
 }
 
 export const makeSendEmailFromSendinblue = ({
@@ -119,7 +143,7 @@ export const makeSendEmailFromSendinblue = ({
 
 export const makeSendinblue = (deps: SendinblueDeps): {
     sendEmail: SendEmail,
-    addContactToMailingLists: AddContactToMailingLists
+    addContactsToMailingLists: AddContactsToMailingLists
 } => {
 
     const { SIB_APIKEY_PRIVATE, htmlBuilder, MAIL_SENDER } = deps
@@ -138,6 +162,6 @@ export const makeSendinblue = (deps: SendinblueDeps): {
 
     return {
         sendEmail: makeSendEmailFromSendinblue({ MAIL_SENDER, htmlBuilder }),
-        addContactToMailingLists
+        addContactsToMailingLists
     }
 }

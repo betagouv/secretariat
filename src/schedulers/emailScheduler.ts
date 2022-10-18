@@ -172,18 +172,18 @@ export async function consumePrimaryEmailStatusEvent(EventBus: IEventBus) {
 
 export async function addUserToOnboardingMailingList(EventBus: IEventBus, MailingService: IMailingService) {
   const messageHandler = async ({ email } : { email: string }) => {
-    MailingService.addContactToMailingLists({
+    MailingService.addContactsToMailingLists({
       listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-      email
+      emails: [email]
     })
   };
   EventBus.consume(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, messageHandler)
 }
 
 export async function addUserToNewsletterMailingList(MailingService: IMailingService, email: string) {
-  MailingService.addContactToMailingLists({
+  MailingService.addContactsToMailingLists({
     listTypes: [MAILING_LIST_TYPE.NEWSLETTER],
-    email
+    emails: [email]
   })
 }
 
