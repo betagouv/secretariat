@@ -92,9 +92,10 @@ export async function addContactsToMailingLists({
     let newContacts = []
     for (const listId of listIds) {
         const contacts : { email: string }[] = await getAllContactsFromList({ listId })
-        console.log('Contacts', contacts)
         const listEmails = contacts.map(contact => contact.email)
+        console.log('Contacts', listEmails.join(','))
         const concernedEmails = emails.filter(x => !listEmails.includes(x));
+        console.log('ConcercernedEmails', concernedEmails.join(','))
         for (let i = 0; i < concernedEmails.length; i += chunkSize) {
             const concernedEmailsChunk = concernedEmails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
