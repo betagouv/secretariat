@@ -72,14 +72,15 @@ async function createEmailCampaign(props) {
         html,
         templateId,
         listIds,
-        campaignName
+        campaignName,
+        variables,
     } = props
     let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
     let emailCampaigns = new SibApiV3Sdk.CreateEmailCampaign(); 
     emailCampaigns = {
         sender: sender,
         name: campaignName,
-        params: {'PARAMETER': 'My param value' , 'ADDRESS': 'Seattle, WA', 'SUBJECT': 'New Subject'},
+        params: variables,
         templateId,
         htmlContent: html,
         subject,
@@ -103,7 +104,7 @@ export const makeSendCampaignEmail = ({
     return async function sendCampaignEmail(props: SendCampaignEmailProps) {
         const {
             subject,
-            variables = {},
+            variables,
             htmlContent,
             campaignName,
             type
@@ -113,6 +114,10 @@ export const makeSendCampaignEmail = ({
         let html: string
         if (htmlContent) {
             html = htmlContent
+            if (!html.includes(`{{ unsubscribe}}`)) {
+                // unsubscribe is mandatory
+                html = `${html}<a href="{{ unsubscribe }}">Click here to unsubscribe</a>`
+            }
         } else {
             if (!htmlBuilder) {
                 templateId = TEMPLATE_ID_BY_TYPE[type]

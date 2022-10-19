@@ -4,13 +4,14 @@ import BetaGouv from '../betagouv';
 import config from '@config';
 import knex from '@/db';
 import * as utils from '@controllers/utils';
-import { getTitle, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
+import { getTitle, renderHtmlFromMd, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
 import { Member, MemberWithEmail } from '@models/member';
 import { JobWTTJ } from '@models/job';
 import { CommunicationEmailCode, DBUser } from '@/models/dbUser/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
 import { sendEmail } from '@/config/email.config';
-import { EMAIL_TYPES } from '@/modules/email';
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
+import { makeSendinblue } from '@/infra/email/sendInBlue';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -202,34 +203,25 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
       ''
     );
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
-    const { html, attachments } = renderHtmlFromMdWithAttachements(newsletterContent);
+    const html = renderHtmlFromMd(newsletterContent);
 
-    const usersInfos : Member[] = await BetaGouv.usersInfos();
-    const users : Member[] = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
-    const dbUsers : DBUser[] = await knex('users').whereNotNull('primary_email');
-    const concernedUsers : MemberWithEmail[] = []
-    for (const user of users) {
-      const dbUser: DBUser | undefined = dbUsers.find((x) => x.username === user.id);
-      if (dbUser ) {
-        concernedUsers.push({
-          ...user,
-          email: dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email
-        })
-      }
-    }
-
-    const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
-    console.log([...config.newsletterBroadcastList.split(','), ...usersEmails])
-    console.log(html)
     if (process.env.SHOULD_SEND_NL || process.env.NODE_ENV === 'test') {
-      await sendEmail({
-        toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
-        attachments,
-        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-        variables: {
-          body: html,
-          subject: `${getTitle(newsletterContent)}`,
+      const { sendCampaignEmail } = makeSendinblue({
+        SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
+        MAIL_SENDER: "espace-membre@beta.gouv.fr",
+        htmlBuilder: {
+            renderFile: function (url: string, params: any): Promise<string> {
+                throw new Error("Function not implemented.");
+            },
+            templates: undefined
         }
+      })
+      sendCampaignEmail({
+          type: MAILING_LIST_TYPE.NEWSLETTER,
+          variables: undefined,
+          campaignName: `${getTitle(newsletterContent)}`,
+          subject: `${getTitle(newsletterContent)}`,
+          htmlContent: html
       })
       
       await knex('newsletters')
