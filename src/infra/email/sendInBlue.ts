@@ -1,5 +1,5 @@
 
-import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, AddContactsToMailingLists, MAILING_LIST_TYPE  } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, AddContactsToMailingLists, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -35,7 +35,8 @@ type SendEmailFromSendinblueDeps = {
 
 const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
     NEWSLETTER: 332,
-    ONBOARDING: 333
+    ONBOARDING: 333,
+    TEST: 336,
 } 
 
 type SendinblueDeps = {
@@ -93,34 +94,63 @@ async function createEmailCampaign(props) {
     });
 }
 
-export async function createAndSendCampaignEmail(props) {
-    const {
-        subject,
-        variables = {},
-        sender,
-        html,
-        templateId,
-        listIds,
-        campaignName
-    } = props
-    const campaign = await createEmailCampaign({
-        subject,
-        variables,
-        sender,
-        html,
-        templateId,
-        listIds,
-        campaignName
-    })
-    let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
+export const makeSendCampaignEmail = ({
+    MAIL_SENDER,
+    htmlBuilder,
+} : {
+    MAIL_SENDER: SendEmailFromSendinblueDeps['MAIL_SENDER'],
+    htmlBuilder: SendEmailFromSendinblueDeps['htmlBuilder'],
+}) : SendCampaignEmail =>  {
+    return async function sendCampaignEmail(props: SendCampaignEmailProps) {
+        const {
+            subject,
+            variables = {},
+            htmlContent,
+            listIds,
+            campaignName,
+            type
+        } = props
 
-    let campaignId = campaign.id;
+        let templateId: number
+        let html: string
+        if (htmlContent) {
+            html = htmlContent
+        } else {
+            if (!htmlBuilder) {
+                templateId = TEMPLATE_ID_BY_TYPE[type]
+                if (!templateId) {
+                    return Promise.reject(new Error('Cannot find template for type ' + type))
+                }
+            } else {
+                const templateURL = htmlBuilder.templates[type]
+                html = await htmlBuilder.renderFile(templateURL, {
+                ...variables
+                });
+            }
+        }
 
-    return apiInstance.sendEmailCampaignNow(campaignId).then(function() {
-    console.log('API called successfully.');
-    }, function(error) {
-    console.error(error);
-    });
+        const campaign = await createEmailCampaign({
+            subject,
+            variables,
+            sender: {
+                name: "Espace Membre BetaGouv",
+                email: MAIL_SENDER
+            },
+            html,
+            templateId,
+            listIds,
+            campaignName
+        })
+        let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
+
+        let campaignId = campaign.id;
+
+        return apiInstance.sendEmailCampaignNow(campaignId).then(function() {
+            console.log('API called successfully.');
+        }, function(error) {
+            console.error(error);
+        });
+    }
 }
 
 export async function getAllContactsFromList({ listId, opts} : {listId: number, opts?: { limit: number, offset: number }}) {
@@ -175,7 +205,7 @@ export async function addContactsToMailingLists({
     return
 }
 
-export const makeSendEmailFromSendinblue = ({
+export const makeSendEmail = ({
     MAIL_SENDER,
     htmlBuilder,
 } : {
@@ -236,10 +266,7 @@ export const makeSendEmailFromSendinblue = ({
 }
 
 
-export const makeSendinblue = (deps: SendinblueDeps): {
-    sendEmail: SendEmail,
-    addContactsToMailingLists: AddContactsToMailingLists
-} => {
+export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
 
     const { SIB_APIKEY_PRIVATE, htmlBuilder, MAIL_SENDER } = deps
 
@@ -256,7 +283,8 @@ export const makeSendinblue = (deps: SendinblueDeps): {
     partnerKey.apiKey = SIB_APIKEY_PRIVATE
 
     return {
-        sendEmail: makeSendEmailFromSendinblue({ MAIL_SENDER, htmlBuilder }),
+        sendEmail: makeSendEmail({ MAIL_SENDER, htmlBuilder }),
+        sendCampaignEmail: makeSendCampaignEmail({ MAIL_SENDER, htmlBuilder }),
         addContactsToMailingLists
     }
 }

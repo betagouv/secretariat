@@ -75,7 +75,6 @@ export const makeSendEmailNodemailer = (deps: SendEmailFromNodemailerDeps): Send
       bcc,
       ...extraParams,
     };
-    console.log(JSON.stringify(mail))
     return new Promise((resolve, reject) => {
       mailTransport.sendMail(mail, (error, info) =>
         error ? reject(error) : resolve(info)
