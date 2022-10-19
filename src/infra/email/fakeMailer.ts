@@ -1,6 +1,7 @@
-import { SendEmailProps } from "@modules/email"
+import { SendCampaignEmailProps, SendEmailProps } from "@modules/email"
 
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
+const sentCampaignEmails: Array<SendCampaignEmailProps> = [] // For testing purposes only
 
 function fakeSendEmail(props: SendEmailProps): Promise<null> {
   if (process.env.NODE_ENV === 'test') {
@@ -21,6 +22,24 @@ function fakeSendEmail(props: SendEmailProps): Promise<null> {
   return null
 }
 
+function fakeSendCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
+  if (process.env.NODE_ENV === 'test') {
+    // Register the sent email but don't send it for real
+    sentCampaignEmails.push(props)
+    return null
+  }
+
+  const { subject, type, variables } = props
+
+  console.info(
+    `EMAIL OUT: ${type} with subject "${subject}" and type ${type}`,
+    variables
+  )
+
+  return null
+}
+
+
 // For tests only
 const getSentEmails = () => {
   return sentEmails
@@ -32,4 +51,4 @@ const resetSentEmails = () => {
   }
 }
 
-export { getSentEmails, fakeSendEmail, resetSentEmails }
+export { getSentEmails, fakeSendEmail, resetSentEmails, fakeSendCampaignEmail }

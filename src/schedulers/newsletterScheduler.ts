@@ -9,7 +9,7 @@ import { JobWTTJ } from '@models/job';
 import { sendInfoToChat } from '@/infra/chat';
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
 import { makeSendinblue } from '@/infra/email/sendInBlue';
-import { sendEmail } from '@/config/email.config';
+import { sendEmail, sendCampaignEmail } from '@/config/email.config';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -204,16 +204,6 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const html = renderHtmlFromMd(newsletterContent);
 
     if (process.env.SHOULD_SEND_NL || process.env.NODE_ENV === 'test') {
-      const { sendCampaignEmail } = makeSendinblue({
-        SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
-        MAIL_SENDER: "espace-membre@beta.gouv.fr",
-        htmlBuilder: {
-            renderFile: function (url: string, params: any): Promise<string> {
-                throw new Error("Function not implemented.");
-            },
-            templates: undefined
-        }
-      })
       await sendCampaignEmail({
           type: MAILING_LIST_TYPE.NEWSLETTER,
           variables: undefined,
