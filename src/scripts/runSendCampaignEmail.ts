@@ -16,5 +16,5 @@ sendCampaignEmail({
     variables: {},
     campaignName: "TEST",
     subject: "TEST",
-    htmlContent: '<h1>This is a test</h1>'
+    htmlContent: '<h1>This is a test</h1><a href="{{ unsubscribe }}">Click here to unsubscribe</a>'
 })
