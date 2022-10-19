@@ -4,13 +4,10 @@ import BetaGouv from '../betagouv';
 import config from '@config';
 import knex from '@/db';
 import * as utils from '@controllers/utils';
-import { getTitle, renderHtmlFromMd, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
-import { Member, MemberWithEmail } from '@models/member';
+import { getTitle, renderHtmlFromMd } from '@/lib/mdtohtml';
 import { JobWTTJ } from '@models/job';
-import { CommunicationEmailCode, DBUser } from '@/models/dbUser/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
-import { sendEmail } from '@/config/email.config';
-import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
+import { MAILING_LIST_TYPE } from '@/modules/email';
 import { makeSendinblue } from '@/infra/email/sendInBlue';
 
 const {
