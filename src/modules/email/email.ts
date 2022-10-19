@@ -213,6 +213,18 @@ export type SendEmailProps = {
     htmlContent?: string,
 }
 
+export type SendCampaignEmailProps = {
+    subject?: string
+    variables: EmailProps['variables'],
+    extraParams?: Record<string, string>, 
+    attachments?: any[],
+    replyTo?: string,
+    headers?: Record<string, string|number>,
+    htmlContent?: string,
+    type: MAILING_LIST_TYPE,
+    campaignName: string
+}
+
 export type AddContactsToMailingListsProps = {
     listTypes: MAILING_LIST_TYPE[],
     emails: string[]
@@ -220,15 +232,19 @@ export type AddContactsToMailingListsProps = {
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>
 
+export type SendCampaignEmail = (props: SendCampaignEmailProps) => Promise<null>
+
 export type AddContactsToMailingLists = (email: AddContactsToMailingListsProps) => Promise<null>
 
 export interface IMailingService {
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
+    sendCampaignEmail?: SendCampaignEmail
 }
 
 export enum MAILING_LIST_TYPE {
     ONBOARDING="ONBOARDING",
-    NEWSLETTER="NEWSLETTER"
+    NEWSLETTER="NEWSLETTER",
+    TEST="TEST"
 }
 

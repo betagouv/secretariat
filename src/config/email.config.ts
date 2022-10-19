@@ -6,6 +6,7 @@ import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 let addContactsToMailingLists
+let sendCampaignEmail
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -91,6 +92,7 @@ if (process.env.NODE_ENV !== 'test') {
       console.log('Emails will be sent using Nodemailer')
     }
     sendEmail = emailer.sendEmail
+    sendCampaignEmail = emailer.sendCampaignEmail
     addContactsToMailingLists = emailer.addContactsToMailingLists
   } catch (e) {
     console.error(e)
@@ -102,5 +104,6 @@ if (process.env.NODE_ENV !== 'test') {
 
 export {
     sendEmail,
-    addContactsToMailingLists
+    addContactsToMailingLists,
+    sendCampaignEmail
 }
