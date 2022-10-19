@@ -7,8 +7,9 @@ import * as utils from '@controllers/utils';
 import { getTitle, renderHtmlFromMd } from '@/lib/mdtohtml';
 import { JobWTTJ } from '@models/job';
 import { sendInfoToChat } from '@/infra/chat';
-import { MAILING_LIST_TYPE } from '@/modules/email';
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
 import { makeSendinblue } from '@/infra/email/sendInBlue';
+import { sendEmail } from '@/config/email.config';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -213,12 +214,21 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
             templates: undefined
         }
       })
-      sendCampaignEmail({
+      await sendCampaignEmail({
           type: MAILING_LIST_TYPE.NEWSLETTER,
           variables: undefined,
           campaignName: `${getTitle(newsletterContent)}`,
           subject: `${getTitle(newsletterContent)}`,
           htmlContent: html
+      })
+
+      await sendEmail({
+        toEmail: [...config.newsletterBroadcastList.split(',')],
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+        variables: {
+          body: html,
+          subject: `${getTitle(newsletterContent)}`,
+        }
       })
       
       await knex('newsletters')

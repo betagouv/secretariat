@@ -338,12 +338,25 @@ describe('Newsletter', () => {
           sent_at: null,
         },
       ]);
+      const sendEmailStub = sinon
+        .stub(Email, 'sendEmail')
+        .returns(Promise.resolve(null));
       clock = sinon.useFakeTimers(date);
       await sendNewsletterAndCreateNewOne();
       padHeadCall.isDone().should.be.true;
       padGetDownloadCall.isDone().should.be.true;
       padPostLoginCall.isDone().should.be.true;
       padPostNewCall.isDone().should.be.true;
+      sendEmailStub.calledOnce.should.be.true;
+      sendEmailStub.firstCall.args[0].variables.subject.should.equal(
+        replaceMacroInContent(NEWSLETTER_TITLE, {
+          __REMPLACER_PAR_DATE__: dateAsString,
+        })
+      );
+      sendEmailStub.firstCall.args[0].toEmail.join(',').should.equal(`secretariat@beta.gouv.fr`)
+      sendEmailStub.firstCall.args[0].variables.body.should.equal(
+        renderHtmlFromMd(contentWithMacro)
+      );
       slack.called.should.be.true;
       const newsletter = await knex('newsletters')
         .orderBy('created_at')
@@ -351,6 +364,7 @@ describe('Newsletter', () => {
         .first();
       newsletter.sent_at.should.not.be.null;
       clock.restore();
+      sendEmailStub.restore();
       slack.restore();
       await knex('newsletters').truncate();
     });
