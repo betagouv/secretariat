@@ -64,6 +64,64 @@ export function createContact({ email, listIds }:{
     });
 }
 
+async function createEmailCampaign(props) {
+    const {
+        subject,
+        variables = {},
+        sender,
+        html,
+        templateId,
+        listIds,
+        campaignName
+    } = props
+    let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
+    let emailCampaigns = new SibApiV3Sdk.CreateEmailCampaign(); 
+    emailCampaigns = {
+        sender: sender,
+        name: campaignName,
+        params: variables,
+        templateId,
+        htmlContent: html,
+        subject,
+        recipients: { listIds: listIds },
+    }
+    return apiInstance.createEmailCampaign(emailCampaigns).then(function(data) {
+        console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+    }, function(error) {
+        console.error(error);
+    });
+}
+
+export async function createAndSendCampaignEmail(props) {
+    const {
+        subject,
+        variables = {},
+        sender,
+        html,
+        templateId,
+        listIds,
+        campaignName
+    } = props
+    const campaign = await createEmailCampaign({
+        subject,
+        variables = {},
+        sender,
+        html,
+        templateId,
+        listIds,
+        campaignName
+    })
+    let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();
+
+    let campaignId = campaign.id;
+
+    return apiInstance.sendEmailCampaignNow(campaignId).then(function() {
+    console.log('API called successfully.');
+    }, function(error) {
+    console.error(error);
+    });
+}
+
 export async function getAllContactsFromList({ listId, opts} : {listId: number, opts?: { limit: number, offset: number }}) {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
     opts = opts || {
@@ -93,9 +151,7 @@ export async function addContactsToMailingLists({
     for (const listId of listIds) {
         const contacts : { email: string }[] = await getAllContactsFromList({ listId })
         const listEmails = contacts.map(contact => contact.email)
-        console.log('Contacts', listEmails.join(','))
         const concernedEmails = emails.filter(x => !listEmails.includes(x));
-        console.log('ConcercernedEmails', concernedEmails.join(','))
         for (let i = 0; i < concernedEmails.length; i += chunkSize) {
             const concernedEmailsChunk = concernedEmails.slice(i, i + chunkSize);
             let contactEmails = new SibApiV3Sdk.AddContactToList();
@@ -103,14 +159,12 @@ export async function addContactsToMailingLists({
             try {
                 const data : { contacts : { failure: string[] }} = await apiInstance.addContactToList(listId, contactEmails)
                 newContacts = [...newContacts, ...data.contacts.failure]
-                console.log('API called successfully. Returned data: ' + concernedEmails);
             } catch (error) {
                 console.error('Cannot add users ${error}', concernedEmailsChunk);
             }
             // do whatever
         }
     }
-    console.log(`${newContacts.length} new users to add`)
     for (const newContact of newContacts) {
         await createContact({
             email: newContact,
@@ -135,21 +189,27 @@ export const makeSendEmailFromSendinblue = ({
             type,
             toEmail,
             variables = {},
-            replyTo
+            replyTo,
+            bcc,
+            htmlContent
         } = props
     
         let templateId: number
         let html: string
-        if (!htmlBuilder) {
-            templateId = TEMPLATE_ID_BY_TYPE[type]
-            if (!templateId) {
-                return Promise.reject(new Error('Cannot find template for type ' + type))
-            }
+        if (htmlContent) {
+            html = htmlContent
         } else {
-            const templateURL = htmlBuilder.templates[type]
-            html = await htmlBuilder.renderFile(templateURL, {
-              ...variables
-            });
+            if (!htmlBuilder) {
+                templateId = TEMPLATE_ID_BY_TYPE[type]
+                if (!templateId) {
+                    return Promise.reject(new Error('Cannot find template for type ' + type))
+                }
+            } else {
+                const templateURL = htmlBuilder.templates[type]
+                html = await htmlBuilder.renderFile(templateURL, {
+                ...variables
+                });
+            }
         }
     
         return apiInstance.sendTransacEmail({
@@ -162,6 +222,9 @@ export const makeSendEmailFromSendinblue = ({
                  "email": email,
               }
           )),
+          bcc: bcc.map(email => ({
+            "email": email
+          })),
           params: variables,
           templateId,
           htmlContent: html,
