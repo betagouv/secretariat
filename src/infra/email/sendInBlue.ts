@@ -87,6 +87,7 @@ async function createEmailCampaign(props) {
     }
     return apiInstance.createEmailCampaign(emailCampaigns).then(function(data) {
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+        return data
     }, function(error) {
         console.error(error);
     });
