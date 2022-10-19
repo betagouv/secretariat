@@ -8,7 +8,6 @@ import { getTitle, renderHtmlFromMd } from '@/lib/mdtohtml';
 import { JobWTTJ } from '@models/job';
 import { sendInfoToChat } from '@/infra/chat';
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
-import { makeSendinblue } from '@/infra/email/sendInBlue';
 import { sendEmail, sendCampaignEmail } from '@/config/email.config';
 
 const {
