@@ -3,7 +3,7 @@ import { MAILING_LIST_TYPE } from "@/modules/email";
 
 const { sendCampaignEmail } = makeSendinblue({
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
-    MAIL_SENDER: "Lucas TEST",
+    MAIL_SENDER: "espace-membre@beta.gouv.fr",
     htmlBuilder: {
         renderFile: function (url: string, params: any): Promise<string> {
             throw new Error("Function not implemented.");
