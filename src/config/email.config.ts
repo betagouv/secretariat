@@ -1,12 +1,12 @@
 
-import { IMailingService, SendEmail } from '@modules/email'
-import { fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
+import { IMailingService, SendCampaignEmail, SendEmail } from '@modules/email'
+import { fakeSendCampaignEmail, fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
 let addContactsToMailingLists
-let sendCampaignEmail
+let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -68,12 +68,13 @@ const {
 if (process.env.NODE_ENV !== 'test') {
 
   try {
-    const emailer : IMailingService = process.env.MAIL_USE_SIB ? makeSendinblue({
+    const sendInBlue = makeSendinblue({
       MAIL_SENDER,
       SIB_APIKEY_PUBLIC,
       SIB_APIKEY_PRIVATE,
       htmlBuilder
-    }) : { sendEmail:makeSendEmailNodemailer({
+    })
+    const emailer : IMailingService = process.env.MAIL_USE_SIB ? sendInBlue : { sendEmail:makeSendEmailNodemailer({
         MAIL_DEBUG,
         MAIL_HOST,
         MAIL_IGNORE_TLS,
@@ -92,8 +93,8 @@ if (process.env.NODE_ENV !== 'test') {
       console.log('Emails will be sent using Nodemailer')
     }
     sendEmail = emailer.sendEmail
-    sendCampaignEmail = emailer.sendCampaignEmail
-    addContactsToMailingLists = emailer.addContactsToMailingLists
+    sendCampaignEmail = sendInBlue.sendCampaignEmail
+    addContactsToMailingLists = sendInBlue.addContactsToMailingLists
   } catch (e) {
     console.error(e)
     process.exit(1)

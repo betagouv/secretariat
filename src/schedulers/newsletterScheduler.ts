@@ -4,13 +4,11 @@ import BetaGouv from '../betagouv';
 import config from '@config';
 import knex from '@/db';
 import * as utils from '@controllers/utils';
-import { getTitle, renderHtmlFromMdWithAttachements } from '@/lib/mdtohtml';
-import { Member, MemberWithEmail } from '@models/member';
+import { getTitle, renderHtmlFromMd } from '@/lib/mdtohtml';
 import { JobWTTJ } from '@models/job';
-import { CommunicationEmailCode, DBUser } from '@/models/dbUser/dbUser';
 import { sendInfoToChat } from '@/infra/chat';
-import { sendEmail } from '@/config/email.config';
-import { EMAIL_TYPES } from '@/modules/email';
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
+import { sendEmail, sendCampaignEmail } from '@/config/email.config';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -202,29 +200,19 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
       ''
     );
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
-    const { html, attachments } = renderHtmlFromMdWithAttachements(newsletterContent);
+    const html = renderHtmlFromMd(newsletterContent);
 
-    const usersInfos : Member[] = await BetaGouv.usersInfos();
-    const users : Member[] = usersInfos.filter(userInfos => !utils.checkUserIsExpired(userInfos));
-    const dbUsers : DBUser[] = await knex('users').whereNotNull('primary_email');
-    const concernedUsers : MemberWithEmail[] = []
-    for (const user of users) {
-      const dbUser: DBUser | undefined = dbUsers.find((x) => x.username === user.id);
-      if (dbUser ) {
-        concernedUsers.push({
-          ...user,
-          email: dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email ? dbUser.secondary_email : dbUser.primary_email
-        })
-      }
-    }
-
-    const usersEmails : string[] = concernedUsers.filter(user => user.email).map(user => user.email) as string[]
-    console.log([...config.newsletterBroadcastList.split(','), ...usersEmails])
-    console.log(html)
     if (process.env.SHOULD_SEND_NL || process.env.NODE_ENV === 'test') {
+      await sendCampaignEmail({
+          type: MAILING_LIST_TYPE.NEWSLETTER,
+          variables: undefined,
+          campaignName: `${getTitle(newsletterContent)}`,
+          subject: `${getTitle(newsletterContent)}`,
+          htmlContent: html
+      })
+
       await sendEmail({
-        toEmail: [...config.newsletterBroadcastList.split(','), ...usersEmails],
-        attachments,
+        toEmail: [...config.newsletterBroadcastList.split(',')],
         type: EMAIL_TYPES.EMAIL_NEWSLETTER,
         variables: {
           body: html,

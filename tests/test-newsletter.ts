@@ -353,7 +353,7 @@ describe('Newsletter', () => {
           __REMPLACER_PAR_DATE__: dateAsString,
         })
       );
-      sendEmailStub.firstCall.args[0].toEmail.join(',').should.equal(`secretariat@beta.gouv.fr,membre.actif@${config.domain},membre.parti@${config.domain},membre.nouveau@${config.domain},membre.plusieurs.missions@${config.domain},julien.dauphant@${config.domain},laurent.bossavit@${config.domain},loup.wolff@${config.domain},mattermost.newuser@${config.domain}`)
+      sendEmailStub.firstCall.args[0].toEmail.join(',').should.equal(`secretariat@beta.gouv.fr`)
       sendEmailStub.firstCall.args[0].variables.body.should.equal(
         renderHtmlFromMd(contentWithMacro)
       );
