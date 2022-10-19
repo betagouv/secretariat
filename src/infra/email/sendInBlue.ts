@@ -105,7 +105,7 @@ export async function createAndSendCampaignEmail(props) {
     } = props
     const campaign = await createEmailCampaign({
         subject,
-        variables = {},
+        variables,
         sender,
         html,
         templateId,
