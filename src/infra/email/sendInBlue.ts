@@ -80,7 +80,7 @@ async function createEmailCampaign(props) {
     emailCampaigns = {
         sender: sender,
         name: campaignName,
-        params: variables,
+        params: {'PARAMETER': 'My param value' , 'ADDRESS': 'Seattle, WA', 'SUBJECT': 'New Subject'},
         templateId,
         htmlContent: html,
         subject,
