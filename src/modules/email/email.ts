@@ -203,7 +203,7 @@ export type EmailProps = BaseEmail & EmailVariants
 export type SendEmailProps = {
     subject?: string
     type: EmailProps['type']
-    variables: EmailProps['variables'],
+    variables: Record<string, string>,
     toEmail: string[],
     extraParams?: Record<string, string>, 
     attachments?: any[],
