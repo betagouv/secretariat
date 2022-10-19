@@ -106,7 +106,6 @@ export const makeSendCampaignEmail = ({
             subject,
             variables = {},
             htmlContent,
-            listIds,
             campaignName,
             type
         } = props
@@ -138,7 +137,7 @@ export const makeSendCampaignEmail = ({
             },
             html,
             templateId,
-            listIds,
+            listIds: [MAILING_LIST_ID_BY_TYPE[type]],
             campaignName
         })
         let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();

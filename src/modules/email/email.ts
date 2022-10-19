@@ -215,14 +215,13 @@ export type SendEmailProps = {
 
 export type SendCampaignEmailProps = {
     subject?: string
-    type: EmailProps['type']
     variables: EmailProps['variables'],
     extraParams?: Record<string, string>, 
     attachments?: any[],
     replyTo?: string,
     headers?: Record<string, string|number>,
     htmlContent?: string,
-    listIds: string[],
+    type: MAILING_LIST_TYPE,
     campaignName: string
 }
 
