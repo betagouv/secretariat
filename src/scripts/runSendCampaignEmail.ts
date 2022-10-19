@@ -13,7 +13,7 @@ const { sendCampaignEmail } = makeSendinblue({
 })
 sendCampaignEmail({
     type: MAILING_LIST_TYPE.TEST,
-    variables: undefined,
+    variables: {},
     campaignName: "TEST",
     subject: "TEST",
     htmlContent: '<h1>This is a test</h1>'

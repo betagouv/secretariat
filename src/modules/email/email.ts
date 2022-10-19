@@ -215,7 +215,7 @@ export type SendEmailProps = {
 
 export type SendCampaignEmailProps = {
     subject?: string
-    variables: EmailProps['variables'],
+    variables: Record<string, string>,
     extraParams?: Record<string, string>, 
     attachments?: any[],
     replyTo?: string,
