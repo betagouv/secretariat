@@ -68,7 +68,6 @@ export function createContact({ email, listIds }:{
 async function createEmailCampaign(props) {
     const {
         subject,
-        variables = {},
         sender,
         html,
         templateId,
