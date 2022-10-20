@@ -200,10 +200,14 @@ export async function addContactsToMailingLists({
         }
     }
     for (const newContact of newContacts) {
-        await createContact({
-            email: newContact,
-            listIds
-        })
+        try {
+            await createContact({
+                email: newContact,
+                listIds
+            })
+        } catch(error) {
+            console.error(`Cannot create contact ${error}`);
+        }
     }
     return
 }

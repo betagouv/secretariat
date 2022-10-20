@@ -1,11 +1,11 @@
 
-import { IMailingService, SendCampaignEmail, SendEmail } from '@modules/email'
+import { AddContactsToMailingLists, IMailingService, SendCampaignEmail, SendEmail } from '@modules/email'
 import { fakeSendCampaignEmail, fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
-let addContactsToMailingLists
+let addContactsToMailingLists: AddContactsToMailingLists
 let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail
 
 enum MAIL_SERVICES {

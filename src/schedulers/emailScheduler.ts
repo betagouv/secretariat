@@ -6,10 +6,11 @@ import config from '@config';
 import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
-import { IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
+import { EMAIL_TYPES, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
+import { addContactsToMailingLists } from '@/config/email.config';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -32,6 +33,12 @@ export async function setEmailAddressesActive() {
   })
   return Promise.all(
     concernedUsers.map(async (user) => {
+      if (user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING) {
+        addContactsToMailingLists({
+          listTypes: [MAILING_LIST_TYPE.ONBOARDING],
+          emails: [user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email]
+        })
+      }
       await setEmailActive(user.username)
       // once email created we create marrainage
     })
