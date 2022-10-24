@@ -36,11 +36,11 @@ export async function setEmailAddressesActive() {
       if (user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING) {
         addContactsToMailingLists({
           listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-          contacts: {
-            email: [user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email],
+          contacts: [{
+            email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
             firstname: utils.capitalizeWords(user.username.split('.')[0]),
             lastname: utils.capitalizeWords(user.username.split('.')[1]),
-          } 
+          }] 
         })
       }
       await setEmailActive(user.username)
