@@ -183,6 +183,13 @@ const betaOVH = {
     }
   },
   // get active users with email registered on ovh
+  getActiveUsers: async () => {
+    const users = await betaGouv.usersInfos();
+    const activeUsers = users.filter(
+      (user) => !checkUserIsExpired(user)
+    );
+    return activeUsers;
+  },
   getActiveRegisteredOVHUsers: async () => {
     const users = await betaGouv.usersInfos();
     const allOvhEmails = await betaOVH.getAllEmailInfos();
