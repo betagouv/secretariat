@@ -60,8 +60,8 @@ export async function sendMail(toEmail, subject, html, extraParams = {}, attachm
   });
 }
 
-export function capitalizeWords(arr) {
-  return arr.map(element => {
+export function capitalizeWords(arr: string) {
+  return arr.split('').map(element => {
     return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
   });
 }

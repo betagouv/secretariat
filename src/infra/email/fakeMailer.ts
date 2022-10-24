@@ -1,4 +1,4 @@
-import { SendCampaignEmailProps, SendEmailProps } from "@modules/email"
+import { AddContactsToMailingListsProps, SendCampaignEmailProps, SendEmailProps } from "@modules/email"
 
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
 const sentCampaignEmails: Array<SendCampaignEmailProps> = [] // For testing purposes only
@@ -39,6 +39,10 @@ function fakeSendCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
   return null
 }
 
+function fakeAddContactToMailingList(props: AddContactsToMailingListsProps): Promise<null> {
+  return
+}
+
 
 // For tests only
 const getSentEmails = () => {
@@ -51,4 +55,10 @@ const resetSentEmails = () => {
   }
 }
 
-export { getSentEmails, fakeSendEmail, resetSentEmails, fakeSendCampaignEmail }
+export {
+  getSentEmails,
+  fakeSendEmail,
+  resetSentEmails,
+  fakeSendCampaignEmail,
+  fakeAddContactToMailingList
+}
