@@ -31,9 +31,9 @@ function createBranchName(username) {
 }
 
 async function sendMessageToReferent({ prInfo, referent, isEmailBetaAsked, name }: IMessageInfo) {
+    const prUrl = prInfo.data.html_url
     try {
       const dbReferent = await knex('users').where({ username: referent }).first()
-      const prUrl = prInfo.data.html_url
       const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
       await sendEmail({
         toEmail: [email],
