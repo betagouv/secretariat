@@ -9,7 +9,7 @@ export async function getForm(req, res) {
       const title = 'Mon compte';
       const formValidationErrors = {}
       const startups = await BetaGouv.startupsInfos();
-      const users : Member[] = await BetaGouv.usersInfos();
+      const users : Member[] = await BetaGouv.getActiveUsers();
       const startupOptions = startups.map(startup => {
         return {
           value: startup.id,
