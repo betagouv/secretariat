@@ -63,7 +63,7 @@ export async function sendMail(toEmail, subject, html, extraParams = {}, attachm
 export function capitalizeWords(arr: string) {
   return arr.split('').map(element => {
     return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
-  });
+  }).join('');
 }
 
 export function buildBetaEmail(id: string) {
