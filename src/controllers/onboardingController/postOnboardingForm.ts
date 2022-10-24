@@ -30,20 +30,24 @@ function createBranchName(username) {
     return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
 
-async function sendMessageToReferent({ prInfo, referent, username, isEmailBetaAsked, name }: IMessageInfo) {
-    const dbReferent = await knex('users').where({ username: referent }).first()
+async function sendMessageToReferent({ prInfo, referent, isEmailBetaAsked, name }: IMessageInfo) {
     const prUrl = prInfo.data.html_url
-    const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
-    await sendEmail({
-      toEmail: [email],
-      type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
-      variables: {
-        referent,
-        prUrl,
-        name,
-        isEmailBetaAsked
-      }
-    })
+    try {
+      const dbReferent = await knex('users').where({ username: referent }).first()
+      const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
+      await sendEmail({
+        toEmail: [email],
+        type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+        variables: {
+          referent,
+          prUrl,
+          name,
+          isEmailBetaAsked
+        }
+      })
+    } catch (e) {
+      console.error(`It was not able to find referent ${referent}`, e)
+    }
     try {
       const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
         term: referent
