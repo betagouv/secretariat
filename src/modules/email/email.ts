@@ -225,9 +225,15 @@ export type SendCampaignEmailProps = {
     campaignName: string
 }
 
+export interface Contact {
+    email: string,
+    firstname?: string,
+    lastname?: string
+}
+
 export type AddContactsToMailingListsProps = {
     listTypes: MAILING_LIST_TYPE[],
-    emails: string[]
+    contacts: Contact[]
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>
