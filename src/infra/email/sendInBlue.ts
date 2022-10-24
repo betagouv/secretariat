@@ -1,4 +1,5 @@
 
+import { objectArrayToCSV } from '@/controllers/utils'
 import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
@@ -35,7 +36,7 @@ type SendEmailFromSendinblueDeps = {
 
 const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
     NEWSLETTER: 332,
-    ONBOARDING: 333,
+    ONBOARDING: 322,
     TEST: 336,
 } 
 
@@ -49,14 +50,19 @@ type SendinblueDeps = {
     } | undefined
 }
 
-export function createContact({ email, listIds }:{
+export function createContact({ email, listIds, attributes }:{
     email: string,
-    listIds: number[]
+    listIds: number[],
+    attributes?: {
+        PRENOM: string
+        NOM: string
+    }
 }) {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
     let createContact = new SibApiV3Sdk.CreateContact();
     createContact.email = email
     createContact.listIds = listIds
+    createContact.attributes = attributes
 
     return apiInstance.createContact(createContact).then(function(data) {
         console.log('API called successfully. Returned data: ' + JSON.stringify(data));
@@ -114,7 +120,7 @@ export const makeSendCampaignEmail = ({
         let html: string
         if (htmlContent) {
             html = htmlContent
-            if (!html.includes(`{{ unsubscribe}}`)) {
+            if (!html.includes(`unsubscribe`)) {
                 // unsubscribe is mandatory
                 html = `${html}<a href="{{ unsubscribe }}">Click here to unsubscribe</a>`
             }
@@ -173,12 +179,43 @@ export async function getAllContactsFromList({ listId, opts} : {listId: number, 
     return [...data, ...nextData]
 }
 
-export async function addContactsToMailingLists({
-        emails,
-        listTypes
-    }: AddContactsToMailingListsProps): Promise<null> {
+export async function importContactsToMailingLists({
+    contacts,
+    listTypes
+}: AddContactsToMailingListsProps): Promise<null> {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
+    let requestContactImport = new SibApiV3Sdk.RequestContactImport();
+    let sibContacts = contacts.map(contact => ({
+        email: contact.email,
+        NOM: contact.lastname,
+        PRENOM: contact.firstname
+    }))
+    requestContactImport.fileBody = objectArrayToCSV(sibContacts)
+    const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
+    requestContactImport.listIds = listIds;
+    requestContactImport.emailBlacklist = false;
+    requestContactImport.smsBlacklist = false;
+    requestContactImport.updateExistingContacts = true;
+    requestContactImport.emptyContactsAttributes = false;
+
+    apiInstance.importContacts(requestContactImport).then(function(data) {
+        console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+    }, function(error) {
+        console.error(error);
+    });
+    return
+}
+
+export async function addContactsToMailingLists({
+        contacts,
+        listTypes,
+    }: AddContactsToMailingListsProps): Promise<null> {
+    if (process.env.FEATURE_SIB_USE_CSV_IMPORT) {
+        return await importContactsToMailingLists({ contacts, listTypes })
+    }
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+    const emails = contacts.map(contact => contact.email)
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
     const chunkSize = 25;
     let newContacts = []
@@ -200,10 +237,19 @@ export async function addContactsToMailingLists({
         }
     }
     for (const newContact of newContacts) {
-        await createContact({
-            email: newContact,
-            listIds
-        })
+        try {
+            const contact = contacts.find(contact => contact.email = newContact)
+            await createContact({
+                email: newContact,
+                listIds,
+                attributes: {
+                    PRENOM: contact.firstname,
+                    NOM: contact.lastname
+                }
+            })
+        } catch(error) {
+            console.error(`Cannot create contact ${error}`);
+        }
     }
     return
 }

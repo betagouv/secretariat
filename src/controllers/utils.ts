@@ -60,8 +60,24 @@ export async function sendMail(toEmail, subject, html, extraParams = {}, attachm
   });
 }
 
+export function capitalizeWords(arr) {
+  return arr.map(element => {
+    return element.charAt(0).toUpperCase() + element.slice(1).toLowerCase();
+  });
+}
+
 export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
+}
+
+export function objectArrayToCSV<T>(arr: Array<T>) {
+  const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+  const header = Object.keys(arr[0])
+  const csv = [
+  header.join(';'), // header row first
+  ...arr.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(';'))
+  ].join('\r\n')
+  return csv
 }
 
 export function checkUserIsExpired(user, minDaysOfExpiration = 1) {
