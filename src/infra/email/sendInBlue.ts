@@ -36,7 +36,7 @@ type SendEmailFromSendinblueDeps = {
 
 const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
     NEWSLETTER: 332,
-    ONBOARDING: 322,
+    ONBOARDING: 333,
     TEST: 336,
 } 
 
