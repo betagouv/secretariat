@@ -8,7 +8,7 @@ const createMissingActiveUserInDb = async() => {
     for (const user of activeUsers) {
         try {
             const users = await knex('users').where({ username: user.id }).first()
-            if (!users.length) {
+            if (!users) {
                 console.log(`User ${user.id} is active but not in bdd`)
                 await knex('users').insert({
                     username: user.id,
