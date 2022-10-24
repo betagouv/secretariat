@@ -6,10 +6,11 @@ import config from '@config';
 import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
-import { IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
+import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
+import { addContactsToMailingLists } from '@/config/email.config';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -32,6 +33,16 @@ export async function setEmailAddressesActive() {
   })
   return Promise.all(
     concernedUsers.map(async (user) => {
+      if (user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING) {
+        addContactsToMailingLists({
+          listTypes: [MAILING_LIST_TYPE.ONBOARDING],
+          contacts: [{
+            email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
+            firstname: utils.capitalizeWords(user.username.split('.')[0]),
+            lastname: utils.capitalizeWords(user.username.split('.')[1]),
+          }] 
+        })
+      }
       await setEmailActive(user.username)
       // once email created we create marrainage
     })
@@ -171,19 +182,19 @@ export async function consumePrimaryEmailStatusEvent(EventBus: IEventBus) {
 }
 
 export async function addUserToOnboardingMailingList(EventBus: IEventBus, MailingService: IMailingService) {
-  const messageHandler = async ({ email } : { email: string }) => {
+  const messageHandler = async ({ contact } : { contact: Contact }) => {
     MailingService.addContactsToMailingLists({
       listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-      emails: [email]
+      contacts: [contact]
     })
   };
   EventBus.consume(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, messageHandler)
 }
 
-export async function addUserToNewsletterMailingList(MailingService: IMailingService, email: string) {
+export async function addUserToNewsletterMailingList(MailingService: IMailingService, contact: Contact) {
   MailingService.addContactsToMailingLists({
     listTypes: [MAILING_LIST_TYPE.NEWSLETTER],
-    emails: [email]
+    contacts: [contact]
   })
 }
 
