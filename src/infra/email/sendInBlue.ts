@@ -219,10 +219,10 @@ export async function removeContactsFromMailingList({
 
     contactEmails.emails = emails;
 
-    apiInstance.removeContactFromList(listId, contactEmails).then(function(data) {
-    console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+    return apiInstance.removeContactFromList(listId, contactEmails).then(function(data) {
+        console.log('API called successfully. Returned data: ' + JSON.stringify(data));
     }, function(error) {
-    console.error(error);
+        console.error(error);
     });
 }
 
@@ -353,6 +353,7 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
     return {
         sendEmail: makeSendEmail({ MAIL_SENDER, htmlBuilder }),
         sendCampaignEmail: makeSendCampaignEmail({ MAIL_SENDER, htmlBuilder }),
-        addContactsToMailingLists
+        addContactsToMailingLists,
+        removeContactsFromMailingList,
     }
 }
