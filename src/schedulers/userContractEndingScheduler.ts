@@ -7,9 +7,11 @@ import { Member, MemberWithEmailsAndMattermostUsername } from '@models/member';
 import betagouv from '@/betagouv';
 import { sleep } from '@controllers/utils';
 import { Job } from '@models/job';
-import { EmailEndingContract, EmailNoMoreContract, EMAIL_TYPES } from '@/modules/email';
+import { EmailEndingContract, EmailNoMoreContract, EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
 import { sendEmail } from '@/config/email.config';
 import htmlBuilder from '@/modules/htmlbuilder/htmlbuilder';
+import { removeContactsFromMailingList } from '@/infra/email/sendInBlue';
+import db from '@/db';
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays =  async (days) : Promise<MemberWithEmailsAndMattermostUsername[]> => {
@@ -323,7 +325,31 @@ export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[
   }
   const mailingList: string[] = await betagouv.getAllMailingList()
   for (const user of expiredUsers) {
-     await removeEmailFromMailingList(user.id, mailingList)
+    try {
+      await removeEmailFromMailingList(user.id, mailingList)
+    } catch(e) {
+      console.error(e)
+    }
   }
+  const dbUsers: DBUser[] = await db('users').whereIn('username', expiredUsers.map(user => user.id))
+  for (const user of dbUsers) {
+    try {
+      await removeContactsFromMailingList({
+        emails: [user.primary_email, user.secondary_email],
+        listType: MAILING_LIST_TYPE.NEWSLETTER
+      })
+    } catch(e) {
+      console.error(e)
+    }
+    try {
+      await removeContactsFromMailingList({
+        emails: [user.primary_email, user.secondary_email],
+        listType: MAILING_LIST_TYPE.ONBOARDING
+      })
+    } catch(e) {
+      console.error(e)
+    }
+ }
 }
+
 
