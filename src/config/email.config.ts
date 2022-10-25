@@ -1,11 +1,12 @@
 
-import { AddContactsToMailingLists, IMailingService, SendCampaignEmail, SendEmail } from '@modules/email'
-import { fakeAddContactToMailingList, fakeSendCampaignEmail, fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
+import { AddContactsToMailingLists, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail } from '@modules/email'
+import { fakeAddContactsToMailingLists, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
 let sendEmail: SendEmail = fakeSendEmail
-let addContactsToMailingLists: AddContactsToMailingLists = fakeAddContactToMailingList
+let addContactsToMailingLists: AddContactsToMailingLists = fakeAddContactsToMailingLists
+let removeContactsFromMailingList: RemoveContactsFromMailingList = fakeRemoveContactsFromMailingList
 let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail
 
 enum MAIL_SERVICES {
@@ -95,6 +96,7 @@ if (process.env.NODE_ENV !== 'test') {
     sendEmail = emailer.sendEmail
     sendCampaignEmail = sendInBlue.sendCampaignEmail
     addContactsToMailingLists = sendInBlue.addContactsToMailingLists
+    removeContactsFromMailingList = sendInBlue.removeContactsFromMailingList
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -106,5 +108,6 @@ if (process.env.NODE_ENV !== 'test') {
 export {
     sendEmail,
     addContactsToMailingLists,
-    sendCampaignEmail
+    sendCampaignEmail,
+    removeContactsFromMailingList
 }

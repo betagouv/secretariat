@@ -1,6 +1,6 @@
 
 import { objectArrayToCSV } from '@/controllers/utils'
-import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail  } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps  } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -205,6 +205,25 @@ export async function importContactsToMailingLists({
         console.error(error);
     });
     return
+}
+
+export async function removeContactsFromMailingList({
+    emails,
+    listType
+}: RemoveContactsFromMailingListProps) {
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+
+    let listId = MAILING_LIST_ID_BY_TYPE[listType]
+
+    let contactEmails = new SibApiV3Sdk.RemoveContactFromList(); 
+
+    contactEmails.emails = emails;
+
+    apiInstance.removeContactFromList(listId, contactEmails).then(function(data) {
+    console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+    }, function(error) {
+    console.error(error);
+    });
 }
 
 export async function addContactsToMailingLists({
