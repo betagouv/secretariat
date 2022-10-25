@@ -53,7 +53,8 @@ function fakeRemoveContactsFromMailingList(props: RemoveContactsFromMailingListP
   return
 }
 
-function fakeUpdateContactEmail(props: UpdateContactEmailProps): Promise<void> {
+function fakeUpdateContactEmail(props: UpdateContactEmailProps): Promise<null> {
+  return
 }
 
 

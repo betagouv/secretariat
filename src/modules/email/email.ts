@@ -252,7 +252,7 @@ export type SendCampaignEmail = (props: SendCampaignEmailProps) => Promise<null>
 
 export type AddContactsToMailingLists = (props: AddContactsToMailingListsProps) => Promise<null>
 
-export type UpdateContactEmail = (props: UpdateContactEmailProps) => Promise<void>
+export type UpdateContactEmail = (props: UpdateContactEmailProps) => Promise<null>
 
 export type RemoveContactsFromMailingList = (props: RemoveContactsFromMailingListProps) => Promise<null>
 
