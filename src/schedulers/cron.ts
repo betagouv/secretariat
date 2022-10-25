@@ -43,6 +43,7 @@ import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeam
 import { postEventsOnMattermost } from './calendarScheduler';
 import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
 import EventBus from '@/infra/eventBus/eventBus';
+import { removeBetaAndParnersUsersFromCommunityTeam, sendReminderToUserAtDays } from './mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 
 interface Job {
   cronTime: string;
@@ -78,6 +79,27 @@ const marrainageJobs: Job[] = [
     onTick: () => comsumeMarrainageStatusEvent(EventBus),
     isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
     name: 'comsumeMarrainageStatusEvent',
+  },
+]
+
+const mattermostJobs: Job[] = [
+  {
+    cronTime: '0 5 * * * *',
+    onTick: removeBetaAndParnersUsersFromCommunityTeam,
+    isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
+    name: 'removeBetaAndParnersUsersFromCommunityTeam',
+  },
+  {
+    cronTime: '0 5 * * * *',
+    onTick: () => sendReminderToUserAtDays({ nbDays: 60 }),
+    isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
+    name: 'sendReminderToUserAtDays',
+  },
+  {
+    cronTime: '0 5 * * * *',
+    onTick: () => sendReminderToUserAtDays({ nbDays: 30 }),
+    isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
+    name: 'sendReminderToUserAtDays',
   },
 ]
 
@@ -334,7 +356,7 @@ const jobs: Job[] = [
     timeZone: "Europe/Paris",
     isActive: true,
     name: "Get mattermost user activity info from api and sync with mattermost_member_info table",
-  },
+  }
 ];
 
 let activeJobs = 0;
