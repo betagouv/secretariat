@@ -1,3 +1,4 @@
+import config from "@/config";
 import { addContactsToMailingLists, removeContactsFromMailingList, updateContactEmail } from "@/config/email.config";
 import knex from "@/db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
@@ -6,7 +7,7 @@ import { addEvent, EventCode } from '@lib/events'
 import { capitalizeWords } from "../utils";
 
 async function changeContactEmail(previousEmail, contact: Contact) {
-  if (process.env.FEATURE_SIB_USE_UPDATE_CONTACT) {
+  if (config.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL) {
     await updateContactEmail({
       previousEmail,
       newEmail: contact.email
