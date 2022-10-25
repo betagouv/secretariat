@@ -236,7 +236,7 @@ export type AddContactsToMailingListsProps = {
     contacts: Contact[]
 }
 
-export type RemoveContactsFromMailingListProps {
+export type RemoveContactsFromMailingListProps = {
     listType: MAILING_LIST_TYPE,
     emails: string[]
 }
