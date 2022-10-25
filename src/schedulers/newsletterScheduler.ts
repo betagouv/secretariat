@@ -202,34 +202,32 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
     const html = renderHtmlFromMd(newsletterContent);
 
-    if (process.env.SHOULD_SEND_NL || process.env.NODE_ENV === 'test') {
-      await sendCampaignEmail({
-          type: MAILING_LIST_TYPE.NEWSLETTER,
-          variables: undefined,
-          campaignName: `${getTitle(newsletterContent)}`,
-          subject: `${getTitle(newsletterContent)}`,
-          htmlContent: html
-      })
+    await sendCampaignEmail({
+        type: MAILING_LIST_TYPE.NEWSLETTER,
+        variables: undefined,
+        campaignName: `${getTitle(newsletterContent)}`,
+        subject: `${getTitle(newsletterContent)}`,
+        htmlContent: html
+    })
 
-      await sendEmail({
-        toEmail: [...config.newsletterBroadcastList.split(',')],
-        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-        variables: {
-          body: html,
-          subject: `${getTitle(newsletterContent)}`,
-        }
-      })
-      
-      await knex('newsletters')
-        .where({
-          id: currentNewsletter.id,
-        })
-        .update({
-          sent_at: date,
-        });
-      if (shouldCreatedNewone) {
-        await createNewsletter();
+    await sendEmail({
+      toEmail: [...config.newsletterBroadcastList.split(',')],
+      type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+      variables: {
+        body: html,
+        subject: `${getTitle(newsletterContent)}`,
       }
+    })
+    
+    await knex('newsletters')
+      .where({
+        id: currentNewsletter.id,
+      })
+      .update({
+        sent_at: date,
+      });
+    if (shouldCreatedNewone) {
+      await createNewsletter();
     }
   }
 }

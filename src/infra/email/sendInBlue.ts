@@ -240,13 +240,11 @@ export async function removeContactsFromMailingList({
     });
 }
 
-export async function addContactsToMailingLists({
-        contacts,
-        listTypes,
-    }: AddContactsToMailingListsProps): Promise<null> {
-    if (process.env.FEATURE_SIB_USE_CSV_IMPORT) {
-        return await importContactsToMailingLists({ contacts, listTypes })
-    }
+export async function addOrCreateContactsToMailingLists({
+    contacts,
+    listTypes,
+}) {
+    // importContactsToMailingLists to the same things but update contacts at the same time
     let apiInstance = new SibApiV3Sdk.ContactsApi();
     const emails = contacts.map(contact => contact.email)
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
@@ -284,7 +282,13 @@ export async function addContactsToMailingLists({
             console.error(`Cannot create contact ${error}`);
         }
     }
-    return
+}
+
+export async function addContactsToMailingLists({
+        contacts,
+        listTypes,
+    }: AddContactsToMailingListsProps): Promise<null> {
+    return importContactsToMailingLists({ contacts, listTypes })
 }
 
 export const makeSendEmail = ({
