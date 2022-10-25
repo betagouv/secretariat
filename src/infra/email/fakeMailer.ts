@@ -2,7 +2,8 @@ import {
   AddContactsToMailingListsProps,
   SendCampaignEmailProps,
   SendEmailProps,
-  RemoveContactsFromMailingListProps
+  RemoveContactsFromMailingListProps,
+  UpdateContactEmailProps
 } from "@modules/email"
 
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
