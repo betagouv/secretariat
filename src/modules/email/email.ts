@@ -236,13 +236,21 @@ export type AddContactsToMailingListsProps = {
     contacts: Contact[]
 }
 
+export type RemoveContactsFromMailingListProps {
+    listType: MAILING_LIST_TYPE,
+    emails: string[]
+}
+
 export type SendEmail = (email: SendEmailProps) => Promise<null>
 
 export type SendCampaignEmail = (props: SendCampaignEmailProps) => Promise<null>
 
-export type AddContactsToMailingLists = (email: AddContactsToMailingListsProps) => Promise<null>
+export type AddContactsToMailingLists = (props: AddContactsToMailingListsProps) => Promise<null>
+
+export type RemoveContactsFromMailingList = (props: RemoveContactsFromMailingListProps) => Promise<null>
 
 export interface IMailingService {
+    removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
     sendCampaignEmail?: SendCampaignEmail

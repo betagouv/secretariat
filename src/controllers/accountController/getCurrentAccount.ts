@@ -7,6 +7,39 @@ import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbU
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 
+  export async function updateCommunicationEmail(req, res) {
+    const { communication_email } = req.body;
+    const username = req.auth.id
+    try {
+      const dbUser = await knex('users').where({
+        username,
+      }).then(db => db[0])
+      if (dbUser.primary_email && dbUser.secondary_email) {
+        await knex('users')
+        .update({
+          communication_email
+        }).where({
+          username
+        })
+        addEvent(EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE, {
+          created_by_username: req.auth.id,
+          action_on_username: username,
+          action_metadata: {
+            value: communication_email,
+            old_value: dbUser ? dbUser.communication_email : null,
+          }
+        })
+        req.flash('message', 'Ton choix d\'email de communication a bien été mis à jour.');
+        console.log(`${req.auth.id} a mis à jour son choix d'email de communication.`);
+        res.redirect(`/account`);
+      };
+    } catch (err) {
+      console.error(err);
+      req.flash('error', err.message);
+      res.redirect(`/account`);
+    }
+  }
+
 export async function getCurrentAccount(req, res) {
     try {
       const [currentUser, marrainageState, dbUser, dbUserDetail] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
@@ -71,38 +104,5 @@ export async function getCurrentAccount(req, res) {
       console.error(err);
       req.flash('error', 'Impossible de récupérer vos informations.');
       return res.redirect('/');
-    }
-  }
-  
-  export async function updateCommunicationEmail(req, res) {
-    const { communication_email } = req.body;
-    const username = req.auth.id
-    try {
-      const dbUser = await knex('users').where({
-        username,
-      }).then(db => db[0])
-      if (dbUser.primary_email && dbUser.secondary_email) {
-        await knex('users')
-        .update({
-          communication_email
-        }).where({
-          username
-        })
-        addEvent(EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE, {
-          created_by_username: req.auth.id,
-          action_on_username: username,
-          action_metadata: {
-            value: communication_email,
-            old_value: dbUser ? dbUser.communication_email : null,
-          }
-        })
-        req.flash('message', 'Ton choix d\'email de communication a bien été mis à jour.');
-        console.log(`${req.auth.id} a mis à jour son choix d'email de communication.`);
-        res.redirect(`/account`);
-      };
-    } catch (err) {
-      console.error(err);
-      req.flash('error', err.message);
-      res.redirect(`/account`);
     }
   }
