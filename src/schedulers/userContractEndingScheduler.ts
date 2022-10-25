@@ -331,7 +331,7 @@ export async function removeEmailsFromMailingList(optionalExpiredUsers?: Member[
       console.error(e)
     }
   }
-  const dbUsers: DBUser[] = await db('users').whereIn('userbame', expiredUsers.map(user => user.id))
+  const dbUsers: DBUser[] = await db('users').whereIn('username', expiredUsers.map(user => user.id))
   for (const user of dbUsers) {
     try {
       await removeContactsFromMailingList({
