@@ -1,9 +1,28 @@
-import { addContactsToMailingLists, removeContactsFromMailingList } from "@/config/email.config";
+import { addContactsToMailingLists, removeContactsFromMailingList, updateContactEmail } from "@/config/email.config";
 import knex from "@/db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
-import { MAILING_LIST_TYPE } from "@/modules/email";
+import { Contact, MAILING_LIST_TYPE } from "@/modules/email";
 import { addEvent, EventCode } from '@lib/events'
 import { capitalizeWords } from "../utils";
+
+async function changeContactEmail(previousEmail, contact: Contact) {
+  if (process.env.FEATURE_SIB_USE_UPDATE_CONTACT) {
+    await updateContactEmail({
+      previousEmail,
+      newEmail: contact.email
+    })
+  }
+  else {
+    await addContactsToMailingLists({
+      contacts: [contact],
+      listTypes: [MAILING_LIST_TYPE.NEWSLETTER]
+    })
+    await removeContactsFromMailingList({
+      emails: [previousEmail],
+      listType: MAILING_LIST_TYPE.NEWSLETTER
+    })
+  }
+}
 
 export async function updateCommunicationEmail(req, res) {
   const { communication_email } = req.body;
@@ -29,17 +48,12 @@ export async function updateCommunicationEmail(req, res) {
           old_value: dbUser ? dbUser.communication_email : null,
         }
       })
-      await addContactsToMailingLists({
-        contacts: [{
-          email: communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email,
-          firstname: capitalizeWords(dbUser.username.split('.')[0]),
-          lastname: capitalizeWords(dbUser.username.split('.')[1]),
-        }],
-        listTypes: [MAILING_LIST_TYPE.NEWSLETTER]
-      })
-      await removeContactsFromMailingList({
-        emails: [previousCommunicationEmail === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email],
-        listType: MAILING_LIST_TYPE.NEWSLETTER
+      const newEmail = communication_email === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email
+      const previousEmail = previousCommunicationEmail === CommunicationEmailCode.PRIMARY ? dbUser.primary_email : dbUser.secondary_email
+      await changeContactEmail(previousEmail, {
+        email: newEmail,
+        firstname: capitalizeWords(dbUser.username.split('.')[0]),
+        lastname: capitalizeWords(dbUser.username.split('.')[1]),
       })
       req.flash('message', 'Ton choix d\'email de communication a bien été mis à jour.');
       console.log(`${req.auth.id} a mis à jour son choix d'email de communication.`);
