@@ -231,14 +231,19 @@ export interface Contact {
     lastname?: string
 }
 
-export type AddContactsToMailingListsProps = {
+export interface AddContactsToMailingListsProps {
     listTypes: MAILING_LIST_TYPE[],
     contacts: Contact[]
 }
 
-export type RemoveContactsFromMailingListProps = {
+export interface RemoveContactsFromMailingListProps {
     listType: MAILING_LIST_TYPE,
     emails: string[]
+}
+
+export interface UpdateContactEmailProps {
+    previousEmail: string,
+    newEmail: string
 }
 
 export type SendEmail = (email: SendEmailProps) => Promise<null>
@@ -247,13 +252,16 @@ export type SendCampaignEmail = (props: SendCampaignEmailProps) => Promise<null>
 
 export type AddContactsToMailingLists = (props: AddContactsToMailingListsProps) => Promise<null>
 
+export type UpdateContactEmail = (props: UpdateContactEmailProps) => Promise<null>
+
 export type RemoveContactsFromMailingList = (props: RemoveContactsFromMailingListProps) => Promise<null>
 
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
-    sendCampaignEmail?: SendCampaignEmail
+    sendCampaignEmail?: SendCampaignEmail,
+    updateContactEmail?: UpdateContactEmail
 }
 
 export enum MAILING_LIST_TYPE {
