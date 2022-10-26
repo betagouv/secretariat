@@ -72,6 +72,8 @@ export default {
   mattermostInvitationLink: process.env.MATTERMOST_INVITATION_LINK || '',
   MATTERMOST_INVITE_ID: process.env.MATTERMOST_INVITE_ID,
   MATTERMOST_ALLOWED_DOMAINS: process.env.MATTERMOST_ALLOWED_DOMAINS || 'beta.gouv.fr',
+  MATTERMOST_PARTNERS_AUTHORS_URL: process.env.MATTERMOST_PARTNERS_AUTHORS_URL,
+  MATTERMOST_EMAIL_REGEX_EXCEPTION: process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
   investigationReportsIframeURL:
     process.env.INVESTIGATION_REPORTS_IFRAME_URL || '',
   incubateurMailingListName: process.env.INCUBATEUR_MAILING_LIST_NAME || 'incubateur',

@@ -96,3 +96,4 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: strin
   export * from './moveUsersToAlumniTeam'
   export * from './reactivateUsers'
   export * from './removeUsersFromCommunityTeam'
+  export * from './removeBetaAndParnersUsersFromCommunityTeam'

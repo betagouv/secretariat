@@ -8,6 +8,7 @@ import * as mattermost from '@/lib/mattermost';
 import * as email from '@/config/email.config';
 import knex from '@/db';
 import { EmailStatusCode } from '@/models/dbUser/dbUser'
+import { removeBetaAndParnersUsersFromCommunityTeam } from '@/schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 
 const mattermostUsers = [
   {
@@ -317,6 +318,68 @@ describe('Move expired user to team Alumni on mattermost', () => {
     const result = await removeUsersFromCommunityTeam(undefined, true);
     removeFromTeamMock.isDone().should.be.true;
     result.length.should.be.equal(1);
+  });
+
+  it('Remove beta and partners expired user from community team on mattermost', async () => {
+  //   nock(/.*mattermost.incubateur.net/)
+  //   .get(/^.*api\/v4\/users.*/)
+  //   .reply(200, [...inactiveMattermostUsers]);
+  // nock(/.*mattermost.incubateur.net/)
+  //   .get(/^.*api\/v4\/users.*/)
+  //   .reply(200, []);
+
+    nock(/.*mattermost.incubateur.net/)
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          email: `julien.dauphant@${config.domain}`,
+        },
+      ]);
+      nock(/.*mattermost.incubateur.net/)
+      .get(/^.*api\/v4\/users.*/)
+      .reply(200, []);
+  
+    nock(/.*mattermost.incubateur.net/)
+      .post(/^.*api\/v4\/users\/search.*/)
+      .reply(200, [
+        {
+          id: 265695,
+          username: 'julien.dauphant',
+          email: 'julien.dauphant',
+        },
+      ]);
+
+    const removeFromTeamMock = nock(/.*mattermost.incubateur.net/)
+      .delete(/^.*api\/v4\/teams\/testteam\/members/)
+      .reply(200, [{ status: 'ok' }])
+      .persist();
+
+    const url = process.env.USERS_API || 'https://beta.gouv.fr';
+    nock(url)
+      .get((uri) => uri.includes('authors.json'))
+      .reply(200, [
+        {
+          id: 'julien.dauphant',
+          fullname: 'Julien Dauphant',
+          missions: [
+            {
+              start: '2016-11-03',
+              end: '2020-10-20',
+              status: 'independent',
+              employer: 'octo',
+            },
+          ],
+        },
+      ])
+      .persist();
+
+    const result = await removeBetaAndParnersUsersFromCommunityTeam({
+      optionalUsers: undefined,
+      checkAll: true,
+    });
+    removeFromTeamMock.isDone().should.be.true;
+    // result.length.should.be.equal(1);
   });
 
   it('Move expired user to team Alumni on mattermost', async () => {

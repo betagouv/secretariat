@@ -7,6 +7,7 @@ import * as utils from '@controllers/utils';
 import * as mattermost from '@/lib/mattermost';
 import betagouv from "@/betagouv";
 import { sendInfoToChat } from "@/infra/chat";
+import axios from "axios";
 
 function validateAtLeastOneFormat(regexStrArr: string[], value) {
     let valid: boolean = false;
@@ -26,7 +27,7 @@ interface UsersToRemoveProps {
     checkAll?: boolean
 }
 
-async function getUserFromCommunityTeamToRemove({
+async function getBetaAndParnersUsersFromCommunityTeam({
     optionalUsers,
     nbDays,
     checkAll=true} : UsersToRemoveProps) : Promise<MattermostUser[]> {
@@ -41,8 +42,8 @@ async function getUserFromCommunityTeamToRemove({
         }
       users = checkAll ? utils.getExpiredUsers(users, nbDays) : utils.getExpiredUsersForXDays(users, nbDays);
     }
-    const partnersActiveUserEmails : string[] = await getPartnersActiveUserEmails()
-    const mattermostEmailRegexException : string[] = (process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION || '').split(',')
+    const partnersActiveUserEmails : string[] = await getPartnersActiveUserEmails({ nbDays, checkAll })
+    const mattermostEmailRegexException : string[] = (config.MATTERMOST_EMAIL_REGEX_EXCEPTION || '').split(',')
     const dbUsers : DBUser[] = await knex('users').whereIn('username', users.map(user => user.id))
     const dbuser_primary_emails : string[] = dbUsers
         .map(dbUser => dbUser.primary_email)
@@ -64,7 +65,7 @@ export async function sendReminderToUserAtDays({
     checkAll,
     nbDays
 }: UsersToRemoveProps) {
-    const usersToSendAMessageTo : MattermostUser[] = await getUserFromCommunityTeamToRemove({
+    const usersToSendAMessageTo : MattermostUser[] = await getBetaAndParnersUsersFromCommunityTeam({
         optionalUsers,
         nbDays,
         checkAll
@@ -101,6 +102,17 @@ export async function removeBetaAndParnersUsersFromCommunityTeam({
     }
 }
 
-async function getPartnersActiveUserEmails() : Promise<string[]> {
-    throw new Error("Function not implemented.");
+async function getPartnersActiveUserEmails({ nbDays, checkAll }: { nbDays: number, checkAll: boolean}) : Promise<string[]> {
+    
+    const membersConfigs : {
+        domain: string,
+        members: Member[]
+    }[] = config.MATTERMOST_PARTNERS_AUTHORS_URL ? await axios.get(config.MATTERMOST_PARTNERS_AUTHORS_URL).then(res => res.data) : []
+    let emails = []
+    for (const membersConfig of membersConfigs) {
+        const members = membersConfig.members
+        const activeMembers = checkAll ? utils.getExpiredUsers(members, nbDays) : utils.getExpiredUsersForXDays(members, nbDays);
+        emails = [...emails, ...activeMembers.map(member => `${member}@${membersConfig.domain}`)]
+    }
+    return emails
 }
