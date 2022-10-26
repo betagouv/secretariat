@@ -92,8 +92,6 @@ export async function removeBetaAndParnersUsersFromCommunityTeam({
         checkAll
     })
 
-    console.log('LCS USERS REMOVE AND BETA', usersToDelete)
-
     for (const user of usersToDelete) {
         try {
             await mattermost.removeUserFromTeam(
