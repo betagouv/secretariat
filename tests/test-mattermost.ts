@@ -369,8 +369,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
       .persist();
 
     const result = await removeBetaAndParnersUsersFromCommunityTeam({
-      optionalUsers: undefined,
-      checkAll: true,
+      optionalUsers: undefined
     });
     removeFromTeamMock.isDone().should.be.true;
     // result.length.should.be.equal(1);
