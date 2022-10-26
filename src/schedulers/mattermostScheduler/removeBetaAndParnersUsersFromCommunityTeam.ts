@@ -40,9 +40,10 @@ export async function getBetaAndParnersUsersFromCommunityTeam({
         } catch(e) {
             throw new Error('Error while getting users infos')
         }
-      users = checkAll ? utils.getExpiredUsers(users, nbDays) : utils.getExpiredUsersForXDays(users, nbDays);
+      users = utils.getActiveUsers(users, nbDays)
     }
-    const partnersActiveUserEmails : string[] = await getPartnersActiveUserEmails({ nbDays, checkAll })
+    console.log(checkAll)
+    const partnersActiveUserEmails : string[] = await getPartnersActiveUserEmails({ nbDays })
     const mattermostEmailRegexException : string[] = (config.MATTERMOST_EMAIL_REGEX_EXCEPTION || '').split(',')
     const dbUsers : DBUser[] = await knex('users').whereIn('username', users.map(user => user.id))
     const dbuser_primary_emails : string[] = dbUsers
@@ -91,6 +92,8 @@ export async function removeBetaAndParnersUsersFromCommunityTeam({
         checkAll
     })
 
+    console.log('LCS USERS REMOVE AND BETA', usersToDelete)
+
     for (const user of usersToDelete) {
         try {
             await mattermost.removeUserFromTeam(
@@ -103,7 +106,7 @@ export async function removeBetaAndParnersUsersFromCommunityTeam({
     }
 }
 
-async function getPartnersActiveUserEmails({ nbDays, checkAll }: { nbDays: number, checkAll: boolean}) : Promise<string[]> {
+async function getPartnersActiveUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
     
     const membersConfigs : {
         domain: string,
@@ -112,7 +115,7 @@ async function getPartnersActiveUserEmails({ nbDays, checkAll }: { nbDays: numbe
     let emails = []
     for (const membersConfig of membersConfigs) {
         const members = membersConfig.members
-        const activeMembers = checkAll ? utils.getExpiredUsers(members, nbDays) : utils.getExpiredUsersForXDays(members, nbDays);
+        const activeMembers = utils.getActiveUsers(members, nbDays);
         emails = [...emails, ...activeMembers.map(member => `${member}@${membersConfig.domain}`)]
     }
     return emails
