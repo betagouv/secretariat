@@ -29,8 +29,8 @@ interface UsersToRemoveProps {
 
 export async function getBetaAndParnersUsersFromCommunityTeam({
     optionalUsers,
-    nbDays,
-    checkAll=true} : UsersToRemoveProps) : Promise<MattermostUser[]> {
+    nbDays
+} : UsersToRemoveProps) : Promise<MattermostUser[]> {
     // Removed users referenced on github but expired for more than 3 months
     let users: Member[] = optionalUsers;
     console.log('Start function remove users from community team');
@@ -42,9 +42,8 @@ export async function getBetaAndParnersUsersFromCommunityTeam({
         }
       users = utils.getActiveUsers(users, nbDays)
     }
-    console.log(checkAll)
     const partnersActiveUserEmails : string[] = await getPartnersActiveUserEmails({ nbDays })
-    const mattermostEmailRegexException : string[] = (config.MATTERMOST_EMAIL_REGEX_EXCEPTION || '').split(',')
+    const mattermostEmailRegexException : string[] = config.MATTERMOST_EMAIL_REGEX_EXCEPTION ? config.MATTERMOST_EMAIL_REGEX_EXCEPTION.split(',') : []
     const dbUsers : DBUser[] = await knex('users').whereIn('username', users.map(user => user.id))
     const dbuser_primary_emails : string[] = dbUsers
         .map(dbUser => dbUser.primary_email)
@@ -68,8 +67,7 @@ export async function sendReminderToUserAtDays({
 }: UsersToRemoveProps) {
     const usersToSendAMessageTo : MattermostUser[] = await getBetaAndParnersUsersFromCommunityTeam({
         optionalUsers,
-        nbDays,
-        checkAll
+        nbDays
     })
 
     for (const user of usersToSendAMessageTo) {
@@ -81,15 +79,13 @@ export async function sendReminderToUserAtDays({
 }
 
 export async function removeBetaAndParnersUsersFromCommunityTeam({
-    optionalUsers,
-    checkAll
-} : { optionalUsers: Member[], checkAll: boolean}) {
+    optionalUsers
+} : { optionalUsers: Member[] }) {
     // Removed users referenced on github but expired for more than 3 months
 
     const usersToDelete : MattermostUser[] = await getBetaAndParnersUsersFromCommunityTeam({
         optionalUsers,
-        nbDays: 3*30,
-        checkAll
+        nbDays: 3*30
     })
 
     for (const user of usersToDelete) {
