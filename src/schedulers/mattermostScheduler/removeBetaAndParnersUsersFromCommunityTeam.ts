@@ -84,7 +84,8 @@ export async function removeBetaAndParnersUsersFromCommunityTeam({
     checkAll
 } : { optionalUsers: Member[], checkAll: boolean}) {
     // Removed users referenced on github but expired for more than 3 months
-    const usersToDelete : MattermostUser[] = await getUserFromCommunityTeamToRemove({
+
+    const usersToDelete : MattermostUser[] = await getBetaAndParnersUsersFromCommunityTeam({
         optionalUsers,
         nbDays: 3*30,
         checkAll

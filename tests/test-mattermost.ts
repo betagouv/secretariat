@@ -321,12 +321,6 @@ describe('Move expired user to team Alumni on mattermost', () => {
   });
 
   it('Remove beta and partners expired user from community team on mattermost', async () => {
-  //   nock(/.*mattermost.incubateur.net/)
-  //   .get(/^.*api\/v4\/users.*/)
-  //   .reply(200, [...inactiveMattermostUsers]);
-  // nock(/.*mattermost.incubateur.net/)
-  //   .get(/^.*api\/v4\/users.*/)
-  //   .reply(200, []);
 
     nock(/.*mattermost.incubateur.net/)
       .get(/^.*api\/v4\/users.*/)
