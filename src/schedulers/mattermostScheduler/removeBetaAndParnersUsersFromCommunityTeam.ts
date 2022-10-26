@@ -27,7 +27,7 @@ interface UsersToRemoveProps {
     checkAll?: boolean
 }
 
-async function getBetaAndParnersUsersFromCommunityTeam({
+export async function getBetaAndParnersUsersFromCommunityTeam({
     optionalUsers,
     nbDays,
     checkAll=true} : UsersToRemoveProps) : Promise<MattermostUser[]> {
