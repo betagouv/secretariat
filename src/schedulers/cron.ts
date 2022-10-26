@@ -86,7 +86,7 @@ const mattermostJobs: Job[] = [
   {
     cronTime: '0 5 * * * *',
     onTick: removeBetaAndParnersUsersFromCommunityTeam,
-    isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
+    isActive: false,
     name: 'removeBetaAndParnersUsersFromCommunityTeam',
   },
   {
@@ -146,6 +146,7 @@ const jobs: Job[] = [
   //
   ...marrainageJobs,
   ...emailJobs,
+  ...mattermostJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
