@@ -304,7 +304,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
           missions: [
             {
               start: '2016-11-03',
-              end: '2021-01-17',
+              end: '2020-10-20',
               status: 'independent',
               employer: 'octo',
             },
@@ -314,7 +314,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
       .persist();
 
     const { removeUsersFromCommunityTeam } = mattermostScheduler;
-    const result = await removeUsersFromCommunityTeam();
+    const result = await removeUsersFromCommunityTeam(undefined, true);
     removeFromTeamMock.isDone().should.be.true;
     result.length.should.be.equal(1);
   });

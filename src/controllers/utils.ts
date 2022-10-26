@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
 import config from '@config';
 import crypto from 'crypto';
+import { Member } from "@/models/member";
 
 export const computeHash = function(username) {
   const hash = crypto.createHmac('sha512', config.HASH_SALT); /** Hashing algorithm sha512 */
@@ -105,11 +106,11 @@ export function getActiveUsers(users, minDaysOfExpiration = 0) {
   return users.filter((u) => !checkUserIsExpired(u, minDaysOfExpiration - 1));
 }
 
-export function getExpiredUsers(users, minDaysOfExpiration = 0) {
+export function getExpiredUsers(users: Member[], minDaysOfExpiration = 0) {
   return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
 }
 
-export function getExpiredUsersForXDays(users, nbDays) {
+export function getExpiredUsersForXDays(users: Member[], nbDays) {
   const date = new Date();
   date.setDate(date.getDate() - nbDays);
   const formatedDate = this.formatDateYearMonthDay(date);
