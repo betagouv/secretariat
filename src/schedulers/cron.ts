@@ -84,19 +84,19 @@ const marrainageJobs: Job[] = [
 
 const mattermostJobs: Job[] = [
   {
-    cronTime: '0 5 * * * *',
+    cronTime: '0 5 * * * 1',
     onTick: removeBetaAndParnersUsersFromCommunityTeam,
     isActive: false,
     name: 'removeBetaAndParnersUsersFromCommunityTeam',
   },
   {
-    cronTime: '0 5 * * * *',
+    cronTime: '0 5 * * * 1',
     onTick: () => sendReminderToUserAtDays({ nbDays: 60 }),
     isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
     name: 'sendReminderToUserAtDays',
   },
   {
-    cronTime: '0 5 * * * *',
+    cronTime: '0 5 * * * 1',
     onTick: () => sendReminderToUserAtDays({ nbDays: 30 }),
     isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
     name: 'sendReminderToUserAtDays',
