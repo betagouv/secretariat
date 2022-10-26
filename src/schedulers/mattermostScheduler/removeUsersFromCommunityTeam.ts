@@ -8,11 +8,12 @@ import * as mattermost from '@/lib/mattermost';
 import betagouv from "@/betagouv";
 
 export async function removeUsersFromCommunityTeam(optionalUsers?: Member[], checkAll=true) {
+    // Removed users referenced on github but expired for more than 3 months
     let users: Member[] = optionalUsers;
     console.log('Start function remove users from community team');
     if (!users) {
       users = await betagouv.usersInfos();
-      users = checkAll ? utils.getExpiredUsers(users, 3) : utils.getExpiredUsersForXDays(users, 3);
+      users = checkAll ? utils.getExpiredUsers(users, 3*30) : utils.getExpiredUsersForXDays(users, 3*30);
     }
     const dbUsers : DBUser[] = await knex('users').whereNotNull('secondary_email');
     const concernedUsers = users.map((user) => {
