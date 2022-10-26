@@ -53,8 +53,8 @@ export async function getBetaAndParnersUsersFromCommunityTeam({
     })
     const authorizedEmails = [...dbuser_primary_emails, ...partnersActiveUserEmails]
     const mattermostUsersToDelete : MattermostUser[] = mattermostUsers.filter(mUser => {
-        return authorizedEmails.includes(mUser.email) ||
-            validateAtLeastOneFormat(mattermostEmailRegexException, mUser.email)
+        return !authorizedEmails.includes(mUser.email) &&
+            !validateAtLeastOneFormat(mattermostEmailRegexException, mUser.email)
     })
     console.log(`Mattermost user to deactivate ${JSON.stringify(mattermostUsersToDelete)}`)
     return mattermostUsersToDelete
