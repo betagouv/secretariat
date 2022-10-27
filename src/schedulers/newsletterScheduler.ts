@@ -139,7 +139,7 @@ export async function newsletterReminder(reminder) {
 
   if (lastSentNewsletter) {
     const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
-    if (nbOfDays < 7) {
+    if (nbOfDays < 10) {
       console.log(`Will not sent newsletter : number of days between last newsletter ${nbOfDays}`) 
       return
     }
@@ -184,7 +184,7 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
 
   if (lastSentNewsletter) {
     const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
-    if (nbOfDays < 7) {
+    if (nbOfDays < 10) {
       return
     }
   }
