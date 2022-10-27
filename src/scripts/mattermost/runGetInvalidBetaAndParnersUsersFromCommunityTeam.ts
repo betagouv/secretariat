@@ -1,4 +1,4 @@
-import { getBetaAndParnersUsersFromCommunityTeam } from "@/schedulers/mattermostScheduler/mattermostScheduler"
+import { getInvalidBetaAndParnersUsersFromCommunityTeam } from "@/schedulers/mattermostScheduler/mattermostScheduler"
 
 const args = process.argv.slice(2);
 let params = {
@@ -8,7 +8,7 @@ if (args[0]) {
   params = JSON.parse(args[0]);
 }
 
-getBetaAndParnersUsersFromCommunityTeam({
+getInvalidBetaAndParnersUsersFromCommunityTeam({
     nbDays: params.nbDays || 90
 }).then(() => {
     console.log('Done')
