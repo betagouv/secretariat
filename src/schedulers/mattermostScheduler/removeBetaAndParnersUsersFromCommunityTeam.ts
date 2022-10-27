@@ -36,7 +36,9 @@ enum MattermostUserStatus {
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO = "USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO",
     USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL = "USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL",
     USER_IS_VALID_WITH_DOMAIN = "USER_IS_VALID_WITH_DOMAIN",
-    USER_IS_VALID_WITH_PARTNER = "USER_IS_VALID_WITH_PARTNER"
+    USER_IS_VALID_WITH_PARTNER = "USER_IS_VALID_WITH_PARTNER",
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO",
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED"
 }
 
 type MattermostUserWithStatus = MattermostUser & {
@@ -56,7 +58,7 @@ export async function getMattermostUsersWithStatus({
         .map(dbUser => dbUser.primary_email)
         .filter(email => email)
     const dbuser_not_active_primary_emails : string[] = dbUsers
-        .filter(dbUser => dbUser.primary_email_status === EmailStatusCode.EMAIL_ACTIVE)
+        .filter(dbUser => dbUser.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE)
         .map(dbUser => dbUser.primary_email)
         .filter(email => email)
     
@@ -77,14 +79,21 @@ export async function getMattermostUsersWithStatus({
                 const memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
-                }
-                if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                }else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
                     status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED
                 } else {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
                 }
             } else {
-                status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
+                const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
+                const memberInfo = users.find(user => user.id === dbUser.username)
+                if (!memberInfo) {
+                    status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
+                } else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                    status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                } else {
+                    status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
+                }
             }
         } else if (partnersUserEmails.includes(mUser.email)) {
             if (inactivePartnersUserEmails.includes(mUser.email)) {
