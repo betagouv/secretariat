@@ -56,7 +56,7 @@ export async function getMattermostUsersWithStatus({
         .map(dbUser => dbUser.primary_email)
         .filter(email => email)
     const dbuser_not_active_primary_emails : string[] = dbUsers
-        .filter(dbUser => dbUser.primary_email_status === EmailStatusCode.EMAIL_ACTIVE)
+        .filter(dbUser => dbUser.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE)
         .map(dbUser => dbUser.primary_email)
         .filter(email => email)
     
@@ -69,7 +69,7 @@ export async function getMattermostUsersWithStatus({
     })
 
     const mattermostEmailRegexException : string[] = config.MATTERMOST_EMAIL_REGEX_EXCEPTION ? config.MATTERMOST_EMAIL_REGEX_EXCEPTION.split(',') : []
-    const mattermostUsersToRemove : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
+    const mattermostUsersWithStatus : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
         let status
         if (dbuser_primary_emails.includes(mUser.email)) {
             if (dbuser_not_active_primary_emails.includes(mUser.email)) {
@@ -102,8 +102,7 @@ export async function getMattermostUsersWithStatus({
             status
         }
     })
-    console.log(`Mattermost user to remove from communauté ${JSON.stringify(mattermostUsersToRemove)}`)
-    return mattermostUsersToRemove
+    return mattermostUsersWithStatus
 }
 
 const MATTERMOST_ACTIVE_STATUS = [
@@ -118,6 +117,8 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
     // Removed users referenced on github but expired for more than 3 months
     const mattermostUsersWithStatus = await getMattermostUsersWithStatus({ nbDays })
     const invalideUsers = mattermostUsersWithStatus.filter(m => !MATTERMOST_ACTIVE_STATUS.includes(m.status))
+    console.log(`Mattermost user to remove ${JSON.stringify(invalideUsers)}`)
+
     return invalideUsers
 }
 
