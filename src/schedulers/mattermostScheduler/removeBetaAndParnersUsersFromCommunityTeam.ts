@@ -36,7 +36,9 @@ enum MattermostUserStatus {
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO = "USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO",
     USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL = "USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL",
     USER_IS_VALID_WITH_DOMAIN = "USER_IS_VALID_WITH_DOMAIN",
-    USER_IS_VALID_WITH_PARTNER = "USER_IS_VALID_WITH_PARTNER"
+    USER_IS_VALID_WITH_PARTNER = "USER_IS_VALID_WITH_PARTNER",
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO",
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED"
 }
 
 type MattermostUserWithStatus = MattermostUser & {
@@ -69,7 +71,7 @@ export async function getMattermostUsersWithStatus({
     })
 
     const mattermostEmailRegexException : string[] = config.MATTERMOST_EMAIL_REGEX_EXCEPTION ? config.MATTERMOST_EMAIL_REGEX_EXCEPTION.split(',') : []
-    const mattermostUsersWithStatus : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
+    const mattermostUsersToRemove : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
         let status
         if (dbuser_primary_emails.includes(mUser.email)) {
             if (dbuser_not_active_primary_emails.includes(mUser.email)) {
@@ -77,14 +79,21 @@ export async function getMattermostUsersWithStatus({
                 const memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
-                }
-                if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                }else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
                     status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED
                 } else {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
                 }
             } else {
-                status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
+                const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
+                const memberInfo = users.find(user => user.id === dbUser.username)
+                if (!memberInfo) {
+                    status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
+                } else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                    status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                } else {
+                    status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
+                }
             }
         } else if (partnersUserEmails.includes(mUser.email)) {
             if (inactivePartnersUserEmails.includes(mUser.email)) {
@@ -102,7 +111,8 @@ export async function getMattermostUsersWithStatus({
             status
         }
     })
-    return mattermostUsersWithStatus
+    console.log(`Mattermost user to remove from communauté ${JSON.stringify(mattermostUsersToRemove)}`)
+    return mattermostUsersToRemove
 }
 
 const MATTERMOST_ACTIVE_STATUS = [
@@ -117,8 +127,6 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
     // Removed users referenced on github but expired for more than 3 months
     const mattermostUsersWithStatus = await getMattermostUsersWithStatus({ nbDays })
     const invalideUsers = mattermostUsersWithStatus.filter(m => !MATTERMOST_ACTIVE_STATUS.includes(m.status))
-    console.log(`Mattermost user to remove ${JSON.stringify(invalideUsers)}`)
-
     return invalideUsers
 }
 
