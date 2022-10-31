@@ -75,13 +75,13 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
     return (
     <>
         <div className="module">
-            { Object.keys(countData).map(key => {
-                return <span>{key} : {countData[key].length}</span>
-            })}
             <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
                 <h3>
                     Membre mattermost et status
                 </h3>
+                { Object.keys(countData).map(key => {
+                    return <div>{key} : {countData[key].length}</div>
+                })}
             { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
             <br/>
             <br/>
