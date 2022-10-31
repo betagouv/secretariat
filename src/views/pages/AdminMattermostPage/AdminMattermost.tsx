@@ -24,6 +24,12 @@ const columns: ColumnDefinition[] = [
   
 const css = ".panel { min-height: 400px; }" // to have enough space to display dropdown
 
+var groupBy = function(xs, key) {
+    return xs.reduce(function(rv, x) {
+        (rv[x[key]] = rv[x[key]] || []).push(x);
+        return rv;
+    }, {});
+};
 /* Pure component */
 export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
 
@@ -64,12 +70,17 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
         exportToCsv('users.csv', state.users)
     }
 
+    const countData = groupBy(state.users, 'status')
+
     return (
     <>
         <div className="module">
+            { Object.keys(countData).map(key => {
+                return <span>{key} : {countData[key].length}</span>
+            })}
             <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
                 <h3>
-                    Filtrer les membres
+                    Membre mattermost et status
                 </h3>
             { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
             <br/>
