@@ -111,7 +111,6 @@ export async function getMattermostUsersWithStatus({
             status
         }
     })
-    console.log(`Mattermost user to remove from communauté ${JSON.stringify(mattermostUsersToRemove)}`)
     return mattermostUsersToRemove
 }
 
@@ -126,11 +125,11 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
 } : UsersToRemoveProps) : Promise<MattermostUser[]> {
     // Removed users referenced on github but expired for more than 3 months
     const mattermostUsersWithStatus = await getMattermostUsersWithStatus({ nbDays })
-    const invalideUsers = mattermostUsersWithStatus.filter(m => !MATTERMOST_ACTIVE_STATUS.includes(m.status))
-    return invalideUsers
+    const invalidUsers = mattermostUsersWithStatus.filter(m => !MATTERMOST_ACTIVE_STATUS.includes(m.status))
+    console.log(`Mattermost user to remove from communauté ${JSON.stringify(invalidUsers)}`)
+
+    return invalidUsers
 }
-
-
 
 export async function sendReminderToUserAtDays({
     optionalUsers,
