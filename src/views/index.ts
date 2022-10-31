@@ -3,8 +3,8 @@ import { Home } from './pages/HomePage'
 import { Admin } from './pages/AdminPage'
 import { InfoUpdate } from './pages/InfoUpdatePage'
 import { Onboarding } from './pages/OnboardingPage'
-import { Community } from './pages/CommunityPage';
-
+import { Community } from './pages/CommunityPage'
+import { AdminMattermost } from './pages/AdminMattermostPage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
@@ -51,3 +51,11 @@ export const InfoUpdatePage = (props: Parameters<typeof InfoUpdate>[0]) =>
     title: 'Mise à jour de mes infos - Espace Membre',
     pageName: 'InfoUpdate', // This must match the Component name
   })
+
+export const AdminMattermostPage = (props: Parameters<typeof AdminMattermostPage>[0]) => makeHtml({
+  Component: AdminMattermost,
+  props,
+  hydrate: true,
+  title: 'Administration Mattermost Page',
+  pageName: 'AdminMattermost', // This must match the Component name
+})
