@@ -1,6 +1,6 @@
 import config from "@/config";
 import axios from "axios";
-import { getMattermostConfig } from "@/config/mattermost.config";
+import { getMattermostConfig } from "@/config/mattermost/mattermost.config";
 
 interface UserStatus {
   user_id: string,

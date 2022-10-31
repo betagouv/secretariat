@@ -1,4 +1,4 @@
-import config from ".";
+import config from "..";
 
 export const getMattermostConfig = () => {
     if (!config.mattermostBotToken) {
