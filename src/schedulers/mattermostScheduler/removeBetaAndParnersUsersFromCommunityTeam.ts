@@ -42,7 +42,64 @@ enum MattermostUserStatus {
 }
 
 type MattermostUserWithStatus = MattermostUser & {
-    status: MattermostUserStatus
+    status: MattermostUserStatus,
+    memberInfo?: Member
+}
+
+const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithStatus) => string> = {
+    USER_IS_NOT_VALID: (user: MattermostUserWithStatus) => `Bonjour ${user.first_name},
+        Tu reçois ce message car ton email n'a pas un domaine valide pour accèder à l'espace Communauté de mattermost.
+        Les emails valides sont ceux en @beta.gouv.fr, d'etalab et des services publics en général ainsi que ceux des attributaires.
+        
+        - Si tu as ce genre d'email c'est celui-ci que tu dois utiliser comme email pour avoir accès a cet espace.
+        - Si tu n'as pas ce genre d'email mais que tu fais toujours parti de la communauté (tu es dans une startup, tu travailles en transverse), il faut que tu crée une fiche membre sur https://espace-membre.incubateur.net/onboarding.
+        
+        Si tu n'es effectivement plus dans la communauté, ton compte sera retirer de l'espace Communauté (mais pas des autres espaces).
+        Il existe une espace Alumni mais il n'est pour l'instant pas animé.
+        
+        Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+        
+        Ceci est un message automatique envoyé par l'app Espace Membre.
+    `,
+    USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_HAS_ACTIVE_PRIMARY_EMAIL: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_IS_PARTNER_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
+Sinon il faudrait la [mettre à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations).
+Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+    `},
+    USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (user: MattermostUserWithStatus): string {
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
+Sinon il faudrait la [mettre à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations).
+Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider. Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+    `},
+    USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_IS_VALID_WITH_DOMAIN: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_IS_VALID_WITH_PARTNER: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    },
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
+        throw new Error("Function not implemented.");
+    }
 }
 
 export async function getMattermostUsersWithStatus({
@@ -73,23 +130,25 @@ export async function getMattermostUsersWithStatus({
     const mattermostEmailRegexException : string[] = config.MATTERMOST_EMAIL_REGEX_EXCEPTION ? config.MATTERMOST_EMAIL_REGEX_EXCEPTION.split(',') : []
     const mattermostUsersToRemove : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
         let status
+        let memberInfo
         if (dbuser_primary_emails.includes(mUser.email)) {
             if (dbuser_not_active_primary_emails.includes(mUser.email)) {
                 const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
-                const memberInfo = users.find(user => user.id === dbUser.username)
+                memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
-                }else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                }else if (utils.checkUserIsExpired(memberInfo)) {
                     status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED
                 } else {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
                 }
+            
             } else {
                 const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
-                const memberInfo = users.find(user => user.id === dbUser.username)
+                memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
-                } else if (utils.checkUserIsExpired(memberInfo, nbDays)) {
+                } else if (utils.checkUserIsExpired(memberInfo)) {
                     status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED
                 } else {
                     status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
@@ -108,6 +167,7 @@ export async function getMattermostUsersWithStatus({
         }
         return {
             ...mUser,
+            memberInfo,
             status
         }
     })
@@ -122,7 +182,7 @@ const MATTERMOST_ACTIVE_STATUS = [
 
 export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
     nbDays
-} : UsersToRemoveProps) : Promise<MattermostUser[]> {
+} : UsersToRemoveProps) : Promise<MattermostUserWithStatus[]> {
     // Removed users referenced on github but expired for more than 3 months
     const mattermostUsersWithStatus = await getMattermostUsersWithStatus({ nbDays })
     const invalidUsers = mattermostUsersWithStatus.filter(m => !MATTERMOST_ACTIVE_STATUS.includes(m.status))
@@ -133,10 +193,9 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
 
 export async function sendReminderToUserAtDays({
     optionalUsers,
-    checkAll,
     nbDays
 }: UsersToRemoveProps) {
-    const usersToSendAMessageTo : MattermostUser[] = await getInvalidBetaAndParnersUsersFromCommunityTeam({
+    const usersToSendAMessageTo : MattermostUserWithStatus[] = await getInvalidBetaAndParnersUsersFromCommunityTeam({
         optionalUsers,
         nbDays
     })
@@ -144,20 +203,7 @@ export async function sendReminderToUserAtDays({
     for (const user of usersToSendAMessageTo) {
         await sendInfoToChat({
             username: user.username,
-            text: `Bonjour ${user.first_name},
-Tu reçois ce message car ton email n'a pas un domaine valide pour accèder à l'espace Communauté de mattermost.
-Les emails valides sont ceux en @beta.gouv.fr, d'etalab et des services publics en général ainsi que ceux des attributaires.
-
-- Si tu as ce genre d'email c'est celui-ci que tu dois utiliser comme email pour avoir accès a cet espace.
-- Si tu n'as pas ce genre d'email mais que tu fais toujours parti de la communauté (tu es dans une startup, tu travailles en transverse), il faut que tu crée une fiche membre sur https://espace-membre.incubateur.net/onboarding.
-
-Si tu n'es effectivement plus dans la communauté, ton compte sera retirer de l'espace Communauté (mais pas des autres espaces).
-Il existe une espace Alumni mais il n'est pour l'instant pas animé.
-
-Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
-
-Ceci est un message automatique envoyé par l'app Espace Membre.
-`
+            text: MESSAGE_FOR_TYPE[user.status](user)
         })
     }
 }
