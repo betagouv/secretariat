@@ -101,7 +101,8 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (user: MattermostUserWithStatus): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
-Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Mon compte > Mon Email.
+Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user.dbUser.secondary_email}.
 
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
@@ -137,6 +138,7 @@ Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépas
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+Et merger la pull request.
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 
@@ -147,7 +149,20 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 `;
     },
     USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED: function (user: MattermostUserWithStatus): string {
-        throw new Error("Function not implemented.");
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+Et merger la pull request.
+
+Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+
+Ceci est un message automatique envoyé par l'app Espace Membre.
+    
+`;
     }
 }
 
