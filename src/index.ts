@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import config from '@config';
 import * as accountController from '@controllers/accountController';
-import * as adminController from '@controllers/adminController';
+import * as adminController from '@/controllers/adminController';
 import * as communityController from '@controllers/communityController';
 import * as githubNotificationController from '@controllers/githubNotificationController';
 import * as indexController from '@controllers/indexController';
@@ -154,7 +154,10 @@ app.post('/account/info', accountController.updateCurrentInfo);
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
-app.get('/admin', adminController.getEmailLists);
+
+app.get(routes.ADMIN, adminController.getEmailLists);
+app.get(routes.ADMIN_MATTERMOST, adminController.getMattermostAdmin);
+
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);

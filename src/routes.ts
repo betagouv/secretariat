@@ -1,5 +1,8 @@
 
 class routes {
+  static ADMIN = '/admin'
+  static ADMIN_MATTERMOST = '/admin/mattermost'
+  // onboarding
   static ONBOARDING = '/onboarding'
   static ONBOARDING_ACTION = '/onboarding'
   // users
