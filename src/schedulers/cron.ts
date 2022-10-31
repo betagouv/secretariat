@@ -90,8 +90,8 @@ const mattermostJobs: Job[] = [
     name: 'removeBetaAndParnersUsersFromCommunityTeam',
   },
   {
-    cronTime: '0 5 * * * 1',
-    onTick: () => sendReminderToUserAtDays({ nbDays: 60 }),
+    cronTime: '0 10 * * * 3',
+    onTick: () => sendReminderToUserAtDays({ nbDays: 90 }),
     isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
     name: 'sendReminderToUserAtDays',
   },
