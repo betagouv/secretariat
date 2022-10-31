@@ -38,12 +38,16 @@ enum MattermostUserStatus {
     USER_IS_VALID_WITH_DOMAIN = "USER_IS_VALID_WITH_DOMAIN",
     USER_IS_VALID_WITH_PARTNER = "USER_IS_VALID_WITH_PARTNER",
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO",
-    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED"
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED",
+    USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED = "USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED",
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_SUSPENDED = "USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_SUSPENDED",
+    USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO = "USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO"
 }
 
 type MattermostUserWithStatus = MattermostUser & {
     status: MattermostUserStatus,
-    memberInfo?: Member
+    memberInfo?: Member,
+    dbUser?: DBUser
 }
 
 const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithStatus) => string> = {
@@ -54,8 +58,7 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
         - Si tu as ce genre d'email c'est celui-ci que tu dois utiliser comme email pour avoir accès a cet espace.
         - Si tu n'as pas ce genre d'email mais que tu fais toujours parti de la communauté (tu es dans une startup, tu travailles en transverse), il faut que tu crée une fiche membre sur https://espace-membre.incubateur.net/onboarding.
         
-        Si tu n'es effectivement plus dans la communauté, ton compte sera retirer de l'espace Communauté (mais pas des autres espaces).
-        Il existe une espace Alumni mais il n'est pour l'instant pas animé.
+        Si tu n'es effectivement plus dans la communauté, ton compte sera retirer de l'espace Communauté (mais pas des autres espaces) d'ici 2 semaines.
         
         Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
@@ -73,18 +76,49 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
     USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
-Sinon il faudrait la [mettre à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations).
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+
 Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
-    `},
+
+Ceci est un message automatique envoyé par l'app Espace Membre.
+    
+`;
+    },
+    USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_SUSPENDED: function (user: MattermostUserWithStatus): string {
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Dans Mon compte > Mon email.
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+        
+Ceci est un message automatique envoyé par l'app Espace Membre
+    `;
+    },
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (user: MattermostUserWithStatus): string {
         return `Bonjour ${user.first_name},
-Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
-Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
-Sinon il faudrait la [mettre à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations).
-Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider. Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
-    `},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+        
+Ceci est un message automatique envoyé par l'app Espace Membre
+    `;
+    },
+    USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (user: MattermostUserWithStatus): string {
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble suspendu.
+Tu peux le reactiver dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Il te suffit ensuite de mettre à jour ton mot de passe pour le réactiver : https://espace-membre.incubateur.net/account#password>
+
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+        
+Ceci est un message automatique envoyé par l'app Espace Membre.
+    `;
+    },
     USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL: function (user: MattermostUserWithStatus): string {
         throw new Error("Function not implemented.");
     },
@@ -98,6 +132,21 @@ Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider. Sinon 
         throw new Error("Function not implemented.");
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
+        return `Bonjour ${user.first_name},
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+
+Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+
+Ceci est un message automatique envoyé par l'app Espace Membre.
+    
+`;
+    },
+    USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED: function (user: MattermostUserWithStatus): string {
         throw new Error("Function not implemented.");
     }
 }
@@ -131,25 +180,38 @@ export async function getMattermostUsersWithStatus({
     const mattermostUsersToRemove : MattermostUserWithStatus[] = mattermostUsers.map(mUser => {
         let status
         let memberInfo
+        let dbUser
         if (dbuser_primary_emails.includes(mUser.email)) {
             if (dbuser_not_active_primary_emails.includes(mUser.email)) {
-                const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
+                dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
                 memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
-                }else if (utils.checkUserIsExpired(memberInfo)) {
-                    status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                } else if (utils.checkUserIsExpired(memberInfo)) {
+                    if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
+                        status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED
+                    } else {
+                        status = MattermostUserStatus.USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                    }
                 } else {
-                    status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
+                    if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
+                        status = MattermostUserStatus.USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
+                    } else {
+                        status = MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO
+                    }
                 }
             
             } else {
-                const dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
+                dbUser = dbUsers.find(dbUser => dbUser.primary_email === mUser.email)
                 memberInfo = users.find(user => user.id === dbUser.username)
                 if (!memberInfo) {
                     status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO
                 } else if (utils.checkUserIsExpired(memberInfo)) {
-                    status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                    if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
+                        status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_SUSPENDED
+                    } else {
+                        status = MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED
+                    }
                 } else {
                     status = MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL
                 }
@@ -168,6 +230,7 @@ export async function getMattermostUsersWithStatus({
         return {
             ...mUser,
             memberInfo,
+            dbUser,
             status
         }
     })
@@ -201,10 +264,16 @@ export async function sendReminderToUserAtDays({
     })
 
     for (const user of usersToSendAMessageTo) {
-        await sendInfoToChat({
-            username: user.username,
-            text: MESSAGE_FOR_TYPE[user.status](user)
-        })
+        try {
+            await sendInfoToChat({
+                username: user.username,
+                text: MESSAGE_FOR_TYPE[user.status](user)
+            })
+            console.log(`Message envoyé à ${user.username}`)
+        } catch(e) {
+            console.log(`Erreur d'envoi à ${user.username}`)
+            console.error(e)
+        }
     }
 }
 
