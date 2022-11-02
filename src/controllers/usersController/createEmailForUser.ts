@@ -68,7 +68,7 @@ export async function createEmailForUser(req, res) {
     }
 }
 
-export async function createEmail(username, creator) {
+export async function createEmail(username: string, creator: string, emailIsRecreated: boolean=false) {
     const email = utils.buildBetaEmail(username);
     const password = crypto.randomBytes(16)
         .toString('base64')
@@ -84,11 +84,11 @@ export async function createEmail(username, creator) {
         username,
     }).update({
         primary_email: email,
-        primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+        primary_email_status: emailIsRecreated ? EmailStatusCode.EMAIL_RECREATION_PENDING : EmailStatusCode.EMAIL_CREATION_PENDING,
         primary_email_status_updated_at: new Date()
     })
 
-    addEvent(EventCode.MEMBER_EMAIL_CREATED, {
+    addEvent(emailIsRecreated ? EventCode.MEMBER_EMAIL_RECREATED : EventCode.MEMBER_EMAIL_CREATED, {
         created_by_username: creator,
         action_on_username: username,
         action_metadata: {
