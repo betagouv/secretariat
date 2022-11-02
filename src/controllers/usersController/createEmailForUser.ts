@@ -45,7 +45,9 @@ export async function createEmailForUser(req, res) {
                 throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
             }
         }
+        let emailIsRecreated = false
         if (dbUser) {
+            emailIsRecreated = dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED
             await updateSecondaryEmail(username, req.body.to_email)
         } else {
             await knex('users').insert({
@@ -54,7 +56,7 @@ export async function createEmailForUser(req, res) {
                 secondary_email: req.body.to_email
             })
         }
-        await createEmail(username, req.auth.id);
+        await createEmail(username, req.auth.id, emailIsRecreated);
 
         req.flash('message', 'Le compte email a bien été créé.');
         res.redirect(`/community/${username}`);
@@ -74,7 +76,7 @@ export async function createEmail(username, creator) {
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
 
-    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
+    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
     await BetaGouv.sendInfoToChat(message);
     await BetaGouv.createEmail(username, password);
