@@ -45,7 +45,9 @@ export async function createEmailForUser(req, res) {
                 throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
             }
         }
+        let emailIsRecreated = false
         if (dbUser) {
+            emailIsRecreated = dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED
             await updateSecondaryEmail(username, req.body.to_email)
         } else {
             await knex('users').insert({
@@ -54,7 +56,7 @@ export async function createEmailForUser(req, res) {
                 secondary_email: req.body.to_email
             })
         }
-        await createEmail(username, req.auth.id);
+        await createEmail(username, req.auth.id, emailIsRecreated);
 
         req.flash('message', 'Le compte email a bien été créé.');
         res.redirect(`/community/${username}`);
@@ -66,7 +68,7 @@ export async function createEmailForUser(req, res) {
     }
 }
 
-export async function createEmail(username, creator) {
+export async function createEmail(username: string, creator: string, emailIsRecreated: boolean=false) {
     const email = utils.buildBetaEmail(username);
     const password = crypto.randomBytes(16)
         .toString('base64')
@@ -74,7 +76,7 @@ export async function createEmail(username, creator) {
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
 
-    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je crée un compte mail pour ${username}`;
+    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
     await BetaGouv.sendInfoToChat(message);
     await BetaGouv.createEmail(username, password);
@@ -82,11 +84,11 @@ export async function createEmail(username, creator) {
         username,
     }).update({
         primary_email: email,
-        primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+        primary_email_status: emailIsRecreated ? EmailStatusCode.EMAIL_RECREATION_PENDING : EmailStatusCode.EMAIL_CREATION_PENDING,
         primary_email_status_updated_at: new Date()
     })
 
-    addEvent(EventCode.MEMBER_EMAIL_CREATED, {
+    addEvent(emailIsRecreated ? EventCode.MEMBER_EMAIL_RECREATED : EventCode.MEMBER_EMAIL_CREATED, {
         created_by_username: creator,
         action_on_username: username,
         action_metadata: {
