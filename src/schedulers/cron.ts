@@ -92,7 +92,7 @@ const mattermostJobs: Job[] = [
   {
     cronTime: '0 10 * * * 3',
     onTick: () => sendReminderToUserAtDays({ nbDays: 90 }),
-    isActive: true,
+    isActive: false,
     name: 'sendReminderToUserAtDays',
   },
   {
