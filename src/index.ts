@@ -157,6 +157,8 @@ app.get('/community/:username', communityController.getUser);
 
 app.get(routes.ADMIN, adminController.getEmailLists);
 app.get(routes.ADMIN_MATTERMOST, adminController.getMattermostAdmin);
+app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, adminController.getMattermostUsersInfo);
+app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, adminController.sendMessageToUsersOnChat);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);

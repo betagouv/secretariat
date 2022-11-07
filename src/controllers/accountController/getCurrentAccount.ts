@@ -5,8 +5,10 @@ import { MemberWithPermission } from "@models/member";
 import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
+import betagouv from "@/betagouv";
 
 export async function getCurrentAccount(req, res) {
+  await betagouv.getAllEmailInfos()
     try {
       const [currentUser, marrainageState, dbUser, dbUserDetail] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
         (async () => utils.userInfos(req.auth.id, true))(),
