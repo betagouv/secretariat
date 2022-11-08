@@ -104,7 +104,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
             fromBeta: state.fromBeta
         }
         const queryParamsString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
-        const usersForMessage = await axios.get(`${routes.ADMIN_MATTERMOST_MESSAGE_API}?${queryParamsString}`, ).then(resp => resp.data)
+        const usersForMessage = await axios.get(`${routes.ADMIN_MATTERMOST_MESSAGE_API}?${queryParamsString}`, ).then(resp => resp.data.users)
         setUsersForMessage(usersForMessage)
     }
 
