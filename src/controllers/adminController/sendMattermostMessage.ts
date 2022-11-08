@@ -48,6 +48,7 @@ export const sendMessageToUsersOnChat = async(req, res) => {
     })
     console.log(`Will send message to ${activeUsers.length}`)
     for (const user of activeUsers) {
+        console.log(`Will write to user`, user.username)
         if (process.env.FEATURE_SEND_MATTERMOST_MESSAGE) {
             try {
                 await sendInfoToChat({
@@ -60,4 +61,10 @@ export const sendMessageToUsersOnChat = async(req, res) => {
             }
         }
     }
+    // send message to admin
+    await sendInfoToChat({
+        text: text,
+        username: req.auth.id,
+        channel: 'secretariat',
+    })
 }
