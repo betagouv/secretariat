@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Request, response } from 'express'
+import { Request } from 'express'
 
 import { Member } from '@models/member';
 import { InnerPageLayout } from '../components/InnerPageLayout';
