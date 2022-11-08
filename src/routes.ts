@@ -2,6 +2,8 @@
 class routes {
   static ADMIN = '/admin'
   static ADMIN_MATTERMOST = '/admin/mattermost'
+  static ADMIN_MATTERMOST_MESSAGE_API = '/api/admin/mattermost/message/users'
+  static ADMIN_MATTERMOST_SEND_MESSAGE = '/admin/mattermost/send-message'
   // onboarding
   static ONBOARDING = '/onboarding'
   static ONBOARDING_ACTION = '/onboarding'

@@ -138,24 +138,23 @@ describe('Community', () => {
       })
     });
 
-    it('should not show the email creation form for users with existing emails', (done) => {
+    it('should not show the email creation form for users with existing emails', async () => {
       nock.cleanAll();
 
       nock(/.*ovh.com/)
         .get(/^.*email\/domain\/.*\/account\/.*/)
         .reply(200, { description: '' });
-
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/responder\/.*/)
+        .reply(200, { description: '' });
       utils.mockUsers();
       utils.mockOvhRedirections();
       utils.mockOvhTime();
-
-      chai.request(app)
+      const res = await chai.request(app)
         .get('/community/membre.parti')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .end((err, res) => {
-          res.text.should.not.include('action="/users/membre.parti/email" method="POST">');
-          done();
-        });
+
+      res.text.should.not.include('action="/users/membre.parti/email" method="POST">');
     });
 
     it('should not show the email creation form for users expired', (done) => {
