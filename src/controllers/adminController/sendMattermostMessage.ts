@@ -67,4 +67,6 @@ export const sendMessageToUsersOnChat = async(req, res) => {
         username: req.auth.id,
         channel: 'secretariat',
     })
+    req.flash('message', `Le message a été envoyé à : ${activeUsers.length} membre`);
+    res.redirect('/admin/mattermost');
 }
