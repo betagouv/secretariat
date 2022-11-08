@@ -27,7 +27,7 @@ export const getMattermostUsersInfo = async(req, res) => {
         res.send(401, 'Droit insufisant pour utiliser cette feature')
         return
     }
-    const fromBeta = Boolean(req.query.fromBeta)
+    const fromBeta = req.query.fromBeta === 'true'
     const users : MattermostUser[] = await getMattermostUsers({
         fromBeta
     })
@@ -42,7 +42,7 @@ export const sendMessageToUsersOnChat = async(req, res) => {
         return
     }
     const text = req.body.text
-    const fromBeta = Boolean(req.body.fromBeta)
+    const fromBeta = req.body.fromBeta === 'true'
     const activeUsers = await getMattermostUsers({
         fromBeta
     })
