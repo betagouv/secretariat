@@ -6,6 +6,7 @@ import { MarrainageGroupStatus, MarrainageGroup, MARRAINAGE_EVENT } from "@/mode
 import { Member } from "@/models/member";
 import knex from "@/db";
 import { MarrainageService } from ".";
+import { getActiveUsers } from '@/controllers/utils';
 
 const countNumberOfMarrainage = (onboarders) => {
     const count = {};
@@ -125,6 +126,8 @@ export class MarrainageServiceWithGroup implements MarrainageService {
 
     async getUsersWithoutMarrainage(): Promise<DBUser[]> {
         const dateFeatureAdded = new Date('01/23/2022');
+        let members : Member[] = await betagouv.usersInfos()
+        members = getActiveUsers(members)
         const users : DBUser[] = await knex('users').where({
           primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         }).andWhere('created_at', '>', dateFeatureAdded)
