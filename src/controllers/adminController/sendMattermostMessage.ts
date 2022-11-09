@@ -23,10 +23,6 @@ const getMattermostUsers = async({ fromBeta } : { fromBeta: boolean}) => {
 }
 
 export const getMattermostUsersInfo = async(req, res) => {
-    if (!config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
-        res.send(401, 'Droit insufisant pour utiliser cette feature')
-        return
-    }
     const fromBeta = req.query.fromBeta === 'true'
     const users : MattermostUser[] = await getMattermostUsers({
         fromBeta
@@ -36,29 +32,58 @@ export const getMattermostUsersInfo = async(req, res) => {
     })   
 }
 
-export const sendMessageToUsersOnChat = async(req, res) => {
-    if (!config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
-        res.send(401, 'Droit insufisant pour utiliser cette feature')
-        return
-    }
-    const text = req.body.text
-    const fromBeta = req.body.fromBeta === 'true'
+const sendMessageToChannel = async ({ channel, text } : { channel: string, text: string }) => {
+    await sendInfoToChat({
+        text: text,
+        channel
+    })
+}
+
+const sendDirectMessageToUsers = async ({
+    fromBeta,
+    text
+} : {fromBeta: boolean, text: string}) => {
     const activeUsers = await getMattermostUsers({
         fromBeta
     })
     console.log(`Will send message to ${activeUsers.length}`)
+    let nbUsers = 0
     for (const user of activeUsers) {
         console.log(`Will write to user`, user.username)
-        if (process.env.FEATURE_SEND_MATTERMOST_MESSAGE) {
-            try {
-                await sendInfoToChat({
-                    text: text,
-                    username: user.username,
-                    channel: 'secretariat',
-                })
-            } catch(e) {
+        try {
+            await sendInfoToChat({
+                text: text,
+                username: user.username,
+                channel: 'secretariat',
+            })
+            nbUsers++
+        } catch(e) {
 
-            }
+        }
+    }
+    return {
+        nbUsers
+    }
+}
+
+export const sendMessageToUsersOnChat = async(req, res) => {
+    const text = req.body.text
+    const fromBeta = req.body.fromBeta === 'true'
+    const channel = req.body.channel
+    const prod = req.body.prod === 'true'
+    if (prod) {
+        if (channel) {
+            await sendMessageToChannel({
+                text,
+                channel
+            })
+        } else {
+            console.log('will send direct message to users')
+            const { nbUsers } = await sendDirectMessageToUsers({
+                text,
+                fromBeta
+            })
+            req.flash('message', `Le message a été envoyé à : ${nbUsers} membres`);
         }
     }
     // send message to admin
@@ -67,6 +92,5 @@ export const sendMessageToUsersOnChat = async(req, res) => {
         username: req.auth.id,
         channel: 'secretariat',
     })
-    req.flash('message', `Le message a été envoyé à : ${activeUsers.length} membres`);
     res.redirect('/admin/mattermost');
 }

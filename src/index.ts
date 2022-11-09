@@ -27,7 +27,8 @@ import * as hookController from '@controllers/hookController';
 import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
-import routes from './routes';
+import routes from './routes/routes';
+import permit, { MemberRole } from './routes/authorization';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -156,9 +157,11 @@ app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
 
 app.get(routes.ADMIN, adminController.getEmailLists);
-app.get(routes.ADMIN_MATTERMOST, adminController.getMattermostAdmin);
-app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, adminController.getMattermostUsersInfo);
-app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, adminController.sendMessageToUsersOnChat);
+
+// ONLY FOR ADMIN
+app.get(routes.ADMIN_MATTERMOST, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostAdmin);
+app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostUsersInfo);
+app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.sendMessageToUsersOnChat);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);
