@@ -50,17 +50,15 @@ const sendDirectMessageToUsers = async ({
     let nbUsers = 0
     for (const user of activeUsers) {
         console.log(`Will write to user`, user.username)
-        if (process.env.FEATURE_SEND_MATTERMOST_MESSAGE) {
-            try {
-                await sendInfoToChat({
-                    text: text,
-                    username: user.username,
-                    channel: 'secretariat',
-                })
-                nbUsers++
-            } catch(e) {
+        try {
+            await sendInfoToChat({
+                text: text,
+                username: user.username,
+                channel: 'secretariat',
+            })
+            nbUsers++
+        } catch(e) {
 
-            }
         }
     }
     return {
