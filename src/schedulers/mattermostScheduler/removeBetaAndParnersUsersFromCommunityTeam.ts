@@ -76,7 +76,7 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
     USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
         const diff = utils.nbOfDaysBetweenDate(new Date(user.memberInfo.end), new Date())
         let time = `1 mois`
-        if (diff > 3*90) {
+        if (diff > 3*30) {
             time = '1 semaine'
         }
         return `Bonjour ${user.first_name},
@@ -140,7 +140,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
         const diff = utils.nbOfDaysBetweenDate(new Date(user.memberInfo.end), new Date())
         let time = `1 mois`
-        if (diff > 3*90) {
+        if (diff > 3*30) {
             time = '1 semaine'
         }
         return `Bonjour ${user.first_name},
@@ -309,7 +309,7 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
         nbDays: 3*30
     })
     usersToDelete = usersToDelete.filter(user => {
-        return user.status === MattermostUserStatus.USER_IS_NOT_VALID || (user.memberInfo && utils.checkUserIsExpired(user.memberInfo, 3*90))
+        return user.status === MattermostUserStatus.USER_IS_NOT_VALID || (user.memberInfo && utils.checkUserIsExpired(user.memberInfo, 3*30))
     })
     console.log(`${usersToDelete.length} users to remove`)
     for (const user of usersToDelete) {
