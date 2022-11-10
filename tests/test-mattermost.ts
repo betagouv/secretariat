@@ -290,6 +290,10 @@ describe('Move expired user to team Alumni on mattermost', () => {
         },
       ]);
 
+    const addToTeamMock = nock(/.*mattermost.incubateur.net/)
+    .post(/^.*api\/v4\/teams\/testteam\/members/)
+    .reply(200, [{ status: 'ok' }])
+    .persist();
     const removeFromTeamMock = nock(/.*mattermost.incubateur.net/)
       .delete(/^.*api\/v4\/teams\/testteam\/members/)
       .reply(200, [{ status: 'ok' }])
@@ -316,6 +320,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
 
     const { removeUsersFromCommunityTeam } = mattermostScheduler;
     const result = await removeUsersFromCommunityTeam(undefined, true);
+    addToTeamMock.isDone().should.be.true
     removeFromTeamMock.isDone().should.be.true;
     result.length.should.be.equal(1);
   });
