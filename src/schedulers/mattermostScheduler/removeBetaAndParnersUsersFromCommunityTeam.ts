@@ -292,24 +292,27 @@ export async function sendReminderToUserAtDays({
     }
 }
 
-export async function removeBetaAndParnersUsersFromCommunityTeam({
-    optionalUsers
-} : { optionalUsers: Member[] }) {
+export async function removeBetaAndParnersUsersFromCommunityTeam() {
     // Removed users referenced on github but expired for more than 3 months
 
-    const usersToDelete : MattermostUser[] = await getInvalidBetaAndParnersUsersFromCommunityTeam({
-        optionalUsers,
+    let usersToDelete : MattermostUserWithStatus[] = await getInvalidBetaAndParnersUsersFromCommunityTeam({
         nbDays: 3*30
     })
-
+    usersToDelete = usersToDelete.filter(user => user.status === MattermostUserStatus.USER_IS_NOT_VALID)
+    console.log(`${usersToDelete.length} users to remove`)
     for (const user of usersToDelete) {
-        try {
-            await mattermost.removeUserFromTeam(
-                user.id,
-                config.mattermostTeamId
-            );
-        } catch (e) {
-            console.log(`Error while removing user ${user.id}`, e)
+        if (process.env.FEATURE_REMOVE_USER_FROM_TEAM_ADD_TO_ALUMNI || process.env.NODE_ENV === 'test') {
+            try {
+                await mattermost.addUserToTeam(
+                    user.id,
+                    config.mattermostAlumniTeamId)
+                await mattermost.removeUserFromTeam(
+                    user.id,
+                    config.mattermostTeamId
+                );
+            } catch (e) {
+                console.log(`Error while removing user ${user.id}`, e)
+            }
         }
     }
 }

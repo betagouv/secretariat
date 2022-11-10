@@ -327,7 +327,7 @@ describe('Move expired user to team Alumni on mattermost', () => {
       .reply(200, [
         {
           id: 'julien.dauphant',
-          email: `julien.dauphant@${config.domain}`,
+          email: `julien.dauphant@nimportequoi.com`,
         },
       ]);
       nock(/.*mattermost.incubateur.net/)
@@ -343,6 +343,11 @@ describe('Move expired user to team Alumni on mattermost', () => {
           email: 'julien.dauphant',
         },
       ]);
+    
+    const addToTeamMock = nock(/.*mattermost.incubateur.net/)
+      .post(/^.*api\/v4\/teams\/testalumniteam\/members/)
+      .reply(200, [{ status: 'ok' }])
+      .persist();
 
     const removeFromTeamMock = nock(/.*mattermost.incubateur.net/)
       .delete(/^.*api\/v4\/teams\/testteam\/members/)
@@ -368,10 +373,9 @@ describe('Move expired user to team Alumni on mattermost', () => {
       ])
       .persist();
 
-    const result = await removeBetaAndParnersUsersFromCommunityTeam({
-      optionalUsers: undefined
-    });
+    await removeBetaAndParnersUsersFromCommunityTeam();
     removeFromTeamMock.isDone().should.be.true;
+    addToTeamMock.isDone().should.be.true
     // result.length.should.be.equal(1);
   });
 
