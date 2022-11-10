@@ -298,11 +298,10 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
     let usersToDelete : MattermostUserWithStatus[] = await getInvalidBetaAndParnersUsersFromCommunityTeam({
         nbDays: 3*30
     })
-
     usersToDelete = usersToDelete.filter(user => user.status === MattermostUserStatus.USER_IS_NOT_VALID)
     console.log(`${usersToDelete.length} users to remove`)
     for (const user of usersToDelete) {
-        if (process.env.FEATURE_REMOVE_USER_FROM_TEAM_ADD_TO_ALUMNI) {
+        if (process.env.FEATURE_REMOVE_USER_FROM_TEAM_ADD_TO_ALUMNI || process.env.NODE_ENV === 'test') {
             try {
                 await mattermost.addUserToTeam(
                     user.id,
