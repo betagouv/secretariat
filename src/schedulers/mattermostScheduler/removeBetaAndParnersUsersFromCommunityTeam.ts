@@ -312,6 +312,7 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
         return user.status === MattermostUserStatus.USER_IS_NOT_VALID || (user.memberInfo && utils.checkUserIsExpired(user.memberInfo, 3*30))
     })
     console.log(`${usersToDelete.length} users to remove`)
+    console.log(`${usersToDelete.map(user => user.email)}`)
     for (const user of usersToDelete) {
         if (process.env.FEATURE_REMOVE_USER_FROM_TEAM_ADD_TO_ALUMNI === 'true' || process.env.NODE_ENV === 'test') {
             try {
