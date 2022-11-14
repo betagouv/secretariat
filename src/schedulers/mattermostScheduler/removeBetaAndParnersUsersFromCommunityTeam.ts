@@ -58,7 +58,7 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
         - Si tu as ce genre d'email c'est celui-ci que tu dois utiliser comme email pour avoir accès a cet espace.
         - Si tu n'as pas ce genre d'email mais que tu fais toujours parti de la communauté (tu es dans une startup, tu travailles en transverse), il faut que tu crée une fiche membre sur https://espace-membre.incubateur.net/onboarding.
         
-        Si tu n'es effectivement plus dans la communauté, ton compte sera retirer de l'espace Communauté (mais pas des autres espaces) d'ici 2 semaines.
+        Si tu n'es effectivement plus dans la communauté, ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine.
         
         Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
@@ -74,15 +74,10 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
         throw new Error("Function not implemented.");
     },
     USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
-        const diff = utils.nbOfDaysBetweenDate(new Date(user.memberInfo.end), new Date())
-        let time = `1 mois`
-        if (diff > 3*30) {
-            time = '1 semaine'
-        }
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans ${time}. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -138,15 +133,10 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         throw new Error("Function not implemented.");
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (user: MattermostUserWithStatus): string {
-        const diff = utils.nbOfDaysBetweenDate(new Date(user.memberInfo.end), new Date())
-        let time = `1 mois`
-        if (diff > 3*30) {
-            time = '1 semaine'
-        }
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans ${time} mois. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 Et merger la pull request.
 
@@ -162,7 +152,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost sera retiré de l'espace "Communauté" dans 1 mois. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 Et merger la pull request.
 
