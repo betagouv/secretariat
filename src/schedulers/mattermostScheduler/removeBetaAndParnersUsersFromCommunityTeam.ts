@@ -77,7 +77,7 @@ const MESSAGE_FOR_TYPE : Record<MattermostUserStatus, (user: MattermostUserWithS
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -136,7 +136,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 Et merger la pull request.
 
@@ -152,7 +152,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
-Si c'est normal tu n'as rien a faire et ton compte mattermost ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
+Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
 Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
 Et merger la pull request.
 
