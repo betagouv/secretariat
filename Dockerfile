@@ -11,4 +11,5 @@ RUN npm install
 COPY . .
 
 EXPOSE 8100
-RUN npm run dev
+
+CMD npm run dev
