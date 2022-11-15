@@ -428,9 +428,8 @@ export const Onboarding = PageLayout(function (props: Props) {
                             name="should_create_marrainage"
                             onChange={(e) => changeFormData('should_create_marrainage', !state.formData.should_create_marrainage)}
                             value={state.formData.should_create_marrainage}
-                            checked={!!state.formData.should_create_marrainage} />
+                            checked={!!state.formData.should_create_marrainage} /> Oui je souhaite avoir un parrain ou une marraine
                     </label>
-                    <input name="employer" value={state.formData.employer} onChange={(e) => changeFormData('employer', e.currentTarget.value)}/>
                 </div>
                 <h4>Ton email</h4>
                 <div className="form__group">
