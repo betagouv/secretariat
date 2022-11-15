@@ -39,7 +39,8 @@ interface FormData {
     start?: string,
     end?: string,
     average_nb_of_days?: number,
-    communication_email: 'primary' | 'secondary'
+    communication_email: 'primary' | 'secondary',
+    should_create_marrainage: boolean,
 }
 
 interface Props {
