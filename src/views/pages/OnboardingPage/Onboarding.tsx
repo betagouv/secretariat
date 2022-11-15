@@ -424,11 +424,12 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <strong>Souhaites-tu avoir un parrain ou une marraine ?</strong><br />
                         Un parrain ou une marraine te contactera pour te présenter les outils, le fonctionnement de @beta.gouv.fr
                         et échanger avec toi et d'autres nouveaux membres.
+                        <br/>
                         <input type="checkbox"
                             name="should_create_marrainage"
                             onChange={(e) => changeFormData('should_create_marrainage', !state.formData.should_create_marrainage)}
                             value={state.formData.should_create_marrainage}
-                            checked={!!state.formData.should_create_marrainage} /> Oui je souhaite avoir un parrain ou une marraine
+                            checked={!!state.formData.should_create_marrainage} /><strong>Je souhaite avoir un parrain ou une marraine</strong>
                     </label>
                 </div>
                 <h4>Ton email</h4>
