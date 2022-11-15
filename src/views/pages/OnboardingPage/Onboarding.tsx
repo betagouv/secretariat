@@ -39,7 +39,8 @@ interface FormData {
     start?: string,
     end?: string,
     average_nb_of_days?: number,
-    communication_email: 'primary' | 'secondary'
+    communication_email: 'primary' | 'secondary',
+    should_create_marrainage: boolean,
 }
 
 interface Props {
@@ -419,17 +420,17 @@ export const Onboarding = PageLayout(function (props: Props) {
                     <input name="employer" value={state.formData.employer} onChange={(e) => changeFormData('employer', e.currentTarget.value)}/>
                 </div>
                 <div className="form__group">
-                    <label htmlFor="badge">
-                        <strong>Badge</strong><br />
-                        Si tu souhaites accéder aux bureaux, il te faudra un badge. Il te faudra aussi en faire la demande séparément.
-                        En cochant cette case, nous saurons que tu en fais la demande et le badge sera renouvellé automatiquement.
+                    <label htmlFor="employer">
+                        <strong>Souhaites-tu avoir un parrain ou une marraine ?</strong><br />
+                        Un parrain ou une marraine te contactera pour te présenter les outils, le fonctionnement de @beta.gouv.fr
+                        et échanger avec toi et d'autres nouveaux membres.
+                        <br/>
+                        <input type="checkbox"
+                            name="should_create_marrainage"
+                            onChange={(e) => changeFormData('should_create_marrainage', !state.formData.should_create_marrainage)}
+                            value={state.formData.should_create_marrainage}
+                            checked={!!state.formData.should_create_marrainage} /><strong>Je souhaite avoir un parrain ou une marraine</strong>
                     </label>
-                    <select name="badge">
-                        <option value=""></option>
-                        { props.userConfig.badgeOptions.map(function(badge) {
-                            return <option value={badge.key} selected={badge.key === state.formData.key}>{badge.name}</option>
-                        })}
-                    </select>
                 </div>
                 <h4>Ton email</h4>
                 <div className="form__group">

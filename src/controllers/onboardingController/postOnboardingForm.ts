@@ -126,6 +126,7 @@ export async function postForm(req, res) {
       const domaine = isValidDomain('domaine', req.body.domaine, errorHandler) ? req.body.domaine : null;
       const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
       const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
+      const should_create_marrainage = req.body.should_create_marrainage === 'true' || false;
       const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
       const gender = req.body.gender
       const osm_city = req.body.osm_city
@@ -227,6 +228,7 @@ export async function postForm(req, res) {
           communication_email,
           primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
           primary_email_status_updated_at: new Date(),
+          should_create_marrainage,
           osm_city,
           average_nb_of_days
         })

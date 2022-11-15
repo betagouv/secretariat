@@ -130,6 +130,7 @@ export class MarrainageServiceWithGroup implements MarrainageService {
         members = getActiveUsers(members)
         const users : DBUser[] = await knex('users').where({
           primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+          should_create_marrainage: true
         })
         .andWhere('created_at', '>', dateFeatureAdded)
         .whereIn('username', members.map(member => member.id))
