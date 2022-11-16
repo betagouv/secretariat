@@ -134,10 +134,25 @@ const betaGouv = {
 
 const betaOVH = {
   emailInfos: async (id: string) => {
+    const promises = []
     const url = `/email/domain/${config.domain}/account/${id}`;
-
+    promises.push(ovh.requestPromised('GET', url, {}))
+    if (config.OVH_EMAIL_PRO_NAME) {
+      const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}`;
+      promises.push(
+        ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+      )
+    }
+    if (config.OVH_EMAIL_EXCHANGE_NAME) {
+      const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
+      promises.push(
+        ovh.requestPromised('GET', urlExchange, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+      )
+    }
     try {
-      return await ovh.requestPromised('GET', url, {});
+      return await Promise.all(promises).then((data) => {
+        return data.flat(1)[0]
+      });
     } catch (err) {
       if (err.error === 404) return null;
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
@@ -149,12 +164,12 @@ const betaOVH = {
     const promises = []
     const url = `/email/domain/${config.domain}/account/`;
     promises.push(ovh.requestPromised('GET', url, {}))
-    // if (config.OVH_EMAIL_PRO_NAME) {
-    //   const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
-    //   promises.push(
-    //     ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
-    //   )
-    // }
+    if (config.OVH_EMAIL_PRO_NAME) {
+      const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
+      promises.push(
+        ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+      )
+    }
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`
       promises.push(
@@ -170,11 +185,12 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  getProEmailInfos: async () => {
+  getAvailableProEmailInfos: async () => {
     const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
     try {
       console.log(`GET OVH pro emails infos : ${urlPro}`)
-      return ovh.requestPromised('GET', urlPro, {})
+      return ovh.requestPromised('GET', urlPro, {}).then(
+        data => data.filter(email => email.includes('@configureme.me')))
     } catch(err) {
       console.error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`)
       throw new Error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`);

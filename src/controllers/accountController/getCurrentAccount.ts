@@ -29,9 +29,9 @@ export async function getCurrentAccount(req, res) {
       const title = 'Mon compte';
       const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
       const gender = dbUserDetail.gender || 'NSP'
-      let emailPros = []
+      let availableEmailPros = []
       if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
-        emailPros = await betagouv.getProEmailInfos()
+        availableEmailPros = await betagouv.getAvailableProEmailInfos()
       }
       return res.render('account', {
         title,
@@ -40,10 +40,12 @@ export async function getCurrentAccount(req, res) {
         userInfos: currentUser.userInfos,
         domain: config.domain,
         isExpired: currentUser.isExpired,
-        emailPros,
         isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         // can create email if email is not set, or if email is not @beta.gouv.fr email
         canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
+        canCreateProAccount: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
+        availableEmailPros,
+
         canCreateRedirection: currentUser.canCreateRedirection,
         canChangePassword: currentUser.canChangePassword,
         communication_email: dbUser.communication_email,
