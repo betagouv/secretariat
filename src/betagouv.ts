@@ -173,6 +173,7 @@ const betaOVH = {
   getProEmailInfos: async () => {
     const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
     try {
+      console.log(`GET OVH pro emails infos : ${urlPro}`)
       return ovh.requestPromised('GET', urlPro, {})
     } catch(err) {
       console.error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`)
