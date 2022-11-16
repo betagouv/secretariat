@@ -19,9 +19,6 @@
             <div class="account-split-panel">
                 <div style="width: 45%">
                     <h6>Mes infos</h6>
-                    <% if (isAdmin) { %>
-                        <%= emailPros %>
-                    <% } %>
                     <% if (userInfos) { %>
                         <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
                     <% } %>
@@ -138,6 +135,16 @@
             </h3>
             <% if (emailInfos) { %>
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
+            <% } %>
+            <% if (isAdmin) { %>
+                <%= availableEmailPros %>
+                <% if (availableEmailPros.length) { %>
+                    <p>Il y a <%= availableEmailPros.length %> compte disponible.</p>
+                    <p>Passer ce compte en pro : </p>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <button class="button no-margin" type="submit">Upgrader en compte pro</button>
+                    </form>
+                <% } %>
             <% } %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer ton compte email @beta.gouv.fr.</p>
