@@ -149,12 +149,12 @@ const betaOVH = {
     const promises = []
     const url = `/email/domain/${config.domain}/account/`;
     promises.push(ovh.requestPromised('GET', url, {}))
-    if (config.OVH_EMAIL_PRO_NAME) {
-      const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
-      promises.push(
-        ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
-      )
-    }
+    // if (config.OVH_EMAIL_PRO_NAME) {
+    //   const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
+    //   promises.push(
+    //     ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+    //   )
+    // }
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`
       promises.push(
@@ -166,6 +166,7 @@ const betaOVH = {
         return data.flat(1)
       });
     } catch (err) {
+      console.error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`)
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
@@ -174,6 +175,7 @@ const betaOVH = {
     try {
       return ovh.requestPromised('GET', urlPro, {})
     } catch(err) {
+      console.error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`)
       throw new Error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`);
     }
   },
@@ -225,7 +227,6 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/responder/${id}`;
 
     try {
-      console.log(`OVH GET ${url} name=${id}`);
       return await ovh.requestPromised('GET', url);
     } catch (err) {
       if (err.error === 404) return null;
@@ -235,7 +236,6 @@ const betaOVH = {
   setResponder: async (id, { content, from, to }) => {
     const url = `/email/domain/${config.domain}/responder`;
     try {
-      console.log(`OVH POST ${url} name=${id}`);
       const params : OvhResponder = {
         account: id,
         content,
@@ -251,8 +251,7 @@ const betaOVH = {
   updateResponder: async (id, { content, from, to }) => {
     const url = `/email/domain/${config.domain}/responder/${id}`;
     try {
-      console.log(`OVH PUT ${url} name=${id}`);
-      return await ovh.requestPromised('PUT', url, {
+       return await ovh.requestPromised('PUT', url, {
         content,
         from,
         to,
@@ -264,7 +263,6 @@ const betaOVH = {
   deleteResponder: async(id) => {
     const url = `/email/domain/${config.domain}/responder/${id}`;
     try {
-      console.log(`OVH DELETE ${url} name=${id}`);
       return await ovh.requestPromised('DELETE', url);
     } catch (err) {
       throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
@@ -274,8 +272,6 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/account`;
 
     try {
-      console.log(`OVH POST ${url} name=${id}`);
-
       return await ovh.requestPromised('POST', url, {
         accountName: id,
         password,
@@ -288,8 +284,6 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/account/${id}`;
 
     try {
-      console.log(`OVH DELETE ${url}`);
-
       return await ovh.requestPromised('DELETE', url);
     } catch (err) {
       throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
@@ -299,8 +293,6 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/redirection`;
 
     try {
-      console.log(`OVH POST ${url} from+${from} &to=${to}`);
-
       return await ovh.requestPromised('POST', url, { from, to, localCopy });
     } catch (err) {
       throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
