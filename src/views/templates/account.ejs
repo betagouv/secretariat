@@ -19,6 +19,9 @@
             <div class="account-split-panel">
                 <div style="width: 45%">
                     <h6>Mes infos</h6>
+                    <% if (isAdmin) { %>
+                        <%= emailPros %>
+                    <% } %>
                     <% if (userInfos) { %>
                         <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
                     <% } %>

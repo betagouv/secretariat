@@ -169,6 +169,14 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  getProEmailInfos: async () => {
+    const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
+    try {
+      return ovh.requestPromised('GET', urlPro, {})
+    } catch(err) {
+      throw new Error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`);
+    }
+  },
   getAllMailingList: async() => {
     const url = `/email/domain/${config.domain}/mailingList/`;
     try {

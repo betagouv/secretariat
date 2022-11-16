@@ -5,6 +5,7 @@ import { MemberWithPermission } from "@models/member";
 import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
+import betagouv from "@/betagouv";
 
 export async function getCurrentAccount(req, res) {
     try {
@@ -28,6 +29,10 @@ export async function getCurrentAccount(req, res) {
       const title = 'Mon compte';
       const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
       const gender = dbUserDetail.gender || 'NSP'
+      let emailPros = []
+      if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
+        emailPros = await betagouv.getProEmailInfos()
+      }
       return res.render('account', {
         title,
         currentUserId: req.auth.id,
@@ -35,6 +40,8 @@ export async function getCurrentAccount(req, res) {
         userInfos: currentUser.userInfos,
         domain: config.domain,
         isExpired: currentUser.isExpired,
+        emailPros,
+        isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         // can create email if email is not set, or if email is not @beta.gouv.fr email
         canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
         canCreateRedirection: currentUser.canCreateRedirection,
