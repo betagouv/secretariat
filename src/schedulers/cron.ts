@@ -84,9 +84,9 @@ const marrainageJobs: Job[] = [
 
 const mattermostJobs: Job[] = [
   {
-    cronTime: '0 0 5 * * 1',
+    cronTime: '0 0 5 * * *',
     onTick: removeBetaAndParnersUsersFromCommunityTeam,
-    isActive: false,
+    isActive: true,
     name: 'removeBetaAndParnersUsersFromCommunityTeam',
   },
   {
