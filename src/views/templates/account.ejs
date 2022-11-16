@@ -137,13 +137,14 @@
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
             <% } %>
             <% if (isAdmin) { %>
-                <%= availableEmailPros %>
                 <% if (availableEmailPros.length) { %>
-                    <p>Il y a <%= availableEmailPros.length %> compte disponible.</p>
+                    <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
                     <p>Passer ce compte en pro : </p>
-                    <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/email-upgrade" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                         <button class="button no-margin" type="submit">Upgrader en compte pro</button>
                     </form>
+                    <br>
+                    <br>
                 <% } %>
             <% } %>
             <% if (canCreateEmail) { %>
