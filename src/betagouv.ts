@@ -134,24 +134,28 @@ const betaGouv = {
 
 const betaOVH = {
   emailInfos: async (id: string) => {
+    const errorHandler = (err) => {
+      if (err.error === 404) return null;
+      throw err;
+    }
     const promises = []
     const url = `/email/domain/${config.domain}/account/${id}`;
-    promises.push(ovh.requestPromised('GET', url, {}))
+    promises.push(ovh.requestPromised('GET', url, {}).catch(errorHandler))
     if (config.OVH_EMAIL_PRO_NAME) {
       const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}`;
       promises.push(
-        ovh.requestPromised('GET', urlPro, {}).then(data => ({...data, isPro: true })).catch(e => [])
+        ovh.requestPromised('GET', urlPro, {}).then(data => ({...data, isPro: true })).catch(errorHandler)
       )
     }
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
       promises.push(
-        ovh.requestPromised('GET', urlExchange, {}).then(data => ({...data, isExchange: true })).catch(e => [])
+        ovh.requestPromised('GET', urlExchange, {}).then(data => ({...data, isExchange: true })).catch(errorHandler)
       )
     }
     try {
       return await Promise.all(promises).then((data) => {
-        return data.flat(1)[0]
+        return data.filter(d => d)
       });
     } catch (err) {
       if (err.error === 404) return null;
