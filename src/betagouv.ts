@@ -140,13 +140,13 @@ const betaOVH = {
     if (config.OVH_EMAIL_PRO_NAME) {
       const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}`;
       promises.push(
-        ovh.requestPromised('GET', urlPro, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+        ovh.requestPromised('GET', urlPro, {}).then(data => ({...data, isPro: true })).catch(e => [])
       )
     }
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
       promises.push(
-        ovh.requestPromised('GET', urlExchange, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+        ovh.requestPromised('GET', urlExchange, {}).then(data => ({...data, isExchange: true })).catch(e => [])
       )
     }
     try {
