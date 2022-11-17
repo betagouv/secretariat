@@ -155,7 +155,7 @@ const betaOVH = {
     }
     try {
       return await Promise.all(promises).then((data) => {
-        return data.filter(d => d)
+        return data.filter(d => d)[0]
       });
     } catch (err) {
       if (err.error === 404) return null;
