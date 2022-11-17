@@ -141,6 +141,10 @@
                     <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
                     <p>Passer ce compte en pro : </p>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/email-upgrade" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <label>
+                            <span class="text-color-almost-black">Un mot de passe pour ton compte</span><br />
+                        </label>
+                        <input name="password" type="password" required min="8">
                         <button class="button no-margin" type="submit">Upgrader en compte pro</button>
                     </form>
                     <br>

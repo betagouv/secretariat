@@ -158,7 +158,7 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  getAllEmailInfos: async () => {
+  getAllEmailInfos: async () : Promise<string[]> => {
     // https://eu.api.ovh.com/console/#/email/domain/%7Bdomain%7D/account#GET
     // result is an array of the users ids : ['firstname1.lastname1', 'firstname2.lastname2', ...]
     const promises = []
@@ -185,8 +185,33 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  getAvailableProEmailInfos: async () => {
+  migrateEmailAccount: async({
+    userId,
+    destinationServiceName,
+    destinationEmailAddress,
+    password
+  }: {
+    userId: string,
+    destinationServiceName: string,
+    destinationEmailAddress: string, //configure.me adress
+    password: string
+  }) : Promise<void> => {
+    const url = `/email/domain/${config.domain}/account/${userId}/migrate/${destinationServiceName}/destinationEmailAddress/${destinationEmailAddress}/migrate`
+    try {
+      return ovh.requestPromised('POST', url, {
+        password
+      })
+    } catch(err) {
+      console.error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`)
+      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+  getAvailableProEmailInfos: async () : Promise<string[]> =>  {
     const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
+    /* TODO
+    * use /email/domain/{domain}/account/{accountName}/migrate/{destinationServiceName}/destinationEmailAddress instead
+    * get available email instead of all emails
+    */
     try {
       console.log(`GET OVH pro emails infos : ${urlPro}`)
       return ovh.requestPromised('GET', urlPro, {}).then(

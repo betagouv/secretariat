@@ -2,10 +2,12 @@ import config from "@config";
 import BetaGouv from "@/betagouv";
 import * as utils from "@controllers/utils";
 import { addEvent, EventCode } from '@/lib/events'
+import betagouv from "@/betagouv";
 
 export async function upgradeEmailForUser(req, res) {
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
+    const password = req.body.password
 
     if (!config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
         throw new Error(
@@ -14,13 +16,38 @@ export async function upgradeEmailForUser(req, res) {
     }
 
     try {
+        const availableProEmail : string[] = await betagouv.getAvailableProEmailInfos()
+        if (!availableProEmail.length) {
+            throw new Error(`
+                Il n'y a plus d'email pro disponible
+            `)
+        }
         const user = await utils.userInfos(username, isCurrentUser);
 
-        if (!isCurrentUser && !user.isExpired) {
+        if (user.isExpired) {
             throw new Error(
-                `Le compte "${username}" n'est pas expiré, vous ne pouvez pas upgrade ce compte.`,
+                `Le compte "${username}" est expiré, vous ne pouvez pas upgrade ce compte.`,
             );
         }
+
+        if (!user.emailInfos) {
+            throw new Error(
+                `Le compte "${username}" n'a pas de compte email`,
+            );
+        }
+
+        if (user.emailInfos.isPro) {
+            throw new Error(
+                `Le compte "${username}" est déjà un compte pro.`,
+            );
+        }
+
+        await betagouv.migrateEmailAccount({
+            userId: user.emailInfos.email.split('@')[0],
+            destinationEmailAddress: availableProEmail[0],
+            destinationServiceName: config.OVH_EMAIL_PRO_NAME,
+            password,
+        })
 
         await BetaGouv.sendInfoToChat(`Upgrade de compte de ${username} (à la demande de ${req.auth.id})`);
         addEvent(EventCode.MEMBER_EMAIL_UPGRADED, {
