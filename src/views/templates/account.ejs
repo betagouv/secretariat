@@ -137,7 +137,8 @@
                 <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
             <% } %>
             <% if (isAdmin) { %>
-                <% if (availableEmailPros.length) { %>
+                <p class="font-weight-bold text-color-blue"><%= emailInfos %></p>
+                <% if (availableEmailPros.length && !emailInfos.isPro && !emailInfos.isExchange) { %>
                     <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
                     <p>Passer ce compte en pro : </p>
                     <form class="no-margin" action="/users/<%= userInfos.id %>/email-upgrade" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
