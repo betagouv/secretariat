@@ -130,6 +130,7 @@ app.get('/logout', logoutController.getLogout);
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
+app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
 app.post(routes.USER_CREATE_REDIRECTION, usersController.createRedirectionForUser);
 app.post(routes.USER_DELETE_REDIRECTION, usersController.deleteRedirectionForUser);
 app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
