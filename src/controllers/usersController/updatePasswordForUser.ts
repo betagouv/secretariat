@@ -45,8 +45,7 @@ export async function updatePasswordForUser(req, res) {
     console.log(`Changement de mot de passe by=${req.auth.id}&email=${email}`);
 
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-
-    await BetaGouv.changePassword(username, password);
+    await BetaGouv.changePassword(username, password, user.emailInfos.emailPlan);
     await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
       created_by_username: req.auth.id,
       action_on_username: username

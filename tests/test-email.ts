@@ -65,6 +65,16 @@ describe('Reinit password for expired users', () => {
       .get((uri) => uri.includes('authors.json'))
       .reply(200, users)
       .persist();
+    utilsTest.mockUsers();
+    utilsTest.mockOvhTime();
+    utilsTest.mockOvhRedirections();
+    utilsTest.mockOvhUserResponder();
+    nock(/.*ovh.com/)
+    .get(/^.*email\/domain\/.*\/account\/.*/)
+    .reply(200, {
+      accountName: 'membre.expire',
+      email: `membre.expire@betagouv.ovh`,
+    });
     await knex('users').where({ username: 'membre.expire' }).update({
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     })
