@@ -134,10 +134,16 @@
                 Mon email
             </h3>
             <% if (emailInfos) { %>
-                <p class="font-weight-bold text-color-blue"><%= emailInfos.email %></p>
+                <p class="font-weight-bold text-color-blue"><%= emailInfos.email %>
+                <% if (emailInfos.isPro) { %> 
+                    (offre OVH Pro)
+                <% } %>
+                <% if (emailInfos.isExchange) { %>
+                    (offre OVH Exchange)
+                <% } %>
+                </p>
             <% } %>
             <% if (isAdmin) { %>
-                <p class="font-weight-bold text-color-blue"><%= emailInfos %></p>
                 <% if (availableEmailPros.length && emailInfos && !emailInfos.isPro && !emailInfos.isExchange) { %>
                     <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
                     <p>Passer ce compte en pro : </p>
