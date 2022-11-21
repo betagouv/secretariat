@@ -11,7 +11,7 @@ export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
         username,
     })
-    const shouldSendEmailCreatedEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
+const shouldSendEmailCreatedEmail = user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING || user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_PENDING
     await knex('users').where({
         username,
     }).update({
