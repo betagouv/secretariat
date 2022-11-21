@@ -139,14 +139,22 @@ const betaGouv = {
 };
 
 const betaOVH = {
-  emailInfos: async (id: string) => {
+  emailInfos: async (id: string) : Promise<{
+    email: string,
+    emailPlan: EMAIL_PLAN_TYPE,
+    isPro?: boolean,
+    isExchange?: boolean
+  }> => {
     const errorHandler = (err) => {
       if (err.error === 404) return null;
       throw err;
     }
     const promises = []
     const url = `/email/domain/${config.domain}/account/${id}`;
-    promises.push(ovh.requestPromised('GET', url, {}).catch(errorHandler))
+    promises.push(ovh.requestPromised('GET', url, {}).then(data => ({
+      ...data,
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+    })).catch(errorHandler))
     if (config.OVH_EMAIL_PRO_NAME) {
       const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}`;
       promises.push(

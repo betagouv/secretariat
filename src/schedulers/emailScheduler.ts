@@ -92,12 +92,13 @@ export async function reinitPasswordEmail() {
   )
   return Promise.all(
     dbUsers.map(async (user) => {
+      const { emailInfos } = await utils.userInfos(user.username, false)
       const newPassword = crypto
         .randomBytes(16)
         .toString('base64')
         .slice(0, -2);
       try {
-        await BetaGouv.changePassword(user.username, newPassword);
+        await BetaGouv.changePassword(user.username, newPassword, emailInfos.emailPlan);
         await setEmailSuspended(user.username)
         console.log(
           `Le mot de passe de ${user.username} a été modifié car son contrat finissait le ${new Date()}.`
