@@ -19,6 +19,12 @@ export interface OvhRedirection {
   id: string;
 }
 
+enum EMAIL_PLAN_TYPE {
+  EMAIL_PLAN_PRO='EMAIL_PLAN_PRO',
+  EMAIL_PLAN_EXCHANGE='EMAIL_PLAN_EXCHANGE',
+  EMAIL_PLAN_BASIC='EMAIL_PLAN_BASIC'
+}
+
 export interface OvhMailingList {
   id: string
 }
@@ -144,13 +150,21 @@ const betaOVH = {
     if (config.OVH_EMAIL_PRO_NAME) {
       const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}`;
       promises.push(
-        ovh.requestPromised('GET', urlPro, {}).then(data => ({...data, isPro: true, email: data.primaryEmailAddress  })).catch(errorHandler)
+        ovh.requestPromised('GET', urlPro, {}).then(data => ({
+          ...data,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+          isPro: true,
+          email: data.primaryEmailAddress  })).catch(errorHandler)
       )
     }
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
       promises.push(
-        ovh.requestPromised('GET', urlExchange, {}).then(data => ({...data, isExchange: true, email: data.primaryEmailAddress })).catch(errorHandler)
+        ovh.requestPromised('GET', urlExchange, {}).then(data => ({
+          ...data,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
+          isExchange: true,
+          email: data.primaryEmailAddress })).catch(errorHandler)
       )
     }
     try {
@@ -427,9 +441,13 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  changePassword: async (id, password) => {
-    const url = `/email/domain/${config.domain}/account/${id}/changePassword`;
-
+  changePassword: async (id, password, plan) => {
+    let url = `/email/domain/${config.domain}/account/${id}/changePassword`;
+    if (plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) { 
+      url = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}/changePassword`
+    } else if (plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE) {
+      url = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}/changePassword`
+    }
     try {
       await ovh.requestPromised('POST', url, { password });
     } catch (err) {
