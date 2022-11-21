@@ -19,7 +19,7 @@ export interface OvhRedirection {
   id: string;
 }
 
-enum EMAIL_PLAN_TYPE {
+export enum EMAIL_PLAN_TYPE {
   EMAIL_PLAN_PRO='EMAIL_PLAN_PRO',
   EMAIL_PLAN_EXCHANGE='EMAIL_PLAN_EXCHANGE',
   EMAIL_PLAN_BASIC='EMAIL_PLAN_BASIC'
