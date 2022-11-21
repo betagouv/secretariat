@@ -110,7 +110,29 @@
         <h3>Compte mail</h3>
 
         <% if (emailInfos) { %>
-            <p class="text-color-blue font-weight-bold"><%= emailInfos.email %></p>
+            <p class="text-color-blue font-weight-bold"><%= emailInfos.email %>
+                <% if (emailInfos.isPro) { %> 
+                    (offre OVH Pro)
+                <% } %>
+                <% if (emailInfos.isExchange) { %>
+                    (offre OVH Exchange)
+                <% } %>
+            </p>
+            <% if (isAdmin) { %>
+                <% if (availableEmailPros.length && emailInfos && !emailInfos.isPro && !emailInfos.isExchange) { %>
+                    <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
+                    <p>Passer ce compte en pro : </p>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/email-upgrade" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <label>
+                            <span class="text-color-almost-black">Un mot de passe pour ton compte</span><br />
+                        </label>
+                        <input name="password" type="password" required min="8">
+                        <button class="button no-margin" type="submit">Upgrader en compte pro</button>
+                    </form>
+                    <br>
+                    <br>
+                <% } %>
+            <% } %>
             <ul>
                 <li>statut de l'email : <%= primaryEmailStatus %></li>
                 <li>compte bloqué pour cause de spam : <%= emailInfos.isBlocked ? 'oui (contactez un.e administrat.eur.rice)' : 'non' %></li>

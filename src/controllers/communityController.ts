@@ -4,6 +4,7 @@ import * as utils from "./utils";
 import knex from "../db";
 import { MemberWithPermission } from "@models/member";
 import { CommunityPage } from '../views';
+import betagouv from "../betagouv";
 
 const EMAIL_STATUS_READABLE_FORMAT = {
   EMAIL_ACTIVE: 'Actif',
@@ -105,7 +106,10 @@ export async function getUser(req, res) {
 
     const dbRes = await knex('users').where({ username })
     const secondaryEmail = dbRes.length === 1 ? dbRes[0].secondary_email : '';
-
+    let availableEmailPros = []
+    if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
+      availableEmailPros = await betagouv.getAvailableProEmailInfos()
+    }
     const title = user.userInfos ? user.userInfos.fullname : null;
     res.render('user', {
       title,
@@ -115,6 +119,8 @@ export async function getUser(req, res) {
       redirections: user.redirections,
       userInfos: user.userInfos,
       isExpired: user.isExpired,
+      isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
+      availableEmailPros,
       primaryEmailStatus: dbRes.length === 1 ? EMAIL_STATUS_READABLE_FORMAT[dbRes[0].primary_email_status] : '',
       canCreateEmail: user.canCreateEmail,
       errors: req.flash('error'),
