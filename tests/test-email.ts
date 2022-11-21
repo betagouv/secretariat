@@ -196,7 +196,7 @@ describe('Set email active', () => {
       username: 'membre.nouveau',
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     }).returning('*')
-    sendEmailStub.calledOnce.should.be.false;
+    sendEmailStub.calledOnce.should.be.true;
     users[0].username.should.be.equal('membre.nouveau')
     await knex('users').where({
       username: 'membre.nouveau'
