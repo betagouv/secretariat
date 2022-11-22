@@ -121,7 +121,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
     const usersValidWithDomain = countData['USER_IS_VALID_WITH_DOMAIN'] || []
     const usersByDomain = {}
     usersValidWithDomain.map(user => {
-        const domain = user.split('@')[1]
+        const domain = user.email.split('@')[1]
         const usersForDomain = usersByDomain[domain] || []
         usersForDomain.push(user)
         usersByDomain[domain] = usersForDomain
