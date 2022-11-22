@@ -91,10 +91,6 @@ DELETE /email/domain/beta.gouv.fr/account/*
 POST /email/domain/beta.gouv.fr/redirection
 DELETE /email/domain/beta.gouv.fr/redirection/*
 POST /email/domain/beta.gouv.fr/account/*/changePassword
-```
-
-- Nécessaires pour les prochaines fonctionalités
-```
 POST /email/domain/beta.gouv.fr/mailingList
 POST /email/domain/beta.gouv.fr/mailingList/*/subscriber
 DELETE /email/domain/beta.gouv.fr/mailingList/*/subscriber/*
