@@ -118,6 +118,15 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
         setUsersForMessage(usersForMessage)
     }
 
+    const usersValidWithDomain = countData['USER_IS_VALID_WITH_DOMAIN'] || []
+    const usersByDomain = {}
+    usersValidWithDomain.map(user => {
+        const domain = user.split('@')[1]
+        const usersForDomain = usersByDomain[domain] || []
+        usersForDomain.push(user)
+        usersByDomain[domain] = usersForDomain
+    })
+
     return (
     <>
         <div className="module">
@@ -127,6 +136,9 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                 </h3>
                 { Object.keys(countData).map(key => {
                     return <div>{key} : {countData[key].length}</div>
+                })}
+                { Object.keys(usersByDomain).map(key => {
+                    return <div>{key} : {usersByDomain[key].length}</div>
                 })}
                 { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
                 <br/>
