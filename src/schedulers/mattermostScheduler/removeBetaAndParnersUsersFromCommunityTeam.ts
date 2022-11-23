@@ -8,7 +8,6 @@ import * as mattermost from '@/lib/mattermost';
 import betagouv from "@/betagouv";
 import { sendInfoToChat } from "@/infra/chat";
 import axios from "axios";
-import { errorHandler } from "@sentry/node/types/handlers";
 
 function validateAtLeastOneFormat(regexStrArr: string[], value) {
     let valid: boolean = false;
@@ -337,7 +336,7 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
             domain: string,
             members: Member[]
         }[] = await axios.get(partnerAuthor.url, config)
-            .then(res => res.data).catch(errorHandler).then(() => [])
+            .then(res => res.data).catch(() => [])
         for (const membersConfig of membersConfigs) {
             const members = membersConfig.members
             emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
