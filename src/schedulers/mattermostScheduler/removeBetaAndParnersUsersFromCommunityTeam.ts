@@ -339,9 +339,8 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
             members: Member[]
         } = await axios.get(partnerAuthor.url, config)
             .then(res => res.data).catch(() => [])
-        console.log('Members config', membersConfig)
         const members = membersConfig.members
-        emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
+        emails = [...emails, ...members.map(member => `${member.id}@${membersConfig.domain}`)]
     }
     return emails
 }
