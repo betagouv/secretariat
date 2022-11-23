@@ -186,7 +186,7 @@ export async function getMattermostUsersWithStatus({
     
     // Parners
     const partnersUserEmails : string[] = await getPartnersUserEmails({ nbDays })
-    const inactivePartnersUserEmails : string[] = await getPartnersActiveUserEmails({ nbDays })
+    const activePartnersUserEmails : string[] = utils.getActiveUsers(partnersUserEmails, nbDays);
 
     const mattermostUsers : MattermostUser[] = await mattermost.getActiveMattermostUsers({
         in_team: config.mattermostTeamId
@@ -233,10 +233,10 @@ export async function getMattermostUsersWithStatus({
                 }
             }
         } else if (partnersUserEmails.includes(mUser.email)) {
-            if (inactivePartnersUserEmails.includes(mUser.email)) {
-                status = MattermostUserStatus.USER_IS_PARTNER_BUT_IS_EXPIRED
-            } else {
+            if (activePartnersUserEmails.includes(mUser.email)) {
                 status = MattermostUserStatus.USER_IS_VALID_WITH_PARTNER
+            } else {
+                status = MattermostUserStatus.USER_IS_PARTNER_BUT_IS_EXPIRED
             }
         } else if (validateAtLeastOneFormat(mattermostEmailRegexException, mUser.email)) {
             status = MattermostUserStatus.USER_IS_VALID_WITH_DOMAIN
@@ -321,7 +321,7 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
     }
 }
 
-async function getPartnersActiveUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
+async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
     const partnerAuthors : {
         url: string,
         api_token: string
@@ -340,8 +340,7 @@ async function getPartnersActiveUserEmails({ nbDays }: { nbDays: number }) : Pro
             .then(res => res.data).catch(errorHandler).then(() => [])
         for (const membersConfig of membersConfigs) {
             const members = membersConfig.members
-            const activeMembers = utils.getActiveUsers(members, nbDays);
-            emails = [...emails, ...activeMembers.map(member => `${member}@${membersConfig.domain}`)]
+            emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
         }
     }
     return emails
