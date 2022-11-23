@@ -326,6 +326,7 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
         api_token: string
     }[] = config.MATTERMOST_PARTNERS_AUTHORS_URLS
     let emails = []
+    console.log(partnerAuthors)
     for (const partnerAuthor of partnerAuthors) {
         const config = partnerAuthor.api_token ? {
             headers: {
@@ -337,6 +338,7 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
             members: Member[]
         }[] = await axios.get(partnerAuthor.url, config)
             .then(res => res.data).catch(() => [])
+        console.log(membersConfigs)
         for (const membersConfig of membersConfigs) {
             const members = membersConfig.members
             emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
