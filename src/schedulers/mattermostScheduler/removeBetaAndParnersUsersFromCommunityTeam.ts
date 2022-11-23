@@ -8,6 +8,7 @@ import * as mattermost from '@/lib/mattermost';
 import betagouv from "@/betagouv";
 import { sendInfoToChat } from "@/infra/chat";
 import axios from "axios";
+import { errorHandler } from "@sentry/node/types/handlers";
 
 function validateAtLeastOneFormat(regexStrArr: string[], value) {
     let valid: boolean = false;
@@ -321,30 +322,27 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
 }
 
 async function getPartnersActiveUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
-    
-    const membersConfigs : {
-        domain: string,
-        members: Member[]
-    }[] = config.MATTERMOST_PARTNERS_AUTHORS_URL ? await axios.get(config.MATTERMOST_PARTNERS_AUTHORS_URL).then(res => res.data) : []
+    const partnerAuthors : {
+        url: string,
+        api_token: string
+    }[] = config.MATTERMOST_PARTNERS_AUTHORS_URLS
     let emails = []
-    for (const membersConfig of membersConfigs) {
-        const members = membersConfig.members
-        const activeMembers = utils.getActiveUsers(members, nbDays);
-        emails = [...emails, ...activeMembers.map(member => `${member}@${membersConfig.domain}`)]
-    }
-    return emails
-}
-
-async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
-    
-    const membersConfigs : {
-        domain: string,
-        members: Member[]
-    }[] = config.MATTERMOST_PARTNERS_AUTHORS_URL ? await axios.get(config.MATTERMOST_PARTNERS_AUTHORS_URL).then(res => res.data) : []
-    let emails = []
-    for (const membersConfig of membersConfigs) {
-        const members = membersConfig.members
-        emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
+    for (const partnerAuthor of partnerAuthors) {
+        const config = partnerAuthor.api_token ? {
+            headers: {
+              'Authorization': 'Bearer ' + partnerAuthor.api_token
+            }
+        } : undefined
+        const membersConfigs : {
+            domain: string,
+            members: Member[]
+        }[] = await axios.get(partnerAuthor.url, config)
+            .then(res => res.data).catch(errorHandler).then(() => [])
+        for (const membersConfig of membersConfigs) {
+            const members = membersConfig.members
+            const activeMembers = utils.getActiveUsers(members, nbDays);
+            emails = [...emails, ...activeMembers.map(member => `${member}@${membersConfig.domain}`)]
+        }
     }
     return emails
 }
