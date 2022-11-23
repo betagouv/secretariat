@@ -332,16 +332,14 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
               'Authorization': 'Bearer ' + partnerAuthor.api_token
             }
         } : undefined
-        const membersConfigs : {
+        const membersConfig : {
             domain: string,
             members: Member[]
-        }[] = await axios.get(partnerAuthor.url, config)
+        } = await axios.get(partnerAuthor.url, config)
             .then(res => res.data).catch(() => [])
-        console.log('Members config', membersConfigs)
-        for (const membersConfig of membersConfigs) {
-            const members = membersConfig.members
-            emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
-        }
+        console.log('Members config', membersConfig)
+        const members = membersConfig.members
+        emails = [...emails, ...members.map(member => `${member}@${membersConfig.domain}`)]
     }
     return emails
 }
