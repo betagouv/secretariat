@@ -85,9 +85,8 @@
                             </form>
                         </div>
                     <% } %>
-                <% } %>
-                <!-- <% } else if (!isExpired) { %>
-                    <h3>L'accueillir ?</h3>
+                <% } else if (!isExpired) { %>
+                    <!-- <h3>L'accueillir ?</h3>
                     <p>
                         <%= userInfos.fullname %> vient d'arriver dans la communauté ? Tu peux inviter quelqu'un à devenir son ou sa marrain·e.
                         Cela lui permettra de rencontrer des membres de la communauté en dehors de son équipe.
@@ -97,10 +96,10 @@
                             <input type="hidden" name="newcomerId" value="<%= userInfos.id %>">
                         </div>
                         <button class="button no-margin" type="submit">Chercher un·e marrain·e</button>
-                    </form>
+                    </form> -->
                 <% } else { %>
-                    <p>La fonction marrainage n'est pas disponible pour les comptes expirés.</p>
-                <% } %> -->
+                    <!-- <p>La fonction marrainage n'est pas disponible pour les comptes expirés.</p> -->
+                <% } %>
             <% } else { %>
                 <p>Sans fiche sur Github, la fonction marrainage n'est pas disponible.</p>
             <% } %>
