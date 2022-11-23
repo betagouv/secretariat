@@ -186,6 +186,8 @@ export async function getMattermostUsersWithStatus({
     // Parners
     const partnersUserEmails : string[] = await getPartnersUserEmails({ nbDays })
     const activePartnersUserEmails : string[] = utils.getActiveUsers(partnersUserEmails, nbDays);
+    console.log(partnersUserEmails)
+    console.log(activePartnersUserEmails)
 
     const mattermostUsers : MattermostUser[] = await mattermost.getActiveMattermostUsers({
         in_team: config.mattermostTeamId
