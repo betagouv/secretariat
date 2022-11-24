@@ -64,6 +64,7 @@ const createMailingLists = async () => {
     for (const startupId of Object.keys(startupDetails)) {
         const startup = startupDetails[startupId]
         const phase = getCurrentPhase(startup)
+        console.log(`Startup : ${startup.id}, phase: ${phase}`)
         if (!ACTIVE_PHASES.includes(phase)) {
             // La startup n'est plus une se de l'incubateur
             return
