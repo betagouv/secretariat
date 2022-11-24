@@ -59,7 +59,7 @@ const addAndRemoveMemberToMailingListForStartup = async(startup) => {
   
 const createMailingLists = async () => {
     const mailingLists : string[] = await betagouv.getAllMailingList()
-    const startupDetails : Record<string,StartupDetail> = await axios.get(`https://beta.gouv.fr/api/v2.3/startups_details.json`)
+    const startupDetails : Record<string,StartupDetail> = await axios.get(`https://beta.gouv.fr/api/v2.3/startups_details.json`).then(res => res.data)
     for (const startupId of Object.keys(startupDetails)) {
         const startup = startupDetails[startupId]
         const phase = getCurrentPhase(startup)
