@@ -325,7 +325,8 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
 async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<string[]> {
     const partnerAuthors : {
         url: string,
-        api_token: string
+        api_token: string,
+        domain: string
     }[] = config.MATTERMOST_PARTNERS_AUTHORS_URLS
     let emails = []
     for (const partnerAuthor of partnerAuthors) {
@@ -334,13 +335,9 @@ async function getPartnersUserEmails({ nbDays }: { nbDays: number }) : Promise<s
               'Authorization': 'Bearer ' + partnerAuthor.api_token
             }
         } : undefined
-        const membersConfig : {
-            domain: string,
-            members: Member[]
-        } = await axios.get(partnerAuthor.url, config)
+        const members = await axios.get(partnerAuthor.url, config)
             .then(res => res.data).catch(() => [])
-        const members = membersConfig.members
-        emails = [...emails, ...members.map(member => `${member.id}@${membersConfig.domain}`)]
+        emails = [...emails, ...members.map(member => `${member.id}@${partnerAuthor.domain}`)]
     }
     return emails
 }
