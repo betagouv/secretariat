@@ -257,6 +257,25 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
+  createMailingList: async(mailingListName: string) => {
+    const url = `/email/domain/${config.domain}/mailingList`
+    try {
+      return await ovh.requestPromised('POST', url, {
+        domain: config.domain,
+        language: 'fr',
+        name: mailingListName,
+        options: {
+          moderatorMessage: false,
+          subscribeByModerator: false,
+          usersPostOnly: false
+        },
+        ownerEmail: 'espace-membre@beta.gouv.fr',
+      });
+    } catch (err) {
+      if (err.error === 404) return null;
+      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
   unsubscribeFromMailingList: async(mailingListName: string, email: string) => {
     const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
     try {
