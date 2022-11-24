@@ -64,21 +64,18 @@ const createMailingLists = async () => {
     for (const startupId of Object.keys(startupDetails)) {
         const startup = startupDetails[startupId]
         const phase = getCurrentPhase(startup)
-        console.log(`Startup : ${startup.id}, phase: ${phase}`)
-        if (!ACTIVE_PHASES.includes(phase)) {
-            // La startup n'est plus une se de l'incubateur
-            return
-        }
-        try {
-            if (process.env.CREATE_MAILING_LIST) {
-                if (!mailingLists.includes(generateMailingListName(startup))) {
-                    await createMailingListForStartup(startup)
+        if (ACTIVE_PHASES.includes(phase)) {
+            try {
+                if (process.env.CREATE_MAILING_LIST) {
+                    if (!mailingLists.includes(generateMailingListName(startup))) {
+                        await createMailingListForStartup(startup)
+                    }
+                    await addAndRemoveMemberToMailingListForStartup(startup)
                 }
-                await addAndRemoveMemberToMailingListForStartup(startup)
+                console.log(`Create mailing list for : ${startup.id}`)
+            } catch (e) {
+                console.error(e)
             }
-            console.log(`Create mailing list for : ${startup.id}`)
-        } catch (e) {
-            console.error(e)
         }
     }
 }
