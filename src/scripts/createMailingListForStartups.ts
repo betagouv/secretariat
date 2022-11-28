@@ -73,7 +73,7 @@ const createMailingLists = async () => {
                     }
                     await addAndRemoveMemberToMailingListForStartup(startup)
                 }
-                console.log(`Create mailing list for : ${startup.id}`)
+                console.log(`Create mailing list for : ${generateMailingListName(startup)}`)
             } catch (e) {
                 console.error(e)
             }
