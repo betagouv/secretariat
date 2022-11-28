@@ -114,6 +114,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
       getGithubMasterSha.called.should.be.false;
       createGithubBranch.called.should.be.false;
@@ -455,7 +456,8 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
-          isEmailBetaAsked: true
+          isEmailBetaAsked: true,
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.calledOnce.should.be.true;
