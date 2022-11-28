@@ -44,6 +44,7 @@ import { postEventsOnMattermost } from './calendarScheduler';
 import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
 import EventBus from '@/infra/eventBus/eventBus';
 import { removeBetaAndParnersUsersFromCommunityTeam, sendReminderToUserAtDays } from './mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
+import { createMailingListForStartups } from './startups/createMailingListForStartups';
 
 interface Job {
   cronTime: string;
@@ -112,6 +113,15 @@ const emailJobs: Job[] = [
   }
 ]
 
+const startupJobs: Job[] = [
+  {
+    cronTime: '0 0 5 * * 1',
+    onTick: createMailingListForStartups,
+    isActive: true,
+    name: 'createMailingListForStartups',
+  }
+]
+
 const jobs: Job[] = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 8 * * 1', // every week a 8:00 on monday
@@ -147,6 +157,7 @@ const jobs: Job[] = [
   ...marrainageJobs,
   ...emailJobs,
   ...mattermostJobs,
+  ...startupJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
