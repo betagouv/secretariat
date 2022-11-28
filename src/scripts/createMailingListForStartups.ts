@@ -31,7 +31,8 @@ function getCurrentPhase(startup : StartupDetail) {
 }
 
 const generateMailingListName = (startup: StartupDetail) : string => {
-    return `startup-info-${startup.id}`;
+    const name = startup.id.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    return `startup-info-${name}`;
 }
 const createMailingListForStartup = async(startup: StartupDetail) => { 
     const mailingListName = generateMailingListName(startup)
@@ -72,7 +73,7 @@ const createMailingLists = async () => {
                     }
                     await addAndRemoveMemberToMailingListForStartup(startup)
                 }
-                console.log(`Create mailing list for : ${startup.id}`)
+                console.log(`Create mailing list for : ${generateMailingListName(startup)}`)
             } catch (e) {
                 console.error(e)
             }
