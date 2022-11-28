@@ -39,9 +39,9 @@ const createMailingListForStartup = async(startup: StartupDetail) => {
     return betagouv.createMailingList(mailingListName)
 }
 
-const addAndRemoveMemberToMailingListForStartup = async(startup) => {
+const addAndRemoveMemberToMailingListForStartup = async(startup: StartupDetail) => {
     const mailingListName = generateMailingListName(startup)
-    const dbUsers : DBUser[] = await db('users').whereIn('username', startup.member)
+    const dbUsers : DBUser[] = await db('users').whereIn('username', startup.active_members)
     const emails = dbUsers.map(dbUser => {
         let email = dbUser.primary_email
         if (dbUser.communication_email === CommunicationEmailCode.SECONDARY && dbUser.secondary_email) {
