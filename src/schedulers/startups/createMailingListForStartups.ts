@@ -52,7 +52,7 @@ export const createMailingListForStartups = async () => {
                     if (!mailingLists.includes(generateMailingListName(startup))) {
                         await createMailingListForStartup(startup)
                     }
-                    db('startups').where({
+                    await db('startups').where({
                         id: startup.id
                     }).update({
                         mailing_list: generateMailingListName(startup)
