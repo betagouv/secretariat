@@ -261,7 +261,6 @@ const betaOVH = {
     const url = `/email/domain/${config.domain}/mailingList`
     try {
       return await ovh.requestPromised('POST', url, {
-        domain: config.domain,
         language: 'fr',
         name: mailingListName,
         options: {
@@ -273,7 +272,7 @@ const betaOVH = {
       });
     } catch (err) {
       if (err.error === 404) return null;
-      throw new Error(`OVH Error DELETE on ${url} : ${JSON.stringify(err)}`);
+      throw new Error(`OVH Error createMailingList on ${url} : ${JSON.stringify(err)}`);
     }
   },
   unsubscribeFromMailingList: async(mailingListName: string, email: string) => {
