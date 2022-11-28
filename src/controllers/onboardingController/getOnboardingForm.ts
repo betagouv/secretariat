@@ -36,7 +36,8 @@ export async function getForm(req, res) {
             osm_city: '',
             average_nb_of_days: 0,
             communication_email: 'secondary',
-            should_create_marrainage: false
+            should_create_marrainage: false,
+            memberType: 'beta',
           },
           communeInfo: null,
           errors: req.flash('error'),
