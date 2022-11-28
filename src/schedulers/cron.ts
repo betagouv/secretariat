@@ -299,7 +299,7 @@ const jobs: Job[] = [
     description: 'Cron job to add user to alumni on mattermost',
   },
   {
-    cronTime: '0 0 * * * *',
+    cronTime: "0 10 * * *", // every day at 10,
     onTick: pullRequestWatcher,
     isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
     name: 'pullRequestWatcher',
