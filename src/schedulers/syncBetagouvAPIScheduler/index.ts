@@ -1,6 +1,6 @@
 export * from './publishJobsWTTJToMattermost'
 export * from './sendMessageToTeamForJobOpenedForALongTime'
-export * from './syncBetagouvStartupAPI'
+export * from '../startups/syncBetagouvStartupAPI'
 export * from './syncBetagouvUserAPI'
 export * from './buildCommunityBDD'
 export * from './publishJobsToMattermost'
