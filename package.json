@@ -43,7 +43,7 @@
     "@octokit/core": "^4.1.0",
     "@octokit/request": "^6.2.1",
     "@octokit/rest": "^19.0.4",
-    "@sentry/integrations": "^7.17.4",
+    "@sentry/integrations": "^7.21.1",
     "@sentry/node": "^7.17.4",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
