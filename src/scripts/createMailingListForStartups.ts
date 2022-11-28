@@ -31,8 +31,9 @@ function getCurrentPhase(startup : StartupDetail) {
 }
 
 const generateMailingListName = (startup: StartupDetail) : string => {
+    const MAX_MAILING_LIST_NAME = 32
     const name = startup.id.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    return `startup-info-${name}`;
+    return `startup-info-${name}`.slice(0, MAX_MAILING_LIST_NAME);
 }
 const createMailingListForStartup = async(startup: StartupDetail) => { 
     const mailingListName = generateMailingListName(startup)
