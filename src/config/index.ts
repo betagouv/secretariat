@@ -14,6 +14,13 @@ const userStatusOptions = [
   { name: 'Société de service', key: 'service' },
 ];
 
+const memberTypeOptions = [
+  { name: `Membre d'une startup ou d'un incubateur`, key: 'beta'},
+  { name: 'Attributaire', key: 'attributaire'},
+  { name: `Membre d'un autre service DINUM (etalab, ...)`, key: 'dinum'},
+  { name: `Autre`, key: 'autre'}
+]
+
 const userBadgeOptions = [{ name: 'Ségur (Paris)', key: 'segur' }];
 
 export default {
@@ -34,6 +41,7 @@ export default {
     statusOptions: userStatusOptions,
     minStartDate: '2013-07-01',
     badgeOptions: userBadgeOptions,
+    memberOptions: memberTypeOptions,
   },
   newsletterBroadcastList:
     process.env.NEWSLETTER_BROADCAST_LIST || 'secretariat@beta.gouv.fr',

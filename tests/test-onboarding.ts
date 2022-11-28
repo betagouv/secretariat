@@ -114,6 +114,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
       getGithubMasterSha.called.should.be.false;
       createGithubBranch.called.should.be.false;
@@ -135,6 +136,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -159,6 +161,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -183,6 +186,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -207,6 +211,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -230,6 +235,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
           // domaine missing
         })
         .end((err, res) => {
@@ -254,6 +260,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          memberType: 'beta',
           // referent missing
         })
         .end((err, res) => {
@@ -279,6 +286,7 @@ describe('Onboarding', () => {
           domaine: 'Wrongvalue',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -304,6 +312,7 @@ describe('Onboarding', () => {
           referent: 'membre.actif',
           email: 'test@example.com',
           website: 'example.com/me',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -329,6 +338,7 @@ describe('Onboarding', () => {
           referent: 'membre.actif',
           email: 'test@example.com',
           github: 'https://github.com/betagouv',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -354,6 +364,7 @@ describe('Onboarding', () => {
           referent: 'membre.actif',
           email: 'test@example.com',
           github: 'github.com/betagouv',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -378,6 +389,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
           isEmailBetaAsked: false
         })
         .end((err, res) => {
@@ -401,6 +413,7 @@ describe('Onboarding', () => {
         referent: 'membre.actif',
         email: 'test@example.com',
         github: 'github.com/betagouv',
+        memberType: 'beta',
       }).then();
 
       chai
@@ -418,6 +431,7 @@ describe('Onboarding', () => {
           referent: 'membre.actif',
           email: 'test@example.com',
           github: 'github.com/betagouv',
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.called.should.be.false;
@@ -442,7 +456,8 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
-          isEmailBetaAsked: true
+          isEmailBetaAsked: true,
+          memberType: 'beta',
         })
         .end((err, res) => {
           getGithubMasterSha.calledOnce.should.be.true;
@@ -468,6 +483,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           referent: 'membre.actif',
           email: 'test@example.com',
+          memberType: 'beta',
           isEmailBetaAsked: false
         })
         .end((err, res) => {
@@ -495,6 +511,7 @@ describe('Onboarding', () => {
           website: 'https://example.com/me',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -518,6 +535,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -541,6 +559,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -564,6 +583,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -587,6 +607,7 @@ describe('Onboarding', () => {
           status: 'Independant',
           domaine: 'Coaching',
           email: 'test@example.com',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -614,6 +635,7 @@ describe('Onboarding', () => {
             status: 'Independant',
             domaine: 'Coaching',
             email: 'test@example.com',
+                      memberType: 'beta',
             isEmailBetaAsked: true,
           })
         } catch(e) {
@@ -638,6 +660,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -661,6 +684,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
@@ -684,6 +708,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .redirects(0)
@@ -708,6 +733,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
@@ -736,6 +762,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'test@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: false,
         })
         .then(() => knex('users').where({ username: 'john.doe' }))
@@ -769,6 +796,7 @@ describe('Onboarding', () => {
           domaine: 'Coaching',
           email: 'updated@example.com',
           referent: 'membre.actif',
+          memberType: 'beta',
           isEmailBetaAsked: true,
         })
         const dbRes = await knex('users').where({ username: 'john.doe' })

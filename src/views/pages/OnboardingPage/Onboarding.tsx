@@ -41,6 +41,7 @@ interface FormData {
     average_nb_of_days?: number,
     communication_email: 'primary' | 'secondary',
     should_create_marrainage: boolean,
+    memberType: string
 }
 
 interface Props {
@@ -64,6 +65,7 @@ interface Props {
         statusOptions: Option[],
         minStartDate: string,
         badgeOptions: Option[],
+        memberOptions: Option[]
     }
 }
 
@@ -111,6 +113,10 @@ export const Onboarding = PageLayout(function (props: Props) {
 
     const handleEmail = (e) => {
         changeFormData('email', e.currentTarget.value)
+    }
+
+    const handleMemberTypeChange = (e) => {
+        changeFormData('memberType', e.currentTarget.value)
     }
 
     const handleCitySelect = (newValue) => {
@@ -421,6 +427,18 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </div>
                 <div className="form__group">
                     <label htmlFor="employer">
+                        <strong>Est-tu ?</strong><br />
+                        { props.userConfig.memberOptions.map((memberType) => {
+                            return (<span key={memberType.key}><input type="radio" name="memberType"
+                                value={memberType.key}
+                                onChange={handleMemberTypeChange}
+                                checked={memberType.key === state.formData.memberType}
+                                required/>{memberType.name}<br/></span>)
+                        })}
+                    </label>
+                </div>
+                { state.formData.memberType === 'incubateur' && <div className="form__group">
+                    <label htmlFor="employer">
                         <strong>Souhaites-tu avoir un parrain ou une marraine ?</strong><br />
                         Un parrain ou une marraine te contactera pour te présenter les outils, le fonctionnement de @beta.gouv.fr
                         et échanger avec toi et d'autres nouveaux membres.
@@ -431,7 +449,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                             value={state.formData.should_create_marrainage}
                             checked={!!state.formData.should_create_marrainage} /><strong>Je souhaite avoir un parrain ou une marraine</strong>
                     </label>
-                </div>
+                </div> }
                 <h4>Ton email</h4>
                 <div className="form__group">
                     <label htmlFor="email">
@@ -454,8 +472,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 Je souhaite une adresse @beta.gouv.fr</strong>
                 <br/>
                 <span>
-                    L'adresse @beta.gouv.fr donne accès aux outils officiels.
-                    Elle est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
+                    L'adresse @beta.gouv.fr est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
                 </span>
                 </label>
                 { props.formValidationErrors['email public'] &&

@@ -134,21 +134,26 @@ export async function postForm(req, res) {
       const tjm = req.body.tjm || null;
       const legal_status = req.body.legal_status
       const average_nb_of_days = req.body.average_nb_of_days
+      const memberType = req.body.memberType || requiredError('memberType', errorHandler);
 
       if (legal_status && !statusOptions.map(statusOption => statusOption.key).includes(legal_status)) {
-        errorHandler('legal_status', `Le statut legal n'a pas une valeur autorisé`)
+        errorHandler('legal_status', `Le statut legal n'a pas une valeur autorisée`)
       }
       if (gender && !genderOptions.map(genderOption => genderOption.key).includes(gender)) {
         errorHandler('gender', `Le genre n'a pas une valeur autorisé`)
       }
       if (workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
-        errorHandler('workplace_insee_code', `La lieu de travail principal n'as pas été trouvé`)
+        errorHandler('workplace_insee_code', `Le lieu de travail principal n'as pas été trouvé`)
       }
       if (!hasPublicServiceEmail && !isEmailBetaAsked) {
         errorHandler(
           'email public',
           '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
         );
+      }
+
+      if (memberType && !config.user.memberOptions.map(opt => opt.key).includes(memberType)) {
+        errorHandler('memberType', `Le type de membre n'est pas une valeur autorisée.`)
       }
       const website = isValidUrl('Site personnel', req.body.website, errorHandler);
       const github = shouldBeOnlyUsername('Utilisateur Github', req.body.github, errorHandler);
@@ -194,6 +199,7 @@ export async function postForm(req, res) {
         employer,
         badge,
         domaine,
+        memberType
       });
       const prInfo = await createNewcomerGithubFile(username, content, referent);
   
