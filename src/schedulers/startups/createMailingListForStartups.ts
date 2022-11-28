@@ -2,7 +2,6 @@ import betagouv from "@/betagouv"
 import db from "@/db"
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser"
 import axios from "axios"
-import knex from "knex"
 import { generateMailingListName, StartupDetail, StartupPhase } from "."
 
 const ACTIVE_PHASES = [
