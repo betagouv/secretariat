@@ -39,7 +39,7 @@ import {
 } from './pullRequestWatcher'
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
-import { publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
+import { buildCommunityBDD, publishJobsToMattermost, publishJobsWTTJToMattermost, sendMessageToTeamForJobOpenedForALongTime, syncBetagouvStartupAPI, syncBetagouvUserAPI } from './syncBetagouvAPIScheduler';
 import { postEventsOnMattermost } from './calendarScheduler';
 import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
 import EventBus from '@/infra/eventBus/eventBus';
@@ -122,6 +122,15 @@ const startupJobs: Job[] = [
   }
 ]
 
+const metricJobs: Job[] = [
+  {
+    cronTime: "0 10 1 * *", // every 1srt of each month,
+    onTick: buildCommunityBDD,
+    isActive: true,
+    name: 'buildCommunityBDD',
+  }
+]
+
 const jobs: Job[] = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 8 * * 1', // every week a 8:00 on monday
@@ -158,6 +167,7 @@ const jobs: Job[] = [
   ...emailJobs,
   ...mattermostJobs,
   ...startupJobs,
+  ...metricJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
