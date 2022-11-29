@@ -78,8 +78,8 @@ const CONFIG_ENDING_CONTRACT_MESSAGE : Record<string, {
 };
 
 const CONFIG_NO_MORE_CONTRACT_MESSAGE : Record<string, EmailNoMoreContract['type']> = {
-  'j+1': EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
-  'j+30': EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY
+  1: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
+  30: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY
 } ; 
 
 const sendMessageOnChatAndEmail = async ({
