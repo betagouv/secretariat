@@ -72,7 +72,7 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_NO_MORE_CONTRACT_30_DAY: false,
     EMAIL_USER_SHOULD_UPDATE_INFO: true,
     EMAIL_NEWSLETTER: true,
-    EMAIL_NEW_MEMBER_PR: false
+    EMAIL_NEW_MEMBER_PR: true
 }
 
 const htmlBuilder : HtmlBuilderType = {
