@@ -379,11 +379,11 @@ export function makeGithubPullRequest(branch, title) {
 
 export function createUsername(firstName, lastName) {
   const prepareName = function (str) {
-    const normalizedStr = replaceSpecialCharacters(str)
+    let normalizedStr = replaceSpecialCharacters(str)
+      .split(' ').map(x => _.deburr(x.toLowerCase()).replace(/[^a-z\-]/g, '')).filter(x => x) // remove empty value
+    normalizedStr = normalizedStr.join('.')
       .split(' ')
-      .join('.')
-      .split(' ')
-      .map((x) => _.deburr(x.toLowerCase()))
+      // .map((x) => _.deburr(x.toLowerCase()))
       .join(' ')
       .trim();
     return hyphenateWhitespace(normalizedStr);

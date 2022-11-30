@@ -518,8 +518,8 @@ describe('Onboarding', () => {
         });
     });
 
-    it('branch name should not contain accents or special characters', (done) => {
-      chai.request(app)
+    it('branch name should not contain accents or special characters', async() => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -530,20 +530,17 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'test-membre@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const branch = createGithubBranch.args[0][1];
-          branch.should.contain('author-raphael-fernandao-uniibe-');
-          done();
-        });
+      const branch = createGithubBranch.args[0][1];
+      branch.should.contain('author-raphael-fernandao-uniibe-');
     });
 
-    it('filename should handle multiple spaces gracefully', (done) => {
-      chai.request(app)
+    it('filename should handle multiple spaces gracefully', async () => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -554,40 +551,34 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'jean-jacques@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const path = createGithubFile.args[0][0];
-          path.should.contain('jean-jacques.dupont.md');
-          done();
-        });
+        const path1 = createGithubFile.args[0][0];
+        path1.should.contain('jean.jacques.dupont.md');
     });
 
-    it('branch name should not contain accents', (done) => {
-      chai.request(app)
+    it('filename should handle hyphen gracefully', async () => {
+        const res = await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
+          firstName: 'Jean-Claude\'    .',
+          lastName: '    Dupont    ',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'jean-claude@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const branch = createGithubBranch.args[0][1];
-          branch.should.contain('author-fernandao-unibe-');
-          done();
-        });
+        const path2 = createGithubFile.args[0][0];
+        path2.should.contain('jean-claude.dupont.md');
     });
 
     it('PR title should contain the referent', (done) => {
@@ -595,7 +586,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Férnàndáô',
+          firstName: 'Diférnàndáô',
           lastName: 'Úñíbe',
           referent: 'John Doe',
           role: 'Dev',
@@ -603,7 +594,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'difernandao@example.com',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
@@ -626,14 +617,14 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renedherblay@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
-          path.should.contain('rene-d-herblay.d-aramitz.md');
+          path.should.contain('rene.d.herblay.d.aramitz.md');
           done();
         });
     });
@@ -650,14 +641,14 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renedeaulbadia@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
-          path.should.contain('rene-l.d-a.md');
+          path.should.contain('rene.l.d.a.md');
           done();
         });
     });
@@ -674,7 +665,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renearamitzof@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
@@ -699,7 +690,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'johndoe@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
@@ -707,8 +698,7 @@ describe('Onboarding', () => {
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          dbRes[0].secondary_email.should.equal(`test@example.com`);
-          // dbRes[0].primary_email.should.equal(`john.doe@${config.domain}`);
+          dbRes[0].secondary_email.should.equal(`johndoe@example.com`);
           dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_UNSET);
         })
         .then(done)
