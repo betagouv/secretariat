@@ -381,7 +381,9 @@ export function createUsername(firstName, lastName) {
   const prepareName = function (str) {
     const normalizedStr = replaceSpecialCharacters(str)
       .split(' ')
-      .map((x) => _.deburr(x.toLowerCase()).replace(/[^a-z]/g, ''))
+      .join('.')
+      .split(' ')
+      .map((x) => _.deburr(x.toLowerCase()))
       .join(' ')
       .trim();
     return hyphenateWhitespace(normalizedStr);
