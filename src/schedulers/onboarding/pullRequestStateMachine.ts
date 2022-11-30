@@ -110,6 +110,7 @@ export async function pullRequestStateMachine() {
     const { data: pullRequests }  = await github.getPullRequests(
         config.githubOrganizationName, 'beta.gouv.fr', 'open')
     const pullRequestURLs = pullRequests.map(pr => pr.url)
+    console.log(dbPullRequests)
     for (const dbPullRequest of dbPullRequests) {
         try {
             const url = dbPullRequest.url
