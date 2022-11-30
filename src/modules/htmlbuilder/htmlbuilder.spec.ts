@@ -369,6 +369,27 @@ describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
     })
 })
 
+describe(`Test EMAIL_NEW_MEMBER_PR`, () => {
+    it(`email EMAIL_NEW_MEMBER_PR`, async () => {
+        const prUrl = 'http://github.com/url'
+        const startup = 'Monsuivi'
+        const name = 'Jean Pauluchon'
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
+            variables: {
+                prUrl,
+                name,
+                isEmailBetaAsked: true,
+                startup
+            }
+        })
+    
+        emailBody.should.include(prUrl)
+        emailBody.should.include(name)
+        emailBody.should.include(startup)
+    })
+})
+
 describe(`Test EMAIL_NEWSLETTER`, () => {
     it(`email EMAIL_NEWSLETTER`, async () => {
         const renderHtmlFromMd = sinon

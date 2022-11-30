@@ -192,8 +192,10 @@ export type EmailNewsletter = {
 export type EmailNewMemberPR = {
     type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
     variables: {
-        body: string,
-        subject: string
+        prUrl: string,
+        name: string,
+        isEmailBetaAsked: boolean,
+        startup: string
     }
 }
 

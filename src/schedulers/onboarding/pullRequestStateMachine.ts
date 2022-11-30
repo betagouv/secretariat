@@ -82,23 +82,33 @@ async function sendMessageToReferent({ prUrl, prInfo }: { prUrl: string, prInfo:
     }
 }
 
-const sendEmailToTeam = async({ prUrl, prInfo, username }: { prUrl: string, prInfo: {
+const sendEmailToTeam = async({ prUrl, prInfo: {
+    referent,
+    name,
+    isEmailBetaAsked,
+    startup
+}, username }: { prUrl: string, prInfo: {
     referent: string,
     name: string,
     isEmailBetaAsked: boolean,
     startup?: string
 }, username: string}) => {
-    if (!prInfo.startup) {
+    if (!startup) {
         return
     }
     const dbStartup : DBStartup = await db('startups').where({
-        id: prInfo.startup
+        id: startup
     }).whereNotNull('mailing_list').first()
     if (dbStartup) {
         await sendEmail({
             toEmail: [`${dbStartup.mailing_list}@${config.domain}`],
             type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
-            variables: undefined
+            variables: {
+                prUrl,
+                name,
+                isEmailBetaAsked,
+                startup
+            }
         })
     }
 }
