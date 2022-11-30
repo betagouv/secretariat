@@ -192,7 +192,14 @@ export async function postForm(req, res) {
       
       await knex('pull_requests').insert({
         username,
-        url: prInfo.data.html_url
+        url: prInfo.data.html_url,
+        info: {
+          startup,
+          username,
+          referent,
+          name,
+          isEmailBetaAsked
+        }
       })
   
       res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
