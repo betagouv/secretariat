@@ -442,8 +442,8 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should call Github API if mandatory fields are present', (done) => {
-      chai.request(app)
+    it('should call Github API if mandatory fields are present', async () => {
+      const res = await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -458,14 +458,11 @@ describe('Onboarding', () => {
           email: 'test@example.com',
           isEmailBetaAsked: true,
           memberType: 'beta',
-        })
-        .end((err, res) => {
-          getGithubMasterSha.calledOnce.should.be.true;
-          createGithubBranch.calledOnce.should.be.true;
-          createGithubFile.calledOnce.should.be.true;
-          makeGithubPullRequest.calledOnce.should.be.true;
-          done();
-        });
+      })
+      getGithubMasterSha.calledOnce.should.be.true;
+      createGithubBranch.calledOnce.should.be.true;
+      createGithubFile.calledOnce.should.be.true;
+      makeGithubPullRequest.calledOnce.should.be.true;
     });
 
     it('should call Github API if email is public email', (done) => {
@@ -615,35 +612,6 @@ describe('Onboarding', () => {
           prTitle.should.contain('Référent : John Doe.');
           done();
         });
-    });
-
-    it('Referent should be notified by email', async() => {
-      nock.cleanAll();
-
-      utils.mockUsers();
-      try {
-        await chai.request(app)
-          .post('/onboarding')
-          .type('form')
-          .send({
-            firstName: 'Férnàndáô',
-            lastName: 'Úñíbe',
-            referent: 'membre.actif',
-            role: 'Dev',
-            start: '2020-01-01',
-            end: '2021-01-01',
-            status: 'Independant',
-            domaine: 'Coaching',
-            email: 'test@example.com',
-                      memberType: 'beta',
-            isEmailBetaAsked: true,
-          })
-        } catch(e) {
-          console.log(e)
-        }
-        sendEmailStub.calledOnce.should.be.true;
-        const email : SendEmailProps = sendEmailStub.args[0][0];
-        email.toEmail[0].should.equal(`membre.actif@${config.domain}`);
     });
 
     it('special characters should be replaced with dashes in the filename', (done) => {

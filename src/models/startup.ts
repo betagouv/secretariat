@@ -42,6 +42,7 @@ interface Phase {
 }
 
 export interface DBStartup {
+    mailing_list: any;
     id: string;
     name: string;
     pitch: string;

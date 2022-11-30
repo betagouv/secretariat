@@ -9,20 +9,7 @@ import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUser
 import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@/models/dbUser/dbUser';
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
-import { sendEmail } from "@/config/email.config";
-import * as mattermost from '@/lib/mattermost';
-import { EMAIL_TYPES } from "@/modules/email";
-import { sendInfoToChat } from "@/infra/chat";
-import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
 import { DOMAINE_OPTIONS } from "@/models/member";
-
-interface IMessageInfo {
-    prInfo,
-    referent: string,
-    username: string,
-    isEmailBetaAsked: boolean,
-    name: string
-}  
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -30,47 +17,6 @@ function createBranchName(username) {
     return `author${username.replace(refRegex, '-')}-${randomSuffix}`;
 }
 
-async function sendMessageToReferent({ prInfo, referent, isEmailBetaAsked, name }: IMessageInfo) {
-    const prUrl = prInfo.data.html_url
-    try {
-      const dbReferent = await knex('users').where({ username: referent }).first()
-      const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
-      await sendEmail({
-        toEmail: [email],
-        type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
-        variables: {
-          referent,
-          prUrl,
-          name,
-          isEmailBetaAsked
-        }
-      })
-    } catch (e) {
-      console.error(`It was not able to find referent ${referent}`, e)
-    }
-    try {
-      const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
-        term: referent
-      })
-      const messageContent = await htmlBuilder.renderContentForTypeAsMarkdown({
-        type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
-        variables: {
-          referent,
-          prUrl,
-          name,
-          isEmailBetaAsked
-        }
-      })
-      await sendInfoToChat({
-        text: messageContent,
-        channel: 'secretariat',
-        username: mattermostUser.username
-      })
-    } catch (e) {
-      console.error('It was not able to send message to referent on mattermost', e)
-    }
-}
-  
 async function createNewcomerGithubFile(username, content, referent) {
     const branch = createBranchName(username);
     console.log(`Début de la création de fiche pour ${username}...`);
@@ -202,15 +148,8 @@ export async function postForm(req, res) {
         memberType
       });
       const prInfo = await createNewcomerGithubFile(username, content, referent);
-  
-      if (prInfo.status === 201 && prInfo.data.html_url) {
-        await sendMessageToReferent({
-          prInfo,
-          referent,
-          isEmailBetaAsked,
-          username,
-          name
-        })
+      if (prInfo.status !== 201 && prInfo.data.html_url) {
+        throw new Error('Il y a eu une erreur merci de recommencer plus tard')
       }
       let primary_email, secondary_email;
       if (isEmailBetaAsked) {
@@ -250,6 +189,11 @@ export async function postForm(req, res) {
         })
         .onConflict('hash')
         .merge();
+      
+      await knex('pull_requests').insert({
+        username,
+        url: prInfo.data.html_url
+      })
   
       res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
     } catch (err) {
