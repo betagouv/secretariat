@@ -1,13 +1,32 @@
 import betagouv from "@/betagouv";
+import { sendEmail } from "@/config/email.config";
 import db from "@/db";
 import { DBStartup, StartupInfo } from "@/models/startup";
+import { EMAIL_TYPES } from "@/modules/email";
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
+enum Phase {
+  PHASE_INVESTIGATION='investigation',
+  PHASE_CONSTRUCTION='construction',
+  PHASE_ACCELERATION='acceleration',
+}
+
 function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
   if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
+    if (newStartupInfo.current_phase === Phase.PHASE_CONSTRUCTION) {
+      sendEmail({
+        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+        variables: {}
+      })
+    } else if (newStartupInfo.current_phase === Phase.PHASE_ACCELERATION) {
+      sendEmail({
+        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+        variables: {}
+      })
+    }
     console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
   }
 }
