@@ -45,6 +45,7 @@ import ConsumeEmailEvent from './emailScheduler/consumeEmailEvent';
 import EventBus from '@/infra/eventBus/eventBus';
 import { removeBetaAndParnersUsersFromCommunityTeam, sendReminderToUserAtDays } from './mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 import { createMailingListForStartups } from './startups/createMailingListForStartups';
+import { pullRequestStateMachine } from './onboarding/pullRequestStateMachine';
 
 interface Job {
   cronTime: string;
@@ -131,6 +132,15 @@ const metricJobs: Job[] = [
   }
 ]
 
+const pullRequestJobs: Job[] = [
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: pullRequestStateMachine,
+    isActive: true,
+    name: 'pullRequestStateMachine',
+  },
+]
+
 const jobs: Job[] = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 8 * * 1', // every week a 8:00 on monday
@@ -168,6 +178,7 @@ const jobs: Job[] = [
   ...mattermostJobs,
   ...startupJobs,
   ...metricJobs,
+  ...pullRequestJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
