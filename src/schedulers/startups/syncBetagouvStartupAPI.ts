@@ -1,4 +1,5 @@
 import betagouv from "@/betagouv";
+import config from "@/config";
 import { sendEmail } from "@/config/email.config";
 import db from "@/db";
 import { DBStartup, StartupInfo } from "@/models/startup";
@@ -14,18 +15,26 @@ enum Phase {
   PHASE_ACCELERATION='acceleration',
 }
 
-function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
+async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
   if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
+    const startupInfos = await betagouv.startupInfosById(newStartupInfo.id)
+    console.log(startupInfos.active_members)
     if (newStartupInfo.current_phase === Phase.PHASE_CONSTRUCTION) {
-      sendEmail({
-        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
-        variables: {}
-      })
+      if (newStartupInfo.mailing_list) {
+        sendEmail({
+          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+          variables: undefined
+        })
+      }
     } else if (newStartupInfo.current_phase === Phase.PHASE_ACCELERATION) {
-      sendEmail({
-        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
-        variables: {}
-      })
+      if (newStartupInfo.mailing_list) {
+        sendEmail({
+          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+          variables: undefined
+        })
+      }
     }
     console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
   }
@@ -55,7 +64,7 @@ export async function syncBetagouvStartupAPI() {
       } else {
         await db('startups').insert(newStartupInfo)
       }
-      compareAndTriggerChange({
+      await compareAndTriggerChange({
         ...newStartupInfo,
         phases: startup.attributes.phases,
       }, previousStartupInfo)
