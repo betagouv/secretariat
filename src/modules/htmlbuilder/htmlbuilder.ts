@@ -21,7 +21,8 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_NO_MORE_CONTRACT_1_DAY: './src/views/templates/emails/mailExpired1day.ejs',
     EMAIL_NO_MORE_CONTRACT_30_DAY: './src/views/templates/emails/mailExpired30days.ejs',
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/views/templates/emails/updateUserInfoEmail.ejs`,
-    EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs'
+    EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs',
+    EMAIL_NEW_MEMBER_PR: './src/views/templates/emails/newMemberPR.ejs'
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -46,6 +47,9 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     EMAIL_USER_SHOULD_UPDATE_INFO: 'Mise à jour de tes informations',
     EMAIL_NEWSLETTER: ({ subject }: EmailNewsletter['variables']) => {
         return `${subject}`
+    },
+    EMAIL_NEW_MEMBER_PR: ({ name }: EmailOnboardingReferent['variables']) => {
+        return `${name} vient de créer sa fiche Github`
     }
 }
 
@@ -67,7 +71,8 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_NO_MORE_CONTRACT_1_DAY: false,
     EMAIL_NO_MORE_CONTRACT_30_DAY: false,
     EMAIL_USER_SHOULD_UPDATE_INFO: true,
-    EMAIL_NEWSLETTER: true
+    EMAIL_NEWSLETTER: true,
+    EMAIL_NEW_MEMBER_PR: false
 }
 
 const htmlBuilder : HtmlBuilderType = {
