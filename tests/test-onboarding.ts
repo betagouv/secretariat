@@ -442,8 +442,8 @@ describe('Onboarding', () => {
         });
     });
 
-    it('should call Github API if mandatory fields are present', (done) => {
-      chai.request(app)
+    it('should call Github API if mandatory fields are present', async () => {
+      const res = await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -458,14 +458,11 @@ describe('Onboarding', () => {
           email: 'test@example.com',
           isEmailBetaAsked: true,
           memberType: 'beta',
-        })
-        .end((err, res) => {
-          getGithubMasterSha.calledOnce.should.be.true;
-          createGithubBranch.calledOnce.should.be.true;
-          createGithubFile.calledOnce.should.be.true;
-          makeGithubPullRequest.calledOnce.should.be.true;
-          done();
-        });
+      })
+      getGithubMasterSha.calledOnce.should.be.true;
+      createGithubBranch.calledOnce.should.be.true;
+      createGithubFile.calledOnce.should.be.true;
+      makeGithubPullRequest.calledOnce.should.be.true;
     });
 
     it('should call Github API if email is public email', (done) => {
@@ -521,8 +518,8 @@ describe('Onboarding', () => {
         });
     });
 
-    it('branch name should not contain accents or special characters', (done) => {
-      chai.request(app)
+    it('branch name should not contain accents or special characters', async() => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -533,20 +530,17 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'test-membre@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const branch = createGithubBranch.args[0][1];
-          branch.should.contain('author-raphael-fernandao-uniibe-');
-          done();
-        });
+      const branch = createGithubBranch.args[0][1];
+      branch.should.contain('author-raphael-fernandao-uniibe-');
     });
 
-    it('filename should handle multiple spaces gracefully', (done) => {
-      chai.request(app)
+    it('filename should handle multiple spaces gracefully', async () => {
+      await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
@@ -557,40 +551,34 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'jean-jacques@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const path = createGithubFile.args[0][0];
-          path.should.contain('jean-jacques.dupont.md');
-          done();
-        });
+        const path1 = createGithubFile.args[0][0];
+        path1.should.contain('jean.jacques.dupont.md');
     });
 
-    it('branch name should not contain accents', (done) => {
-      chai.request(app)
+    it('filename should handle hyphen gracefully', async () => {
+        const res = await chai.request(app)
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Férnàndáô',
-          lastName: 'Úñíbe',
+          firstName: 'Jean-Claude\'    .',
+          lastName: '    Dupont    ',
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'jean-claude@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
-        .end((err, res) => {
-          const branch = createGithubBranch.args[0][1];
-          branch.should.contain('author-fernandao-unibe-');
-          done();
-        });
+        const path2 = createGithubFile.args[0][0];
+        path2.should.contain('jean-claude.dupont.md');
     });
 
     it('PR title should contain the referent', (done) => {
@@ -598,7 +586,7 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'Férnàndáô',
+          firstName: 'Diférnàndáô',
           lastName: 'Úñíbe',
           referent: 'John Doe',
           role: 'Dev',
@@ -606,7 +594,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'difernandao@example.com',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
@@ -615,35 +603,6 @@ describe('Onboarding', () => {
           prTitle.should.contain('Référent : John Doe.');
           done();
         });
-    });
-
-    it('Referent should be notified by email', async() => {
-      nock.cleanAll();
-
-      utils.mockUsers();
-      try {
-        await chai.request(app)
-          .post('/onboarding')
-          .type('form')
-          .send({
-            firstName: 'Férnàndáô',
-            lastName: 'Úñíbe',
-            referent: 'membre.actif',
-            role: 'Dev',
-            start: '2020-01-01',
-            end: '2021-01-01',
-            status: 'Independant',
-            domaine: 'Coaching',
-            email: 'test@example.com',
-                      memberType: 'beta',
-            isEmailBetaAsked: true,
-          })
-        } catch(e) {
-          console.log(e)
-        }
-        sendEmailStub.calledOnce.should.be.true;
-        const email : SendEmailProps = sendEmailStub.args[0][0];
-        email.toEmail[0].should.equal(`membre.actif@${config.domain}`);
     });
 
     it('special characters should be replaced with dashes in the filename', (done) => {
@@ -658,14 +617,14 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renedherblay@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
-          path.should.contain('rene-d-herblay.d-aramitz.md');
+          path.should.contain('rene.d.herblay.d.aramitz.md');
           done();
         });
     });
@@ -682,14 +641,14 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renedeaulbadia@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
         })
         .end((err, res) => {
           const path = createGithubFile.args[0][0];
-          path.should.contain('rene-l.d-a.md');
+          path.should.contain('rene.l.d.a.md');
           done();
         });
     });
@@ -706,7 +665,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'renearamitzof@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
@@ -731,7 +690,7 @@ describe('Onboarding', () => {
           end: '2021-01-01',
           status: 'Independant',
           domaine: 'Coaching',
-          email: 'test@example.com',
+          email: 'johndoe@example.com',
           referent: 'membre.actif',
           memberType: 'beta',
           isEmailBetaAsked: true,
@@ -739,8 +698,7 @@ describe('Onboarding', () => {
         .then(() => knex('users').where({ username: 'john.doe' }))
         .then((dbRes) => {
           dbRes.length.should.equal(1);
-          dbRes[0].secondary_email.should.equal(`test@example.com`);
-          // dbRes[0].primary_email.should.equal(`john.doe@${config.domain}`);
+          dbRes[0].secondary_email.should.equal(`johndoe@example.com`);
           dbRes[0].primary_email_status.should.equal(EmailStatusCode.EMAIL_UNSET);
         })
         .then(done)
