@@ -17,7 +17,7 @@ export function applyChanges(text, changes) {
             const keyScalar = YAML.CST.resolveAsScalar(e.key)
             if (keyScalar.value === key) {
                 const valueScalar = YAML.CST.resolveAsScalar(e.value)
-                if (valueScalar.value !== newValue) {
+                if (valueScalar && valueScalar.value !== newValue) {
                     updates[key] = "updated"
                     YAML.CST.setScalarValue(e.value, newValue)
                 } else {
