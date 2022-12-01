@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+
 import betagouv from "@/betagouv";
 import config from "@/config";
 import { sendEmail } from "@/config/email.config";
@@ -58,6 +60,7 @@ export async function syncBetagouvStartupAPI() {
         contact: startup.attributes.contact,
         phases: JSON.stringify(startup.attributes.phases),
         current_phase: getCurrentPhase(startup),
+        mailing_list: previousStartupInfo.mailing_list,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
       }
       if (previousStartupInfo) {
@@ -68,9 +71,14 @@ export async function syncBetagouvStartupAPI() {
       } else {
         await db('startups').insert(newStartupInfo)
       }
-      await compareAndTriggerChange({
-        ...newStartupInfo,
-        phases: startup.attributes.phases,
-      }, previousStartupInfo)
+      try {
+        await compareAndTriggerChange({
+          ...newStartupInfo,
+          phases: startup.attributes.phases,
+        }, previousStartupInfo)
+      } catch (e) {
+        Sentry.captureException(e);
+        console.error(e)
+      }
     }
   }
