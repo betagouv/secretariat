@@ -1,13 +1,47 @@
+import * as Sentry from '@sentry/node';
+
 import betagouv from "@/betagouv";
+import config from "@/config";
+import { sendEmail } from "@/config/email.config";
 import db from "@/db";
 import { DBStartup, StartupInfo } from "@/models/startup";
+import { EMAIL_TYPES } from "@/modules/email";
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
-function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
-  if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
+enum Phase {
+  PHASE_INVESTIGATION='investigation',
+  PHASE_CONSTRUCTION='construction',
+  PHASE_ACCELERATION='acceleration',
+}
+
+async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
+  if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase && process.env.FEATURE_SEND_EMAIL_BY_PHASE) {
+    const startupInfos = await betagouv.startupInfosById(newStartupInfo.id)
+    console.log(startupInfos.active_members)
+    if (newStartupInfo.current_phase === Phase.PHASE_CONSTRUCTION) {
+      if (newStartupInfo.mailing_list) {
+        sendEmail({
+          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+          variables: {
+            startup: newStartupInfo.id
+          }
+        })
+      }
+    } else if (newStartupInfo.current_phase === Phase.PHASE_ACCELERATION) {
+      if (newStartupInfo.mailing_list) {
+        sendEmail({
+          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+          variables: {
+            startup: newStartupInfo.id
+          }
+        })
+      }
+    }
     console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
   }
 }
@@ -26,6 +60,7 @@ export async function syncBetagouvStartupAPI() {
         contact: startup.attributes.contact,
         phases: JSON.stringify(startup.attributes.phases),
         current_phase: getCurrentPhase(startup),
+        mailing_list: previousStartupInfo.mailing_list,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
       }
       if (previousStartupInfo) {
@@ -36,9 +71,14 @@ export async function syncBetagouvStartupAPI() {
       } else {
         await db('startups').insert(newStartupInfo)
       }
-      compareAndTriggerChange({
-        ...newStartupInfo,
-        phases: startup.attributes.phases,
-      }, previousStartupInfo)
+      try {
+        await compareAndTriggerChange({
+          ...newStartupInfo,
+          phases: startup.attributes.phases,
+        }, previousStartupInfo)
+      } catch (e) {
+        Sentry.captureException(e);
+        console.error(e)
+      }
     }
   }

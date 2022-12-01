@@ -1,13 +1,6 @@
 import { Member } from "@models/member"
 import { Job } from "@/models/job"
 
-
-
-
-
-
-
-
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL = 'MARRAINAGE_NEWCOMER_EMAIL',
     MARRAINAGE_ONBOARDER_EMAIL = 'MARRAINAGE_ONBOARDER_EMAIL',
@@ -28,7 +21,9 @@ export enum EMAIL_TYPES {
     EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY",
     EMAIL_USER_SHOULD_UPDATE_INFO = 'EMAIL_USER_SHOULD_UPDATE_INFO',
     EMAIL_NEWSLETTER = "EMAIL_NEWSLETTER",
-    EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR"
+    EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR",
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE = "EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE",
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE"
 }
 
 export type SubjectFunction = {
@@ -199,6 +194,19 @@ export type EmailNewMemberPR = {
     }
 }
 
+export type EmailStartupEnterConstructionPhase = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+    variables: {
+        startup: string
+    }
+}
+
+export type EmailStartupEnterAccelerationPhase = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+    variables: {
+        startup: string
+    }
+}
 
 export type EmailVariants =
  | EmailMarrainageNewcomer
@@ -217,6 +225,8 @@ export type EmailVariants =
  | EmailUserShouldUpdateInfo
  | EmailNewsletter
  | EmailNewMemberPR
+ | EmailStartupEnterConstructionPhase
+ | EmailStartupEnterAccelerationPhase
 
 export type EmailProps = BaseEmail & EmailVariants
 

@@ -1,6 +1,6 @@
 import ejs from 'ejs'
 
-import { EmailOnboardingReferent, EmailNewsletter, EmailProps, HtmlBuilderType, SubjectFunction } from "@/modules/email"
+import { EmailOnboardingReferent, EmailNewsletter, EmailProps, HtmlBuilderType, SubjectFunction, EmailNewMemberPR, EmailStartupEnterConstructionPhase, EmailStartupEnterAccelerationPhase } from "@/modules/email"
 import * as mdtohtml from '@/lib/mdtohtml'
 
 const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
@@ -22,7 +22,9 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_NO_MORE_CONTRACT_30_DAY: './src/views/templates/emails/mailExpired30days.ejs',
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/views/templates/emails/updateUserInfoEmail.ejs`,
     EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs',
-    EMAIL_NEW_MEMBER_PR: './src/views/templates/emails/newMemberPR.ejs'
+    EMAIL_NEW_MEMBER_PR: './src/views/templates/emails/newMemberPR.ejs',
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: './src/views/templates/emails/startupEnterConstructionPhase.ejs',
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: './src/views/templates/emails/startupEnterAccelerationPhase.ejs'
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -48,9 +50,15 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     EMAIL_NEWSLETTER: ({ subject }: EmailNewsletter['variables']) => {
         return `${subject}`
     },
-    EMAIL_NEW_MEMBER_PR: ({ name }: EmailOnboardingReferent['variables']) => {
+    EMAIL_NEW_MEMBER_PR: ({ name }: EmailNewMemberPR['variables']) => {
         return `${name} vient de créer sa fiche Github`
-    }
+    },
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE:  ({ startup }: EmailStartupEnterConstructionPhase['variables']) => {
+        return `${startup} passe en construction : les bonnes pratiques`
+    },
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE:  ({startup }: EmailStartupEnterAccelerationPhase['variables']) => {
+        return `${startup} passe en acceleration : les bonnes pratiques`
+    },
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -72,7 +80,9 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_NO_MORE_CONTRACT_30_DAY: false,
     EMAIL_USER_SHOULD_UPDATE_INFO: true,
     EMAIL_NEWSLETTER: true,
-    EMAIL_NEW_MEMBER_PR: true
+    EMAIL_NEW_MEMBER_PR: true,
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: true,
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: true
 }
 
 const htmlBuilder : HtmlBuilderType = {
