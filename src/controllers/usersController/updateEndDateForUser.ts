@@ -1,6 +1,7 @@
 import config from "@config";
 import { addEvent, EventCode } from '@/lib/events'
 import { updateAuthorGithubFile } from "./usersControllerUtils";
+import betagouv from "@/betagouv";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;
@@ -36,8 +37,10 @@ export async function updateEndDateForUser(req, res) {
             req.flash('error', formValidationErrors);
             throw new Error();
         }
-
-        const changes = { end: newEnd };
+        const info = await betagouv.userInfosById(username)
+        const missions = info.missions
+        missions[missions.length-1].end = newEnd
+        const changes = { missions };
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
             created_by_username: req.auth.id,
