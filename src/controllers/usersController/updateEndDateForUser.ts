@@ -37,7 +37,7 @@ export async function updateEndDateForUser(req, res) {
             throw new Error();
         }
 
-        const changes = [{ key: 'end', old: end, new: newEnd }];
+        const changes = [{ end: newEnd }];
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
             created_by_username: req.auth.id,
