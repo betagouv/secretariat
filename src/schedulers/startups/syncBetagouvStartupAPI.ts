@@ -60,7 +60,7 @@ export async function syncBetagouvStartupAPI() {
         contact: startup.attributes.contact,
         phases: JSON.stringify(startup.attributes.phases),
         current_phase: getCurrentPhase(startup),
-        mailing_list: previousStartupInfo.mailing_list,
+        mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
       }
       if (previousStartupInfo) {
