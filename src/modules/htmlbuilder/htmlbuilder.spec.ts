@@ -390,6 +390,39 @@ describe(`Test EMAIL_NEW_MEMBER_PR`, () => {
     })
 })
 
+describe(`Test EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE`, () => {
+    it(`email EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE`, async () => {
+        const startup = 'Monsuivi'
+        const title : string =  await htmlBuilder.renderSubjectForType({
+        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+            variables: {
+                startup
+            }
+        })
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+            variables: {
+                startup
+            }
+        })
+        emailBody.should.include(startup)
+        title.should.include(startup)
+    })
+})
+
+describe(`Test EMAIL_STARTUP_ENTER_ACCELERATION_PHASE`, () => {
+    it(`email EMAIL_STARTUP_ENTER_ACCELERATION_PHASE`, async () => {
+        const startup = 'Monsuivi'
+        const emailBody : string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+            variables: {
+                startup
+            }
+        })
+        emailBody.should.include(startup)
+    })
+})
+
 describe(`Test EMAIL_NEWSLETTER`, () => {
     it(`email EMAIL_NEWSLETTER`, async () => {
         const renderHtmlFromMd = sinon
