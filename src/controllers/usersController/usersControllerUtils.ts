@@ -92,8 +92,13 @@ export async function updateAuthorGithubFile(username, changes) {
             return utils.getGithubFile(path, branch);
         })
         .then((res) => {
+            const yaml = require('js-yaml');
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-            content = applyChanges(content, changes).content
+            const [doc, doc1] = yaml.loadAll(content)
+            for (const key in Object.keys(changes)) {
+                doc[key] = changes[key]
+            }
+            content = yaml.dump(doc) + '\n' + yaml.dump(doc1)
             return utils.createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {

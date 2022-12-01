@@ -234,6 +234,9 @@ const betaOVH = {
     }
   },
   getAvailableProEmailInfos: async () : Promise<string[]> =>  {
+    if (!config.OVH_EMAIL_PRO_NAME) {
+      return []
+    }
     const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
     /* TODO
     * use /email/domain/{domain}/account/{accountName}/migrate/{destinationServiceName}/destinationEmailAddress instead
