@@ -6,6 +6,7 @@ import { DBUser, EmailStatusCode, USER_EVENT } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendEmail } from "@/config/email.config";
 import EventBus from "@/infra/eventBus/eventBus";
+import { applyChanges } from "@/lib/frontmatter";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
@@ -92,10 +93,7 @@ export async function updateAuthorGithubFile(username, changes) {
         })
         .then((res) => {
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-            changes.forEach((change) => {
-                // replace old keys by new keys
-                content = content.replace(`${change.key}: ${change.old}`, `${change.key}: ${change.new}`);
-            });
+            content = applyChanges(content, changes).content
             return utils.createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {
