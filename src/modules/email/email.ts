@@ -228,9 +228,6 @@ export type EmailNewMemberPR = {
 export type EmailStartupEnterConstructionPhase = {
     type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
     variables: {
-        prUrl: string,
-        name: string,
-        isEmailBetaAsked: boolean,
         startup: string
     }
 }
@@ -238,9 +235,6 @@ export type EmailStartupEnterConstructionPhase = {
 export type EmailStartupEnterAccelerationPhase = {
     type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
     variables: {
-        prUrl: string,
-        name: string,
-        isEmailBetaAsked: boolean,
         startup: string
     }
 }

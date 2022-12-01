@@ -23,8 +23,8 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/views/templates/emails/updateUserInfoEmail.ejs`,
     EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs',
     EMAIL_NEW_MEMBER_PR: './src/views/templates/emails/newMemberPR.ejs',
-    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: '',
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: ''
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: './src/views/templates/emails/startupEnterConstructionPhase.ejs',
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: './src/views/templates/emails/startupEnterAccelerationPhase.ejs'
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {

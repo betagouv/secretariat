@@ -24,7 +24,9 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
           type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
-          variables: undefined
+          variables: {
+            startup: newStartupInfo.id
+          }
         })
       }
     } else if (newStartupInfo.current_phase === Phase.PHASE_ACCELERATION) {
@@ -32,7 +34,9 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
           type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
-          variables: undefined
+          variables: {
+            startup: newStartupInfo.id
+          }
         })
       }
     }
