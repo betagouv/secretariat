@@ -94,7 +94,7 @@ export async function updateAuthorGithubFile(username, changes) {
             const yaml = require('js-yaml');
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
             const [doc, doc1] = yaml.loadAll(content)
-            for (const key in Object.keys(changes)) {
+            for (const key of Object.keys(changes)) {
                 doc[key] = changes[key]
             }
             content = '---\n' + yaml.dump(doc) + '\n---\n' + yaml.dump(doc1)
