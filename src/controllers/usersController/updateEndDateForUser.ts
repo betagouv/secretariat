@@ -44,7 +44,6 @@ export async function updateEndDateForUser(req, res) {
             start: mission.start ? new Date(mission.start) : undefined,
         }))
         missions[missions.length-1].end = newEndDate
-        console.log(missions, newEnd)
         const changes = { missions };
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
