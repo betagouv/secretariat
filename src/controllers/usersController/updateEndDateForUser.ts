@@ -40,6 +40,7 @@ export async function updateEndDateForUser(req, res) {
         const info = await betagouv.userInfosById(username)
         const missions = info.missions
         missions[missions.length-1].end = newEnd
+        console.log(missions, newEnd)
         const changes = { missions };
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
