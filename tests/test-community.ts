@@ -4,6 +4,7 @@ import nock from 'nock';
 import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
+import config from '@/config';
 
 chai.use(chaiHttp);
 describe('Community', () => {
@@ -125,6 +126,7 @@ describe('Community', () => {
       await knex('users')
         .where({ username: 'membre.parti' })
         .update({
+          primary_email: '',
           secondary_email: 'perso@example.com',
         })
       
@@ -134,6 +136,7 @@ describe('Community', () => {
 
       res.text.should.include('<input value="perso@example.com" name="to_email"');
       await knex('users').where({ username: 'membre.parti'}).update({
+        primary_email: `membre.parti@${config.domain}`,
         secondary_email: null
       })
     });
