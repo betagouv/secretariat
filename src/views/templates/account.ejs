@@ -170,7 +170,7 @@
                             <span class="text-color-almost-black">Email personnel ou professionnel</span><br />
                             Les informations de connexion seront envoyées à cet email
                         </label>
-                        <input value="<%= secondaryEmail %>" name="to_email" type="email" required>
+                        <input value="<% if (canCreateEmail) { %><%= primaryEmail %><% } else { %><%= secondaryEmail %><% } %>" name="to_email" type="email" required>
                     </div>
                     <button class="button no-margin" type="submit">Créer un compte</button>
                 </form>

@@ -121,6 +121,7 @@ export async function getUser(req, res) {
       isExpired: user.isExpired,
       isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       availableEmailPros,
+      primaryEmail: dbUser ? dbUser.primary_email : '',
       primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
       canCreateEmail: user.canCreateEmail,
       hasPublicServiceEmail: dbUser && dbUser.primary_email && !dbUser.primary_email.includes(config.domain),
