@@ -160,6 +160,10 @@
             <% } %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer ton compte email @beta.gouv.fr.</p>
+                <% if (hasPublicServiceEmail) { %>
+                    Attention tu as une adresse de service public en adresse primaire. Si tu créés une adresse @beta.gouv.fr, elle deviendra ton adresse primaire :
+                    celle à utiliser pour mattermost, et d'autres outils.
+                <% } %>
                 <form class="no-margin" action="/users/<%= userInfos.id %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group  margin-10-0">
                         <label>
