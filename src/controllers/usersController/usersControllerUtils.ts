@@ -100,6 +100,9 @@ export async function updateAuthorGithubFile(username, changes) {
             content = '---\n' + yaml.dump(doc, {
                 replacer: (key, value) => {
                     console.log(key, value)
+                    if (key === 'end') {
+                        return value.split('T')[0]
+                    }
                     return value
                 }
             }) + '\n---\n' + yaml.dump(doc1)
