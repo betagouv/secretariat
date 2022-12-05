@@ -104,8 +104,8 @@ export async function getUser(req, res) {
       .where({ username });
     const marrainageState = marrainageStateResponse[0];
 
-    const dbRes = await knex('users').where({ username })
-    const secondaryEmail = dbRes.length === 1 ? dbRes[0].secondary_email : '';
+    const dbUser = await knex('users').where({ username }).first()
+    const secondaryEmail = dbUser ? dbUser.secondary_email : '';
     let availableEmailPros = []
     if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
       availableEmailPros = await betagouv.getAvailableProEmailInfos()
@@ -121,8 +121,9 @@ export async function getUser(req, res) {
       isExpired: user.isExpired,
       isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       availableEmailPros,
-      primaryEmailStatus: dbRes.length === 1 ? EMAIL_STATUS_READABLE_FORMAT[dbRes[0].primary_email_status] : '',
+      primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
       canCreateEmail: user.canCreateEmail,
+      hasPublicServiceEmail: dbUser && dbUser.primary_email && !dbUser.primary_email.includes(config.domain),
       errors: req.flash('error'),
       messages: req.flash('message'),
       domain: config.domain,
