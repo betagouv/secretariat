@@ -6,7 +6,6 @@ import { DBUser, EmailStatusCode, USER_EVENT } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendEmail } from "@/config/email.config";
 import EventBus from "@/infra/eventBus/eventBus";
-import { applyChanges } from "@/lib/frontmatter";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
