@@ -101,7 +101,7 @@ export async function updateAuthorGithubFile(username, changes) {
                 replacer: (key, value) => {
                     console.log(key, value)
                     if (key === 'end') {
-                        return value.split('T')[0]
+                        return value.toISOString().split('T')[0]
                     }
                     return value
                 }
