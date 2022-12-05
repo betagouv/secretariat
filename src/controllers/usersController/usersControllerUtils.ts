@@ -97,7 +97,7 @@ export async function updateAuthorGithubFile(username, changes) {
             for (const key in Object.keys(changes)) {
                 doc[key] = changes[key]
             }
-            content = '---' + yaml.dump(doc) + '\n---' + yaml.dump(doc1)
+            content = '---\n' + yaml.dump(doc) + '\n---\n' + yaml.dump(doc1)
             return utils.createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {
