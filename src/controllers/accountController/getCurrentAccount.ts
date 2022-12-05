@@ -42,7 +42,8 @@ export async function getCurrentAccount(req, res) {
         isExpired: currentUser.isExpired,
         isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         // can create email if email is not set, or if email is not @beta.gouv.fr email
-        canCreateEmail: currentUser.canCreateEmail && !hasPublicServiceEmail,
+        canCreateEmail: currentUser.canCreateEmail,
+        hasPublicServiceEmail,
         canCreateProAccount: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         availableEmailPros,
 

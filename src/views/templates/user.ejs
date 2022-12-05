@@ -140,13 +140,17 @@
         <% } else { %>
             <% if (canCreateEmail) { %>
                 <p>Tu peux créer un compte mail pour <%= userInfos.fullname %>.</p>
+                <% if (hasPublicServiceEmail) { %>
+                    Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
+                    celle à utiliser pour mattermost, et d'autres outils.
+                <% } %>
                 <form class="no-margin" action="/users/<%= username %>/email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
                     <div class="form__group  margin-10-0">
                         <label>
                             <span class="text-color-almost-black">Email personnel ou professionnel</span><br />
                             Le mot de passe et les informations de connexion seront envoyées à cet email
                         </label>
-                        <input value="<%= secondaryEmail %>" name="to_email" type="email" required>
+                        <input value="<% if (canCreateEmail && primaryEmail) { %><%= primaryEmail %><% } else { %><%= secondaryEmail %><% } %>" name="to_email" type="email" required>
                     </div>
                     <button class="button no-margin" type="submit">Créer un compte</button>
                 </form>
