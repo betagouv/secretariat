@@ -40,10 +40,10 @@ export async function updateEndDateForUser(req, res) {
         const info = await betagouv.userInfosById(username)
         const missions = info.missions.map(mission => ({
             ...mission,
-            end: mission.end ? (new Date(mission.end)).toISOString() : undefined,
-            start: mission.start ? (new Date(mission.start)).toISOString() : undefined,
+            end: mission.end ? new Date(mission.end) : undefined,
+            start: mission.start ? new Date(mission.start) : undefined,
         }))
-        missions[missions.length-1].end = newEndDate.toISOString().split('T')[0]
+        missions[missions.length-1].end = newEndDate
         console.log(missions, newEnd)
         const changes = { missions };
         await updateAuthorGithubFile(username, changes);
