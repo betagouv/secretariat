@@ -244,7 +244,6 @@ export async function getAllTransacBlockedContacts({
     };
 
     const data = await apiInstance.getTransacBlockedContacts(opts).then(data => {
-      console.log('Transac contacts', data)
       return data.contacts
     })
     if (data.length < limit) {
@@ -272,7 +271,6 @@ export async function getAllContacts({
     };
 
     const data = await apiInstance.getContacts(opts).then(data => {
-      console.log('Transac contacts', data)
       return data.contacts
     })
     if (data.length < limit) {
