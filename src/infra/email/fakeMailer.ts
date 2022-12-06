@@ -70,6 +70,9 @@ function fakeGetAllContacts(props: { }): Promise<Contact[]> {
   return Promise.resolve([])
 }
 
+function fakeGetAllContactsFromList(props: { listId: number }): Promise<Contact[]> {
+  return Promise.resolve([])
+}
 
 // For tests only
 const getSentEmails = () => {
@@ -92,5 +95,6 @@ export {
   fakeUpdateContactEmail,
   fakeGetAllTransacBlockedContacts,
   fakeSmtpBlockedContactsEmailDelete,
-  fakeGetAllContacts
+  fakeGetAllContacts,
+  fakeGetAllContactsFromList
 }

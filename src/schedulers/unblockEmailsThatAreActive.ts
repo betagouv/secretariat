@@ -1,11 +1,11 @@
-import { getAllContacts, getAllTransacBlockedContacts, smtpBlockedContactsEmailDelete } from "@/config/email.config"
+import { getAllContactsFromList, getAllTransacBlockedContacts, smtpBlockedContactsEmailDelete } from "@/config/email.config"
 import betagouv from "@/betagouv"
 
 export async function unblockEmailsThatAreActive() {
     const startDate = new Date()
     const endDate = new Date()
     startDate.setMonth(startDate.getMonth() - 6)
-    let contacts = await getAllContacts({ offset: 0})
+    let contacts = await getAllContactsFromList({ listId: 332 }) // SIB newsletter mailing list
     contacts = contacts.filter(c => c.emailBlacklisted)
     console.log('Blacklisted contacts', contacts)
     const transacContacts = await getAllTransacBlockedContacts({ startDate, endDate, senders: [

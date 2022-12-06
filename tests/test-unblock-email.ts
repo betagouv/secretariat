@@ -11,7 +11,7 @@ describe('Unblock emails', () => {
   let getAllTransacBlockedContactsStub
   let smtpBlockedContactsEmailDeleteStub
   let getAllEmailInfosStub
-  let getAllContacts
+  let getAllContactsFromList
   beforeEach(() => {
     getAllTransacBlockedContactsStub = Sinon.stub(EmailConfig, 'getAllTransacBlockedContacts')
     getAllTransacBlockedContactsStub.returns(Promise.resolve([{
@@ -24,8 +24,8 @@ describe('Unblock emails', () => {
       'jean.francois@betagouv.ovh',
       'autremembre.actif@betagouv.ovh'
     ]))
-    getAllContacts = Sinon.stub(EmailConfig, 'getAllContacts')
-    getAllContacts.returns(Promise.resolve([{
+    getAllContactsFromList = Sinon.stub(EmailConfig, 'getAllContactsFromList')
+    getAllContactsFromList.returns(Promise.resolve([{
       email: 'autremembre.actif@betagouv.ovh',
       emailBlacklisted: true
     }]))
@@ -34,7 +34,7 @@ describe('Unblock emails', () => {
     getAllTransacBlockedContactsStub.restore()
     getAllEmailInfosStub.restore()
     smtpBlockedContactsEmailDeleteStub.restore()
-    getAllContacts.restore()
+    getAllContactsFromList.restore()
   })
   it('Should unblock emails that are active', async () => {
 

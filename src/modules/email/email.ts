@@ -293,6 +293,8 @@ export type GetAllTransacBlockedContacts = (props: { startDate: Date, endDate: D
 
 export type GetAllContacts = (props: { offset: number }) => Promise<Contact[]>
 
+export type GetAllContactsFromList = (props: { listId: number }) => Promise<Contact[]>
+
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
@@ -301,7 +303,8 @@ export interface IMailingService {
     updateContactEmail?: UpdateContactEmail
     smtpBlockedContactsEmailDelete?: SmtpBlockedContactsEmailDelete,
     getAllTransacBlockedContacts?: GetAllTransacBlockedContacts,
-    getAllContacts?: GetAllContacts
+    getAllContacts?: GetAllContacts,
+    getAllContactsFromList?: GetAllContactsFromList
 }
 
 export enum MAILING_LIST_TYPE {
