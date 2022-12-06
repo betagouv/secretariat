@@ -20,9 +20,9 @@ describe('Unblock emails', () => {
     smtpBlockedContactsEmailDeleteStub = Sinon.stub(EmailConfig, 'smtpBlockedContactsEmailDelete')
     getAllEmailInfosStub = Sinon.stub(betagouv, 'getAllEmailInfos')
     getAllEmailInfosStub.returns(Promise.resolve([
-      'membre.actif@betagouv.ovh',
-      'jean.francois@betagouv.ovh',
-      'autremembre.actif@betagouv.ovh'
+      'membre.actif',
+      'jean.francois',
+      'autremembre.actif'
     ]))
     getAllContactsFromList = Sinon.stub(EmailConfig, 'getAllContactsFromList')
     getAllContactsFromList.returns(Promise.resolve([{
