@@ -236,8 +236,8 @@ export async function getAllTransacBlockedContacts({
     const limit = 100
     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     let opts = { 
-        'startDate': startDate, //mandatory
-        'endDate': endDate, //mandatory
+        'startDate': startDate.toISOString().split('T')[0], //mandatory
+        'endDate': endDate.toISOString().split('T')[0], //mandatory
         limit,  // max 100
         'offset': offset || 0, 
         senders
