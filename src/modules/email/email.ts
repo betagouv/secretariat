@@ -256,7 +256,7 @@ export type SendCampaignEmailProps = {
 }
 
 export interface Contact {
-    emailBlacklisted: boolean,
+    emailBlacklisted?: boolean,
     email: string,
     firstname?: string,
     lastname?: string
