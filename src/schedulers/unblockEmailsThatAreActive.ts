@@ -15,7 +15,7 @@ export async function unblockEmailsThatAreActive() {
         'contact@beta.gouv.fr'
     ], offset: 0 })
     let activeEmails = await betagouv.getAllEmailInfos()
-    activeEmails.map(email => `${email}@${config.domain}`)
+    activeEmails = activeEmails.map(email => `${email}@${config.domain}`)
     const contactEmails = [...transacContacts, ...contacts].map(contact => contact.email) 
     const emailsToBeUnblocked = contactEmails.filter(email => activeEmails.includes(email))
     console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked))

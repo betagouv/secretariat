@@ -4,6 +4,7 @@ import { unblockEmailsThatAreActive } from '@/schedulers/unblockEmailsThatAreAct
 import * as EmailConfig from '@config/email.config'
 import Sinon from 'sinon';
 import betagouv from '@/betagouv';
+import config from '@/config';
 
 chai.use(chaiHttp);
 
@@ -15,7 +16,7 @@ describe('Unblock emails', () => {
   beforeEach(() => {
     getAllTransacBlockedContactsStub = Sinon.stub(EmailConfig, 'getAllTransacBlockedContacts')
     getAllTransacBlockedContactsStub.returns(Promise.resolve([{
-      email: 'membre.actif@betagouv.ovh'
+      email: `membre.actif@${config.domain}`
     }]))
     smtpBlockedContactsEmailDeleteStub = Sinon.stub(EmailConfig, 'smtpBlockedContactsEmailDelete')
     getAllEmailInfosStub = Sinon.stub(betagouv, 'getAllEmailInfos')
@@ -26,7 +27,7 @@ describe('Unblock emails', () => {
     ]))
     getAllContactsFromList = Sinon.stub(EmailConfig, 'getAllContactsFromList')
     getAllContactsFromList.returns(Promise.resolve([{
-      email: 'autremembre.actif@betagouv.ovh',
+      email: `autremembre.actif@${config.domain}`,
       emailBlacklisted: true
     }]))
   })
