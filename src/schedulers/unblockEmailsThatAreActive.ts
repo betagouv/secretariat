@@ -13,7 +13,10 @@ export async function unblockEmailsThatAreActive() {
     const activeEmails = await betagouv.getAllEmailInfos()
     const contactEmails = contacts.map(contact => contact.email) 
     const emailsToBeUnblocked = contactEmails.filter(email => activeEmails.includes(email))
+    console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked))
     for (const email in emailsToBeUnblocked) {
-        await smtpBlockedContactsEmailDelete({ email })
+        if (process.env.FEATURE_UNBLOCK_CONTACT_EMAIL) {
+            await smtpBlockedContactsEmailDelete({ email })
+        }
     }
 }
