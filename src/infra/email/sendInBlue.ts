@@ -261,14 +261,19 @@ export async function getAllTransacBlockedContacts({
 export async function getAllContacts({
     offset,
 } : {
-    offset?: number
+    offset?: number,
+    modifiedSince?: Date
 }) : Promise<Contact[]> {
     const limit = 1000
     let apiInstance = new SibApiV3Sdk.ContactsApi();
+    let modifiedSince = new Date()
+    modifiedSince.setMonth(modifiedSince.getMonth() - 3)
     let opts = { 
         limit,  // max 100
-        'offset': offset || 0, 
+        'offset': offset || 0,
+        modifiedSince
     };
+
 
     const data = await apiInstance.getContacts(opts).then(data => {
       return data.contacts
@@ -277,7 +282,8 @@ export async function getAllContacts({
         return data
     }
     const nextData = await getAllContacts({
-        offset: limit
+        offset: limit,
+        modifiedSince
     })
     return [...data, ...nextData]
 }
