@@ -215,7 +215,7 @@ export async function smtpBlockedContactsEmailDelete({
 } : { email: string }) {
     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
-    apiInstance.smtpBlockedContactsEmailDelete(email).then(function() {
+    return apiInstance.smtpBlockedContactsEmailDelete(email).then(function() {
         console.log('API called successfully.');
     }, function(error) {
         console.error(error);
@@ -424,6 +424,6 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
         removeContactsFromMailingList,
         updateContactEmail,
         smtpBlockedContactsEmailDelete,
-        getTransacBlockedContacts
+        getAllTransacBlockedContacts
     }
 }
