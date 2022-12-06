@@ -3,7 +3,8 @@ import {
   SendCampaignEmailProps,
   SendEmailProps,
   RemoveContactsFromMailingListProps,
-  UpdateContactEmailProps
+  UpdateContactEmailProps,
+  Contact
 } from "@modules/email"
 
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
@@ -57,6 +58,14 @@ function fakeUpdateContactEmail(props: UpdateContactEmailProps): Promise<null> {
   return
 }
 
+function fakeGetAllTransacBlockedContacts(props: { startDate: Date, endDate: Date, offset: number, senders: string[] }): Promise<Contact[]> {
+  return Promise.resolve([])
+}
+
+function fakeSmtpBlockedContactsEmailDelete(props: { email: string }): Promise<null> {
+  return
+}
+
 
 // For tests only
 const getSentEmails = () => {
@@ -76,5 +85,7 @@ export {
   fakeSendCampaignEmail,
   fakeAddContactsToMailingLists,
   fakeRemoveContactsFromMailingList,
-  fakeUpdateContactEmail
+  fakeUpdateContactEmail,
+  fakeGetAllTransacBlockedContacts,
+  fakeSmtpBlockedContactsEmailDelete
 }

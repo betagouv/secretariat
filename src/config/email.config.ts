@@ -1,6 +1,6 @@
 
-import { AddContactsToMailingLists, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, UpdateContactEmail } from '@modules/email'
-import { fakeAddContactsToMailingLists, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, fakeUpdateContactEmail, makeSendEmailNodemailer } from '@infra/email'
+import { AddContactsToMailingLists, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
+import { fakeAddContactsToMailingLists, fakeGetAllTransacBlockedContacts, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, fakeSmtpBlockedContactsEmailDelete, fakeUpdateContactEmail, makeSendEmailNodemailer } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
@@ -9,6 +9,8 @@ let addContactsToMailingLists: AddContactsToMailingLists = fakeAddContactsToMail
 let removeContactsFromMailingList: RemoveContactsFromMailingList = fakeRemoveContactsFromMailingList
 let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail
 let updateContactEmail: UpdateContactEmail = fakeUpdateContactEmail
+let smtpBlockedContactsEmailDelete: SmtpBlockedContactsEmailDelete = fakeSmtpBlockedContactsEmailDelete
+let getAllTransacBlockedContacts: GetAllTransacBlockedContacts = fakeGetAllTransacBlockedContacts
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -99,6 +101,8 @@ if (process.env.NODE_ENV !== 'test') {
     addContactsToMailingLists = sendInBlue.addContactsToMailingLists
     removeContactsFromMailingList = sendInBlue.removeContactsFromMailingList
     updateContactEmail = sendInBlue.updateContactEmail
+    smtpBlockedContactsEmailDelete = sendInBlue.smtpBlockedContactsEmailDelete
+    getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -112,5 +116,7 @@ export {
     addContactsToMailingLists,
     sendCampaignEmail,
     removeContactsFromMailingList,
-    updateContactEmail
+    updateContactEmail,
+    smtpBlockedContactsEmailDelete,
+    getAllTransacBlockedContacts, 
 }

@@ -286,12 +286,18 @@ export type UpdateContactEmail = (props: UpdateContactEmailProps) => Promise<nul
 
 export type RemoveContactsFromMailingList = (props: RemoveContactsFromMailingListProps) => Promise<null>
 
+export type SmtpBlockedContactsEmailDelete = (props: { email: string }) => Promise<null>
+
+export type GetAllTransacBlockedContacts = (props: { startDate: Date, endDate: Date, offset: number, senders: string[] }) => Promise<Contact[]>
+
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
     sendCampaignEmail?: SendCampaignEmail,
     updateContactEmail?: UpdateContactEmail
+    smtpBlockedContactsEmailDelete?: SmtpBlockedContactsEmailDelete,
+    getAllTransacBlockedContacts?: GetAllTransacBlockedContacts
 }
 
 export enum MAILING_LIST_TYPE {
