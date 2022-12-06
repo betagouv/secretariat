@@ -7,25 +7,31 @@ import betagouv from '@/betagouv';
 
 chai.use(chaiHttp);
 
-describe('Startup page', () => {
-  describe('GET /startups unauthenticated', () => {
-    it('should redirect to login', async () => {
-        const getAllTransacBlockedContactsStub = Sinon.stub(EmailConfig, 'getAllTransacBlockedContacts')
-        getAllTransacBlockedContactsStub.returns(Promise.resolve([{
-          email: 'membre.actif@betagouv.ovh'
-        }]))
-        const smtpBlockedContactsEmailDeleteStub = Sinon.stub(EmailConfig, 'smtpBlockedContactsEmailDelete')
-        const getAllEmailInfos = Sinon.stub(betagouv, 'getAllEmailInfos')
-        getAllEmailInfos.returns(Promise.resolve([
-          'membre.actif@betagouv.ovh',
-          'jean.francois@betagouv.ovh'
-        ]))
-        await unblockEmailsThatAreActive()
-        smtpBlockedContactsEmailDeleteStub.calledOnce.should.be.true
-        smtpBlockedContactsEmailDeleteStub.calledWith({ email: 'membre.actif@betagouv.ovh' })
-        getAllTransacBlockedContactsStub.restore()
-        getAllEmailInfos.restore()
-        smtpBlockedContactsEmailDeleteStub.restore()
-    });
+describe('Unblock emails', () => {
+  let getAllTransacBlockedContactsStub
+  let smtpBlockedContactsEmailDeleteStub
+  let getAllEmailInfosStub
+  beforeEach(() => {
+    getAllTransacBlockedContactsStub = Sinon.stub(EmailConfig, 'getAllTransacBlockedContacts')
+    getAllTransacBlockedContactsStub.returns(Promise.resolve([{
+      email: 'membre.actif@betagouv.ovh'
+    }]))
+    smtpBlockedContactsEmailDeleteStub = Sinon.stub(EmailConfig, 'smtpBlockedContactsEmailDelete')
+    getAllEmailInfosStub = Sinon.stub(betagouv, 'getAllEmailInfos')
+    getAllEmailInfosStub.returns(Promise.resolve([
+      'membre.actif@betagouv.ovh',
+      'jean.francois@betagouv.ovh'
+    ]))
+  })
+  afterEach(() => {
+    getAllTransacBlockedContactsStub.restore()
+    getAllEmailInfosStub.restore()
+    smtpBlockedContactsEmailDeleteStub.restore()
+  })
+  it('Should unblock emails that are active', async () => {
+
+      await unblockEmailsThatAreActive()
+      smtpBlockedContactsEmailDeleteStub.calledOnce.should.be.true
+      smtpBlockedContactsEmailDeleteStub.calledWith({ email: 'membre.actif@betagouv.ovh' })
   });
 })
