@@ -259,6 +259,31 @@ export async function getAllTransacBlockedContacts({
     return [...data, ...nextData]
 }
 
+export async function getAllContacts({
+    offset,
+} : {
+    offset?: number
+}) : Promise<Contact[]> {
+    const limit = 1000
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+    let opts = { 
+        limit,  // max 100
+        'offset': offset || 0, 
+    };
+
+    const data = await apiInstance.getContacts(opts).then(data => {
+      console.log('Transac contacts', data)
+      return data.contacts
+    })
+    if (data.length < limit) {
+        return data
+    }
+    const nextData = await getAllContacts({
+        offset: limit
+    })
+    return [...data, ...nextData]
+}
+
 export async function updateContactEmail({ previousEmail, newEmail } : UpdateContactEmailProps) {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
@@ -427,6 +452,7 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
         removeContactsFromMailingList,
         updateContactEmail,
         smtpBlockedContactsEmailDelete,
-        getAllTransacBlockedContacts
+        getAllTransacBlockedContacts,
+        getAllContacts
     }
 }

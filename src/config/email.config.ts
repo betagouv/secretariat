@@ -1,6 +1,6 @@
 
-import { AddContactsToMailingLists, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
-import { fakeAddContactsToMailingLists, fakeGetAllTransacBlockedContacts, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, fakeSmtpBlockedContactsEmailDelete, fakeUpdateContactEmail, makeSendEmailNodemailer } from '@infra/email'
+import { AddContactsToMailingLists, GetAllContacts, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
+import { fakeAddContactsToMailingLists, fakeGetAllTransacBlockedContacts, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, fakeSmtpBlockedContactsEmailDelete, fakeUpdateContactEmail, makeSendEmailNodemailer, fakeGetAllContacts } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
@@ -11,6 +11,7 @@ let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail
 let updateContactEmail: UpdateContactEmail = fakeUpdateContactEmail
 let smtpBlockedContactsEmailDelete: SmtpBlockedContactsEmailDelete = fakeSmtpBlockedContactsEmailDelete
 let getAllTransacBlockedContacts: GetAllTransacBlockedContacts = fakeGetAllTransacBlockedContacts
+let getAllContacts: GetAllContacts = fakeGetAllContacts
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -103,6 +104,7 @@ if (process.env.NODE_ENV !== 'test') {
     updateContactEmail = sendInBlue.updateContactEmail
     smtpBlockedContactsEmailDelete = sendInBlue.smtpBlockedContactsEmailDelete
     getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts
+    getAllContacts = sendInBlue.getAllContacts
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -119,4 +121,5 @@ export {
     updateContactEmail,
     smtpBlockedContactsEmailDelete,
     getAllTransacBlockedContacts, 
+    getAllContacts
 }

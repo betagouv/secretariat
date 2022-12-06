@@ -66,6 +66,10 @@ function fakeSmtpBlockedContactsEmailDelete(props: { email: string }): Promise<n
   return
 }
 
+function fakeGetAllContacts(props: { }): Promise<Contact[]> {
+  return Promise.resolve([])
+}
+
 
 // For tests only
 const getSentEmails = () => {
@@ -87,5 +91,6 @@ export {
   fakeRemoveContactsFromMailingList,
   fakeUpdateContactEmail,
   fakeGetAllTransacBlockedContacts,
-  fakeSmtpBlockedContactsEmailDelete
+  fakeSmtpBlockedContactsEmailDelete,
+  fakeGetAllContacts
 }
