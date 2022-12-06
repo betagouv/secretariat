@@ -7,6 +7,7 @@ export async function unblockEmailsThatAreActive() {
     startDate.setMonth(startDate.getMonth() - 6)
     let contacts = await getAllContacts({ offset: 0})
     contacts = contacts.filter(c => c.emailBlacklisted)
+    console.log('Blacklisted contacts', contacts)
     const transacContacts = await getAllTransacBlockedContacts({ startDate, endDate, senders: [
         'espace-membre@beta.gouv.fr',
         'espace-membre@incubateur.net',
