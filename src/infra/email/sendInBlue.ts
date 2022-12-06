@@ -214,7 +214,7 @@ export async function smtpBlockedContactsEmailDelete({
     email
 } : { email: string }) {
     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-
+    console.log(`Unblocked email ${email}`)
     return apiInstance.smtpBlockedContactsEmailDelete(email).then(function() {
         console.log('API called successfully.');
     }, function(error) {
