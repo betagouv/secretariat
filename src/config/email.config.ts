@@ -1,6 +1,17 @@
 
-import { AddContactsToMailingLists, GetAllContacts, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
-import { fakeAddContactsToMailingLists, fakeGetAllTransacBlockedContacts, fakeRemoveContactsFromMailingList, fakeSendCampaignEmail, fakeSendEmail, fakeSmtpBlockedContactsEmailDelete, fakeUpdateContactEmail, makeSendEmailNodemailer, fakeGetAllContacts } from '@infra/email'
+import { AddContactsToMailingLists, GetAllContacts, GetAllContactsFromList, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
+import {
+  fakeAddContactsToMailingLists,
+  fakeGetAllTransacBlockedContacts,
+  fakeRemoveContactsFromMailingList,
+  fakeSendCampaignEmail,
+  fakeSendEmail,
+  fakeSmtpBlockedContactsEmailDelete,
+  fakeUpdateContactEmail,
+  makeSendEmailNodemailer,
+  fakeGetAllContacts,
+  fakeGetAllContactsFromList
+} from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
 
@@ -12,6 +23,7 @@ let updateContactEmail: UpdateContactEmail = fakeUpdateContactEmail
 let smtpBlockedContactsEmailDelete: SmtpBlockedContactsEmailDelete = fakeSmtpBlockedContactsEmailDelete
 let getAllTransacBlockedContacts: GetAllTransacBlockedContacts = fakeGetAllTransacBlockedContacts
 let getAllContacts: GetAllContacts = fakeGetAllContacts
+let getAllContactsFromList: GetAllContactsFromList = fakeGetAllContactsFromList
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -105,6 +117,7 @@ if (process.env.NODE_ENV !== 'test') {
     smtpBlockedContactsEmailDelete = sendInBlue.smtpBlockedContactsEmailDelete
     getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts
     getAllContacts = sendInBlue.getAllContacts
+    getAllContactsFromList = sendInBlue.getAllContactsFromList
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -121,5 +134,6 @@ export {
     updateContactEmail,
     smtpBlockedContactsEmailDelete,
     getAllTransacBlockedContacts, 
-    getAllContacts
+    getAllContacts,
+    getAllContactsFromList
 }
