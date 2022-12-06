@@ -256,6 +256,7 @@ export type SendCampaignEmailProps = {
 }
 
 export interface Contact {
+    emailBlacklisted: boolean,
     email: string,
     firstname?: string,
     lastname?: string
@@ -290,6 +291,8 @@ export type SmtpBlockedContactsEmailDelete = (props: { email: string }) => Promi
 
 export type GetAllTransacBlockedContacts = (props: { startDate: Date, endDate: Date, offset: number, senders: string[] }) => Promise<Contact[]>
 
+export type GetAllContacts = (props: { offset: number }) => Promise<Contact[]>
+
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
@@ -297,7 +300,8 @@ export interface IMailingService {
     sendCampaignEmail?: SendCampaignEmail,
     updateContactEmail?: UpdateContactEmail
     smtpBlockedContactsEmailDelete?: SmtpBlockedContactsEmailDelete,
-    getAllTransacBlockedContacts?: GetAllTransacBlockedContacts
+    getAllTransacBlockedContacts?: GetAllTransacBlockedContacts,
+    getAllContacts?: GetAllContacts
 }
 
 export enum MAILING_LIST_TYPE {
