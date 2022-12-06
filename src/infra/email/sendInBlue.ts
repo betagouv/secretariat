@@ -457,6 +457,7 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
         updateContactEmail,
         smtpBlockedContactsEmailDelete,
         getAllTransacBlockedContacts,
-        getAllContacts
+        getAllContacts,
+        getAllContactsFromList
     }
 }

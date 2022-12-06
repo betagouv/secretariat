@@ -6,7 +6,7 @@ export async function unblockEmailsThatAreActive() {
     const startDate = new Date()
     const endDate = new Date()
     startDate.setMonth(startDate.getMonth() - 6)
-    let contacts = await getAllContactsFromList({ listId: MAILING_LIST_TYPE.NEWSLETTER })
+    let contacts = await getAllContactsFromList({ listId: 332 }) // SIB newsletter mailing list
     contacts = contacts.filter(c => c.emailBlacklisted)
     console.log('Blacklisted contacts', contacts)
     const transacContacts = await getAllTransacBlockedContacts({ startDate, endDate, senders: [
