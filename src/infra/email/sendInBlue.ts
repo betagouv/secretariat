@@ -253,7 +253,8 @@ export async function getAllTransacBlockedContacts({
         startDate,
         endDate,
         senders,
-        offset: limit
+        offset: limit,
+        limit
     })
     return [...data, ...nextData]
 }
@@ -283,6 +284,7 @@ export async function getAllContacts({
     }
     const nextData = await getAllContacts({
         offset: limit,
+        limit,
         modifiedSince
     })
     return [...data, ...nextData]
