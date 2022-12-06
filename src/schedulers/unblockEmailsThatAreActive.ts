@@ -1,6 +1,5 @@
 import { getAllContactsFromList, getAllTransacBlockedContacts, smtpBlockedContactsEmailDelete } from "@/config/email.config"
 import betagouv from "@/betagouv"
-import { MAILING_LIST_TYPE } from "@/modules/email"
 
 export async function unblockEmailsThatAreActive() {
     const startDate = new Date()
