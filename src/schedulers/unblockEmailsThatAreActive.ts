@@ -1,5 +1,6 @@
 import { getAllContactsFromList, getAllTransacBlockedContacts, smtpBlockedContactsEmailDelete } from "@/config/email.config"
 import betagouv from "@/betagouv"
+import config from "@/config"
 
 export async function unblockEmailsThatAreActive() {
     const startDate = new Date()
@@ -13,7 +14,8 @@ export async function unblockEmailsThatAreActive() {
         'espace-membre@incubateur.net',
         'contact@beta.gouv.fr'
     ], offset: 0 })
-    const activeEmails = await betagouv.getAllEmailInfos()
+    let activeEmails = await betagouv.getAllEmailInfos()
+    activeEmails = activeEmails.map(email => `${email}@${config.domain}`)
     const contactEmails = [...transacContacts, ...contacts].map(contact => contact.email) 
     const emailsToBeUnblocked = contactEmails.filter(email => activeEmails.includes(email))
     console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked))
