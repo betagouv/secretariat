@@ -1,6 +1,6 @@
 
 import { objectArrayToCSV } from '@/controllers/utils'
-import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps, UpdateContactEmailProps } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps, UpdateContactEmailProps, Contact } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -210,6 +210,52 @@ export async function importContactsToMailingLists({
     return
 }
 
+export async function smtpBlockedContactsEmailDelete({
+    email
+} : { email: string }) {
+    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+    apiInstance.smtpBlockedContactsEmailDelete(email).then(function() {
+        console.log('API called successfully.');
+    }, function(error) {
+        console.error(error);
+    });
+}
+
+export async function getAllTransacBlockedContacts({
+    startDate,
+    endDate,
+    offset,
+    senders
+} : {
+    startDate: Date,
+    endDate: Date,
+    senders: string[],
+    offset: number
+}) : Promise<Contact[]> {
+    const limit = 100
+    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+    let opts = { 
+        'startDate': startDate, //mandatory
+        'endDate': endDate, //mandatory
+        limit,  // max 100
+        'offset': offset || 0, 
+        senders
+    };
+
+    const data = await apiInstance.getTransacBlockedContacts(opts).then(data => data.contacts)
+    if (data.length < limit) {
+        return data
+    }
+    const nextData = await getAllTransacBlockedContacts({
+        startDate,
+        endDate,
+        senders,
+        offset: limit
+    })
+    return [...data, ...nextData]
+}
+
 export async function updateContactEmail({ previousEmail, newEmail } : UpdateContactEmailProps) {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
@@ -376,6 +422,8 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
         sendCampaignEmail: makeSendCampaignEmail({ MAIL_SENDER, htmlBuilder }),
         addContactsToMailingLists,
         removeContactsFromMailingList,
-        updateContactEmail
+        updateContactEmail,
+        smtpBlockedContactsEmailDelete,
+        getTransacBlockedContacts
     }
 }
