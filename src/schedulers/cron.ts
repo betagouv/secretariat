@@ -181,7 +181,7 @@ const jobs: Job[] = [
     cronTime: '0 0 0 * * 1', // every week a 8:00 on monday
     onTick: unblockEmailsThatAreActive,
     isActive: true,
-    name: 'Post event of the week from betagouv calendar',
+    name: 'Unblock blacklisted email',
   },
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
