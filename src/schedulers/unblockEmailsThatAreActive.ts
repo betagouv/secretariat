@@ -19,7 +19,7 @@ export async function unblockEmailsThatAreActive() {
     const contactEmails = [...transacContacts, ...contacts].map(contact => contact.email) 
     const emailsToBeUnblocked = contactEmails.filter(email => activeEmails.includes(email))
     console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked))
-    for (const email in emailsToBeUnblocked) {
+    for (const email of emailsToBeUnblocked) {
         if (process.env.FEATURE_UNBLOCK_CONTACT_EMAIL || process.env.NODE_ENV==='test') {
             await smtpBlockedContactsEmailDelete({ email })
         }
