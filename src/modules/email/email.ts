@@ -295,12 +295,15 @@ export type GetAllContacts = (props: { offset: number }) => Promise<Contact[]>
 
 export type GetAllContactsFromList = (props: { listId: number }) => Promise<Contact[]>
 
+export type UnblacklistContactEmail = (props: { email: string }) => Promise<void>
+
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
     sendCampaignEmail?: SendCampaignEmail,
-    updateContactEmail?: UpdateContactEmail
+    updateContactEmail?: UpdateContactEmail,
+    unblacklistContactEmail?: UnblacklistContactEmail,
     smtpBlockedContactsEmailDelete?: SmtpBlockedContactsEmailDelete,
     getAllTransacBlockedContacts?: GetAllTransacBlockedContacts,
     getAllContacts?: GetAllContacts,
