@@ -228,7 +228,7 @@ export async function unblacklistContactEmail({
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
     let updateContact = new SibApiV3Sdk.UpdateContact(); 
-    updateContact.emailBlacklisted = true
+    updateContact.emailBlacklisted = false
 
     return apiInstance.updateContact(email, updateContact).then(function() {
         console.log('API called successfully.');
