@@ -1,5 +1,17 @@
 
-import { AddContactsToMailingLists, GetAllContacts, GetAllContactsFromList, GetAllTransacBlockedContacts, IMailingService, RemoveContactsFromMailingList, SendCampaignEmail, SendEmail, SmtpBlockedContactsEmailDelete, UpdateContactEmail } from '@modules/email'
+import {
+  AddContactsToMailingLists,
+  GetAllContacts,
+  GetAllContactsFromList,
+  GetAllTransacBlockedContacts,
+  IMailingService,
+  RemoveContactsFromMailingList,
+  SendCampaignEmail,
+  SendEmail,
+  SmtpBlockedContactsEmailDelete,
+  UpdateContactEmail,
+  UnblacklistContactEmail
+} from '@modules/email'
 import {
   fakeAddContactsToMailingLists,
   fakeGetAllTransacBlockedContacts,
@@ -10,7 +22,8 @@ import {
   fakeUpdateContactEmail,
   makeSendEmailNodemailer,
   fakeGetAllContacts,
-  fakeGetAllContactsFromList
+  fakeGetAllContactsFromList,
+  fakeUnblacklistContactEmail
 } from '@infra/email'
 import { makeSendinblue } from '@infra/email/sendInBlue'
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder'
@@ -24,6 +37,7 @@ let smtpBlockedContactsEmailDelete: SmtpBlockedContactsEmailDelete = fakeSmtpBlo
 let getAllTransacBlockedContacts: GetAllTransacBlockedContacts = fakeGetAllTransacBlockedContacts
 let getAllContacts: GetAllContacts = fakeGetAllContacts
 let getAllContactsFromList: GetAllContactsFromList = fakeGetAllContactsFromList
+let unblacklistContactEmail: UnblacklistContactEmail = fakeUnblacklistContactEmail
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -118,6 +132,7 @@ if (process.env.NODE_ENV !== 'test') {
     getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts
     getAllContacts = sendInBlue.getAllContacts
     getAllContactsFromList = sendInBlue.getAllContactsFromList
+    unblacklistContactEmail = sendInBlue.unblacklistContactEmail
   } catch (e) {
     console.error(e)
     process.exit(1)
@@ -135,5 +150,6 @@ export {
     smtpBlockedContactsEmailDelete,
     getAllTransacBlockedContacts, 
     getAllContacts,
-    getAllContactsFromList
+    getAllContactsFromList,
+    unblacklistContactEmail
 }

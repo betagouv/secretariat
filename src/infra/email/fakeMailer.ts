@@ -10,6 +10,10 @@ import {
 const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
 const sentCampaignEmails: Array<SendCampaignEmailProps> = [] // For testing purposes only
 
+function fakeUnblacklistContactEmail(props: { email: string }) : Promise<null> {
+  return
+}
+
 function fakeSendEmail(props: SendEmailProps): Promise<null> {
   if (process.env.NODE_ENV === 'test') {
     // Register the sent email but don't send it for real
@@ -96,5 +100,6 @@ export {
   fakeGetAllTransacBlockedContacts,
   fakeSmtpBlockedContactsEmailDelete,
   fakeGetAllContacts,
-  fakeGetAllContactsFromList
+  fakeGetAllContactsFromList,
+  fakeUnblacklistContactEmail
 }

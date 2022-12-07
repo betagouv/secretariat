@@ -222,6 +222,21 @@ export async function smtpBlockedContactsEmailDelete({
     });
 }
 
+export async function unblacklistContactEmail({
+    email
+} : { email: string }) : Promise<null> {
+    let apiInstance = new SibApiV3Sdk.ContactsApi();
+
+    let updateContact = new SibApiV3Sdk.UpdateContact(); 
+    updateContact.emailBlacklisted = true
+
+    return apiInstance.updateContact(email, updateContact).then(function() {
+        console.log('API called successfully.');
+    }, function(error) {
+        console.error(error);
+    });
+}
+
 export async function getAllTransacBlockedContacts({
     startDate,
     endDate,
@@ -455,6 +470,7 @@ export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
         addContactsToMailingLists,
         removeContactsFromMailingList,
         updateContactEmail,
+        unblacklistContactEmail,
         smtpBlockedContactsEmailDelete,
         getAllTransacBlockedContacts,
         getAllContacts,

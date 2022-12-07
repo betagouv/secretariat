@@ -1,4 +1,4 @@
-import { getAllContactsFromList, getAllTransacBlockedContacts, smtpBlockedContactsEmailDelete } from "@/config/email.config"
+import { getAllContactsFromList, getAllTransacBlockedContacts, unblacklistContactEmail } from "@/config/email.config"
 import betagouv from "@/betagouv"
 import config from "@/config"
 
@@ -21,7 +21,7 @@ export async function unblockEmailsThatAreActive() {
     console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked))
     for (const email of emailsToBeUnblocked) {
         if (process.env.FEATURE_UNBLOCK_CONTACT_EMAIL || process.env.NODE_ENV==='test') {
-            await smtpBlockedContactsEmailDelete({ email })
+            await unblacklistContactEmail({ email })
         }
     }
 }

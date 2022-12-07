@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 
 describe('Unblock emails', () => {
   let getAllTransacBlockedContactsStub
-  let smtpBlockedContactsEmailDeleteStub
+  let unblacklistContactEmailStub
   let getAllEmailInfosStub
   let getAllContactsFromList
   beforeEach(() => {
@@ -18,7 +18,7 @@ describe('Unblock emails', () => {
     getAllTransacBlockedContactsStub.returns(Promise.resolve([{
       email: `membre.actif@${config.domain}`
     }]))
-    smtpBlockedContactsEmailDeleteStub = Sinon.stub(EmailConfig, 'smtpBlockedContactsEmailDelete')
+    unblacklistContactEmailStub = Sinon.stub(EmailConfig, 'unblacklistContactEmail')
     getAllEmailInfosStub = Sinon.stub(betagouv, 'getAllEmailInfos')
     getAllEmailInfosStub.returns(Promise.resolve([
       'membre.actif',
@@ -34,13 +34,13 @@ describe('Unblock emails', () => {
   afterEach(() => {
     getAllTransacBlockedContactsStub.restore()
     getAllEmailInfosStub.restore()
-    smtpBlockedContactsEmailDeleteStub.restore()
+    unblacklistContactEmailStub.restore()
     getAllContactsFromList.restore()
   })
   it('Should unblock emails that are active', async () => {
 
       await unblockEmailsThatAreActive()
-      smtpBlockedContactsEmailDeleteStub.calledTwice.should.be.true
-      smtpBlockedContactsEmailDeleteStub.calledWith({ email: 'membre.actif@betagouv.ovh' })
+      unblacklistContactEmailStub.calledTwice.should.be.true
+      unblacklistContactEmailStub.calledWith({ email: 'membre.actif@betagouv.ovh' })
   });
 })
