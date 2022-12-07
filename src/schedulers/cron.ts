@@ -46,6 +46,7 @@ import EventBus from '@/infra/eventBus/eventBus';
 import { removeBetaAndParnersUsersFromCommunityTeam, sendReminderToUserAtDays } from './mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 import { createMailingListForStartups } from './startups/createMailingListForStartups';
 import { pullRequestStateMachine } from './onboarding/pullRequestStateMachine';
+import { unblockEmailsThatAreActive } from './unblockEmailsThatAreActive';
 
 interface Job {
   cronTime: string;
@@ -141,7 +142,7 @@ const pullRequestJobs: Job[] = [
   },
 ]
 
-const jobs: Job[] = [
+const newsletterJobs = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 8 * * 1', // every week a 8:00 on monday
     onTick: () => newsletterReminder('FIRST_REMINDER'),
@@ -165,6 +166,22 @@ const jobs: Job[] = [
     onTick: sendNewsletterAndCreateNewOne,
     isActive: config.FEATURE_NEWSLETTER,
     name: 'sendNewsletterAndCreateNewOneJob',
+  }
+]
+
+const jobs: Job[] = [
+  ...newsletterJobs,
+  ...marrainageJobs,
+  ...emailJobs,
+  ...mattermostJobs,
+  ...startupJobs,
+  ...metricJobs,
+  ...pullRequestJobs,
+  {
+    cronTime: '0 0 0 * * 1', // every week a 8:00 on monday
+    onTick: unblockEmailsThatAreActive,
+    isActive: true,
+    name: 'Post event of the week from betagouv calendar',
   },
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
@@ -172,13 +189,6 @@ const jobs: Job[] = [
     isActive: true,
     name: 'Post event of the week from betagouv calendar',
   },
-  //
-  ...marrainageJobs,
-  ...emailJobs,
-  ...mattermostJobs,
-  ...startupJobs,
-  ...metricJobs,
-  ...pullRequestJobs,
   {
     cronTime: '* */8 * * * *',
     onTick: setEmailAddressesActive,
