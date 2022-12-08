@@ -103,7 +103,7 @@ export async function updateAuthorGithubFile(username, changes) {
             }
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
-            }) + '\n---\n' + yaml.dump(doc1)
+            }) + '\n---\n' + yaml.dump(doc1 ? doc1 : '')
             return utils.createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {
