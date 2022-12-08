@@ -47,6 +47,7 @@ import { removeBetaAndParnersUsersFromCommunityTeam, sendReminderToUserAtDays } 
 import { createMailingListForStartups } from './startups/createMailingListForStartups';
 import { pullRequestStateMachine } from './onboarding/pullRequestStateMachine';
 import { unblockEmailsThatAreActive } from './unblockEmailsThatAreActive';
+import { recreateEmailIfUserActive } from './recreateEmailIfUserActive';
 
 interface Job {
   cronTime: string;
@@ -190,7 +191,13 @@ const jobs: Job[] = [
     name: 'Post event of the week from betagouv calendar',
   },
   {
-    cronTime: '* */8 * * * *',
+    cronTime: '* */8 * * * *', 
+    onTick: recreateEmailIfUserActive,
+    isActive: true,
+    name: 'Recreate email for user active again',
+  },
+  {
+    cronTime: '* */4 * * * *',
     onTick: setEmailAddressesActive,
     isActive: true,
     name: 'setEmailAddressesActive'
