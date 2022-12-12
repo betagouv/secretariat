@@ -18,7 +18,7 @@ enum Phase {
 }
 
 async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
-  if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase && process.env.FEATURE_SEND_EMAIL_BY_PHASE) {
+  if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
     const startupInfos = await betagouv.startupInfosById(newStartupInfo.id)
     console.log(startupInfos.active_members)
     if (newStartupInfo.current_phase === Phase.PHASE_CONSTRUCTION) {
