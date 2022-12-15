@@ -24,7 +24,8 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_NEWSLETTER: './src/views/templates/emails/newsletter.ejs',
     EMAIL_NEW_MEMBER_PR: './src/views/templates/emails/newMemberPR.ejs',
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: './src/views/templates/emails/startupEnterConstructionPhase.ejs',
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: './src/views/templates/emails/startupEnterAccelerationPhase.ejs'
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: './src/views/templates/emails/startupEnterAccelerationPhase.ejs',
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: null
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -53,12 +54,13 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
     EMAIL_NEW_MEMBER_PR: ({ name }: EmailNewMemberPR['variables']) => {
         return `${name} vient de créer sa fiche Github`
     },
-    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE:  ({ startup }: EmailStartupEnterConstructionPhase['variables']) => {
+    EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: ({ startup }: EmailStartupEnterConstructionPhase['variables']) => {
         return `${startup} passe en construction : les bonnes pratiques`
     },
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE:  ({startup }: EmailStartupEnterAccelerationPhase['variables']) => {
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: ({ startup }: EmailStartupEnterAccelerationPhase['variables']) => {
         return `${startup} passe en acceleration : les bonnes pratiques`
     },
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: ''
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -82,7 +84,8 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_NEWSLETTER: true,
     EMAIL_NEW_MEMBER_PR: true,
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: true,
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: true
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: true,
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: false
 }
 
 const htmlBuilder : HtmlBuilderType = {
