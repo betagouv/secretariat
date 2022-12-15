@@ -24,7 +24,8 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     EMAIL_NEWSLETTER: 0,
     EMAIL_NEW_MEMBER_PR: 0,
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: 0,
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: 0
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: 0,
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: 929,
 }
 
 type SendEmailFromSendinblueDeps = {
@@ -116,7 +117,8 @@ export const makeSendCampaignEmail = ({
             variables,
             htmlContent,
             campaignName,
-            type
+            type,
+            forceTemplate
         } = props
 
         let templateId: number
@@ -128,7 +130,7 @@ export const makeSendCampaignEmail = ({
                 html = `${html}<a href="{{ unsubscribe }}">Click here to unsubscribe</a>`
             }
         } else {
-            if (!htmlBuilder) {
+            if (!htmlBuilder || forceTemplate) {
                 templateId = TEMPLATE_ID_BY_TYPE[type]
                 if (!templateId) {
                     return Promise.reject(new Error('Cannot find template for type ' + type))

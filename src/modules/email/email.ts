@@ -23,7 +23,8 @@ export enum EMAIL_TYPES {
     EMAIL_NEWSLETTER = "EMAIL_NEWSLETTER",
     EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR",
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE = "EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE",
-    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE"
+    EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE"
 }
 
 export type SubjectFunction = {
@@ -208,6 +209,13 @@ export type EmailStartupEnterAccelerationPhase = {
     }
 }
 
+export type EmailStartupEnterInvestigationPhase = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE,
+    variables: {
+        startup: string
+    }
+}
+
 export type EmailVariants =
  | EmailMarrainageNewcomer
  | EmailMarrainageOnboarder
@@ -227,6 +235,7 @@ export type EmailVariants =
  | EmailNewMemberPR
  | EmailStartupEnterConstructionPhase
  | EmailStartupEnterAccelerationPhase
+ | EmailStartupEnterInvestigationPhase
 
 export type EmailProps = BaseEmail & EmailVariants
 
@@ -252,7 +261,8 @@ export type SendCampaignEmailProps = {
     headers?: Record<string, string|number>,
     htmlContent?: string,
     type: MAILING_LIST_TYPE,
-    campaignName: string
+    campaignName: string,
+    forceTemplate?: boolean
 }
 
 export interface Contact {
