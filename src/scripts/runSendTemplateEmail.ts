@@ -2,8 +2,8 @@ import config from "@/config"
 import { sendEmail } from "@/config/email.config"
 import { EMAIL_TYPES } from "@/modules/email"
 
-function sendTemplateEmail() {
-    sendEmail({
+const sendTemplateEmail = async () => {
+    await sendEmail({
         toEmail: [config.senderEmail],
         type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE,
         forceTemplate: true,
@@ -12,4 +12,6 @@ function sendTemplateEmail() {
         }
     })
 }
-sendTemplateEmail()
+sendTemplateEmail().then(() => {
+    console.log('Done')
+})
