@@ -243,6 +243,7 @@ export type SendEmailProps = {
     subject?: string
     type: EmailProps['type']
     variables: EmailProps['variables'],
+    forceTemplate?: boolean,
     toEmail: string[],
     extraParams?: Record<string, string>, 
     attachments?: any[],
@@ -262,7 +263,6 @@ export type SendCampaignEmailProps = {
     htmlContent?: string,
     type: MAILING_LIST_TYPE,
     campaignName: string,
-    forceTemplate?: boolean
 }
 
 export interface Contact {

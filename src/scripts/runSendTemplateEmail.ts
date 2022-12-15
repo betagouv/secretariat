@@ -6,6 +6,7 @@ function sendTemplateEmail() {
     sendEmail({
         toEmail: [config.senderEmail],
         type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE,
+        forceTemplate: true,
         variables: {
             startup: 'Ma.startup'
         }
