@@ -440,7 +440,7 @@ export const makeSendEmail = ({
           )),
           bcc: bcc ? bcc.map(email => ({
             "email": email
-          })) : [],
+          })) : null,
           params: variables,
           templateId,
           htmlContent: html,
