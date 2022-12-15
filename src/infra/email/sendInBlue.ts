@@ -406,7 +406,8 @@ export const makeSendEmail = ({
             variables = {},
             replyTo,
             bcc,
-            htmlContent
+            htmlContent,
+            forceTemplate
         } = props
     
         let templateId: number
@@ -414,7 +415,7 @@ export const makeSendEmail = ({
         if (htmlContent) {
             html = htmlContent
         } else {
-            if (!htmlBuilder) {
+            if (!htmlBuilder || forceTemplate) {
                 templateId = TEMPLATE_ID_BY_TYPE[type]
                 if (!templateId) {
                     return Promise.reject(new Error('Cannot find template for type ' + type))
