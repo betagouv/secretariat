@@ -438,7 +438,7 @@ export const makeSendEmail = ({
                  "email": email,
               }
           )),
-          bcc: bcc.map(email => ({
+          bcc: bcc ? [] : bcc.map(email => ({
             "email": email
           })),
           params: variables,
