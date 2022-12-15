@@ -427,29 +427,34 @@ export const makeSendEmail = ({
                 });
             }
         }
+        const transacParams = {
+            sender: {
+                name: "Espace Membre BetaGouv",
+                email: MAIL_SENDER
+            },
+            to: toEmail.map(email => (
+                {  
+                    "email": email,
+                }
+            )),
+            params: variables,
+            templateId,
+            htmlContent: html,
+            replyTo,
+            subject: subject,
+        }
+
+        if (bcc) {
+            transacParams['bcc'] = bcc.map(email => ({
+                "email": email
+            }))
+        }
     
         return apiInstance.sendTransacEmail({
-          sender: {
-              name: "Espace Membre BetaGouv",
-              email: MAIL_SENDER
-          },
-          to: toEmail.map(email => (
-              {  
-                 "email": email,
-              }
-          )),
-          bcc: bcc ? bcc.map(email => ({
-            "email": email
-          })) : undefined,
-          params: variables,
-          templateId,
-          htmlContent: html,
-          replyTo,
-          subject: subject,
+            ...transacParams
         })
     }
 }
-
 
 export const makeSendinblue = (deps: SendinblueDeps): IMailingService => {
 
