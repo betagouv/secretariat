@@ -9,9 +9,9 @@ const sendTemplateEmail = async () => {
         forceTemplate: true,
         variables: {
             startup: 'Ma.startup',
-            isEmailBetaAsked: true,
+            isEmailBetaAsked: false,
             name: "Jean",
-            prUrl: 'http://localhost.com'
+            prUrl: 'http://beta.gouv.fr'
         }
     })
 }
