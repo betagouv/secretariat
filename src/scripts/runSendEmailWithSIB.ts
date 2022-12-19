@@ -1,10 +1,16 @@
 import { makeSendinblue } from "@/infra/email/sendInBlue";
-import { EMAIL_TYPES } from "@/modules/email";
+import { EmailVariants, EMAIL_TYPES } from "@/modules/email";
 
 const { sendEmail } = makeSendinblue({
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
     MAIL_SENDER: "espace-membre@beta.gouv.fr",
     htmlBuilder: {
+        renderContentForType(params: EmailVariants) {
+            throw new Error("Function not implemented.");
+        },
+        renderSubjectForType(params: EmailVariants) {
+            throw new Error("Function not implemented.");
+        },
         renderFile: function (url: string, params: any): Promise<string> {
             throw new Error("Function not implemented.");
         },
