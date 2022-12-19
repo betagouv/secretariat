@@ -2,6 +2,8 @@ import axios from "axios"
 import config from "@config"
 
 export const postToHook = async (req, res) => {
+    console.log(req.params)
+    console.log(req.body)
     if (req.params.hookId === config.CHATWOOT_ID) {
       let conversationId = ''
       try {
