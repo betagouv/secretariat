@@ -428,15 +428,13 @@ export const makeSendEmail = ({
                     return Promise.reject(new Error('Cannot find template for type ' + type))
                 }
             } else {
+                const  paramsToRenderContent = {
+                    variables,
+                    type
+                } as EmailVariants
                 // const templateURL = htmlBuilder.templates[type]
-                html = await htmlBuilder.renderContentForType({
-                    type,
-                    variables
-                })
-                subject = props.subject || htmlBuilder.renderSubjectForType({
-                    type,
-                    variables
-                })
+                html = await htmlBuilder.renderContentForType(paramsToRenderContent)
+                subject = props.subject || htmlBuilder.renderSubjectForType(paramsToRenderContent)
             }
         }
         const transacParams = {
