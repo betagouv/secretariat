@@ -430,10 +430,6 @@ export const makeSendEmail = ({
                 });
             }
         }
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
         const transacParams = {
             sender: {
                 name: "Espace Membre BetaGouv",
