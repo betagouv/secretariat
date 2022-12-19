@@ -5,10 +5,13 @@ import { EMAIL_TYPES } from "@/modules/email"
 const sendTemplateEmail = async () => {
     await sendEmail({
         toEmail: [config.senderEmail],
-        type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE,
+        type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
         forceTemplate: true,
         variables: {
-            startup: 'Ma.startup'
+            startup: 'Ma.startup',
+            isEmailBetaAsked: true,
+            name: "Jean",
+            prUrl: 'http://localhost.com'
         }
     })
 }
