@@ -1,7 +1,7 @@
 
 import config from '@/config'
 import { objectArrayToCSV } from '@/controllers/utils'
-import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps, UpdateContactEmailProps, Contact } from '@modules/email'
+import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps, UpdateContactEmailProps, Contact, EMAIL_TYPES, EmailVariants } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
@@ -35,6 +35,8 @@ type SendEmailFromSendinblueDeps = {
     MAIL_SENDER: string,
     htmlBuilder: {
         renderFile (url: string, params: any): Promise<string>,
+        renderContentForType (params: EmailVariants): Promise<string>,
+        renderSubjectForType (params: EmailVariants): string,
         templates: Record<EmailProps['type'], string>
     } | undefined
 }
@@ -51,6 +53,8 @@ type SendinblueDeps = {
     MAIL_SENDER: string,
     htmlBuilder: {
         renderFile (url: string, params: any): Promise<string>,
+        renderContentForType (params: EmailVariants): Promise<string>,
+        renderSubjectForType (params: EmailVariants): string,
         templates: Record<EmailProps['type'], string>
     } | undefined
 }
@@ -402,7 +406,6 @@ export const makeSendEmail = ({
 
     return async function sendEmailFromSendinblue(props: SendEmailProps): Promise<null> {
         const {
-            subject,
             type,
             toEmail,
             variables = {},
@@ -414,6 +417,7 @@ export const makeSendEmail = ({
     
         let templateId: number
         let html: string
+        let subject
         console.log(`Will send email from SIB : ${forceTemplate}`)
         if (htmlContent) {
             html = htmlContent
@@ -424,10 +428,15 @@ export const makeSendEmail = ({
                     return Promise.reject(new Error('Cannot find template for type ' + type))
                 }
             } else {
-                const templateURL = htmlBuilder.templates[type]
-                html = await htmlBuilder.renderFile(templateURL, {
-                ...variables
-                });
+                // const templateURL = htmlBuilder.templates[type]
+                html = await htmlBuilder.renderContentForType({
+                    type,
+                    variables
+                })
+                subject = props.subject || htmlBuilder.renderSubjectForType({
+                    type,
+                    variables
+                })
             }
         }
         const transacParams = {
