@@ -1,4 +1,5 @@
 
+import config from '@/config'
 import { objectArrayToCSV } from '@/controllers/utils'
 import { EmailProps, SendEmail, SendEmailProps, AddContactsToMailingListsProps, MAILING_LIST_TYPE, SendCampaignEmailProps, IMailingService, SendCampaignEmail, RemoveContactsFromMailingListProps, UpdateContactEmailProps, Contact } from '@modules/email'
 import SibApiV3Sdk from 'sib-api-v3-sdk'
@@ -39,8 +40,8 @@ type SendEmailFromSendinblueDeps = {
 }
 
 const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
-    NEWSLETTER: 332,
-    ONBOARDING: 333,
+    NEWSLETTER: config.MAILING_LIST_NEWSLETTER || 332,
+    ONBOARDING: config.MAILING_LIST_ONBOARDING || 333,
     TEST: 336,
 } 
 
@@ -198,6 +199,7 @@ export async function importContactsToMailingLists({
     }))
     requestContactImport.fileBody = objectArrayToCSV(sibContacts)
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
+    console.log('SIB call : add email to list', listIds)
     requestContactImport.listIds = listIds;
     requestContactImport.emailBlacklist = false;
     requestContactImport.smsBlacklist = false;
@@ -412,6 +414,7 @@ export const makeSendEmail = ({
     
         let templateId: number
         let html: string
+        console.log(`Will send email from SIB : ${forceTemplate}`)
         if (htmlContent) {
             html = htmlContent
         } else {
@@ -427,6 +430,10 @@ export const makeSendEmail = ({
                 });
             }
         }
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
         const transacParams = {
             sender: {
                 name: "Espace Membre BetaGouv",

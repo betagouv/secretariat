@@ -26,6 +26,7 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
           type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+          forceTemplate: true,
           variables: {
             startup: newStartupInfo.id
           }
@@ -36,6 +37,7 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
           type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+          forceTemplate: true,
           variables: {
             startup: newStartupInfo.id
           }
