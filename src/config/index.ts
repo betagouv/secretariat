@@ -131,6 +131,7 @@ export default {
   FEATURE_USE_NEW_MARRAINAGE: process.env.FEATURE_USE_NEW_MARRAINAGE === 'true',
   FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === 'true',
   MARRAINAGE_ONBOARDER_LIST: process.env.MARRAINAGE_ONBOARDER_LIST ? process.env.MARRAINAGE_ONBOARDER_LIST.split(',') : undefined,
+  SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
   REDIS_URL: process.env.REDIS_URL
