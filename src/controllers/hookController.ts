@@ -1,10 +1,28 @@
 import axios from "axios"
 import config from "@config"
 
+type 
+
+interface ISibWebhookBody {
+  event: 'soft_bounce' | 'hard_bounce' | 'blocked' | 'invalid_email' | 'error' | 'unsubscribed',
+  email: string,
+  id: number,
+  timestamp: number,
+  ts_event: number
+  date: string,
+  'message-id': string,
+}
+
 export const postToHook = async (req, res) => {
-    console.log(req.params)
-    console.log(req.body)
-    if (req.params.hookId === config.CHATWOOT_ID) {
+    if (req.params.hookId === config.SIB_WEBHOOK_ID) {
+      let sibWebhookBody = req.body as ISibWebhookBody
+
+      const message = `:toolbox: Webhook send in blue\n
+email: ${sibWebhookBody.email}\n
+statut de l'email : ${sibWebhookBody.event}\n
+`
+      await axios.post(`https://mattermost.incubateur.net/hooks/${config.SIB_WEBHOOK_ID}`, {text: message});
+    } else if (req.params.hookId === config.CHATWOOT_ID) {
       let conversationId = ''
       try {
         conversationId = req.body.id
