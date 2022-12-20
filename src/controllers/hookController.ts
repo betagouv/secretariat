@@ -1,8 +1,6 @@
 import axios from "axios"
 import config from "@config"
 
-type 
-
 interface ISibWebhookBody {
   event: 'soft_bounce' | 'hard_bounce' | 'blocked' | 'invalid_email' | 'error' | 'unsubscribed',
   email: string,
