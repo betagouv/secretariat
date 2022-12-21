@@ -58,10 +58,13 @@ export async function postBaseInfoUpdate(req, res) {
         })
         // TODO: get actual PR url instead
         const pullRequestsUrl = `https://github.com/${config.githubRepository}/pulls`;
-        req.flash('message', `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte. 
+        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte. 
         \nDemande à un membre de ton équipe de merger ta fiche : <a href="${pullRequestsUrl}" target="_blank">${pullRequestsUrl}</a>. 
-        \nUne fois mergée, ton profil sera mis à jour.`);
-        res.redirect(`/account/base-info`);
+        \nUne fois mergée, ton profil sera mis à jour.`
+        req.flash('message', message);
+        res.json({
+            message,
+        });
     } catch (err) {
         console.log("ERROR", err.message),
         console.error(err);
