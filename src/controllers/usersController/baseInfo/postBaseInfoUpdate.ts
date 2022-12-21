@@ -57,7 +57,7 @@ export async function postBaseInfoUpdate(req, res) {
         await db('pull_requests').insert({
             url: prInfo.html_url,
             username,
-            type: PULL_REQUEST_TYPE.PR_MEMBER_UPDATE,
+            type: PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
             status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
             info: JSON.stringify(changes)
         })

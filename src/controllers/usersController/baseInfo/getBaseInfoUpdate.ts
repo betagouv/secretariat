@@ -23,7 +23,6 @@ export async function getBaseInfoUpdate(req, res) {
           label: startup.attributes.name
         }
       })
-      console.log('LCS GET BASE INFO')
       res.send(
         BaseInfoUpdatePage({
           title,

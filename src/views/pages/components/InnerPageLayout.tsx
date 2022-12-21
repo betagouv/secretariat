@@ -34,7 +34,36 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             <a href="/community" id="community"
                                 className={`nav-item ${props.activeTab === 'community' ? 'active' : ''}`}>
                                 <img src="/static/favicon/favicon-16x16.png" /> Communauté
-                                <br/><small>Rechercher des membres</small>
+                                <br/>
+                            { props.activeTab !== 'community' &&<small>Rechercher des membres, carte, ...</small> }
+                            { props.activeTab === 'community' && <ul style={{ marginTop: 10 }}>
+                                <li>
+                                    <a href="/community/" id="account" 
+                                        style={{
+                                            fontSize: '14px',
+                                            paddingTop: 0,
+                                            paddingBottom: 0,
+                                            paddingLeft: 20,
+                                            marginBottom: 20
+                                        }} 
+                                        className={`nav-item active`}>
+                                        🔎 Rechercher un ou une membre
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/map" target="_blank"
+                                        style={{
+                                            fontSize: '14px',
+                                            paddingTop: 0,
+                                            paddingLeft: 20,
+                                            marginBottom: 20
+                                        }}
+                                        className={`nav-item`}>
+                                       📍 Carte des membres
+                                    </a>
+                                </li>
+
+                            </ul>}
                             </a>
                         </li>
                         {/* <li>

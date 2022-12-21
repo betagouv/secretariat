@@ -35,6 +35,22 @@
                         <img src="/static/favicon/favicon-16x16.png" /> Communauté
                         <br><small>Rechercher des membres</small>
                     </a>
+                    <% if (activeTab === 'community') { %>
+                        <ul className="margin-left-5">
+                            <li style="font-size: 14px">
+                                <a href="/community/" id="account" 
+                                    className={`nav-item active`}>
+                                    🔎 Rechercher des membres
+                                </a>
+                            </li>
+                            <li style="font-size: 14px">
+                                <a href="/map" target="_blank"
+                                    className={`nav-item`}>
+                                📍 Carte des membres
+                                </a>
+                            </li>
+                        </ul>
+                    <% } %>
                 </li>
                 <!-- <li>
                     <a href="/startups" id="startups"
