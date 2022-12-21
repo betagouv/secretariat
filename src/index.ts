@@ -72,6 +72,8 @@ app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
+// const router = express.Router()
+// router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const getJwtTokenForUser = (id) =>

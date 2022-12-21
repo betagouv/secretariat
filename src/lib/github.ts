@@ -2,10 +2,22 @@ import { Octokit } from "@octokit/rest";
 import config from "@config";
 import fm from "front-matter";
 import axios from "axios";
+import { request } from '@octokit/request';
+
+export interface PRInfo {
+  html_url: string,
+  number: number
+}
 
 function getURL(objectID) {
   return `https://api.github.com/repos/betagouv/beta.gouv.fr/${objectID}`;
 }
+
+const requestWithAuth = request.defaults({
+  headers: {
+    authorization: `token ${config.githubToken}`,
+  },
+});
 
 async function getJson(uri) {
   await axios({
@@ -192,3 +204,54 @@ export function getPullRequests(owner: string, repo: string, state: 'all' | 'ope
       state
   })
 }
+
+export function getGithubMasterSha() {
+  const url = `https://api.github.com/repos/${config.githubRepository}/git/ref/heads/master`;
+  return requestWithAuth(url);
+}
+
+export function createGithubBranch(sha, branch) {
+  const url = `https://api.github.com/repos/${config.githubFork}/git/refs`;
+  const ref = `refs/heads/${branch}`;
+  return requestWithAuth(`POST ${url}`, { sha, ref });
+}
+
+export function deleteGithubBranch(branch) {
+  const url = `https://api.github.com/repos/${config.githubFork}/git/refs/heads/${branch}`;
+  return requestWithAuth(`DELETE ${url}`);
+}
+
+export function getGithubFile(path, branch) {
+  const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
+
+  return requestWithAuth(`GET ${url}`, { branch });
+}
+
+export function createGithubFile(path, branch, content, sha = undefined) {
+  const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
+  const message = `${
+    sha ? 'Mise à jour' : 'Création'
+  } de fichier ${path} sur la branche ${branch}`;
+  const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
+
+  return requestWithAuth(`PUT ${url}`, {
+    branch,
+    sha,
+    message,
+    content: base64EncodedContent,
+  });
+}
+
+export function makeGithubPullRequest(branch, title) {
+  const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
+  const head = `${config.githubFork.split('/')[0]}:${branch}`;
+  const base = 'master';
+
+  return requestWithAuth(`POST ${url}`, {
+    title,
+    head,
+    base,
+    maintainer_can_modify: true,
+  });
+}
+

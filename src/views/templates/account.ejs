@@ -60,10 +60,19 @@
                     </p>
                     <!-- <h6 class="margin-10-0 collapse-header">
                     </h6> -->
-                    <hr>
+                    <br>
                     <center>
                     <small>Une de ces informations n'est plus juste ?</small><br>
+                    <% if (updatePullRequest) { %>
+                        <br>
+                        <div class="notification">
+                            ⚠️ Une pull request existe déjà sur ta fiche membre. toi ou un membre de ton équipe doit la merger pour que les changements soit pris en compte
+                            <a href="<%= updatePullRequest.url %>"><%= updatePullRequest.url %></a>
+                            <br>(la mise à jour peut prendre 10 minutes.)
+                        </div>
+                    <% } %>
                     <a class="button" href="/account/base-info">✏️ Mettre à jour mes infos</a></center>
+
                     <!-- <div class="collapse">
                         <h6 class="margin-10-0 collapse-header">
                             <button aria-expanded="false" id="update-end-date">
@@ -120,7 +129,7 @@
                 </div>
             </div>
         </div>
-        <div class="panel margin-top-0">
+        <div class="panel margin-top-0 panel-partial-width">
             <h6>Observatoire de la Communauté</h6>
                 <p>
                     <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>

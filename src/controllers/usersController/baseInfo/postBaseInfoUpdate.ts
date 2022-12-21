@@ -1,7 +1,9 @@
-import config from "@config";
 import { addEvent, EventCode } from '@/lib/events'
 import { updateAuthorGithubFile } from "../usersControllerUtils";
 import betagouv from "@/betagouv";
+import { PRInfo } from "@/lib/github";
+import db from "@/db";
+import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 
 export async function postBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -22,11 +24,9 @@ export async function postBaseInfoUpdate(req, res) {
 
         const { start, end } = req.body;
         const newEnd = req.body.end || requiredError('nouvelle date de fin');
-        console.log('LCS CHANGES 1')
 
         const startDate = new Date(start);
         const newEndDate = isValidDate('nouvelle date de fin', new Date(end));
-        console.log('LCS CHANGES 2')
         if (startDate && newEndDate) {
             if (newEndDate < startDate) {
                 formValidationErrors.push('nouvelle date de fin : la date doit être supérieure à la date de début');
@@ -37,7 +37,6 @@ export async function postBaseInfoUpdate(req, res) {
             req.flash('error', formValidationErrors);
             throw new Error(formValidationErrors.toString());
         }
-        console.log('LCS CHANGES 3')
         const info = await betagouv.userInfosById(username)
         const missions = info.missions.map(mission => ({
             ...mission,
@@ -46,8 +45,7 @@ export async function postBaseInfoUpdate(req, res) {
         }))
         missions[missions.length-1].end = newEndDate
         const changes = { missions, role: req.body.role, startups: req.body.startups };
-        console.log('LCS CHANGES', changes, username)
-        await updateAuthorGithubFile(username, changes);
+        const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth.id,
             action_on_username: username,
@@ -56,10 +54,16 @@ export async function postBaseInfoUpdate(req, res) {
                 old_value: end,
             }
         })
+        await db('pull_requests').insert({
+            url: prInfo.html_url,
+            username,
+            type: PULL_REQUEST_TYPE.PR_MEMBER_UPDATE,
+            status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+            info: JSON.stringify(changes)
+        })
         // TODO: get actual PR url instead
-        const pullRequestsUrl = `https://github.com/${config.githubRepository}/pulls`;
         const message = `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte. 
-        \nDemande à un membre de ton équipe de merger ta fiche : <a href="${pullRequestsUrl}" target="_blank">${pullRequestsUrl}</a>. 
+        \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, ton profil sera mis à jour.`
         req.flash('message', message);
         res.json({

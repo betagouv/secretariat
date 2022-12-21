@@ -59,10 +59,15 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         })
     }
 
-    const save = () => {
+    const save = async (event) => {
+        event.preventDefault();
         axios.post(`/account/base-info/${props.username}`, {
             ...state.formData,
             startups: state.formData.startups.map(s => s.value)
+        }).then(() => {
+            window.location.replace('/account');
+        }).catch(() => {
+            alert('Erreur')
         })
     }
     console.log(state.formData)
@@ -72,7 +77,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         <div className="panel margin-top-m">
             <h3>Mise à jour de mes informations</h3>
             <div className="beta-banner"></div>
-            <form action="/account/info" method="POST">
+            <form onSubmit={save}>
                 <div className="form__group">
                     <label htmlFor="role">
                         <strong>Rôle chez BetaGouv</strong><br />
@@ -142,10 +147,11 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                     />
                     <input type="hidden" name="startup" value={state.formData.startups} required/>
                 </div> */}
-                <button
-                    onClick={save}
+                <input
+                    type="submit"
+                    value="Enregistrer"
                     className="button"
-                    type="submit">Enregistrer</button>
+                />
             </form>
             </div>
         </div>
