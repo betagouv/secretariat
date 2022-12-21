@@ -27,15 +27,17 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                             <a href="/account" id="account" 
                                 className={`nav-item ${props.activeTab === 'account' ? 'active' : ''}`}>
                                 🔓 Mon compte
+                                <br/><small>Administrer mon email, mes infos</small>
                             </a>
                         </li>
                         <li>
                             <a href="/community" id="community"
                                 className={`nav-item ${props.activeTab === 'community' ? 'active' : ''}`}>
                                 <img src="/static/favicon/favicon-16x16.png" /> Communauté
+                                <br/><small>Rechercher des membres</small>
                             </a>
                         </li>
-                        <li>
+                        {/* <li>
                             <a href="/startups" id="startups"
                                 className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
                                 🚀 Startups
@@ -46,25 +48,25 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 className={`nav-item ${props.activeTab === 'administration' ? 'active' : ''}`}>
                                 ⚙️ Administration
                             </a>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                             <a href="/newsletters" id="newsletter" 
                                 className={`nav-item ${props.activeTab === 'newsletter' ? 'active' : ''}`}>
                                 ✉️ Infolettres internes
                             </a>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                             <a href="/resources" id="resources"
                                 className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>
                                 📕 Ressources
                             </a>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                             <a href="/map" id="map" 
                                 className={`nav-item ${props.activeTab === 'map' ? 'active' : ''}`}>
                                 📍 Carte des membres
                             </a>
-                        </li>
+                        </li> */}
                         <li className="nav-end">
                             <hr />
                             { (props.currentUserId) &&

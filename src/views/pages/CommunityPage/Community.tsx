@@ -119,13 +119,14 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
         <div className="module">
             <div className="panel panel-full-width">
                 <h3>
-                    Rechercher
+                    Rechercher un ou une membre
                 </h3>
                 <form className="no-margin" action="/community">
                     <div className="form__group">
                         <label><strong>Nom ou prénom du membre</strong></label>
                         <MemberSelect
                             name="username"
+                            placeholder="Sélectionner un membre"
                             onChange={(e) => changeFormData('username', e.value)}
                             members={props.users.map(u => ({
                                 value: u.id,
