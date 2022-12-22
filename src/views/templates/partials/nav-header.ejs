@@ -29,23 +29,25 @@
                         <br><small>Administrer mon email, mes infos</small>
                     </a>
                 </li>
-                <li>
+                <li class="<% if(activeTab === 'community') { %>active<% } %> nav-sub-menu-container">
                     <a href="/community" id="community"
-                        class="nav-item <% if(activeTab === 'community') { %> active <% } %>">
+                        class="nav-item">
                         <img src="/static/favicon/favicon-16x16.png" /> Communauté
-                        <br><small>Rechercher des membres</small>
+                        <% if(activeTab !== 'community') { %>
+                            <br/><small>Rechercher un ou une membre, carte des membres, ...</small>
+                        <% } %>  
                     </a>
-                    <% if (activeTab === 'community') { %>
-                        <ul className="margin-left-5">
-                            <li style="font-size: 14px">
+                    <% if(activeTab === 'community') { %>
+                        <ul>
+                            <li>
                                 <a href="/community/" id="account" 
-                                    className={`nav-item active`}>
-                                    🔎 Rechercher des membres
+                                    class="nav-sub-item active">
+                                    🔎 Rechercher un ou une membre
                                 </a>
                             </li>
-                            <li style="font-size: 14px">
+                            <li>
                                 <a href="/map" target="_blank"
-                                    className={`nav-item`}>
+                                    class="nav-sub-item">
                                 📍 Carte des membres
                                 </a>
                             </li>

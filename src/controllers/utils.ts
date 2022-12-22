@@ -124,27 +124,6 @@ export function requiredError(formValidationErrors, field) {
   formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
 }
 
-export function isValidDate(formValidationErrors, field, date) {
-  if (date instanceof Date && !Number.isNaN(date.getTime())) {
-    return date;
-  }
-  formValidationErrors.push(`${field} : la date n'est pas valide`);
-  return null;
-}
-
-export function isValidNumber(formValidationErrors, field, number) {
-  if (!number) {
-    requiredError(formValidationErrors, field);
-    return null;
-  }
-  const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gim;
-  if (numberRegex.test(number)) {
-    return number;
-  }
-  formValidationErrors.push(`${field} : le numéro n'est pas valide`);
-  return null;
-}
-
 export function isValidEmail(formValidationErrors,  field, email) {
   const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (emailRegex.test(email.toLowerCase())) {

@@ -77,7 +77,7 @@ export async function getLogin(req, res) {
 }
 
 export async function postLogin(req, res) {
-  const formValidationErrors = [];
+  const formValidationErrors = {};
   const next = req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : ''
   const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
 

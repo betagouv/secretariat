@@ -37,6 +37,11 @@ interface BaseInfoUpdateProps {
   username: string,
 }
 
+interface FormErrorResponse {
+    errors?: Record<string,string[]>
+    message: string
+}
+
 /* Pure component */
 export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     const [state, setState] = React.useState<any>({
@@ -48,6 +53,9 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
             end: props.formData.end ? new Date(props.formData.end) : ''
         }
     });
+    const [formErrors, setFormErrors] = React.useState({});
+    const [errorMessage, setErrorMessage] = React.useState('');
+
     const css = ".panel { overflow: hidden; width: auto; }"
 
     const changeFormData = (key, value) => {
@@ -66,98 +74,89 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
             startups: state.formData.startups.map(s => s.value)
         }).then(() => {
             window.location.replace('/account');
-        }).catch(() => {
-            alert('Erreur')
+        }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
+            const ErrorResponse : FormErrorResponse = data
+            setErrorMessage(ErrorResponse.message)
+            if (ErrorResponse.errors) {
+                setFormErrors(ErrorResponse.errors)
+            }
         })
     }
-    console.log(state.formData)
+
     return (
         <>
-        <div className="module">
-        <div className="panel margin-top-m">
-            <h3>Mise à jour de mes informations</h3>
-            <div className="beta-banner"></div>
-            <form onSubmit={save}>
-                <div className="form__group">
-                    <label htmlFor="role">
-                        <strong>Rôle chez BetaGouv</strong><br />
-                    </label>
-                    <input name="role"
-                        onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
-                        value={state.formData.role}
-                        required/>
-                </div>
-                <div className="form__group">
-                    <label htmlFor="startup">
-                        <strong>Startups (actuelles)</strong><br />
-                    </label>
-                    <SESelect
-                        startups={props.startupOptions}
-                        onChange={(startups) => {
-                            changeFormData('startups', startups)
-                        }}
-                        isMulti={true}
-                        placeholder={"Selectionne ta startup"}
-                        defaultValue={props.formData.startups.map(startup => ({
-                            label: startup,
-                            value: startup
-                        }))}
-                    />
-                    <input type="hidden" name="startup" value={state.formData.startups} required/>
-                </div>
-                <div className="form__group">
-                    <label htmlFor="end">
-                        <strong>Fin de la mission (obligatoire)</strong><br />
-                        Si tu ne la connais pas, mets une date dans 6 mois, tu pourras la corriger plus tard.<br />
-                        <i>Au format JJ/MM/YYYY</i>
-                    </label>
-                    <DatepickerSelect
-                        name="endDate"
-                        min={'2020-01-31'}
-                        title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
-                        dateFormat='dd/MM/yyyy'
-                        selected={state.formData.end}
-                        onChange={(date:Date) => changeFormData('end', date)} />
-                    { !!props.formValidationErrors['fin de la mission'] && 
-                        <p className="text-small text-color-red">{props.formValidationErrors['fin de la mission']}</p>
+            <div className="module">
+            <small>
+                <a href="/account">Mon Compte</a> &gt; <a href="">Mise à jour de mes informations</a>
+            </small>
+            <div className="panel margin-top-m">
+                    <h3>Mise à jour de mes informations</h3>
+                    { !!errorMessage && 
+                        <p className="text-small text-color-red">{errorMessage}</p>
                     }
-                    { !!props.formValidationErrors['date de fin'] && 
-                        <p className="text-small text-color-red">{props.formValidationErrors['date de fin']}</p>
-                    }
-                    {/* <input name="end"
-                        value={state.formData.end ? formatDate(state.formData.end) : ''}
-                        required hidden/> */}
+                    <div className="beta-banner"></div>
+                    <form className='no-margin' onSubmit={save}>
+                        <div className="form__group">
+                            <label htmlFor="role">
+                                <strong>Rôle chez BetaGouv</strong><br />
+                            </label>
+                            <input name="role"
+                                onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
+                                value={state.formData.role}
+                                required/>
+                            { !!props.formValidationErrors['role'] && 
+                                <p className="text-small text-color-red">{formErrors['role']}</p>
+                            }
+                        </div>
+                        <div className="form__group">
+                            <label htmlFor="startup">
+                                <strong>Startups (actuelles)</strong><br />
+                            </label>
+                            <SESelect
+                                startups={props.startupOptions}
+                                onChange={(startups) => {
+                                    console.log(startups)
+                                    changeFormData('startups', startups)
+                                }}
+                                isMulti={true}
+                                placeholder={"Selectionne ta startup"}
+                                defaultValue={props.formData.startups.map(startup => ({
+                                    label: startup,
+                                    value: startup
+                                }))}
+                            />
+                            { !!formErrors['gender'] && 
+                                <p className="text-small text-color-red">{formErrors['startups']}</p>
+                            }
+                        </div>
+                        <div className="form__group">
+                            <label htmlFor="end">
+                                <strong>Fin de la mission (obligatoire)</strong><br />
+                                Si tu ne la connais pas, mets une date dans 6 mois, tu pourras la corriger plus tard.<br />
+                                <i>Au format JJ/MM/YYYY</i>
+                            </label>
+                            <DatepickerSelect
+                                name="endDate"
+                                min={'2020-01-31'}
+                                title="En format YYYY-MM-DD, par exemple : 2020-01-31" required
+                                dateFormat='dd/MM/yyyy'
+                                selected={state.formData.end}
+                                onChange={(date:Date) => changeFormData('end', date)} />
+                            { !!formErrors['nouvelle date de fin'] && 
+                                <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
+                            }
+                        </div>
+                        <input
+                            type="submit"
+                            value="Enregistrer"
+                            className="button"
+                        />
+                    </form>
                 </div>
-                {/* <div className="form__group">
-                    <label htmlFor="startup">
-                        <strong>Mes précédentes Startups</strong><br />
-                    </label>
-                    <SESelect
-                        startups={props.startupOptions}
-                        onChange={(startups) => setState({
-                        ...state,
-                        startups
-                        })}
-                        isMulti={true}
-                        placeholder={"Selectionne ta startup"}
-                        defaultValue={props.formData.startups.map(startup => ({
-                            label: startup,
-                            value: startup
-                        }))}
-                    />
-                    <input type="hidden" name="startup" value={state.formData.startups} required/>
-                </div> */}
-                <input
-                    type="submit"
-                    value="Enregistrer"
-                    className="button"
-                />
-            </form>
             </div>
-        </div>
-        <style media="screen">
-            {css}
-        </style>
+            <style media="screen">
+                {css}
+            </style>
         </>
     )
 })

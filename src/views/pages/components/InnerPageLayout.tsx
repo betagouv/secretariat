@@ -30,41 +30,41 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 <br/><small>Administrer mon email, mes infos</small>
                             </a>
                         </li>
-                        <li>
+                        <li className={`nav-sub-menu-container ${props.activeTab === 'community' ? 'active' : ''}`}>
                             <a href="/community" id="community"
-                                className={`nav-item ${props.activeTab === 'community' ? 'active' : ''}`}>
+                                className={`nav-item`}>
                                 <img src="/static/favicon/favicon-16x16.png" /> Communauté
                                 <br/>
-                            { props.activeTab !== 'community' &&<small>Rechercher des membres, carte, ...</small> }
-                            { props.activeTab === 'community' && <ul style={{ marginTop: 10 }}>
+                                { props.activeTab !== 'community' &&<small>Rechercher un ou une membre, carte des membres, ...</small> }
+                            </a>
+                            { props.activeTab === 'community' && <ul>
                                 <li>
                                     <a href="/community/" id="account" 
-                                        style={{
-                                            fontSize: '14px',
-                                            paddingTop: 0,
-                                            paddingBottom: 0,
-                                            paddingLeft: 20,
-                                            marginBottom: 20
-                                        }} 
-                                        className={`nav-item active`}>
+                                        // style={{
+                                        //     fontSize: '14px',
+                                        //     paddingTop: 0,
+                                        //     paddingBottom: 0,
+                                        //     paddingLeft: 20,
+                                        //     marginBottom: 20
+                                        // }} 
+                                        className={`nav-sub-item active`}>
                                         🔎 Rechercher un ou une membre
                                     </a>
                                 </li>
                                 <li>
                                     <a href="/map" target="_blank"
-                                        style={{
-                                            fontSize: '14px',
-                                            paddingTop: 0,
-                                            paddingLeft: 20,
-                                            marginBottom: 20
-                                        }}
-                                        className={`nav-item`}>
+                                        // style={{
+                                        //     fontSize: '14px',
+                                        //     paddingTop: 0,
+                                        //     paddingLeft: 20,
+                                        //     marginBottom: 20
+                                        // }}
+                                        className={`nav-sub-item`}>
                                        📍 Carte des membres
                                     </a>
                                 </li>
 
                             </ul>}
-                            </a>
                         </li>
                         {/* <li>
                             <a href="/startups" id="startups"
