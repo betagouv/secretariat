@@ -86,10 +86,13 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     return (
         <>
             <div className="module">
-            <small>
-                <a href="/account">Mon Compte</a> &gt; <a href="">Mise à jour de mes informations</a>
-            </small>
-            <div className="panel margin-top-m">
+            <div>
+                <small>
+                    <a href="/account">Mon Compte</a> &gt; <a href="">Mise à jour de mes informations</a>
+                </small>
+            </div>
+            <div className="margin-top-m"></div>
+            <div className="panel">
                     <h3>Mise à jour de mes informations</h3>
                     { !!errorMessage && 
                         <p className="text-small text-color-red">{errorMessage}</p>

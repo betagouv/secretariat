@@ -92,8 +92,14 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
     return (
         <>
         <div className="module">
+            <div>
+                <small>
+                    <a href="/account">Mon compte</a> &gt; <a href="">Mise à jour de l'observatoire</a>
+                </small>
+            </div>
+            <div className="margin-top-m"></div>
                     <div className="row">
-                    <div className="panel margin-top-m">
+                    <div className="panel">
                         <h3>Mise à jour de mes informations</h3>
 
                         <div className="beta-banner"></div>

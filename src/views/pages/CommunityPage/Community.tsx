@@ -11,6 +11,12 @@ export const Community = InnerPageLayout((props: CommunityProps) => {
 
     return <>
         <div className="module">
+            <div>
+                <small>
+                    <a href="/account">Communauté</a> &gt; <a href="">Rechercher un ou une membre</a>
+                </small>
+            </div>
+            <div className="margin-top-m"></div>
             <CommunitySearchMember {...props}/>
             <CommunityFilterMembers {...props}/>
         </div>
