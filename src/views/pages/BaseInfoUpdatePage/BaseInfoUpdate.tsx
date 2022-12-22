@@ -77,7 +77,6 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
             ...state.formData,
             startups: state.formData.startups.map(s => s.value)
         }).then(() => {
-            setIsSaving(false)
             window.location.replace('/account');
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
