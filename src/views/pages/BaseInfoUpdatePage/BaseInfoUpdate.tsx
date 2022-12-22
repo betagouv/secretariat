@@ -7,6 +7,7 @@ import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';
 import { Mission } from '@/models/mission';
 import axios from 'axios';
+import { DBPullRequest } from '@/models/pullRequests';
 
 interface Option {
   key: string,
@@ -35,6 +36,7 @@ interface BaseInfoUpdateProps {
   startups: string[],
   startupOptions: Option[],
   username: string,
+  updatePullRequest?: DBPullRequest
 }
 
 interface FormErrorResponse {
@@ -94,6 +96,12 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
             <div className="margin-top-m"></div>
             <div className="panel">
                     <h3>Mise à jour de mes informations</h3>
+                    { !!props.updatePullRequest && <div className="notification">
+                            ⚠️ Une pull request existe déjà sur ta fiche membre. Toi ou un membre de ton équipe doit la merger pour que les changements soit pris en compte
+                            <a href={props.updatePullRequest.url}>{props.updatePullRequest.url}</a>
+                            (la prise en compte peut prendre 10 minutes.)
+                        </div>
+                    }
                     { !!errorMessage && 
                         <p className="text-small text-color-red">{errorMessage}</p>
                     }
