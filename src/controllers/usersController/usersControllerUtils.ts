@@ -96,7 +96,12 @@ export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
             const [doc, doc1] = yaml.loadAll(content)
             for (const key of Object.keys(changes)) {
-                doc[key] = changes[key]
+                const value = changes[key]
+                if (!value || (Array.isArray(value) && !value.length)) {
+                    delete changes[key]
+                } else {
+                    doc[key] = changes[key]
+                }
             }
             const schema = yaml.DEFAULT_SCHEMA
             schema.compiledTypeMap.scalar['tag:yaml.org,2002:timestamp'].represent = function(object) {
@@ -104,7 +109,11 @@ export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo
             }
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
-            }) + '\n---\n' + yaml.dump(doc1 ? doc1 : '')
+            }) + '\n---'
+            if (doc1) {
+                console.log(doc1)
+                content = content + yaml.dump(doc1)
+            }
             return createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {
