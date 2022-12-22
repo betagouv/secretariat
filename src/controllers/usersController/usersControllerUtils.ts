@@ -98,7 +98,7 @@ export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo
             for (const key of Object.keys(changes)) {
                 const value = changes[key]
                 if (!value || (Array.isArray(value) && !value.length)) {
-                    delete changes[key]
+                    delete doc[key]
                 } else {
                     doc[key] = changes[key]
                 }
