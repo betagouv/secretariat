@@ -30,12 +30,14 @@
                     <p>
                         <span class="font-weight-bold">Rôle:</span> <%= userInfos.role %>
                     </p>
-                    <p>
-                        <span class="font-weight-bold">Startups actuelles:</span><br>
-                        <% for (var i=0; i < userInfos.startups.length; i++) { %>
-                        - <%= userInfos.startups[i] %><br>
-                        <% } %>
-                    </p>
+                    <% if (userInfos.startups) { %>
+                      <p>
+                          <span class="font-weight-bold">Startups actuelles:</span><br>
+                          <% for (var i=0; i < userInfos.startups.length; i++) { %>
+                          - <%= userInfos.startups[i] %><br>
+                          <% } %>
+                      </p>
+                    <% } %>
                     <p>
                     <!-- <span class="font-weight-bold">startup(s) précédente(s):</span> <%= userInfos.previously %><br><br> -->
                     </p>
