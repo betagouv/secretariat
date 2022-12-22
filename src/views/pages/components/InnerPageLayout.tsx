@@ -21,7 +21,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
             <div id="dashboard" className="dashboard">
                 <aside className="side-menu" role="navigation" id="navigation">
                     <button id="drawer-toggle" className="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
-                    <h4 id="logo">Espace Membre</h4>
+                    <a href="/account" className="home-logo"><h4 id="logo">Espace Membre</h4></a>
                     <ul className="hidden-mobile margin-bottom-5" id="drawer">
                         <li>
                             <a href="/account" id="account" 
