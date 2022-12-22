@@ -1,16 +1,17 @@
 import betagouv from "@/betagouv";
-import knex from "@/db";
 import * as utils from "@controllers/utils";
 import { DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { BaseInfoUpdatePage } from '@views';
 import { MemberWithPermission } from "@/models/member";
+import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import db from "@/db";
 
 export async function getBaseInfoUpdate(req, res) {
     try {
       const [currentUser] : [MemberWithPermission, DBUser] = await Promise.all([
         (async () => utils.userInfos(req.auth.id, true))(),
         (async () => {
-          const rows = await knex('users').where({ username: req.auth.id });
+          const rows = await db('users').where({ username: req.auth.id });
           return rows.length === 1 ? rows[0] : null;
         })()
       ]);
@@ -23,6 +24,13 @@ export async function getBaseInfoUpdate(req, res) {
           label: startup.attributes.name
         }
       })
+      const updatePullRequest = await db('pull_requests')
+        .where({
+          username: req.auth.id,
+          status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED
+        })
+        .orderBy('created_at', 'desc')
+        .first()
       res.send(
         BaseInfoUpdatePage({
           title,
@@ -34,6 +42,7 @@ export async function getBaseInfoUpdate(req, res) {
           startupOptions,
           activeTab: 'account',
           username: req.auth.id,
+          updatePullRequest,
           formData: {
             startups: currentUser.userInfos.startups || [],
             role: currentUser.userInfos.role,
