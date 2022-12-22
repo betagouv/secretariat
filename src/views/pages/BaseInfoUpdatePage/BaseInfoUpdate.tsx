@@ -57,6 +57,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     });
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
+    const [isSaving, setIsSaving] = React.useState(false)
 
     const css = ".panel { overflow: hidden; width: auto; }"
 
@@ -71,14 +72,17 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
 
     const save = async (event) => {
         event.preventDefault();
+        setIsSaving(true)
         axios.post(`/account/base-info/${props.username}`, {
             ...state.formData,
             startups: state.formData.startups.map(s => s.value)
         }).then(() => {
+            setIsSaving(false)
             window.location.replace('/account');
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
             setErrorMessage(ErrorResponse.message)
+            setIsSaving(false)
             if (ErrorResponse.errors) {
                 setFormErrors(ErrorResponse.errors)
             }
@@ -159,7 +163,8 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                         </div>
                         <input
                             type="submit"
-                            value="Enregistrer"
+                            disabled={isSaving}
+                            value={isSaving ? `Enregistrement en cours...` : `Enregistrer`}
                             className="button"
                         />
                     </form>
