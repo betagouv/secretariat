@@ -111,8 +111,7 @@ export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo
                 schema: schema
             }) + '\n---'
             if (doc1) {
-                console.log(doc1)
-                content = content + yaml.dump(doc1)
+                content = content + '\n\n' + yaml.dump(doc1)
             }
             return createGithubFile(path, branch, content, res.data.sha);
         })
