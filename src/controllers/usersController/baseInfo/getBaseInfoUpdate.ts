@@ -35,7 +35,7 @@ export async function getBaseInfoUpdate(req, res) {
           activeTab: 'account',
           username: req.auth.id,
           formData: {
-            startups: currentUser.userInfos.startups,
+            startups: currentUser.userInfos.startups || [],
             role: currentUser.userInfos.role,
             missions: currentUser.userInfos.missions,
             end: currentUser.userInfos.end,
