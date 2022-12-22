@@ -98,8 +98,8 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                     <h3>Mise à jour de mes informations</h3>
                     { !!props.updatePullRequest && <div className="notification">
                             ⚠️ Une pull request existe déjà sur ta fiche membre. Toi ou un membre de ton équipe doit la merger pour que les changements soit pris en compte
-                            <a href={props.updatePullRequest.url}>{props.updatePullRequest.url}</a>
-                            (la prise en compte peut prendre 10 minutes.)
+                            <a href={props.updatePullRequest.url} target="_blank">{props.updatePullRequest.url}</a>
+                            <br/>(la prise en compte peut prendre 10 minutes.)
                         </div>
                     }
                     { !!errorMessage && 
