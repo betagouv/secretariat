@@ -4,6 +4,12 @@
 <script src="/static/collapse/collapse.js"></script>
 
 <div class="module">
+    <div>
+        <small>
+            <a href="/account">Mon compte</a>
+        </small>
+    </div>
+    <div class="margin-top-m"></div>
     <% if (hasActiveResponder) { %>
         <div class="notification warning">
             <strong>Réponse automatique activée.</strong>
@@ -12,26 +18,37 @@
         </div>
     <% } %>
     <div class="row">
-        <div class="panel panel-full-width">
-            <h3>
-                Mon compte beta.gouv
-            </h3>
-            <div class="account-split-panel">
-                <div style="width: 45%">
-                    <h6>Mes infos</h6>
+        <div class="panel panel-partial-width">
+            <div>
+                <h3>
+                    Mon compte beta.gouv
+                </h3>
+                <div>
                     <% if (userInfos) { %>
-                        <p class="text-color-blue font-weight-bold"><%= userInfos.fullname %></p>
+                        <p><span class="font-weight-bold">Nom</span>: <%= userInfos.fullname %></p>
                     <% } %>
-                    <% if (userInfos.start) { %>
+                    <p>
+                        <span class="font-weight-bold">Rôle:</span> <%= userInfos.role %>
+                    </p>
+                    <p>
+                        <span class="font-weight-bold">Startups actuelles:</span><br>
+                        <% for (var i=0; i < userInfos.startups.length; i++) { %>
+                        - <%= userInfos.startups[i] %><br>
+                        <% } %>
+                    </p>
+                    <p>
+                    <!-- <span class="font-weight-bold">startup(s) précédente(s):</span> <%= userInfos.previously %><br><br> -->
+                    </p>
+                    <% if (userInfos.end) { %>
                         <p>
-                            <span class="font-weight-bold">Mission :</span>
-                            du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %>
-                            <% if (userInfos.end) { %> au <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %><br>
-                        </p>
+                            <span class="font-weight-bold">Fin de mission :</span>
+                            <!-- du <%= new Date(userInfos.start).toLocaleDateString('fr-FR') %> -->
+                            <% if (userInfos.end) { %><%= new Date(userInfos.end).toLocaleDateString('fr-FR') %><% } %>
+                        </p>    
                     <% } %>
                     <% if (userInfos.employer) { %>
                         <p>
-                            <strong>Employeur : </strong><%= userInfos.employer %>
+                            <strong>Employeur : </strong><%= userInfos.employer.replace('admin/', '') %>
                         </p>
                     <% } %>
                     <% if (userInfos.github) { %>
@@ -47,74 +64,86 @@
                     <p>
                         <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
                     </p>
-                <div class="collapse">
-                    <h6 class="margin-10-0 collapse-header">
-                        <button aria-expanded="false" id="update-end-date">
-                            Mettre à jour ma date de fin
-                            <div class="icon fa fa-chevron-down"></div>
-                        </button>
-                    </h6>
-                    <div hidden class="collapse-content">
-                        <section id="update-end-date-form" class="panel">
-                            <div class="notification">
-                                Pour que ton changement de date soit pris en compte,
-                                demande à un membre de ton équipe de
-                                "merger" le changement sur <a href="https://github.com/betagouv/beta.gouv.fr/pulls" target="_blank">github</a>.
-                            </div>
-                            <form action="/users/<%= userInfos.id %>/end-date" method="POST">
-                                <input type="hidden" name="_method" value="PUT">
-                                <input type="hidden" name="start" value="<%= userInfos.start %>">
-                                <input type="hidden" name="end" value="<%= userInfos.end %>">
-                                <p>
-                                    <strong>Date de fin actuelle :</strong>
-                                    <% if (userInfos.end) { %>
-                                        <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
-                                    <% } else { %>
-                                        Non renseignée
-                                    <% } %>
-                                </p>
-                                <div class="form__group">
-                                    <label for="end">
-                                        <strong>Nouvelle date de fin</strong>
-                                    </label>
-                                    <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                    <!-- <h6 class="margin-10-0 collapse-header">
+                    </h6> -->
+                    <br>
+                    <center>
+                    <small>Une de ces informations n'est plus juste ?</small><br>
+                    <% if (updatePullRequest) { %>
+                        <br>
+                        <div class="notification">
+                            ⚠️ Une pull request existe déjà sur ta fiche membre. Toi ou un membre de ton équipe doit la merger pour que les changements soit pris en compte
+                            <a href="<%= updatePullRequest.url %>"><%= updatePullRequest.url %></a>
+                            <br>(la prise en compte peut prendre 10 minutes.)
+                        </div>
+                    <% } %>
+                    <a class="button" href="/account/base-info">✏️ Mettre à jour mes infos</a></center>
+
+                    <!-- <div class="collapse">
+                        <h6 class="margin-10-0 collapse-header">
+                            <button aria-expanded="false" id="update-end-date">
+                                Mettre à jour ma date de fin
+                                <div class="icon fa fa-chevron-down"></div>
+                            </button>
+                        </h6>
+                        <div hidden class="collapse-content">
+                            <section id="update-end-date-form" class="panel">
+                                <div class="notification">
+                                    Pour que ton changement de date soit pris en compte,
+                                    demande à un membre de ton équipe de
+                                    "merger" le changement sur <a href="https://github.com/betagouv/beta.gouv.fr/pulls" target="_blank">github</a>.
                                 </div>
-                                <div class="form__group button__group">
-                                    <button class="button" type="submit">Valider</button>
-                                    <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
-                                </div>
-                            </form>
-                        </section>
-                        <hr />
+                                <form action="/users/<%= userInfos.id %>/end-date" method="POST">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="start" value="<%= userInfos.start %>">
+                                    <input type="hidden" name="end" value="<%= userInfos.end %>">
+                                    <p>
+                                        <strong>Date de fin actuelle :</strong>
+                                        <% if (userInfos.end) { %>
+                                            <%= new Date(userInfos.end).toLocaleDateString('fr-FR') %>
+                                        <% } else { %>
+                                            Non renseignée
+                                        <% } %>
+                                    </p>
+                                    <div class="form__group">
+                                        <label for="end">
+                                            <strong>Nouvelle date de fin</strong>
+                                        </label>
+                                        <input type="date" name="newEnd" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= formData.newEnd %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                    </div>
+                                    <div class="form__group button__group">
+                                        <button class="button" type="submit">Valider</button>
+                                        <button id="update-end-date-form-cancel-button" class="button secondary">Annuler</button>
+                                    </div>
+                                </form>
+                            </section>
+                            <hr />
+                        </div>
                     </div>
-                </div>
-                <div class="collapse">
-                    <h6 class="margin-10-0 collapse-header">
-                        <button aria-expanded="false" id="webmail">
-                            Mettre à jour ma fiche
-                            <div class="icon fa fa-chevron-down"></div>
-                        </button>
-                    </h6>
-                    <div hidden class="collapse-content">
-                        <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a> 
-                        <hr />
-                    </div>
+                    <div class="collapse">
+                        <h6 class="margin-10-0 collapse-header">
+                            <button aria-expanded="false" id="webmail">
+                                Mettre à jour ma fiche
+                                <div class="icon fa fa-chevron-down"></div>
+                            </button>
+                        </h6>
+                        <div hidden class="collapse-content">
+                            <a class="button no-margin" href="https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/<%= userInfos.id %>.md" target="_blank">Modifier sur Github</a> 
+                            <hr />
+                        </div>
+                    </div> -->
                 </div>
             </div>
-            <!-- <div class="account-split-panel-shrink">
-                <img width="100%" src="/static/images/logo-betagouv.jpg" />
-            </div> -->
-        <!-- </div>
-        <div class="panel panel-partial-width margin-top-0"> -->
-            <div style="width: 45%">
-                <h6>Observatoire de la Communauté</h6>
+        </div>
+        <div class="panel margin-top-0 panel-partial-width">
+            <h6>Observatoire de la Communauté</h6>
                 <p>
                     <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
                 </p>
                 <p>
                     <span class="font-weight-bold">Genre : </span> <%= gender || 'Non renseigné' %>
                 </p>
-
+    
                 <p>
                     <span class="font-weight-bold">TJM : </span> <%= tjm || 'Non renseigné' %>
                 </p>
@@ -124,8 +153,6 @@
                 <a class="button" href="/account/info">Participez</a>  <a class="button secondary" target="_blank" href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5">Consulter</a>
                 <br/>
                 <br/>
-            </div>
-        </div>
         </div>
     </div>
     <div class="row">

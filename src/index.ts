@@ -72,6 +72,8 @@ app.use(cookieParser(config.secret));
 app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
+// const router = express.Router()
+// router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const getJwtTokenForUser = (id) =>
@@ -150,9 +152,13 @@ app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get('/startups', startupController.getStartupList);
 app.get('/startups/:startup', startupController.getStartup);
-app.get('/account', accountController.getCurrentAccount);
-app.get('/account/info', accountController.getCurrentInfo);
-app.post('/account/info', accountController.updateCurrentInfo);
+
+app.get(routes.ACCOUNT_GET, accountController.getCurrentAccount);
+app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpdate);
+app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo);
+app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
+app.post(routes.ACCOUNT_POST_BASE_INFO_FORM, express.json({type: '*/*'}), usersController.postBaseInfoUpdate);
+
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);

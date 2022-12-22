@@ -6,6 +6,7 @@ import { DBUser, EmailStatusCode, USER_EVENT } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendEmail } from "@/config/email.config";
 import EventBus from "@/infra/eventBus/eventBus";
+import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
@@ -75,20 +76,20 @@ export function createBranchName(username) {
     return `author${username.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
 }
 
-export async function updateAuthorGithubFile(username, changes) {
+export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo> {
     const branch = createBranchName(username);
     const path = `content/_authors/${username}.md`;
     console.log(`Début de la mise à jour de la fiche pour ${username}...`);
 
-    await utils.getGithubMasterSha()
+    return await getGithubMasterSha()
         .then((response) => {
             const { sha } = response.data.object;
             console.log('SHA du master obtenu');
-            return utils.createGithubBranch(sha, branch);
+            return createGithubBranch(sha, branch);
         })
         .then(() => {
             console.log(`Branche ${branch} créée`);
-            return utils.getGithubFile(path, branch);
+            return getGithubFile(path, branch);
         })
         .then((res) => {
             const yaml = require('js-yaml');
@@ -104,14 +105,18 @@ export async function updateAuthorGithubFile(username, changes) {
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
             }) + '\n---\n' + yaml.dump(doc1 ? doc1 : '')
-            return utils.createGithubFile(path, branch, content, res.data.sha);
+            return createGithubFile(path, branch, content, res.data.sha);
         })
         .then(() => {
             console.log(`Fiche Github pour ${username} mise à jour dans la branche ${branch}`);
-            return utils.makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}`);
+            return makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}`);
         })
-        .then(() => {
+        .then((response) => {
             console.log(`Pull request pour la mise à jour de la fiche de ${username} ouverte`);
+            if (response.status !== 201 && response.data.html_url) {
+                throw new Error('Il y a eu une erreur merci de recommencer plus tard')
+            }
+            return response.data
         })
         .catch((err) => {
             console.log(err);

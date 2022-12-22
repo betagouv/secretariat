@@ -10,6 +10,7 @@ import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions }
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS } from "@/models/member";
+import { getGithubMasterSha, createGithubBranch, createGithubFile, makeGithubPullRequest, deleteGithubBranch, PRInfo } from "@/lib/github";
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -21,27 +22,30 @@ async function createNewcomerGithubFile(username, content, referent) {
     const branch = createBranchName(username);
     console.log(`Début de la création de fiche pour ${username}...`);
   
-    const prInfo = await utils.getGithubMasterSha()
+    const prInfo = await getGithubMasterSha()
       .then((response) => {
         const { sha } = response.data.object;
         console.log('SHA du master obtenu');
-        return utils.createGithubBranch(sha, branch);
+        return createGithubBranch(sha, branch);
       })
       .then(() => {
         console.log(`Branche ${branch} créée`);
         const path = `content/_authors/${username}.md`;
-        return utils.createGithubFile(path, branch, content);
+        return createGithubFile(path, branch, content);
       })
       .then(() => {
         console.log(`Fiche Github pour ${username} créée dans la branche ${branch}`);
-        return utils.makeGithubPullRequest(branch, `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`);
+        return makeGithubPullRequest(branch, `Création de fiche pour ${username}. Référent : ${referent || 'pas renseigné'}.`);
       })
       .then((response) => {
+        if (response.status !== 201 && response.data.html_url) {
+            throw new Error('Il y a eu une erreur merci de recommencer plus tard')
+        }
         console.log(`Pull request pour la fiche de ${username} ouverte`);
-        return response;
+        return response.data;
       })
       .catch((err) => {
-        utils.deleteGithubBranch(branch);
+        deleteGithubBranch(branch);
         console.log(`Branche ${branch} supprimée`);
         if (err.status === 422) {
           throw new Error(`Une fiche pour ${username} existe déjà`);
@@ -147,10 +151,7 @@ export async function postForm(req, res) {
         domaine,
         memberType
       });
-      const prInfo = await createNewcomerGithubFile(username, content, referent);
-      if (prInfo.status !== 201 && prInfo.data.html_url) {
-        throw new Error('Il y a eu une erreur merci de recommencer plus tard')
-      }
+      const prInfo : PRInfo = await createNewcomerGithubFile(username, content, referent);
       let primary_email, secondary_email;
       if (isEmailBetaAsked) {
         // primaryEmail sera l'email beta qui sera créé en asynchrone
@@ -192,7 +193,7 @@ export async function postForm(req, res) {
       
       await knex('pull_requests').insert({
         username,
-        url: prInfo.data.html_url,
+        url: prInfo.html_url,
         info: JSON.stringify({
           startup,
           username,
@@ -202,7 +203,7 @@ export async function postForm(req, res) {
         })
       })
   
-      res.redirect(`/onboardingSuccess/${prInfo.data.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
+      res.redirect(`/onboardingSuccess/${prInfo.number}?isEmailBetaAsked=${isEmailBetaAsked}`);
     } catch (err) {
       if (err.message) {
         req.flash('error', err.message);

@@ -8,6 +8,7 @@ import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import { HomePage } from '../views';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
+import { isValidEmail } from './validator';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -77,15 +78,16 @@ export async function getLogin(req, res) {
 }
 
 export async function postLogin(req, res) {
-  const formValidationErrors = [];
+  const formValidationErrors = {};
+  const errorHandler = (field, message) => {
+    formValidationErrors[field] = message
+  }
   const next = req.query.next ? `?next=${req.query.next}${req.query.anchor ? `&anchor=` + req.query.anchor : ''}` : ''
-  const emailInput = req.body.emailInput.toLowerCase() || utils.isValidEmail(formValidationErrors, 'email', req.body.emailInput.toLowerCase());
-
-  if (formValidationErrors.length) {
+  const emailInput = req.body.emailInput.toLowerCase() || isValidEmail('email', req.body.emailInput.toLowerCase(), errorHandler);
+  if (Object.keys(formValidationErrors).length) {
     req.flash('error', formValidationErrors);
     return res.redirect(`/login${next}`);
   }
-
   let username;
 
   const emailSplit = emailInput.split('@');

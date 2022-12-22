@@ -5,7 +5,7 @@ import { MemberWithPermission } from "@models/member";
 import { statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 
-export async function updateCurrentInfo(req, res) {
+export async function postCurrentInfo(req, res) {
     const formValidationErrors = {};
     const title = 'Mon compte';
     const [currentUser] : [MemberWithPermission] = await Promise.all([

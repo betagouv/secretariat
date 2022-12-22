@@ -42,51 +42,44 @@ describe('Login', () => {
   // });
 
   describe('POST /login with next query param and anchor', () => {
-    it('should keep the next query param', (done) => {
-      chai.request(app)
+    it('should keep the next query param', async () => {
+      const res = await chai.request(app)
         .post('/login?next=/users')
         .type('form')
         .send({
           emailInput: 'test@',
         })
         .redirects(0)
-        .end((err, res) => {
-          res.should.have.status(302);
-          res.header.location.should.equal('/login?next=/users');
-          done();
-        });
+      console.log(res)
+      res.should.have.status(302);
+      res.header.location.should.equal('/login?next=/users');
     });
 
-    it('should keep the anchor query param', (done) => {
-      chai.request(app)
+    it('should keep the anchor query param', async () => {
+      const res = await chai.request(app)
         .post('/login?next=/users&anchor=password')
         .type('form')
         .send({
           emailInput: '',
         })
         .redirects(0)
-        .end((err, res) => {
-          res.should.have.status(302);
-          res.header.location.should.equal('/login?next=/users&anchor=password');
-          done();
-        });
+
+      res.should.have.status(302);
+      res.header.location.should.equal('/login?next=/users&anchor=password');
     });
   });
 
   describe('POST /login without email', () => {
-    it('should redirect to login', (done) => {
-      chai.request(app)
+    it('should redirect to login', async () => {
+      const res = await chai.request(app)
         .post('/login')
         .type('form')
         .send({
           emailInput: '',
         })
         .redirects(0)
-        .end((err, res) => {
-          res.should.have.status(302);
-          res.header.location.should.equal('/login');
-          done();
-        });
+      res.should.have.status(302);
+      res.header.location.should.equal('/login');
     });
   });
 
@@ -114,19 +107,17 @@ describe('Login', () => {
   });
 
   describe('POST /login with email with accent in username beta', () => {
-    it('should redirect to login', (done) => {
-      chai.request(app)
+    it('should redirect to login', async () => {
+      const res = await chai.request(app)
         .post('/login')
         .type('form')
         .send({
           emailInput: 'prénom.nom@beta.gouv.fr',
         })
         .redirects(0)
-        .end((err, res) => {
-          res.should.have.status(302);
-          res.header.location.should.equal('/login');
-          done();
-        });
+
+      res.should.have.status(302);
+      res.header.location.should.equal('/login');
     });
   });
 

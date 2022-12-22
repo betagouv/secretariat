@@ -26,44 +26,65 @@
                     <a href="/account" id="account" 
                         class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
                         🔓 Mon compte
+                        <br><small>Administrer mon email, mes infos</small>
                     </a>
                 </li>
-                <li>
+                <li class="<% if(activeTab === 'community') { %>active<% } %> nav-sub-menu-container">
                     <a href="/community" id="community"
-                        class="nav-item <% if(activeTab === 'community') { %> active <% } %>">
+                        class="nav-item">
                         <img src="/static/favicon/favicon-16x16.png" /> Communauté
+                        <% if(activeTab !== 'community') { %>
+                            <br/><small>Rechercher un ou une membre, carte des membres, ...</small>
+                        <% } %>  
                     </a>
+                    <% if(activeTab === 'community') { %>
+                        <ul>
+                            <li>
+                                <a href="/community/" id="account" 
+                                    class="nav-sub-item active">
+                                    🔎 Rechercher un ou une membre
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/map" target="_blank"
+                                    class="nav-sub-item">
+                                📍 Carte des membres
+                                </a>
+                            </li>
+                        </ul>
+                    <% } %>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="/startups" id="startups"
                         class="nav-item <% if(activeTab === 'startups') { %> active <% } %>">
                         🚀 Startups
                     </a>
                 </li>
-                <li>
-                    <a href="/admin" id="admin" 
-                        class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
-                        ⚙️ Administration
-                    </a>
-                </li>
-                <li>
+                    <li>
+                        <a href="/admin" id="admin" 
+                            class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                            ⚙️ Administration
+                        </a>
+                    </li>
+                -->
+                <!-- <li>
                     <a href="/newsletters" id="newsletter" 
                         class="nav-item <% if(activeTab === 'newsletter') { %> active <% } %>">
                         ✉️ Infolettres internes
                     </a>
-                </li>
-                <li>
+                </li> -->
+                <!-- <li>
                     <a href="/resources" id="resources"
                         class="nav-item <% if(activeTab === 'resources') { %> active <% } %>">
                         📕 Ressources
                     </a>
-                </li>
-                <li>
+                </li> -->
+                <!-- <li>
                     <a href="/map" id="map"
                         class="nav-item <% if(activeTab === 'map') { %> active <% } %>">
                         📍 Carte des membres
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-end">
                     <hr />
                     <% if (currentUserId) { %>

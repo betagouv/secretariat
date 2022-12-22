@@ -6,14 +6,13 @@ import * as controllerUtils from '@/controllers/utils';
 import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
-import config from '@config';
 import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import betagouv from '@/betagouv';
 import * as searchCommune from '@/lib/searchCommune';
 import * as email from '@config/email.config'
-import { SendEmailProps } from '@/modules/email';
 import * as mattermost from '@/lib/mattermost'
 import { MattermostUser } from '@/lib/mattermost';
+import * as github from '@/lib/github'
 
 chai.use(chaiHttp);
 
@@ -47,19 +46,19 @@ describe('Onboarding', () => {
 
     beforeEach((done) => {
       getGithubMasterSha = sinon
-        .stub(controllerUtils, 'getGithubMasterSha')
+        .stub(github, 'getGithubMasterSha')
         .resolves({ headers: null, url: null, status: null, data: { object: { sha: 'sha' } } });
 
       createGithubBranch = sinon
-        .stub(controllerUtils, 'createGithubBranch')
+        .stub(github, 'createGithubBranch')
         .resolves({ headers: null, url: null, status: null, data: {} });
 
       createGithubFile = sinon
-        .stub(controllerUtils, 'createGithubFile')
+        .stub(github, 'createGithubFile')
         .resolves({ headers: null, url: null, status: null, data: {} });
 
       makeGithubPullRequest = sinon
-        .stub(controllerUtils, 'makeGithubPullRequest')
+        .stub(github, 'makeGithubPullRequest')
         .resolves({ headers: null, url: null, status: 201, data: { html_url: 'https://example.com/' } });
 
       sendEmailStub = sinon

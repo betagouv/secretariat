@@ -1,4 +1,4 @@
-type Status = 'independant' | 'admin' | 'service';
+export type Status = 'independant' | 'admin' | 'service';
 
 export interface Mission {
   start: string,
@@ -16,4 +16,11 @@ export interface DBMission {
   username: string,
   start: Date,
   end?: Date
+}
+
+export interface GithubMission {
+  start: Date,
+  end: Date,
+  status: Status,
+  employer: string
 }

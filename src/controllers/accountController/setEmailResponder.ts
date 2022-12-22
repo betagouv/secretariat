@@ -1,25 +1,16 @@
 import betagouv from "@/betagouv";
 import { addEvent, EventCode } from "@/lib/events";
+import { requiredError, isValidDate } from "@controllers/validator"
 
 export async function setEmailResponder(req, res) {
     const formValidationErrors: string[] = [];
-  
-    function requiredError(field) {
-      formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
+    const errorHandler = (field, message) => {
+      formValidationErrors[field] = message
     }
-  
-    function isValidDate(field, date) {
-      if (date instanceof Date && !Number.isNaN(date.getTime())) {
-        return date;
-      }
-      formValidationErrors.push(`${field} : la date n'est pas valide`);
-      return null;
-    }
-  
     const { from, to } = req.body;
-    const content = req.body.content || requiredError('content')
-    const startDate = isValidDate('nouvelle date de debut', new Date(from));
-    const endDate = isValidDate('nouvelle date de fin', new Date(to));
+    const content = req.body.content || requiredError('content', errorHandler)
+    const startDate = isValidDate('nouvelle date de debut', new Date(from), errorHandler);
+    const endDate = isValidDate('nouvelle date de fin', new Date(to), errorHandler);
   
     if (startDate && endDate) {
       if (endDate < startDate) {

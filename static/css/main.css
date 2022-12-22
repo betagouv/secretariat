@@ -1,6 +1,5 @@
 @import "/datagouvfr/main.css";
 
-
 /* override template.min.css */
 
 body {
@@ -177,6 +176,38 @@ h4, h5, h6 {
 
 .dashboard .side-menu a.nav-item {
   padding: var(--space-s) var(--space-l);
+  font-size: 1.1rem;
+}
+
+.dashboard .side-menu a.nav-sub-item {
+  padding: var(--space-s) var(--space-l);
+}
+
+.dashboard .side-menu li.nav-sub-menu-container {
+  /* padding: var(--space-s) var(--space-l); */
+  font-size: 1.1rem;
+}
+
+.dashboard .side-menu li.nav-sub-menu-container ul {
+  padding: var(--space-s) var(--space-l);
+  padding-top: 0px;
+  font-size: 0.9em;
+}
+
+.dashboard .side-menu li.nav-sub-menu-container a {
+  padding-bottom: 0.6em;
+}
+
+
+.dashboard .side-menu li.nav-sub-menu-container li a {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 1em;
+}
+
+.dashboard .side-menu li.nav-sub-menu-container.active {
+  background: linear-gradient(to right, #0053b3, #0053b3 5px, #ebeff3 5px, #ebeff3);
+  background: linear-gradient(to right, var(--theme-primary), var(--theme-primary) 5px, var(--lighter-grey) 5px, var(--lighter-grey));
 }
 
 .side-menu hr {

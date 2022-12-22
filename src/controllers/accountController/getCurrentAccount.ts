@@ -1,32 +1,40 @@
 import config from "@config";
-import knex from "@/db";
 import * as utils from "@controllers/utils";
 import { MemberWithPermission } from "@models/member";
 import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 import betagouv from "@/betagouv";
+import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import db from "@/db";
 
 export async function getCurrentAccount(req, res) {
     try {
       const [currentUser, marrainageState, dbUser, dbUserDetail] : [MemberWithPermission, string, DBUser, DBUserDetail] = await Promise.all([
         (async () => utils.userInfos(req.auth.id, true))(),
         (async () => {
-          const [state] = await knex('marrainage').where({ username: req.auth.id });
+          const [state] = await db('marrainage').where({ username: req.auth.id });
           return state;
         })(),
         (async () => {
-          const rows = await knex('users').where({ username: req.auth.id });
+          const rows = await db('users').where({ username: req.auth.id });
           return rows.length === 1 ? rows[0] : null;
         })(),
         (async () => {
           const hash = utils.computeHash(req.auth.id)
-          const rows = await knex('user_details').where({ hash });
+          const rows = await db('user_details').where({ hash });
           return rows.length === 1 ? rows[0] : {};
         })(),
       ]);
       const today = new Date()
       const title = 'Mon compte';
+      const updatePullRequest = await db('pull_requests')
+        .where({
+          username: req.auth.id,
+          status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED
+        })
+        .orderBy('created_at', 'desc')
+        .first()
       const hasPublicServiceEmail = dbUser.primary_email && !dbUser.primary_email.includes(config.domain)
       const gender = dbUserDetail.gender || 'NSP'
       let availableEmailPros = []
@@ -46,7 +54,7 @@ export async function getCurrentAccount(req, res) {
         hasPublicServiceEmail,
         canCreateProAccount: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         availableEmailPros,
-
+        updatePullRequest,
         canCreateRedirection: currentUser.canCreateRedirection,
         canChangePassword: currentUser.canChangePassword,
         communication_email: dbUser.communication_email,

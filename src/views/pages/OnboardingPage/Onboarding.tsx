@@ -488,7 +488,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         onChange={(e) => changeFormData('communication_email', e.value)}></CommunicationEmailSelect>
                 </label>}
             </div>
-            <button className="button" type="submit">Changer ces informations</button>
+            <button className="button" type="submit">Créer ma fiche</button>
         </form>
     </div>
 </div>

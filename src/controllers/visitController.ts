@@ -2,6 +2,7 @@ import BetaGouv from "../betagouv";
 import config from "@config";
 import knex from "../db";
 import * as utils from "./utils";
+import { requiredError, isValidDate, isValidPhoneNumber } from "@controllers/validator"
 
 const getUserInfoForUsername = (usersInfos, username) => usersInfos.find((userInfo) => userInfo.id === username);
 
@@ -50,17 +51,19 @@ export async function getForm(req, res) {
 
 export async function postForm(req, res) {
   try {
-    const formValidationErrors = [];
-
-    let visitors = req.body.visitorList || utils.requiredError(formValidationErrors, 'visiteurs');
-    const referent = req.body.referentUsername || utils.requiredError(formValidationErrors, 'référent');
-    const number = utils.isValidNumber(formValidationErrors, 'numéro', req.body.number);
-    let date = req.body.date || utils.requiredError(formValidationErrors, 'date');
-    date = utils.isValidDate(formValidationErrors, 'date de visite', new Date(date));
+    const formValidationErrors = {};
+    const errorHandler = (field, message) => {
+      formValidationErrors[field] = message
+    }
+    let visitors = req.body.visitorList || requiredError('visiteurs', errorHandler);
+    const referent = req.body.referentUsername || requiredError('référent', errorHandler);
+    const number = isValidPhoneNumber('numéro', req.body.number, errorHandler);
+    let date = req.body.date || requiredError('date', errorHandler);
+    date = isValidDate('date de visite', new Date(date), errorHandler);
     // when only one visitor is sent in the form, visitors is a string
     visitors = Array.isArray(visitors) ? visitors : [visitors];
 
-    if (formValidationErrors.length) {
+    if (Object.keys(formValidationErrors).length) {
       req.flash('error', formValidationErrors);
       throw new Error();
     }

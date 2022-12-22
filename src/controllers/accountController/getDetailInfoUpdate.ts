@@ -5,7 +5,7 @@ import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbU
 import { fetchCommuneDetails } from "@lib/searchCommune";
 import { InfoUpdatePage } from '@views';
 
-export async function getCurrentInfo(req, res) {
+export async function getDetailInfoUpdate(req, res) {
     try {
       const [dbUser, dbUserDetail] : [DBUser, DBUserDetail] = await Promise.all([
         (async () => {

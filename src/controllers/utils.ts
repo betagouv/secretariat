@@ -1,5 +1,4 @@
 import axios from "axios";
-import { request } from '@octokit/request';
 import _ from 'lodash';
 import nodemailer from 'nodemailer';
 import BetaGouv from '../betagouv';
@@ -25,12 +24,6 @@ const mailTransport = nodemailer.createTransport({
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
-  },
-});
-
-const requestWithAuth = request.defaults({
-  headers: {
-    authorization: `token ${config.githubToken}`,
   },
 });
 
@@ -129,27 +122,6 @@ export function isMobileFirefox(req) {
 
 export function requiredError(formValidationErrors, field) {
   formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
-}
-
-export function isValidDate(formValidationErrors, field, date) {
-  if (date instanceof Date && !Number.isNaN(date.getTime())) {
-    return date;
-  }
-  formValidationErrors.push(`${field} : la date n'est pas valide`);
-  return null;
-}
-
-export function isValidNumber(formValidationErrors, field, number) {
-  if (!number) {
-    requiredError(formValidationErrors, field);
-    return null;
-  }
-  const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gim;
-  if (numberRegex.test(number)) {
-    return number;
-  }
-  formValidationErrors.push(`${field} : le numéro n'est pas valide`);
-  return null;
 }
 
 export function isValidEmail(formValidationErrors,  field, email) {
@@ -325,56 +297,6 @@ export async function userInfos(id, isCurrentUser) {
 
     throw new Error(`Problème pour récupérer les infos du membre ${id}`);
   }
-}
-
-export function getGithubMasterSha() {
-  const url = `https://api.github.com/repos/${config.githubRepository}/git/ref/heads/master`;
-  return requestWithAuth(url);
-}
-
-export function createGithubBranch(sha, branch) {
-  const url = `https://api.github.com/repos/${config.githubFork}/git/refs`;
-  const ref = `refs/heads/${branch}`;
-  return requestWithAuth(`POST ${url}`, { sha, ref });
-}
-
-export function deleteGithubBranch(branch) {
-  const url = `https://api.github.com/repos/${config.githubFork}/git/refs/heads/${branch}`;
-  return requestWithAuth(`DELETE ${url}`);
-}
-
-export function getGithubFile(path, branch) {
-  const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
-
-  return requestWithAuth(`GET ${url}`, { branch });
-}
-
-export function createGithubFile(path, branch, content, sha = undefined) {
-  const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}`;
-  const message = `${
-    sha ? 'Mise à jour' : 'Création'
-  } de fichier ${path} sur la branche ${branch}`;
-  const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
-
-  return requestWithAuth(`PUT ${url}`, {
-    branch,
-    sha,
-    message,
-    content: base64EncodedContent,
-  });
-}
-
-export function makeGithubPullRequest(branch, title) {
-  const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
-  const head = `${config.githubFork.split('/')[0]}:${branch}`;
-  const base = 'master';
-
-  return requestWithAuth(`POST ${url}`, {
-    title,
-    head,
-    base,
-    maintainer_can_modify: true,
-  });
 }
 
 export function createUsername(firstName, lastName) {

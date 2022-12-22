@@ -1,39 +1,40 @@
 import config from "@config";
 import { addEvent, EventCode } from '@/lib/events'
 import { updateAuthorGithubFile } from "./usersControllerUtils";
+import { requiredError, isValidDate } from "@controllers/validator"
+
 import betagouv from "@/betagouv";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;
 
     try {
-        const formValidationErrors = [];
-
-        function requiredError(field) {
-            formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
-        }
-
-        function isValidDate(field, date) {
-            if (date instanceof Date && !Number.isNaN(date.getTime())) {
-                return date;
+        const formValidationErrors = {};
+        const errorHandler = (field, message) => {
+            const errorMessagesForKey = []
+            // get previous message
+            if (formValidationErrors[field]) {
+                errorMessagesForKey.push(formValidationErrors[field])
             }
-            formValidationErrors.push(`${field} : la date n'est pas valide`);
-            return null;
+            // add new message to array
+            errorMessagesForKey.push(message)
+            // make it one message
+            formValidationErrors[field] = errorMessagesForKey.join(',')
         }
 
         const { start, end } = req.body;
-        const newEnd = req.body.newEnd || requiredError('nouvelle date de fin');
+        const newEnd = req.body.newEnd || requiredError('nouvelle date de fin', errorHandler);
 
         const startDate = new Date(start);
-        const newEndDate = isValidDate('nouvelle date de fin', new Date(newEnd));
+        const newEndDate = isValidDate('nouvelle date de fin', new Date(newEnd), errorHandler);
 
         if (startDate && newEndDate) {
             if (newEndDate < startDate) {
-                formValidationErrors.push('nouvelle date de fin : la date doit être supérieure à la date de début');
+                errorHandler('nouvelle date de fin', 'La date doit être supérieure à la date de début');
             }
         }
 
-        if (formValidationErrors.length) {
+        if (Object.keys(formValidationErrors).length) {
             req.flash('error', formValidationErrors);
             throw new Error();
         }

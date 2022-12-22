@@ -1,10 +1,12 @@
 import { isValidGithubUserName } from "@/lib/github";
 
-export const requiredError = function (field, callback) {
+type ValidatorCalback = (field: string, message: string) => void
+
+export const requiredError = function (field: string, callback: ValidatorCalback) {
     callback(field, 'Le champ n‘est pas renseigné');
   }
 
-export const isValidDate = function (field, date, callback) {
+export const isValidDate = function (field: string, date: Date, callback: ValidatorCalback) {
   if (date instanceof Date && !Number.isNaN(date.getTime())) {
     return date;
   }
@@ -12,7 +14,7 @@ export const isValidDate = function (field, date, callback) {
   return null;
 }
 
-export const isValidUrl = function (field, url, callback) {
+export const isValidUrl = function (field: string, url: string, callback: ValidatorCalback) {
   if (!url || url.indexOf('http') === 0) {
     return url;
   }
@@ -20,7 +22,7 @@ export const isValidUrl = function (field, url, callback) {
   return null;
 }
 
-export const shouldBeOnlyUsername = function (field, value, callback) {
+export const shouldBeOnlyUsername = function (field: string, value: string, callback: ValidatorCalback) {
   if (isValidGithubUserName(value)) {
     return value;
   }
@@ -28,7 +30,7 @@ export const shouldBeOnlyUsername = function (field, value, callback) {
   return null;
 }
 
-export const isValidEmail = function (field, email, callback) {
+export const isValidEmail = function (field: string, email: string, callback: ValidatorCalback) {
   if (!email) {
     requiredError(field, callback);
     return null;
@@ -41,7 +43,7 @@ export const isValidEmail = function (field, email, callback) {
   return null;
 }
 
-export const isValidDomain = function (field, domain, callback) {
+export const isValidDomain = function (field:string, domain: string, callback: ValidatorCalback) {
   if (!domain) {
     requiredError(field, callback);
     return null;
@@ -56,6 +58,19 @@ export const isValidDomain = function (field, domain, callback) {
     'Autre'].includes(domain)) {
     return domain;
   }
-  callback('Le domaine n‘est pas valide');
+  callback(field, 'Le domaine n‘est pas valide');
+  return null;
+}
+
+export function isValidPhoneNumber(field: string, number: string, callback: ValidatorCalback) {
+  if (!number) {
+    requiredError(field, callback);
+    return null;
+  }
+  const numberRegex = /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/gim;
+  if (numberRegex.test(number)) {
+    return number;
+  }
+  callback(field, `${field} : le numéro n'est pas valide`);
   return null;
 }
