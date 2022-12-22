@@ -63,11 +63,6 @@
                             <% } %>
                         </p>
                     <% } %>
-                    <p>
-                        <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
-                    </p>
-                    <!-- <h6 class="margin-10-0 collapse-header">
-                    </h6> -->
                     <br>
                     <center>
                     <small>Une de ces informations n'est plus juste ?</small><br>
@@ -163,7 +158,7 @@
                 Mon email
             </h3>
             <% if (emailInfos) { %>
-                <p class="font-weight-bold text-color-blue"><%= emailInfos.email %>
+                <p> <span class="font-weight-bold">Email principal : </span><span class="font-weight-bold text-color-blue"><%= emailInfos.email %>
                 <% if (emailInfos.isPro) { %> 
                     (offre OVH Pro)
                 <% } %>
@@ -172,6 +167,12 @@
                 <% } %>
                 </p>
             <% } %>
+            <% if (!emailInfos && primaryEmail && !primaryEmail.includes(domain)) { %>
+            <p> <span class="font-weight-bold">Email principal : </span><span class="font-weight-bold text-color-blue"><%= primaryEmail %>
+            <% } %>
+            <p>
+                <span class="font-weight-bold">Email secondaire : </span> <%= secondaryEmail || 'Non renseigné' %>
+            </p>
             <% if (isAdmin) { %>
                 <% if (availableEmailPros.length && emailInfos && !emailInfos.isPro && !emailInfos.isExchange) { %>
                     <p>Il y a <%= availableEmailPros.length %> compte disponibles.</p>
