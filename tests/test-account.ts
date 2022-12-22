@@ -147,15 +147,11 @@ describe('Account', () => {
         });
     });
 
-    it('should display dates in french locale', (done) => {
-      chai.request(app)
+    it('should display dates in french locale', async () => {
+      const res = await chai.request(app)
         .get('/account')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .end((err, res) => {
-          res.text.should.include('du 03/11/2016');
-          res.text.should.include('du 03/11/2016');
-          done();
-        });
+      res.text.should.include('2040-11-12');
     });
 
     it('should set email responder', (done) => {

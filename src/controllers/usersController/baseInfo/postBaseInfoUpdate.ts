@@ -49,7 +49,7 @@ export async function postBaseInfoUpdate(req, res) {
         }))
         missions[missions.length-1].end = newEndDate
         const changes : GithubCardChange = { missions, role, startups };
-        const prInfo : PRInfo = {html_url: '', number: 18} //await updateAuthorGithubFile(username, changes);
+        const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth.id,
             action_on_username: username,
