@@ -5,6 +5,7 @@ import { BaseInfoUpdatePage } from '@views';
 import { MemberWithPermission } from "@/models/member";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@/db";
+import { StartupInfo } from "@/models/startup";
 
 export async function getBaseInfoUpdate(req, res) {
     try {
@@ -17,13 +18,21 @@ export async function getBaseInfoUpdate(req, res) {
       ]);
       const title = 'Mon compte';
       const formValidationErrors = {}
-      const startups = await betagouv.startupsInfos();
+      const startups : StartupInfo[] = await betagouv.startupsInfos();
       const startupOptions = startups.map(startup => {
         return {
           value: startup.id,
           label: startup.attributes.name
         }
       })
+      const userStartups = (currentUser.userInfos.startups || [])
+        .map(userStartup => {
+          const startupInfo = startups.find(s => s.id === userStartup)
+          return {
+            value: userStartup,
+            label: startupInfo?.attributes.name
+          }
+        })
       const updatePullRequest = await db('pull_requests')
         .where({
           username: req.auth.id,
@@ -36,7 +45,6 @@ export async function getBaseInfoUpdate(req, res) {
           title,
           formValidationErrors,
           currentUserId: req.auth.id,
-          startups,
           genderOptions,
           statusOptions,
           startupOptions,
@@ -44,7 +52,7 @@ export async function getBaseInfoUpdate(req, res) {
           username: req.auth.id,
           updatePullRequest,
           formData: {
-            startups: currentUser.userInfos.startups || [],
+            startups: userStartups || [],
             role: currentUser.userInfos.role,
             missions: currentUser.userInfos.missions,
             end: currentUser.userInfos.end,

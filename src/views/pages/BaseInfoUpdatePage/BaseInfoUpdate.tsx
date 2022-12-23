@@ -18,25 +18,30 @@ interface BaseInfoFormData {
     missions: Mission[],
     end: string,
     start: string,
-    startups: string[],
+    startups: {
+        value: string,
+        label: string
+    }[],
     role: string
 }
 
 interface BaseInfoUpdateProps {
-  title: string,
-  currentUserId: string,
-  errors: string[],
-  messages: string[],
-  activeTab: string,
-  request: Request,
-  formData: BaseInfoFormData,
-  statusOptions: Option[],
-  genderOptions: Option[],
-  formValidationErrors: any,
-  startups: string[],
-  startupOptions: Option[],
-  username: string,
-  updatePullRequest?: DBPullRequest
+    title: string,
+    currentUserId: string,
+    errors: string[],
+    messages: string[],
+    activeTab: string,
+    request: Request,
+    formData: BaseInfoFormData,
+    statusOptions: Option[],
+    genderOptions: Option[],
+    formValidationErrors: any,
+    startupOptions: {
+        value: string,
+        label: string
+    }[],
+    username: string,
+    updatePullRequest?: DBPullRequest
 }
 
 interface FormErrorResponse {
@@ -134,10 +139,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                 }}
                                 isMulti={true}
                                 placeholder={"Selectionne ta startup"}
-                                defaultValue={props.formData.startups.map(startup => ({
-                                    label: startup,
-                                    value: startup
-                                }))}
+                                defaultValue={props.formData.startups}
                             />
                             { !!formErrors['gender'] && 
                                 <p className="text-small text-color-red">{formErrors['startups']}</p>
