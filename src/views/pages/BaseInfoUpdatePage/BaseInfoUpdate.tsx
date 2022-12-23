@@ -139,10 +139,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                 }}
                                 isMulti={true}
                                 placeholder={"Selectionne ta startup"}
-                                defaultValue={props.formData.startups.map(startup => ({
-                                    label: startup,
-                                    value: startup
-                                }))}
+                                defaultValue={props.formData.startups}
                             />
                             { !!formErrors['gender'] && 
                                 <p className="text-small text-color-red">{formErrors['startups']}</p>
