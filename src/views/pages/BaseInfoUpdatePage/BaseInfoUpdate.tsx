@@ -38,7 +38,7 @@ interface BaseInfoUpdateProps {
     formValidationErrors: any,
     startupOptions: {
         value: string,
-        labrel: string
+        label: string
     }[],
     username: string,
     updatePullRequest?: DBPullRequest

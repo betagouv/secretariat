@@ -45,7 +45,6 @@ export async function getBaseInfoUpdate(req, res) {
           title,
           formValidationErrors,
           currentUserId: req.auth.id,
-          startups,
           genderOptions,
           statusOptions,
           startupOptions,
