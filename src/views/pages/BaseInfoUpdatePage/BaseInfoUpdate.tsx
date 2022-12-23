@@ -18,25 +18,30 @@ interface BaseInfoFormData {
     missions: Mission[],
     end: string,
     start: string,
-    startups: string[],
+    startups: {
+        value: string,
+        label: string
+    }[],
     role: string
 }
 
 interface BaseInfoUpdateProps {
-  title: string,
-  currentUserId: string,
-  errors: string[],
-  messages: string[],
-  activeTab: string,
-  request: Request,
-  formData: BaseInfoFormData,
-  statusOptions: Option[],
-  genderOptions: Option[],
-  formValidationErrors: any,
-  startups: string[],
-  startupOptions: Option[],
-  username: string,
-  updatePullRequest?: DBPullRequest
+    title: string,
+    currentUserId: string,
+    errors: string[],
+    messages: string[],
+    activeTab: string,
+    request: Request,
+    formData: BaseInfoFormData,
+    statusOptions: Option[],
+    genderOptions: Option[],
+    formValidationErrors: any,
+    startupOptions: {
+        value: string,
+        labrel: string
+    }[],
+    username: string,
+    updatePullRequest?: DBPullRequest
 }
 
 interface FormErrorResponse {
