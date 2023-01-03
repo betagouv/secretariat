@@ -258,7 +258,6 @@ export async function userInfos(id, isCurrentUser) {
       hasUserInfos &&
       !isExpired &&
       emailInfos === null;
-
     // On peut créer une redirection & changer un password si:
     // - la page fiche Github existe
     // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)

@@ -1,5 +1,6 @@
 
 class routes {
+  static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-ce-passe-t-il'
   static ADMIN = '/admin'
   static ADMIN_MATTERMOST = '/admin/mattermost'
   static ADMIN_MATTERMOST_MESSAGE_API = '/api/admin/mattermost/message/users'
@@ -17,6 +18,7 @@ class routes {
   static USER_UPDATE_PRIMARY_EMAIL = '/users/:username/primary_email'
   static USER_UPDATE_END_DATE = '/users/:username/end-date'
   static USER_UPGRADE_EMAIL = '/users/:username/email-upgrade'
+  static API_GET_USER_INFO = '/api/users/:username'
   // account
   static ACCOUNT_GET = '/account'
   static ACCOUNT_GET_BASE_INFO_FORM = '/account/base-info'

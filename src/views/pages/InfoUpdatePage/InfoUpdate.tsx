@@ -4,16 +4,9 @@ import type { Request } from 'express';
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { InnerPageLayout } from '../components/InnerPageLayout';
 import CitySelect from '../components/CitySelect';
+import { CommuneInfo } from '@/models/communeInfo'
+import { Option } from '@/models/misc'
 
-interface CommuneInfo {
-    nom: string,
-    codesPostaux?: string[]
-}
-
-interface Option {
-  key: string,
-  name: string
-}
 
 interface FormData {
     gender: string,

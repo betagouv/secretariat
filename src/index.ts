@@ -24,6 +24,7 @@ import * as startupController from '@controllers/startupController';
 import * as usersController from '@controllers/usersController';
 import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
+import { getWhatIsGoingOnWithMemberController } from '@/controllers/whatIsGoingOnWithMemberController/whatIsGoingOnWithMemberController';
 import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
@@ -92,6 +93,8 @@ app.use(
       '/marrainage/accept',
       '/marrainage/decline',
       '/notifications/github',
+      routes.WHAT_IS_GOING_ON_WITH_MEMBER,
+      /api\/users\/*/,
       routes.ONBOARDING,
       routes.ONBOARDING_ACTION,
       /hook\/*/,
@@ -129,6 +132,8 @@ app.post('/login', loginController.postLogin);
 app.get('/signin', loginController.getSignIn);
 app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
+// que ce passe-t-il
+app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER, getWhatIsGoingOnWithMemberController)
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
@@ -139,6 +144,7 @@ app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
 app.post(routes.USER_UPDATE_SECONDARY_EMAIL, usersController.manageSecondaryEmailForUser);
 app.post(routes.USER_UPDATE_PRIMARY_EMAIL, usersController.managePrimaryEmailForUser);
 app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
+app.get(routes.API_GET_USER_INFO, usersController.getUserInfo);
 //
 app.post(
   '/notifications/github',
