@@ -17,7 +17,7 @@ export const PageLayout = <T extends HasRequest>(Component: (props: T) => JSX.El
           <h3>Espace membre de BetaGouv</h3>
         </a>
       </header>
-      <main role="main">
+      <main role="main" style={{ minHeight: 1500 }}>
         <section className="section section-grey no-padding">
           <Header />
           <Component {...props} />
