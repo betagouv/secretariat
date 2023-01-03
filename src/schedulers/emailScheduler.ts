@@ -81,7 +81,7 @@ export async function createEmailAddresses() {
 
 export async function reinitPasswordEmail() {
   const users : Member[] = await BetaGouv.usersInfos();
-  const expiredUsers : Member[] = utils.getExpiredUsers(users, 1);
+  const expiredUsers : Member[] = utils.getExpiredUsers(users, 5);
   const dbUsers : DBUser[] = await knex('users')
     .whereIn(
       'username', expiredUsers.map(user => user.id)

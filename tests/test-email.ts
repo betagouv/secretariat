@@ -33,7 +33,7 @@ describe('getUnregisteredOVHUsers', () => {
 
 describe('Reinit password for expired users', () => {
   const datePassed = new Date();
-  datePassed.setDate(datePassed.getDate() - 1);
+  datePassed.setDate(datePassed.getDate() - 5);
   const formatedDate = utils.formatDateYearMonthDay(datePassed);
   const users = [
     {
