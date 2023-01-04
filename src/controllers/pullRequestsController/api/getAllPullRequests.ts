@@ -4,7 +4,7 @@ import * as github from '@/lib/github';
 export async function getAllPullRequests(req, res) {    
     try {
         const { data: pullRequests }  = await github.getPullRequests(
-            config.githubOrganizationName, 'beta.gouv.fr', req.params.status || 'open')
+            config.githubOrganizationName, config.githubBetagouvTeam, req.params.status || 'open')
         res.json({
             pullRequests: pullRequests
         });
