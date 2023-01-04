@@ -232,7 +232,10 @@ export const UpdateEndDateScreen = function(props) {
                 </div>
             </div>
         </div>}
-        { dateStep === 'waitingForPR' && <UpdateEndDatePendingScreen next={props.next} pullRequestURL={pullRequestURL}/>}
+        { dateStep === 'waitingForPR' && <UpdateEndDatePendingScreen
+            user={props.user}
+            next={props.next}
+            pullRequestURL={pullRequestURL}/>}
     </>
 }
 
@@ -254,6 +257,7 @@ export const UpdateEndDatePendingScreen = function(props) {
             const pullRequestURLs = pullRequests.map(pr => pr.html_url)
             if (!pullRequestURLs.includes(props.pullRequestURL)) {
                 setPRStatus('merged')
+                setSeconds(DEFAULT_TIME)
             }
         } catch (e) {
 
@@ -267,6 +271,7 @@ export const UpdateEndDatePendingScreen = function(props) {
             const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
             if (isDateInTheFuture) {
                 setPRStatus('validated')
+                setSeconds(DEFAULT_TIME)
                 // user date is now in the future
             }
         } catch (e) {
@@ -304,7 +309,7 @@ export const UpdateEndDatePendingScreen = function(props) {
     return <>
         {prStatus === 'notMerged' && <><div className="notification">
             <p>Une pull request en attente : </p>
-            <a href={pullRequestURL}>{pullRequestURL}</a>
+            <a href={pullRequestURL} target="_blank">{pullRequestURL}</a>
         </div>
         <p>Il faut la merger pour que le changement de date de fin soit prise en compte :)</p>
         <p>Suite au merge la prise en compte peut prendre 10 minutes</p></>}
