@@ -369,9 +369,9 @@ export const WhichMemberScreen = function(props) {
 export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
     const createEmail = async () => {
-        console.log('Call create email')
         try {
-            const res = await axios.post(routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id), {
+            const api = routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id)
+            const res = await axios.post(api, {
                 to_email: emailValue
             })
             if (res.status === 200) {
@@ -397,8 +397,8 @@ export const CreateEmailScreen = function(props) {
                 </label>
             <input
                 defaultValue={props.secondaryEmail}
-                onChange={(value) => {
-                    setEmailValue(value)
+                onChange={(event) => {
+                    setEmailValue(event.target.value)
                 }}
                 type="email" required />
             </div>
@@ -414,7 +414,6 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const noEmail = 'noEmail'
 
     function startFix(fixeItems) {
-        console.log(fixes)
         setFixes(fixeItems)
         setStep(STEP.updateEndDate)
     }
