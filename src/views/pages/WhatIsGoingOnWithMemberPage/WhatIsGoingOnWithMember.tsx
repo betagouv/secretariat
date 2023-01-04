@@ -261,6 +261,7 @@ export const UpdateEndDatePendingScreen = function(props) {
     }
 
     const checkPRChangesAreApplied = async () => {
+        console.log('CALL CHECK PR CHANGES ARE applied')
         try {
             const data = await axios.get(routes.API_GET_USER_INFO.replace(':username', props.user.userInfos.id)).then(resp => resp.data)
             const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
@@ -269,7 +270,7 @@ export const UpdateEndDatePendingScreen = function(props) {
                 // user date is now in the future
             }
         } catch (e) {
-
+            console.error(e)
         }
     }
 
