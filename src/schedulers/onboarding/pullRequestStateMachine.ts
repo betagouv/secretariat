@@ -142,7 +142,7 @@ export async function pullRequestStateMachine() {
     })
     const { data: pullRequests }  = await github.getPullRequests(
         config.githubOrganizationName, 'beta.gouv.fr', 'open')
-    const pullRequestURLs = pullRequests.map(pr => pr.url)
+    const pullRequestURLs = pullRequests.map(pr => pr.html_url)
     for (const dbPullRequest of dbPullRequests) {
         try {
             if (dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING) {
