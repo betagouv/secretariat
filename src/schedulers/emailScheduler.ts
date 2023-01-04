@@ -40,6 +40,7 @@ export async function setEmailAddressesActive() {
             email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
             firstname: utils.capitalizeWords(user.username.split('.')[0]),
             lastname: utils.capitalizeWords(user.username.split('.')[1]),
+            domaine: githubUsers.find((x) => user.username === x.id).domaine
           }] 
         })
       }
