@@ -71,6 +71,7 @@ export async function postBaseInfoUpdate(req, res) {
         req.flash('message', message);
         res.json({
             message,
+            pr_url: prInfo.html_url
         });
     } catch (err) {
         res.status(400).json({

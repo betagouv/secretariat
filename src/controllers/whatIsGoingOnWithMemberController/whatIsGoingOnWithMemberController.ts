@@ -29,7 +29,6 @@ export async function getWhatIsGoingOnWithMemberController(req, res) {
         }
     }));
   } catch (err) {
-    console.log('ERROR : GET QUE CE PASSE_TIL')
     console.error(err);
     return res.send('Erreur interne : impossible de récupérer les informations de la communauté');
   }

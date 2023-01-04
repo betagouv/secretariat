@@ -20,6 +20,11 @@ enum STEP {
     everythingIsGood = "everythingIsGood"
 }
 
+interface FormErrorResponse {
+    errors?: Record<string,string[]>
+    message: string
+}
+
 interface Props {
     title?: string,
     errors?: string[],
@@ -164,17 +169,41 @@ const MemberComponent = function({
 export const UpdateEndDateScreen = function(props) {
     const [date, setDate] = React.useState(props.date)
     const [dateStep, setDateStep] = React.useState('changeDate')
+    const [isSaving, setIsSaving] = React.useState(false)
+    const [formErrors, setFormErrors] = React.useState({});
+    const [errorMessage, setErrorMessage] = React.useState('');
+    const [pullRequestURL, setPullRequestURL] = React.useState();
+    console.log(props.user)
     function changeFormData(value) {
         setDate(value)
     }
 
     function updateDate() {
-        setDateStep('waitingForPR')
+        if (isSaving) {
+            return
+        }
+        setIsSaving(true)
+        axios.post(routes.ACCOUNT_POST_BASE_INFO_FORM.replace(':username', props.user.userInfos.id), {
+            end: date
+        }).then((resp) => {
+            setPullRequestURL(resp.data.pr_url)
+            setDateStep('waitingForPR')
+        }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
+            const ErrorResponse : FormErrorResponse = data
+            setErrorMessage(ErrorResponse.message)
+            setIsSaving(false)
+            if (ErrorResponse.errors) {
+                setFormErrors(ErrorResponse.errors)
+            }
+        })
     }
 
     return <>
         <h2>Mise à jour de la date de fin pour {props.user.userInfos.fullname}</h2>
         { dateStep === 'changeDate' && <div className="no-margin">
+            { !!errorMessage && 
+                <p className="text-small text-color-red">{errorMessage}</p>
+            }
             <div className="form__group">
                 <label htmlFor="end">
                     <strong>Fin de la mission (obligatoire)</strong><br />
@@ -188,8 +217,8 @@ export const UpdateEndDateScreen = function(props) {
                     dateFormat='dd/MM/yyyy'
                     selected={date}
                     onChange={(date:Date) => changeFormData(date)} />
-                { !!props.formErrors['nouvelle date de fin'] && 
-                    <p className="text-small text-color-red">{props.formErrors['nouvelle date de fin']}</p>
+                { !!formErrors['nouvelle date de fin'] && 
+                    <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
                 }
             </div>
             <div className="form__group">
@@ -204,7 +233,7 @@ export const UpdateEndDateScreen = function(props) {
                 </div>
             </div>
         </div>}
-        { dateStep === 'waitingForPR' && <UpdateEndDatePendingScreen next={props.next}/>}
+        { dateStep === 'waitingForPR' && <UpdateEndDatePendingScreen next={props.next} pullRequestURL={pullRequestURL}/>}
     </>
 }
 
@@ -216,29 +245,66 @@ const AccountPendingCreationScreen = function(props) {
 }
 
 export const UpdateEndDatePendingScreen = function(props) {
-    const [seconds, setSeconds] = React.useState(120)
+    const DEFAULT_TIME = 60
+    const [seconds, setSeconds] = React.useState(DEFAULT_TIME)
     const [prStatus, setPRStatus] = React.useState('notMerged')
+    const { pullRequestURL } = props
+    const checkPR = async () => {
+        try {
+            const pullRequests = await axios.get(routes.PULL_REQUEST_GET_PRS).then(resp => resp.data.pullRequests)
+            const pullRequestURLs = pullRequests.map(pr => pr.url)
+            if (!pullRequestURLs.includes(props.pullRequestURL)) {
+                setPRStatus('merged')
+            }
+        } catch (e) {
+
+        }
+    }
+
+    const checkPRChangesAreApplied = async () => {
+        try {
+            const data = await axios.get(routes.API_GET_USER_INFO.replace(':username', props.user.userInfos.id)).then(resp => resp.data)
+            const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
+            if (isDateInTheFuture) {
+                setPRStatus('validated')
+                // user date is now in the future
+            }
+        } catch (e) {
+
+        }
+    }
+
     React.useEffect(() => {
-        setInterval(() => {
-            setSeconds((prev) => {
-                if (prev - 1 === 0) return 120
-                if (prev === 110 && prStatus === 'notMerged') {
-                    setPRStatus('merged')
-                    return 120
-                }
-                if (prev === 110 && prStatus === 'merged') {
-                    setPRStatus('validated')
-                    return 120
-                }
-                return prev - 1
-            })
+        // exit early when we reach 0
+        if (!seconds) return;
+    
+        // save intervalId to clear the interval when the
+        // component re-renders
+        const intervalId = setInterval(() => {
+            const prev = seconds
+            if (seconds === DEFAULT_TIME && prStatus === 'notMerged') {
+                checkPR()
+            }
+            if (seconds === DEFAULT_TIME && prStatus === 'merged') {
+                checkPRChangesAreApplied()
+            }
+            if (prev - 1 === 0) {
+                setSeconds(DEFAULT_TIME)
+            } else {
+                setSeconds(seconds - 1)
+            }
         }, 1000);
-    }, [prStatus]);
+    
+        // clear interval on re-render to avoid memory leaks
+        return () => clearInterval(intervalId);
+        // add seconds as a dependency to re-rerun the effect
+        // when we update it
+      }, [seconds, prStatus]);
 
     return <>
         {prStatus === 'notMerged' && <><div className="notification">
             <p>Une pull request en attente : </p>
-            <a href="https://github.com/betagouv/beta.gouv.fr/pull/12705/files">https://github.com/betagouv/beta.gouv.fr/pull/12705/files</a>
+            <a href={pullRequestURL}>{pullRequestURL}</a>
         </div>
         <p>Il faut la merger pour que le changement de date de fin soit prise en compte :)</p>
         <p>Suite au merge la prise en compte peut prendre 10 minutes</p></>}
