@@ -251,7 +251,7 @@ export const UpdateEndDatePendingScreen = function(props) {
     const checkPR = async () => {
         try {
             const pullRequests = await axios.get(routes.PULL_REQUEST_GET_PRS).then(resp => resp.data.pullRequests)
-            const pullRequestURLs = pullRequests.map(pr => pr.url)
+            const pullRequestURLs = pullRequests.map(pr => pr.html_url)
             if (!pullRequestURLs.includes(props.pullRequestURL)) {
                 setPRStatus('merged')
             }
