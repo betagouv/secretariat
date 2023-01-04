@@ -181,7 +181,9 @@ export const UpdateEndDateScreen = function(props) {
         }
         setIsSaving(true)
         axios.post(routes.ACCOUNT_POST_BASE_INFO_FORM.replace(':username', props.user.userInfos.id), {
-            end: date
+            end: date,
+            role: props.user.userInfos.role,
+            startups: props.user.userInfos.startups
         }).then((resp) => {
             setPullRequestURL(resp.data.pr_url)
             setDateStep('waitingForPR')
