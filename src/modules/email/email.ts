@@ -267,6 +267,7 @@ export type SendCampaignEmailProps = {
 }
 
 export interface Contact {
+    domaine?: string,
     emailBlacklisted?: boolean,
     email: string,
     firstname?: string,
