@@ -371,7 +371,7 @@ export const CreateEmailScreen = function(props) {
     const createEmail = async () => {
         console.log('Call create email')
         try {
-            const res = await axios.post(`${routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id)}`, {
+            const res = await axios.post(routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id), {
                 to_email: emailValue
             })
             if (res.status === 200) {
