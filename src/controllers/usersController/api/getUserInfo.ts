@@ -1,4 +1,3 @@
-import betagouv from "@/betagouv";
 import * as utils from "@controllers/utils";
 import { MemberWithPermission } from "@/models/member";
 import db from "@/db";
