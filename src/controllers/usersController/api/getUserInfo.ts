@@ -24,10 +24,6 @@ export async function getUserInfo(req, res) {
     
         const dbUser = await db('users').where({ username }).first()
         const secondaryEmail = dbUser ? dbUser.secondary_email : '';
-        let availableEmailPros = []
-        if (req.auth ? config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id) : false) {
-        availableEmailPros = await betagouv.getAvailableProEmailInfos()
-        }
         res.json({
             username,
             currentUserId: req.auth ? req.auth.id : undefined,
