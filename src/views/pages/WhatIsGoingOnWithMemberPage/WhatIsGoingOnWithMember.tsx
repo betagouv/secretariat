@@ -369,8 +369,9 @@ export const WhichMemberScreen = function(props) {
 export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
     const createEmail = async () => {
+        console.log('Call create email')
         try {
-            const res = await axios.post(`${routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.username)}`, {
+            const res = await axios.post(`${routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id)}`, {
                 to_email: emailValue
             })
             if (res.status === 200) {
@@ -379,6 +380,7 @@ export const CreateEmailScreen = function(props) {
                 throw new Error('Email was not created')
             }
         } catch(e) {
+            console.error(e)
             alert('Un erreur est survenue')
         }
     }
@@ -436,7 +438,10 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             <p>Une fois qu'elle sera a jour tu pourras recréer un email pour {user.userInfos.fullname}</p>
         }</>
     } else if (step === STEP.createEmail) {
-        stepView = <CreateEmailScreen secondaryEmail={user.secondaryEmail} next={next} user={user} />
+        stepView = <CreateEmailScreen
+            secondaryEmail={user.secondaryEmail}
+            next={next}
+            user={user} />
     } else if (step === STEP.accountPendingCreation) {
         stepView = <AccountPendingCreationScreen next={next} user={user} />
     } else if (step === STEP.everythingIsGood) {
