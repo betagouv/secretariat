@@ -199,7 +199,8 @@ export async function importContactsToMailingLists({
     let sibContacts = contacts.map(contact => ({
         email: contact.email,
         NOM: contact.lastname,
-        PRENOM: contact.firstname
+        PRENOM: contact.firstname,
+        DOMAINE: contact.domaine
     }))
     requestContactImport.fileBody = objectArrayToCSV(sibContacts)
     const listIds = listTypes.map(id => MAILING_LIST_ID_BY_TYPE[id])
