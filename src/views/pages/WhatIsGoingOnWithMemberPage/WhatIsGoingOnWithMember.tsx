@@ -415,6 +415,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
 
     function startFix(fixeItems) {
         setFixes(fixeItems)
+        console.log(fixes)
         setStep(STEP.updateEndDate)
     }
     function next(step) {
