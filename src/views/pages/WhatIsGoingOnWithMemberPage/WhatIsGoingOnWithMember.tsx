@@ -101,10 +101,7 @@ const MemberComponent = function({
     emailInfos,
     isExpired,
     userInfos,
-    canCreateEmail,
-    hasPublicServiceEmail,
     primaryEmailStatus,
-    username,
     startFix
 }) {
     const steps = []
@@ -401,19 +398,14 @@ export const CreateEmailScreen = function(props) {
 }
 
 export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
-    const {
-        hasPublicServiceEmail
-    } = props
     const [step, setStep] = React.useState(STEP.whichMember)
     const [fixes, setFixes] = React.useState([])
-    const [formErrors, setFormErrors] = React.useState({})
-    const [formData, setFormData] = React.useState(props.formData)
     const [user, setUser] = React.useState(undefined)
     const noEmail = 'noEmail'
 
-    function startFix(fixes) {
-        console.log('LCS START FIXES')
-        setFixes(fixes)
+    function startFix(fixeItems) {
+        console.log(fixes)
+        setFixes(fixeItems)
         setStep(STEP.updateEndDate)
     }
     function next(step) {
@@ -429,9 +421,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     } else if (step === STEP.updateEndDate) {
         stepView = <UpdateEndDateScreen
             user={user}
-            formData={formData}
-            next={next}
-            formErrors={formErrors} />
+            next={next} />
     } else if (step === STEP.waitingForDateToBeUpdated) {
         stepView = <><p>La date est en cours d'update, elle devrait être mise à jour d'ici 15 minutes</p>
         {noEmail &&
