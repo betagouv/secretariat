@@ -23,6 +23,10 @@ enum STEP {
     showMember = "showMember"
 }
 
+type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfos,
+    isExpired?: boolean,
+    primaryEmailStatus: string }
+
 interface FormErrorResponse {
     errors?: Record<string,string[]>
     message: string
@@ -415,7 +419,7 @@ export const CreateEmailScreen = function(props) {
 export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const [step, setStep] = React.useState(STEP.whichMember)
     const [fixes, setFixes] = React.useState([STEP.whichMember, STEP.showMember])
-    const [user, setUser] : [MemberWithPermission, (user: MemberWithPermission) => void] = React.useState(undefined)
+    const [user, setUser] : [MemberAllInfo, (user: MemberAllInfo) => void] = React.useState(undefined)
     const noEmail = 'noEmail'
 
     React.useEffect(() => {
