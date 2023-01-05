@@ -7,7 +7,8 @@ import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
 
-export async function createEmailAndUpdateSecondaryEmail(username: string, isCurrentUser: boolean) {
+export async function createEmailAndUpdateSecondaryEmail({username, email} : {username:string, email:string}, currentUser: string) {
+    const isCurrentUser = currentUser === username;
     const [user, dbUser]: [MemberWithPermission, DBUser] = await Promise.all([
         utils.userInfos(username, isCurrentUser),
         knex('users').where({ username }).first()
@@ -38,22 +39,23 @@ export async function createEmailAndUpdateSecondaryEmail(username: string, isCur
     let emailIsRecreated = false
     if (dbUser) {
         emailIsRecreated = dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED
-        await updateSecondaryEmail(username, req.body.to_email)
+        await updateSecondaryEmail(username, email)
     } else {
         await knex('users').insert({
             username,
             primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: req.body.to_email
+            secondary_email: email
         })
     }
-    await createEmail(username, req.auth.id, emailIsRecreated);
+    await createEmail(username, currentUser, emailIsRecreated);
 }
 
 export async function createEmailForUser(req, res) {
     const username = req.sanitize(req.params.username);
-    const isCurrentUser = req.auth.id === username;
+    const email = req.sanitize(req.body.email);
+
     try {
-        createEmailAndUpdateSecondaryEmail(username, isCurrentUser)
+        createEmailAndUpdateSecondaryEmail({username, email}, req.auth.id)
         req.flash('message', 'Le compte email a bien été créé.');
         res.redirect(`/community/${username}`);
     } catch (err) {
