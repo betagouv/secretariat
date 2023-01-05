@@ -1,10 +1,10 @@
 import React from 'react'
+
 import DatepickerSelect from '../components/DatepickerSelect'
 import { PageLayout } from '../components/PageLayout';
-
 import MemberSelect from "../components/MemberSelect"
 import { StartupInfo } from '@/models/startup';
-import { Member } from '@/models/member';
+import { Member, MemberWithPermission } from '@/models/member';
 import { CommuneInfo } from '@/models/communeInfo';
 import { Option } from '@/models/misc';
 import { hydrateOnClient } from '../../hydrateOnClient';
@@ -15,9 +15,12 @@ enum STEP {
     whichMember = 'whichMember',
     updateEndDate = 'updateEndDate',
     createEmail = 'createEmail',
+    showUserInfo = 'showUserInfo',
     waitingForDateToBeUpdated = "waitingForDateToBeUpdated",
     accountPendingCreation = "accountPendingCreation",
-    everythingIsGood = "everythingIsGood"
+    everythingIsGood = "everythingIsGood",
+    emailSuspended = "emailSuspended",
+    showMember = "showMember"
 }
 
 interface FormErrorResponse {
@@ -104,17 +107,20 @@ const MemberComponent = function({
     primaryEmailStatus,
     startFix
 }) {
-    const steps = []
+    const steps = [STEP.whichMember, STEP.showMember]
     const showSteps = (!!isExpired || !emailInfos || primaryEmailStatus === 'suspendu' || (!emailInfos && !!emailInfos.isBlocked))
     if (!!isExpired) {
-        steps.push('changeDate')
+        steps.push(STEP.updateEndDate)
+        steps.push(STEP.waitingForDateToBeUpdated)
     }
     if (!emailInfos) {
-        steps.push('recreateEmail')
+        steps.push(STEP.createEmail)
+        steps.push(STEP.accountPendingCreation)
     }
     if (primaryEmailStatus === 'suspendu' || !!emailInfos && !!emailInfos.isBlocked) {
-        steps.push('changePassword')
-    }    
+        steps.push(STEP.emailSuspended)
+    }
+    steps.push(STEP.everythingIsGood)
     return <div>
     <h2>{userInfos.fullname}</h2>
     {!!userInfos && <UserInfo userInfos={userInfos}/>}
@@ -157,7 +163,7 @@ const MemberComponent = function({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'}}>
-            <button className="button" onClick={startFix} role="button">Commencer la procédure - étape 1 : {steps[0]}</button>
+            <button className="button" onClick={() => startFix(steps)} role="button">Commencer la procédure - étape 1 : {steps[0]}</button>
         </div>
     </>}
 </div>
@@ -170,7 +176,6 @@ export const UpdateEndDateScreen = function(props) {
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
     const [pullRequestURL, setPullRequestURL] = React.useState();
-    console.log(props.user)
     function changeFormData(value) {
         setDate(value)
     }
@@ -265,7 +270,6 @@ export const UpdateEndDatePendingScreen = function(props) {
     }
 
     const checkPRChangesAreApplied = async () => {
-        console.log('CALL CHECK PR CHANGES ARE applied')
         try {
             const data = await axios.get(routes.API_GET_USER_INFO.replace(':username', props.user.userInfos.id)).then(resp => resp.data)
             const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
@@ -343,6 +347,8 @@ export const WhichMemberScreen = function(props) {
 
     return <>
             {!memberInfo && <form className="no-margin">
+                <h2>Qu'est-ce qu'il se passe ?</h2>
+                <p>Sélectionne le membre que tu veux aider :</p>
                 <div className="form__group">
                     <label><strong>Nom ou prénom du membre</strong></label>
                     <MemberSelect
@@ -361,10 +367,9 @@ export const WhichMemberScreen = function(props) {
                     </button>
                 </div>
             </form>}
-            { !!memberInfo && <MemberComponent {...memberInfo} startFix={props.startFix}/>
-            }
         </>
 }
+
 
 export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
@@ -409,26 +414,48 @@ export const CreateEmailScreen = function(props) {
 
 export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const [step, setStep] = React.useState(STEP.whichMember)
-    const [fixes, setFixes] = React.useState([])
-    const [user, setUser] = React.useState(undefined)
+    const [fixes, setFixes] = React.useState([STEP.whichMember, STEP.showMember])
+    const [user, setUser] : [MemberWithPermission, (user: MemberWithPermission) => void] = React.useState(undefined)
     const noEmail = 'noEmail'
 
+    React.useEffect(() => {
+        history.replaceState({
+            step: STEP.whichMember
+        }, '')
+        window.onpopstate = e => {
+            setStep(e.state.step)
+            //your code...
+        }
+    }, [])
     function startFix(fixeItems) {
         setFixes(fixeItems)
-        console.log(fixes)
-        setStep(STEP.updateEndDate)
+        next(fixeItems)
     }
-    function next(step) {
-        setStep(step)
+    function next(steps?: STEP[], paramUser?: MemberWithPermission) {
+        const currentStepIndex = (steps || fixes).findIndex(s => s === step)
+        const nextStep = (steps || fixes)[currentStepIndex + 1]
+        setStep(nextStep)
+        history.pushState({
+            step: nextStep,
+            memberId: (paramUser || user).userInfos.id,
+        }, '', `${window.location}?memberId=${(paramUser || user).userInfos.id}`)
     }
     let stepView
     if (step === STEP.whichMember) {
         stepView = <WhichMemberScreen
             users={props.users}
-            startFix={startFix}
-            setUser={setUser}
+            setUser={(user) => {
+                setUser(user)
+                next([STEP.whichMember, STEP.showMember], user)
+            }}
         />
-    } else if (step === STEP.updateEndDate) {
+    } else if (step === STEP.showMember) {
+        stepView = <MemberComponent
+            {...user}
+            startFix={startFix}/>
+    }
+    
+    else if (step === STEP.updateEndDate) {
         stepView = <UpdateEndDateScreen
             user={user}
             next={next} />
