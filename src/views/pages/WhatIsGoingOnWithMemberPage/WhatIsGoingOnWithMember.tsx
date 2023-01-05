@@ -251,7 +251,7 @@ export const UpdateEndDateScreen = function(props) {
 const AccountPendingCreationScreen = function(props) {
     return <div><h2>Création du compte en cours ...</h2>
         <p>Cela peut prendre jusqu'a 10 minutes</p>
-        <button className="button" onClick={() => props.next(STEP.everythingIsGood)}>C'est bon l'email a été envoyé</button>
+        <button className="button" onClick={() => props.next()}>C'est bon l'email a été envoyé</button>
     </div>
 }
 
@@ -326,7 +326,7 @@ export const UpdateEndDatePendingScreen = function(props) {
         </>}
         {prStatus === 'validated' && <>
             <p>La PR est à jour c'est bon on peut passé à l'étape suivante :)</p>
-            <button className={'button'} onClick={() => props.next(STEP.createEmail)}>Passer à l'étape suivante</button>
+            <button className={'button'} onClick={() => props.next()}>Passer à l'étape suivante</button>
         </>}
         {prStatus !== 'validated' && <p>Recheck dans {seconds} secondes</p>}
     </>
@@ -384,7 +384,7 @@ export const CreateEmailScreen = function(props) {
                 to_email: emailValue
             })
             if (res.status === 200) {
-                props.next(STEP.accountPendingCreation)
+                props.next()
             } else {
                 throw new Error('Email was not created')
             }
