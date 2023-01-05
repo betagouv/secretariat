@@ -138,6 +138,8 @@ app.get('/logout', logoutController.getLogout);
 app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER, getWhatIsGoingOnWithMemberController)
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
+app.post(routes.USER_CREATE_EMAIL_API, usersController.createEmailApi);
+
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
 app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
 app.post(routes.USER_CREATE_REDIRECTION, usersController.createRedirectionForUser);

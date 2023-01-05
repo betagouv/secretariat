@@ -379,7 +379,7 @@ export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
     const createEmail = async () => {
         try {
-            const api = routes.USER_CREATE_EMAIL.replace(':username', props.user.userInfos.id)
+            const api = routes.USER_CREATE_EMAIL_API.replace(':username', props.user.userInfos.id)
             const res = await axios.post(api, {
                 to_email: emailValue
             })
