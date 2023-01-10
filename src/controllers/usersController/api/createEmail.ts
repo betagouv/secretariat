@@ -12,7 +12,7 @@ export async function createEmailApi(req, res) {
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            errors: err
+            errors: err.message
         })
     }
 }
