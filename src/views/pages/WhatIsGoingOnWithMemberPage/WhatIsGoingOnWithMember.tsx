@@ -25,6 +25,9 @@ enum STEP {
 
 type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfos,
     isExpired?: boolean,
+    isEmailBlocked?: boolean,
+    hasEmailInfos?: boolean,
+    hasSecondaryEmail?: boolean,
     primaryEmailStatus: string }
 
 interface FormErrorResponse {
@@ -57,6 +60,99 @@ interface Props {
         badgeOptions: Option[],
         memberOptions: Option[]
     }
+}
+
+const ConnectedScreen = (props) => {
+    const [connected, setConnected] = React.useState(false)
+    const [seconds, setSeconds] = React.useState(30)
+    const [loginSent, setLoginSent] = React.useState(false)
+    const [email, setEmail] = React.useState()
+    const [calledOnce, setCalledOnce] = React.useState(false)
+    const [wasAlreadyConnected, setWasAlreadyConnected] = React.useState(false)
+    const pingConnection = async() => {
+        console.log('Ping connection')
+        const user = await axios.get(routes.ME).then(res => res.data.user)
+        .catch(e => {
+            console.log(`L'utilisateur n'est pas connecté`)
+        })
+        if (user) {
+            if (!calledOnce) {
+                setWasAlreadyConnected(true)
+            }
+            setConnected(true)
+        }
+        if (!calledOnce) {
+            setCalledOnce(true)
+        }
+    }
+    React.useEffect(() => {
+        // exit early when we reach 0
+        if (!seconds) return;
+    
+        // save intervalId to clear the interval when the
+        // component re-renders
+        const intervalId = setInterval(() => {
+            const prev = seconds
+            if (seconds === 30) {
+                pingConnection().catch(console.error);
+            }
+            if (prev - 1 === 0) {
+                setSeconds(30)
+            } else {
+                setSeconds(seconds - 1)
+            }
+        }, 1000);
+    
+        // clear interval on re-render to avoid memory leaks
+        return () => clearInterval(intervalId);
+        // add seconds as a dependency to re-rerun the effect
+        // when we update it
+      }, [seconds]);
+    // React.useEffect(() => {
+    //     pingConnection().catch(console.error);
+    // }, [])
+    const onSubmit = async (e) => {
+        e.preventDefault()
+        try {
+            await axios.post(routes.LOGIN_API, {
+                emailInput: email
+            }).then(res => res.data)
+            setLoginSent(true)
+            await pingConnection()
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    return <>
+        <h2>{props.title}</h2>
+        {calledOnce && !wasAlreadyConnected && <div className="notification">
+            <p><b>Pour effectuer cette action il faut être connecter, nous allons t'envoyer un lien de connexion</b></p>
+            { !connected && !loginSent && <form action={`/login${props.next}`} method="POST" id="login_form" onSubmit={onSubmit}>
+                <label htmlFor="emailInput"><b>Ton email (@beta.gouv.fr ou secondaire)</b></label>
+                <div className="input__group">
+                    <input
+                        onChange={e => {
+                            setEmail(e.currentTarget.value)
+                        }}
+                        name="emailInput"
+                        type="email"
+                        placeholder="prenom.nom@beta.gouv.fr"
+                        autoComplete="username"/>
+                </div>
+                <button className="button" id="primary_email_button">Recevoir le lien de connexion</button>
+                <span><a href="#forgot">J'ai oublié mon email</a></span>
+            </form>}
+            { loginSent && <p>
+                Lien de connexion envoyé ! Clique sur le lien de connexion que tu as reçu par email, puis sur "Me connecter" et reviens sur cette page.<br/>
+                Nouveau test de connexion dans {seconds}s.
+            </p>}
+            {connected && <p>Tu es connecté !</p>}
+        </div>}
+        {calledOnce && <div style={!connected ? { opacity: 0.5, pointerEvents: 'none'} : {}}>
+            {props.children}
+        </div>}
+    </>
 }
 
 const EmailInfo = function({ emailInfos, primaryEmailStatus}) {
@@ -106,22 +202,25 @@ const UserInfo = function(props) {
 
 const MemberComponent = function({
     emailInfos,
+    isEmailBlocked,
+    hasEmailInfos,
+    hasSecondaryEmail,
     isExpired,
     userInfos,
     primaryEmailStatus,
     startFix
 }) {
     const steps = [STEP.whichMember, STEP.showMember]
-    const showSteps = (!!isExpired || !emailInfos || primaryEmailStatus === 'suspendu' || (!emailInfos && !!emailInfos.isBlocked))
+    const showSteps = (!!isExpired || !hasEmailInfos || primaryEmailStatus === 'suspendu' || !!isEmailBlocked)
     if (!!isExpired) {
         steps.push(STEP.updateEndDate)
         steps.push(STEP.waitingForDateToBeUpdated)
     }
-    if (!emailInfos) {
+    if (!hasEmailInfos) {
         steps.push(STEP.createEmail)
         steps.push(STEP.accountPendingCreation)
     }
-    if (primaryEmailStatus === 'suspendu' || !!emailInfos && !!emailInfos.isBlocked) {
+    if (primaryEmailStatus === 'suspendu' || !!isEmailBlocked) {
         steps.push(STEP.emailSuspended)
     }
     steps.push(STEP.everythingIsGood)
@@ -152,10 +251,17 @@ const MemberComponent = function({
             <p>Pour réactiver son compte il faut :</p>
             <ol>
                 {!!isExpired && <li>changer sa date de fin et merger la PR</li>}
-                {!emailInfos && <li>Re-créer son email beta</li>}
+                {!hasEmailInfos && <li>Re-créer son email beta</li>}
                 {primaryEmailStatus === 'suspendu' && <li>changer son mot de passe pour réactiver son email</li>}
                 {!!emailInfos && !!emailInfos.isBlocked && <li>L'email est bloqué pour cause de spam, il faut le réactiver en changeant le mot de passe</li>}
             </ol>
+            {!hasEmailInfos && !!hasSecondaryEmail && <p>
+                Si tu es un collègue de {userInfos.fullname} tu pourras recréer l'email pour lui/elle :).
+            </p>}
+            {!hasEmailInfos && !!hasSecondaryEmail && <p>Si tu es {userInfos.fullname} tu pourras recréer l'email toi même une fois ta date de fin à jour.</p>}
+            {!hasEmailInfos && !hasSecondaryEmail && <p>
+                {userInfos.fullname} n'a pas d'email secondaire, si tu es toi même {userInfos.fullname} il va falloir qu'un collègue le fasse à ta place.
+            </p>}
         </div>
     </>}{
         !showSteps && <div className="notification">
@@ -167,7 +273,7 @@ const MemberComponent = function({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'}}>
-            <button className="button" onClick={() => startFix(steps)} role="button">Commencer la procédure - étape 1 : {steps[0]}</button>
+            <button className="button" onClick={() => startFix(steps)} role="button">Commencer la procédure</button>
         </div>
     </>}
 </div>
@@ -393,7 +499,8 @@ export const CreateEmailScreen = function(props) {
             alert('Un erreur est survenue')
         }
     }
-    return <div><h2>Tu peux créer un compte mail pour {props.user.userInfos.fullname}.</h2>
+
+    return <ConnectedScreen title={`Tu peux créer un compte mail pour ${props.user.userInfos.fullname}.`}><div>
         {!!props.hasPublicServiceEmail && <p>
             Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
             celle à utiliser pour mattermost, et d'autres outils.
@@ -413,7 +520,7 @@ export const CreateEmailScreen = function(props) {
             </div>
             <button className="button no-margin" type="submit" onClick={createEmail}>Créer un compte</button>
         </div>
-    </div>
+    </div></ConnectedScreen>
 }
 
 export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
@@ -423,14 +530,27 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const noEmail = 'noEmail'
 
     React.useEffect(() => {
+        console.log('STATE', history.state, localStorage.getItem('state'))
+        const state : {
+            step: STEP,
+            memberId: string,
+            user: MemberAllInfo
+        } = JSON.parse(localStorage.getItem('state'))
         history.replaceState({
-            step: STEP.whichMember
+            step: state.step || STEP.whichMember
         }, '')
+        if (state.step) {
+            setStep(state.step)
+        }
+        if (state.user) {
+            setUser(state.user)
+        }
         window.onpopstate = e => {
             setStep(e.state.step)
             //your code...
         }
     }, [])
+
     function startFix(fixeItems) {
         setFixes(fixeItems)
         next(fixeItems)
@@ -439,10 +559,13 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         const currentStepIndex = (steps || fixes).findIndex(s => s === step)
         const nextStep = (steps || fixes)[currentStepIndex + 1]
         setStep(nextStep)
-        history.pushState({
+        const state = {
             step: nextStep,
             memberId: (paramUser || user).userInfos.id,
-        }, '', `${window.location}?memberId=${(paramUser || user).userInfos.id}`)
+            user: paramUser || user
+        }
+        history.pushState(state, '')
+        localStorage.setItem('state', JSON.stringify(state))
     }
     let stepView
     if (step === STEP.whichMember) {

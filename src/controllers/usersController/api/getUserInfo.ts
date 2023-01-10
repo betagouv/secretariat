@@ -24,17 +24,22 @@ export async function getUserInfo(req, res) {
         const dbUser = await db('users').where({ username }).first()
         const secondaryEmail = dbUser ? dbUser.secondary_email : '';
         res.json({
-            username,
-            currentUserId: req.auth ? req.auth.id : undefined,
-            emailInfos: user.emailInfos,
+            // info public
             userInfos: user.userInfos,
             isExpired: user.isExpired,
-            primaryEmail: dbUser ? dbUser.primary_email : '',
+            hasEmailInfo: !!user.emailInfos,
+            isEmailBlocked: user.emailInfos && user.emailInfos.isBlocked,
+            hasSecondaryEmail: !!secondaryEmail,
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
+            username,
+            // info filled if connected users
+            currentUserId: req.auth ? req.auth.id : undefined,
+            emailInfos: req.auth && req.auth.id ? user.emailInfos : undefined,
+            primaryEmail: req.auth && req.auth.id && dbUser ? dbUser.primary_email : '',
             canCreateEmail: user.canCreateEmail,
             hasPublicServiceEmail: dbUser && dbUser.primary_email && !dbUser.primary_email.includes(config.domain),
             domain: config.domain,
-            secondaryEmail,
+            secondaryEmail: req.auth && req.auth.id ? secondaryEmail : '',
         });
     } catch (err) {
         console.error(err);

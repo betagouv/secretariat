@@ -77,6 +77,63 @@ export async function getLogin(req, res) {
   renderLogin(req, res, {});
 }
 
+export async function postLoginApi(req, res) {
+  const formValidationErrors = {};
+  const errorHandler = (field, message) => {
+    formValidationErrors[field] = message
+  }
+  console.log('LCS TESTO', req.body, req.params)
+  const emailInput = req.body.emailInput.toLowerCase() || isValidEmail('email', req.body.emailInput.toLowerCase(), errorHandler);
+  if (Object.keys(formValidationErrors).length) {
+    return res.json({
+      errors: formValidationErrors
+    }).status(500);
+  }
+  let username;
+
+  const emailSplit = emailInput.split('@');
+  if (emailSplit[1] === config.domain) {
+    username = emailSplit[0];
+    if (username === undefined || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)) {
+      return res.json({
+        errors: `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
+      }).status(500);
+    }
+  }
+  try {
+    const dbResponse = await knex('users')
+    .select()
+    .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+    .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
+    username = dbResponse[0].username;
+  } catch (e) {
+    return res.json({
+      errors: `L'adresse email ${emailInput} n'est pas connue.`
+    }).status(500);
+  }
+
+  try {
+    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
+    const token = generateToken();
+    const loginUrl: URL = new URL(secretariatUrl + '/signin' + `#${token}`);
+    if (req.query.anchor) {
+      loginUrl.searchParams.append('anchor', req.query.anchor)
+    }
+    loginUrl.searchParams.append('next', req.query.next || config.defaultLoggedInRedirectUrl)
+    await sendLoginEmail(emailInput, username, loginUrl.toString());
+    await saveToken(username, token, emailInput);
+
+    return res.json({
+      success: true
+    });
+  } catch (err) {
+    console.error(err);
+    return res.json({
+      errors: err.message
+    })
+  }
+}
+
 export async function postLogin(req, res) {
   const formValidationErrors = {};
   const errorHandler = (field, message) => {

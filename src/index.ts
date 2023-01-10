@@ -90,6 +90,7 @@ app.use(
     path: [
       '/',
       '/login',
+      routes.LOGIN_API,
       '/signin',
       '/marrainage/accept',
       '/marrainage/decline',
@@ -131,6 +132,7 @@ app.use((err, req, res, next) => {
 app.get('/', indexController.getIndex);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
+app.post(routes.LOGIN_API, express.json({type: '*/*'}), loginController.postLoginApi);
 app.get('/signin', loginController.getSignIn);
 app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
@@ -164,6 +166,7 @@ app.post('/marrainage/reload', marrainageController.reloadRequest);
 app.get('/startups', startupController.getStartupList);
 app.get('/startups/:startup', startupController.getStartup);
 
+app.get(routes.ME, express.json({type: '*/*'}), accountController.getCurrentUser);
 app.get(routes.ACCOUNT_GET, accountController.getCurrentAccount);
 app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpdate);
 app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo);

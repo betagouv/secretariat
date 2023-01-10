@@ -27,6 +27,9 @@ class routes {
   static ACCOUNT_GET_DETAIL_INFO_FORM = '/account/info'
   static ACCOUNT_POST_DETAIL_INFO_FORM = '/account/info'
   static PULL_REQUEST_GET_PRS: string = '/api/pull-requests'
+  static ME: string = '/api/me'
+
+  static LOGIN_API: string = '/api/login'
 }
 
 export default routes
