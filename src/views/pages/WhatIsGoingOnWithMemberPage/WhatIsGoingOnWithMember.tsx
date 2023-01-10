@@ -536,14 +536,16 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             memberId: string,
             user: MemberAllInfo
         } = JSON.parse(localStorage.getItem('state'))
-        history.replaceState({
-            step: state.step || STEP.whichMember
-        }, '')
-        if (state.step) {
-            setStep(state.step)
-        }
-        if (state.user) {
-            setUser(state.user)
+        if (state) {
+            history.replaceState({
+                step: state.step || STEP.whichMember
+            }, '')
+            if (state.step) {
+                setStep(state.step)
+            }
+            if (state.user) {
+                setUser(state.user)
+            }
         }
         window.onpopstate = e => {
             setStep(e.state.step)
