@@ -572,7 +572,9 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         next(fixeItems)
     }
     function goBack() {
-        setStep(STEP.whichMember)
+        const currentStepIndex = fixes.findIndex(s => s === step)
+        const nextStep = fixes[currentStepIndex - 1]
+        setStep(nextStep || STEP.whichMember)
     }
     function next(steps?: STEP[], paramUser?: MemberWithPermission) {
         const currentStepIndex = (steps || fixes).findIndex(s => s === step)
