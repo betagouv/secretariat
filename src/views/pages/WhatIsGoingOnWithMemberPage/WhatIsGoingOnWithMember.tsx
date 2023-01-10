@@ -342,6 +342,7 @@ export const UpdateEndDateScreen = function(props) {
                     justifyContent: 'center'}}>
                     <button
                         onClick={updateDate}
+                        disabled={isSaving}
                         className="button no-margin"
                         type="submit">Valider le changement de date</button>
                 </div>
@@ -533,7 +534,8 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         const state : {
             step: STEP,
             memberId: string,
-            user: MemberAllInfo
+            user: MemberAllInfo,
+            steps: STEP[]
         } = JSON.parse(localStorage.getItem('state'))
         if (state) {
             history.pushState({
@@ -541,6 +543,9 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             }, '')
             if (state.step) {
                 setStep(state.step)
+            }
+            if (state.steps) {
+                setFixes(state.steps)
             }
             if (state.user) {
                 setUser(state.user)
@@ -566,7 +571,8 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         const state = {
             step: nextStep,
             memberId: (paramUser || user).userInfos.id,
-            user: paramUser || user
+            user: paramUser || user,
+            steps: (steps || fixes)
         }
         history.pushState(state, '')
         localStorage.setItem('state', JSON.stringify(state))
