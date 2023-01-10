@@ -240,7 +240,7 @@ const MemberComponent = function({
                 </li>
             }
             {
-                !emailInfos && <li>
+                !hasEmailInfos && <li>
                     Son email a été supprimé.
                 </li>
             }
@@ -253,7 +253,7 @@ const MemberComponent = function({
                 {!!isExpired && <li>changer sa date de fin et merger la PR</li>}
                 {!hasEmailInfos && <li>Re-créer son email beta</li>}
                 {primaryEmailStatus === 'suspendu' && <li>changer son mot de passe pour réactiver son email</li>}
-                {!!emailInfos && !!emailInfos.isBlocked && <li>L'email est bloqué pour cause de spam, il faut le réactiver en changeant le mot de passe</li>}
+                {!!isEmailBlocked && <li>L'email est bloqué pour cause de spam, il faut le réactiver en changeant le mot de passe</li>}
             </ol>
             {!hasEmailInfos && !!hasSecondaryEmail && <p>
                 Si tu es un collègue de {userInfos.fullname} tu pourras recréer l'email pour lui/elle :).
