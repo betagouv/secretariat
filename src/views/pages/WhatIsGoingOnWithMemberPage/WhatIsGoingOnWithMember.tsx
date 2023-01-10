@@ -530,14 +530,13 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const noEmail = 'noEmail'
 
     React.useEffect(() => {
-        console.log('STATE', history.state, localStorage.getItem('state'))
         const state : {
             step: STEP,
             memberId: string,
             user: MemberAllInfo
         } = JSON.parse(localStorage.getItem('state'))
         if (state) {
-            history.replaceState({
+            history.pushState({
                 step: state.step || STEP.whichMember
             }, '')
             if (state.step) {
@@ -556,6 +555,9 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     function startFix(fixeItems) {
         setFixes(fixeItems)
         next(fixeItems)
+    }
+    function goBack() {
+        setStep(STEP.whichMember)
     }
     function next(steps?: STEP[], paramUser?: MemberWithPermission) {
         const currentStepIndex = (steps || fixes).findIndex(s => s === step)
@@ -605,6 +607,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     }
     return <div className="container container-small">
         <div className="panel margin-top-m" style={{ minHeight: 500 }}>
+            <a onClick={() => goBack()}>Retour</a>
             {stepView}
         </div>
     </div>
