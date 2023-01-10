@@ -27,7 +27,7 @@ export async function getUserInfo(req, res) {
             // info public
             userInfos: user.userInfos,
             isExpired: user.isExpired,
-            hasEmailInfo: !!user.emailInfos,
+            hasEmailInfos: !!user.emailInfos,
             isEmailBlocked: user.emailInfos && user.emailInfos.isBlocked,
             hasSecondaryEmail: !!secondaryEmail,
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
