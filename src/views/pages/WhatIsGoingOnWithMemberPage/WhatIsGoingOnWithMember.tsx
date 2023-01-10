@@ -214,7 +214,7 @@ const MemberComponent = function({
     const showSteps = (!!isExpired || !hasEmailInfos || primaryEmailStatus === 'suspendu' || !!isEmailBlocked)
     if (!!isExpired) {
         steps.push(STEP.updateEndDate)
-        steps.push(STEP.waitingForDateToBeUpdated)
+        // steps.push(STEP.waitingForDateToBeUpdated)
     }
     if (!hasEmailInfos) {
         steps.push(STEP.createEmail)
@@ -428,10 +428,10 @@ export const UpdateEndDatePendingScreen = function(props) {
         <p>Il faut la merger pour que le changement de date de fin soit prise en compte :)</p>
         <p>Suite au merge la prise en compte peut prendre 10 minutes</p></>}
         {prStatus === 'merged' && <>
-            <p>La PR a probablement été mergé. Le changement sera pris en compte d'ici quelques minutes, il faut encore attendre :)</p>
+            <p>La PR a probablement été mergée. Le changement sera pris en compte d'ici quelques minutes, il faut encore attendre :)</p>
         </>}
         {prStatus === 'validated' && <>
-            <p>La PR est à jour c'est bon on peut passé à l'étape suivante :)</p>
+            <p>La date de fin est à jour c'est bon on peut passé à l'étape suivante :)</p>
             <button className={'button'} onClick={() => props.next()}>Passer à l'étape suivante</button>
         </>}
         {prStatus !== 'validated' && <p>Recheck dans {seconds} secondes</p>}
