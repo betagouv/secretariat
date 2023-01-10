@@ -357,8 +357,8 @@ export const UpdateEndDateScreen = function(props) {
 
 const AccountPendingCreationScreen = function(props) {
     return <div><h2>Création du compte en cours ...</h2>
-        <p>Cela peut prendre jusqu'a 10 minutes</p>
-        <button className="button" onClick={() => props.next()}>C'est bon l'email a été envoyé</button>
+        <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
+        <button className="button" onClick={() => props.next()}>C'est bon j'ai bien reçu l'email</button>
     </div>
 }
 
@@ -484,9 +484,14 @@ export const WhichMemberScreen = function(props) {
 
 export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
+    const [isSaving, setIsSaving] = React.useState(false)
     const createEmail = async () => {
+        if (isSaving) {
+            return
+        }
         try {
             const api = routes.USER_CREATE_EMAIL_API.replace(':username', props.user.userInfos.id)
+            setIsSaving(false)
             const res = await axios.post(api, {
                 to_email: emailValue
             })
@@ -496,6 +501,7 @@ export const CreateEmailScreen = function(props) {
                 throw new Error('Email was not created')
             }
         } catch(e) {
+            setIsSaving(false)
             console.error(e)
             alert('Un erreur est survenue')
         }
@@ -519,7 +525,11 @@ export const CreateEmailScreen = function(props) {
                 }}
                 type="email" required />
             </div>
-            <button className="button no-margin" type="submit" onClick={createEmail}>Créer un compte</button>
+            <button
+                className="button no-margin"
+                type="submit"
+                disabled={isSaving}
+                onClick={createEmail}>Créer un compte</button>
         </div>
     </div></ConnectedScreen>
 }

@@ -4,7 +4,7 @@ export async function createEmailApi(req, res) {
     const username = req.sanitize(req.params.username);
     const email = req.sanitize(req.body.to_email);
     try {
-        createEmailAndUpdateSecondaryEmail({ username, email}, req.auth.id)
+        await createEmailAndUpdateSecondaryEmail({ username, email}, req.auth.id)
         req.flash('message', 'Le compte email a bien été créé.');
         res.json({
             status: 'created'
