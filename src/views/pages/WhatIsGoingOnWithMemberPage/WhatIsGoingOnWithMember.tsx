@@ -607,7 +607,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     }
     return <div className="container container-small">
         <div className="panel margin-top-m" style={{ minHeight: 500 }}>
-            <a onClick={() => goBack()}>Retour</a>
+            { step !== STEP.whichMember && <a onClick={() => goBack()}>Retour</a>}
             {stepView}
         </div>
     </div>
