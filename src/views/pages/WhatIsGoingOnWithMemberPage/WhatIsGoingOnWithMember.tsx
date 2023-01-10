@@ -25,9 +25,9 @@ enum STEP {
 
 type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfos,
     isExpired?: boolean,
-    isEmailBlocked?: boolean,
-    hasEmailInfos?: boolean,
-    hasSecondaryEmail?: boolean,
+    isEmailBlocked: boolean,
+    hasEmailInfos: boolean,
+    hasSecondaryEmail: boolean,
     primaryEmailStatus: string }
 
 interface FormErrorResponse {
@@ -66,7 +66,7 @@ const ConnectedScreen = (props) => {
     const [connected, setConnected] = React.useState(false)
     const [seconds, setSeconds] = React.useState(30)
     const [loginSent, setLoginSent] = React.useState(false)
-    const [email, setEmail] = React.useState()
+    const [email, setEmail] = React.useState('')
     const [calledOnce, setCalledOnce] = React.useState(false)
     const [wasAlreadyConnected, setWasAlreadyConnected] = React.useState(false)
     const pingConnection = async() => {
