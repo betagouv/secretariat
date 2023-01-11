@@ -99,7 +99,7 @@ app.use(
       routes.PULL_REQUEST_GET_PRS,
       routes.ONBOARDING,
       routes.ONBOARDING_ACTION,
-      `/${routes.API_GET_PUBLIC_USER_INFO.replace(':username','*')}/`,
+      /api\/public\/users\/*/,
       /hook\/*/,
       /onboardingSuccess\/*/,
     ],
