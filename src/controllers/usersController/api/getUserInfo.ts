@@ -37,7 +37,7 @@ export async function getUserInfo(req, res) {
             emailInfos: req.auth && req.auth.id ? user.emailInfos : undefined,
             primaryEmail: req.auth && req.auth.id && dbUser ? dbUser.primary_email : '',
             canCreateEmail: user.canCreateEmail,
-            hasPublicServiceEmail: dbUser && dbUser.primary_email && !dbUser.primary_email.includes(config.domain),
+            hasPublicServiceEmail: Boolean(dbUser && dbUser.primary_email && !dbUser.primary_email.includes(config.domain)),
             domain: config.domain,
             secondaryEmail: req.auth && req.auth.id ? secondaryEmail : '',
         });

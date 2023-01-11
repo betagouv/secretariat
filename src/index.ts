@@ -96,10 +96,10 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       routes.WHAT_IS_GOING_ON_WITH_MEMBER,
-      /api\/users\/*/,
-      /api\/pull-requests\/*/,
+      routes.PULL_REQUEST_GET_PRS,
       routes.ONBOARDING,
       routes.ONBOARDING_ACTION,
+      `/${routes.API_GET_PUBLIC_USER_INFO.replace(':username','*')}/`,
       /hook\/*/,
       /onboardingSuccess\/*/,
     ],
@@ -150,7 +150,7 @@ app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
 app.post(routes.USER_UPDATE_SECONDARY_EMAIL, usersController.manageSecondaryEmailForUser);
 app.post(routes.USER_UPDATE_PRIMARY_EMAIL, usersController.managePrimaryEmailForUser);
 app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
-app.get(routes.API_GET_USER_INFO, usersController.getUserInfo);
+app.get(routes.API_GET_PUBLIC_USER_INFO, usersController.getUserInfo);
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests)
 //
 app.post(

@@ -40,29 +40,10 @@ interface FormErrorResponse {
 
 interface Props {
     title?: string,
+    users: Member[],
     errors?: string[],
     messages?: string[],
     request: Request,
-    formData: FormData,
-    users: Member[],
-    domaineOptions?: Option[],
-    statusOptions?: Option[],
-    genderOptions?: Option[],
-    formValidationErrors?: any,
-    communeInfo?: CommuneInfo,
-    startups?: StartupInfo[],
-    userInfos: Member,
-    hasPublicServiceEmail?: boolean,
-    startupOptions?: {
-        value: string,
-        label: string
-    }[],
-    userConfig: {
-        statusOptions: Option[],
-        minStartDate: string,
-        badgeOptions: Option[],
-        memberOptions: Option[]
-    }
 }
 
 const ConnectedScreen = (props) => {
@@ -583,7 +564,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const [user, setUser] : [MemberAllInfo, (user: MemberAllInfo) => void] = React.useState(undefined)
     const [pullRequestURL, setPullRequestURL] = React.useState('');
     const getUser : (string) => Promise<MemberAllInfo> = async (member) => {
-        return await axios.get(routes.API_GET_USER_INFO.replace(':username', member))
+        return await axios.get(routes.API_GET_PUBLIC_USER_INFO.replace(':username', member))
         .then(resp => {
             setUser(resp.data)
             return resp.data
@@ -705,7 +686,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         </div>
     } else if (step === STEP.emailBlocked) {
         stepView = <div>
-            <p>{user.userInfos.fullname} a du faire une envoie massif d'email par gmail, ou depuis de nombreuses ips différentes. Son email a été bloqué par OVH.</p>
+            <p>{user.userInfos.fullname} a du faire un envoie massif d'email par gmail, ou depuis de nombreuses ips différentes. Son email a été bloqué par OVH.</p>
             <p>Pour le réactiver, iel doit se connecter a l'espace-membre. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
             <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>

@@ -351,3 +351,66 @@ describe('Login', () => {
         sendEmailStub.notCalled.should.be.true;
   });
 });
+
+describe('Login With API', () => {
+  let sendEmailStub;
+  beforeEach((done) => {
+    sendEmailStub = sinon.stub(Email, 'sendEmail').returns(Promise.resolve(null));
+    done();
+  });
+
+  afterEach(async () => {
+    sendEmailStub.restore();
+  });
+
+  describe('POST /api/login with correct email', () => {
+    it('should email to primary address', async() => {
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: 'membre.actif.perso@example.com',
+      })
+
+      await chai.request(app)
+          .post('/api/login')
+          .type('form')
+          .send({
+            emailInput: `membre.actif@${config.domain}`,
+          })
+    
+      sendEmailStub.calledOnce.should.be.true;
+      const destinationEmail : SendEmailProps = sendEmailStub.args[0][0];
+      destinationEmail.toEmail[0].should.equal(`membre.actif@${config.domain}`);
+      await knex('users').where({
+        username: 'membre.actif'
+      }).update({
+        secondary_email: null,
+      })
+    });
+  })
+  describe('POST /api/login with incorrect email', () => {
+    it('should not email', async() => {
+      await chai.request(app)
+          .post('/api/login')
+          .type('form')
+          .send({
+            emailInput: `membre.actif@totototo.com`,
+          })
+    
+      sendEmailStub.calledOnce.should.be.false;
+    });
+  })
+
+  describe('POST /api/login with empty email', () => {
+    it('should not email', async() => {
+      await chai.request(app)
+          .post('/api/login')
+          .type('form')
+          .send({
+            emailInput: ``,
+          })
+    
+      sendEmailStub.calledOnce.should.be.false;
+    });
+  })
+})

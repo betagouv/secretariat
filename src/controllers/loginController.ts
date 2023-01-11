@@ -82,7 +82,6 @@ export async function postLoginApi(req, res) {
   const errorHandler = (field, message) => {
     formValidationErrors[field] = message
   }
-  console.log('LCS TESTO', req.body, req.params)
   const emailInput = req.body.emailInput.toLowerCase() || isValidEmail('email', req.body.emailInput.toLowerCase(), errorHandler);
   if (Object.keys(formValidationErrors).length) {
     return res.json({
