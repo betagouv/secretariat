@@ -562,6 +562,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
                 setFixes(state.steps)
             }
             if (state.user) {
+                setUser(state.user)
                 getUser(state.user.userInfos.id).then(() => {
                     setUser(state.user)
                 })
