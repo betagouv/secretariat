@@ -214,7 +214,7 @@ const MemberComponent = function({
     const showSteps = (!!isExpired || !hasEmailInfos || primaryEmailStatus === 'suspendu' || !!isEmailBlocked)
     if (!!isExpired) {
         steps.push(STEP.updateEndDate)
-        // steps.push(STEP.waitingForDateToBeUpdated)
+        steps.push(STEP.waitingForDateToBeUpdated)
     }
     if (!hasEmailInfos) {
         steps.push(STEP.createEmail)
@@ -281,11 +281,9 @@ const MemberComponent = function({
 
 export const UpdateEndDateScreen = function(props) {
     const [date, setDate] = React.useState(props.date)
-    const [dateStep, setDateStep] = React.useState('changeDate')
     const [isSaving, setIsSaving] = React.useState(false)
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
-    const [pullRequestURL, setPullRequestURL] = React.useState();
     function changeFormData(value) {
         setDate(value)
     }
@@ -300,8 +298,8 @@ export const UpdateEndDateScreen = function(props) {
             role: props.user.userInfos.role,
             startups: props.user.userInfos.startups
         }).then((resp) => {
-            setPullRequestURL(resp.data.pr_url)
-            setDateStep('waitingForPR')
+            props.setPullRequestURL(resp.data.pr_url)
+            props.next()
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
             setErrorMessage(ErrorResponse.message)
@@ -314,7 +312,7 @@ export const UpdateEndDateScreen = function(props) {
 
     return <>
         <h2>Mise à jour de la date de fin pour {props.user.userInfos.fullname}</h2>
-        { dateStep === 'changeDate' && <div className="no-margin">
+        <div className="no-margin">
             { !!errorMessage && 
                 <p className="text-small text-color-red">{errorMessage}</p>
             }
@@ -347,11 +345,7 @@ export const UpdateEndDateScreen = function(props) {
                         type="submit">Valider le changement de date</button>
                 </div>
             </div>
-        </div>}
-        { dateStep === 'waitingForPR' && <UpdateEndDatePendingScreen
-            user={props.user}
-            next={props.next}
-            pullRequestURL={pullRequestURL}/>}
+        </div>
     </>
 }
 
@@ -360,6 +354,10 @@ const AccountPendingCreationScreen = function(props) {
         <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
         <button className="button" onClick={() => props.next()}>C'est bon j'ai bien reçu l'email</button>
     </div>
+}
+
+const isDateInTheFuture = function(date: Date) {
+    return date > new Date()
 }
 
 export const UpdateEndDatePendingScreen = function(props) {
@@ -382,9 +380,8 @@ export const UpdateEndDatePendingScreen = function(props) {
 
     const checkPRChangesAreApplied = async () => {
         try {
-            const data = await getUser(props.user.userInfos.id)
-            const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
-            if (isDateInTheFuture) {
+            const data = await getUser(props.user.userInfos.id)            
+            if (isDateInTheFuture(new Date(data.userInfos.end))) {
                 setPRStatus('validated')
                 setSeconds(DEFAULT_TIME)
                 // user date is now in the future
@@ -393,6 +390,12 @@ export const UpdateEndDatePendingScreen = function(props) {
             console.error(e)
         }
     }
+
+    React.useEffect(() => {
+        if (isDateInTheFuture(new Date(props.user.userInfos.end))) {
+            setPRStatus('validated')
+        }
+    }, props.user)
 
     React.useEffect(() => {
         // exit early when we reach 0
@@ -426,13 +429,13 @@ export const UpdateEndDatePendingScreen = function(props) {
             <p>Une pull request en attente : </p>
             <a href={pullRequestURL} target="_blank">{pullRequestURL}</a>
         </div>
-        <p>Il faut la merger pour que le changement de date de fin soit prise en compte :)</p>
+        <p>Il faut la merger pour que le changement de date de fin soit prise en compte :</p>
         <p>Suite au merge la prise en compte peut prendre 10 minutes</p></>}
         {prStatus === 'merged' && <>
             <p>La PR a probablement été mergée. Le changement sera pris en compte d'ici quelques minutes, il faut encore attendre :)</p>
         </>}
         {prStatus === 'validated' && <>
-            <p>La date de fin est à jour c'est bon on peut passé à l'étape suivante :)</p>
+            <p>La date de fin est à jour c'est bon on peut passé à l'étape suivante :</p>
             <button className={'button'} onClick={() => props.next()}>Passer à l'étape suivante</button>
         </>}
         {prStatus !== 'validated' && <p>Recheck dans {seconds} secondes</p>}
@@ -542,14 +545,15 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const [step, setStep] = React.useState(STEP.whichMember)
     const [fixes, setFixes] = React.useState([STEP.whichMember, STEP.showMember])
     const [user, setUser] : [MemberAllInfo, (user: MemberAllInfo) => void] = React.useState(undefined)
-    const noEmail = 'noEmail'
+    const [pullRequestURL, setPullRequestURL] = React.useState('');
 
     React.useEffect(() => {
         const state : {
             step: STEP,
             memberId: string,
             user: MemberAllInfo,
-            steps: STEP[]
+            steps: STEP[],
+            pullRequestURL: string
         } = JSON.parse(localStorage.getItem('state'))
         if (state) {
             history.pushState({
@@ -560,6 +564,9 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             }
             if (state.steps) {
                 setFixes(state.steps)
+            }
+            if (state.pullRequestURL) {
+                setPullRequestURL(state.pullRequestURL)
             }
             if (state.user) {
                 setUser(state.user)
@@ -622,29 +629,27 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         stepView = <MemberComponent
             {...user}
             startFix={startFix}/>
-    }
-    
-    else if (step === STEP.updateEndDate) {
+    } else if (step === STEP.updateEndDate) {
         stepView = <UpdateEndDateScreen
             user={user}
             next={next} />
-    } else if (step === STEP.waitingForDateToBeUpdated) {
-        stepView = <><p>La date est en cours d'update, elle devrait être mise à jour d'ici 15 minutes</p>
-        {noEmail &&
-            <p>Une fois qu'elle sera a jour tu pourras recréer un email pour {user.userInfos.fullname}</p>
-        }</>
     } else if (step === STEP.createEmail) {
         stepView = <CreateEmailScreen
             secondaryEmail={user.secondaryEmail}
             next={next}
             user={user} />
     } else if (step === STEP.accountPendingCreation) {
-        stepView = <AccountPendingCreationScreen next={next} user={user} />
+        stepView = <AccountPendingCreationScreen next={next} user={user} setPullRequestURL={setPullRequestURL} />
     } else if (step === STEP.everythingIsGood) {
         stepView = <div>
             <p>Tout semble régler pour {user.userInfos.fullname}.</p>
             <button className="button" onClick={resetLocalStorage}>Terminer</button>
         </div>
+    } else if (step === STEP.waitingForDateToBeUpdated) {
+        stepView = <UpdateEndDatePendingScreen
+            user={user}
+            next={next}
+            pullRequestURL={pullRequestURL}/>
     }
     return <div className="container container-small">
         <div className="panel margin-top-m" style={{ minHeight: 500 }}>
