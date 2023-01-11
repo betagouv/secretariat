@@ -42,7 +42,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
         const changes : { missions: GithubMission[]}= { missions };
         const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
-            created_by_username: req.auth.id,
+            created_by_username: req.auth ? req.auth.id : 'what-is-going-on-with-member',
             action_on_username: username,
             action_metadata: {
                 value: newEnd,
