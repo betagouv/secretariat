@@ -437,7 +437,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         })}
                     </label>
                 </div>
-                { state.formData.memberType === 'incubateur' && <div className="form__group">
+                { state.formData.memberType === 'beta' && <div className="form__group">
                     <label htmlFor="employer">
                         <strong>Souhaites-tu avoir un parrain ou une marraine ?</strong><br />
                         Un parrain ou une marraine te contactera pour te présenter les outils, le fonctionnement de @beta.gouv.fr
