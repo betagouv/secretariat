@@ -6,10 +6,11 @@ import MemberSelect from "../components/MemberSelect"
 import { StartupInfo } from '@/models/startup';
 import { Member, MemberWithPermission } from '@/models/member';
 import { CommuneInfo } from '@/models/communeInfo';
-import { Option } from '@/models/misc';
+import { EMAIL_STATUS_READABLE_FORMAT, Option } from '@/models/misc';
 import { hydrateOnClient } from '../../hydrateOnClient';
 import axios from 'axios';
 import routes from '@/routes/routes';
+import { EmailStatusCode } from '@/models/dbUser';
 
 enum STEP {
     whichMember = 'whichMember',
@@ -65,8 +66,9 @@ interface Props {
 }
 
 const ConnectedScreen = (props) => {
+    const INITIAL_TIME = 30
     const [connected, setConnected] = React.useState(false)
-    const [seconds, setSeconds] = React.useState(30)
+    const [seconds, setSeconds] = React.useState(INITIAL_TIME)
     const [loginSent, setLoginSent] = React.useState(false)
     const [email, setEmail] = React.useState('')
     const [calledOnce, setCalledOnce] = React.useState(false)
@@ -95,11 +97,11 @@ const ConnectedScreen = (props) => {
         // component re-renders
         const intervalId = setInterval(() => {
             const prev = seconds
-            if (seconds === 30) {
+            if (seconds === INITIAL_TIME) {
                 pingConnection().catch(console.error);
             }
             if (prev - 1 === 0) {
-                setSeconds(30)
+                setSeconds(INITIAL_TIME)
             } else {
                 setSeconds(seconds - 1)
             }
@@ -221,10 +223,10 @@ const MemberComponent = function({
         steps.push(STEP.accountPendingCreation)
         steps.push(STEP.accountCreated)
     }
-    if (primaryEmailStatus === 'suspendu' && !isEmailBlocked) {
+    if (primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] && !isEmailBlocked) {
         steps.push(STEP.emailSuspended)
     }
-    if (primaryEmailStatus !== 'suspendu' && isEmailBlocked) {
+    if (primaryEmailStatus !== EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] && isEmailBlocked) {
         steps.push(STEP.emailBlocked)
     }
     steps.push(STEP.everythingIsGood)
@@ -355,7 +357,7 @@ export const UpdateEndDateScreen = function(props) {
 }
 
 const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser, next, user: MemberAllInfo}) {
-    const INITIAL_TIME = 30
+    const INITIAL_TIME = 60
     const [seconds, setSeconds] = React.useState(INITIAL_TIME)
     React.useEffect(() => {
         // exit early when we reach 0
@@ -367,7 +369,7 @@ const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser
                 getUser().catch(console.error);
             }
             if (prev - 1 === 0) {
-                setSeconds(30)
+                setSeconds(INITIAL_TIME)
             } else {
                 setSeconds(seconds - 1)
             }
@@ -377,12 +379,12 @@ const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser
 
     return <div>
         <h2>Création du compte de {user.userInfos.id}</h2>
-        {user && !user.hasEmailInfos && <>
+        {user && user.primaryEmailStatus !== EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_ACTIVE] && <>
             <p>Création en cours ...</p>
             <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
             <button className="button" onClick={() => next()}>C'est bon {user.userInfos.id} as bien reçu l'email</button></>
         }
-        {user && !!user.hasEmailInfos && <>
+        {user && user.primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_ACTIVE] && <>
             <p className='notification'>
                 C'est bon le compte de {user.userInfos.id} est actif.
             </p>
