@@ -580,8 +580,16 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     }
     function goBack() {
         const currentStepIndex = fixes.findIndex(s => s === step)
-        const nextStep = fixes[currentStepIndex - 1]
-        setStep(nextStep || STEP.whichMember)
+        const nextStep = fixes[currentStepIndex - 1] || STEP.whichMember
+        setStep(nextStep)
+        const state = {
+            step: nextStep,
+            memberId: user.userInfos.id,
+            user: user,
+            steps: fixes
+        }
+        localStorage.setItem('state', JSON.stringify(state))
+
     }
     function resetLocalStorage() {
         localStorage.removeItem('state')
