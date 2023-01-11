@@ -108,9 +108,7 @@ const ConnectedScreen = (props) => {
         // add seconds as a dependency to re-rerun the effect
         // when we update it
       }, [seconds]);
-    // React.useEffect(() => {
-    //     pingConnection().catch(console.error);
-    // }, [])
+
     const onSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -396,7 +394,7 @@ export const UpdateEndDatePendingScreen = function(props) {
         if (isDateInTheFuture(new Date(props.user.userInfos.end))) {
             setPRStatus('validated')
         }
-    }, props.user)
+    }, [props.user])
 
     React.useEffect(() => {
         // exit early when we reach 0
