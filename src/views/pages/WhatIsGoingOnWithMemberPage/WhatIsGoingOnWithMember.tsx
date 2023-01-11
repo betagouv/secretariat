@@ -479,7 +479,7 @@ export const UpdateEndDatePendingScreen = function({ getUser, user, pullRequestU
     </>
 }
 
-export const WhichMemberScreen = function({ user, setUser, getUser, users }) {
+export const WhichMemberScreen = function({ setUser, getUser, users }) {
     const [isSearching, setIsSearching] = React.useState(false)
 
     const search = async (member: string) => {
@@ -670,7 +670,6 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
                 setUser(user);
                 next([STEP.whichMember, STEP.showMember], user);
             }}
-            user={user}
             getUser={getUser}/>
     } else if (step === STEP.showMember) {
         stepView = <MemberComponent
