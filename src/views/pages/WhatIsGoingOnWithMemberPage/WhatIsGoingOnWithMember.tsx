@@ -366,7 +366,7 @@ const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser
         const intervalId = setInterval(() => {
             const prev = seconds
             if (seconds === INITIAL_TIME) {
-                getUser().catch(console.error);
+                getUser(user.userInfos.id).catch(console.error);
             }
             if (prev - 1 === 0) {
                 setSeconds(INITIAL_TIME)
