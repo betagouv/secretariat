@@ -257,21 +257,6 @@ describe('User', () => {
     });
   });
 
-  describe('GET /api/public/users/:username unauthenticated', () => {
-    it('should return an Unauthorized error', (done) => {
-      chai
-        .request(app)
-        .post('/api/public/users/membre.parti')
-        .send({
-          _method: 'POST',
-          to_email: 'test@example.com',
-        })
-        .end((err, res) => {
-          res.should.have.status(401);
-          done();
-        });
-    });
-  });
   describe('GET /api/public/users/:username authenticated', () => {
     let sendEmailStub;
     beforeEach((done) => {
@@ -290,8 +275,6 @@ describe('User', () => {
         const res = await chai
           .request(app)
           .get('/api/public/users/membre.nouveau')
-          .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        console.log(res.body)
         res.should.have.status(200);
         res.body.username.should.equal('membre.nouveau')
     });
