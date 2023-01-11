@@ -382,7 +382,7 @@ export const UpdateEndDatePendingScreen = function(props) {
 
     const checkPRChangesAreApplied = async () => {
         try {
-            const data = await axios.get(routes.API_GET_USER_INFO.replace(':username', props.user.userInfos.id)).then(resp => resp.data)
+            const data = getUser(props.user.userInfos.id)
             const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
             if (isDateInTheFuture) {
                 setPRStatus('validated')
@@ -439,6 +439,10 @@ export const UpdateEndDatePendingScreen = function(props) {
     </>
 }
 
+const getUser = async (member) => {
+    return await axios.get(routes.API_GET_USER_INFO.replace(':username', member)).then(resp => resp.data)
+}
+
 export const WhichMemberScreen = function(props) {
     // const [member, setMember] = React.useState(undefined)
     const [isSearching, setIsSearching] = React.useState(false)
@@ -447,7 +451,7 @@ export const WhichMemberScreen = function(props) {
     const search = async (member: string) => {
         setIsSearching(true)
         try {
-            const data = await axios.get(routes.API_GET_USER_INFO.replace(':username', member)).then(resp => resp.data)
+            const data = await getUser(member)
             setMemberInfo(data)
             props.setUser(data)
         } catch {
@@ -558,7 +562,10 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
                 setFixes(state.steps)
             }
             if (state.user) {
-                setUser(state.user)
+                getUser(state.user.userInfos.id).then(() => {
+                    setUser(state.user)
+                })
+                
             }
         }
         window.onpopstate = e => {
@@ -576,6 +583,10 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         const nextStep = fixes[currentStepIndex - 1]
         setStep(nextStep || STEP.whichMember)
     }
+    function resetLocalStorage() {
+        localStorage.removeItem('state')
+    }
+
     function next(steps?: STEP[], paramUser?: MemberWithPermission) {
         const currentStepIndex = (steps || fixes).findIndex(s => s === step)
         const nextStep = (steps || fixes)[currentStepIndex + 1]
@@ -621,7 +632,10 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     } else if (step === STEP.accountPendingCreation) {
         stepView = <AccountPendingCreationScreen next={next} user={user} />
     } else if (step === STEP.everythingIsGood) {
-        stepView = <p>Tout semble régler pour {user.userInfos.fullname} :)</p>
+        stepView = <div>
+            <p>Tout semble régler pour {user.userInfos.fullname}.</p>
+            <button className="button" onClick={resetLocalStorage}>Terminer</button>
+        </div>
     }
     return <div className="container container-small">
         <div className="panel margin-top-m" style={{ minHeight: 500 }}>
