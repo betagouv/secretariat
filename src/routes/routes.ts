@@ -26,6 +26,9 @@ class routes {
   static ACCOUNT_POST_BASE_INFO_FORM = '/account/base-info/:username'
   static ACCOUNT_GET_DETAIL_INFO_FORM = '/account/info'
   static ACCOUNT_POST_DETAIL_INFO_FORM = '/account/info'
+  static API_PUBLIC_POST_BASE_INFO_FORM = '/api/public/account/base-info/:username'
+
+
   static PULL_REQUEST_GET_PRS: string = '/api/pull-requests'
   static ME: string = '/api/me'
 

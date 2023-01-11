@@ -102,6 +102,7 @@ app.use(
       /api\/public\/users\/*/,
       /hook\/*/,
       /onboardingSuccess\/*/,
+      /api\/public\/account\/base-info\/*/
     ],
   })
 );
@@ -172,7 +173,7 @@ app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpda
 app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo);
 app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
 app.post(routes.ACCOUNT_POST_BASE_INFO_FORM, express.json({type: '*/*'}), usersController.postBaseInfoUpdate);
-
+app.post(routes.API_PUBLIC_POST_BASE_INFO_FORM, express.json({ type: '*/*'}), usersController.publicPostBaseInfoUpdate)
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
