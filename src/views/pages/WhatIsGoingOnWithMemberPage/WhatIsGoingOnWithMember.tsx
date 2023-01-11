@@ -20,7 +20,9 @@ enum STEP {
     accountPendingCreation = "accountPendingCreation",
     everythingIsGood = "everythingIsGood",
     emailSuspended = "emailSuspended",
-    showMember = "showMember"
+    showMember = "showMember",
+    accountCreated = "accountCreated",
+    emailBlocked = "emailBlocked"
 }
 
 type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfos,
@@ -217,9 +219,13 @@ const MemberComponent = function({
     if (!hasEmailInfos) {
         steps.push(STEP.createEmail)
         steps.push(STEP.accountPendingCreation)
+        steps.push(STEP.accountCreated)
     }
-    if (primaryEmailStatus === 'suspendu' || !!isEmailBlocked) {
+    if (primaryEmailStatus === 'suspendu' && !isEmailBlocked) {
         steps.push(STEP.emailSuspended)
+    }
+    if (primaryEmailStatus !== 'suspendu' && isEmailBlocked) {
+        steps.push(STEP.emailBlocked)
     }
     steps.push(STEP.everythingIsGood)
     return <div>
@@ -348,10 +354,40 @@ export const UpdateEndDateScreen = function(props) {
     </>
 }
 
-const AccountPendingCreationScreen = function(props) {
-    return <div><h2>Création du compte de {props.user.userInfos.id} en cours ...</h2>
-        <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
-        <button className="button" onClick={() => props.next()}>C'est bon {props.user.userInfos.id} as bien reçu l'email</button>
+const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser, next, user: MemberAllInfo}) {
+    const INITIAL_TIME = 30
+    const [seconds, setSeconds] = React.useState(INITIAL_TIME)
+    React.useEffect(() => {
+        // exit early when we reach 0
+        if (!seconds) return;
+
+        const intervalId = setInterval(() => {
+            const prev = seconds
+            if (seconds === INITIAL_TIME) {
+                getUser().catch(console.error);
+            }
+            if (prev - 1 === 0) {
+                setSeconds(30)
+            } else {
+                setSeconds(seconds - 1)
+            }
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, [seconds, user]);
+
+    return <div>
+        <h2>Création du compte de {user.userInfos.id}</h2>
+        {user && !user.hasEmailInfos && <>
+            <p>Création en cours ...</p>
+            <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
+            <button className="button" onClick={() => next()}>C'est bon {user.userInfos.id} as bien reçu l'email</button></>
+        }
+        {user && !!user.hasEmailInfos && <>
+            <p className='notification'>
+                C'est bon le compte de {user.userInfos.id} est actif.
+            </p>
+            <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
+        </>}
     </div>
 }
 
@@ -359,16 +395,15 @@ const isDateInTheFuture = function(date: Date) {
     return date > new Date()
 }
 
-export const UpdateEndDatePendingScreen = function(props) {
+export const UpdateEndDatePendingScreen = function({ getUser, user, pullRequestURL, next }) {
     const DEFAULT_TIME = 60
     const [seconds, setSeconds] = React.useState(DEFAULT_TIME)
     const [prStatus, setPRStatus] = React.useState('notMerged')
-    const { pullRequestURL } = props
     const checkPR = async () => {
         try {
             const pullRequests = await axios.get(routes.PULL_REQUEST_GET_PRS).then(resp => resp.data.pullRequests)
             const pullRequestURLs = pullRequests.map(pr => pr.html_url)
-            if (!pullRequestURLs.includes(props.pullRequestURL)) {
+            if (!pullRequestURLs.includes(pullRequestURL)) {
                 setPRStatus('merged')
                 setSeconds(DEFAULT_TIME)
             }
@@ -379,7 +414,7 @@ export const UpdateEndDatePendingScreen = function(props) {
 
     const checkPRChangesAreApplied = async () => {
         try {
-            const data = await getUser(props.user.userInfos.id)            
+            const data = await getUser(user.userInfos.id)            
             if (isDateInTheFuture(new Date(data.userInfos.end))) {
                 setPRStatus('validated')
                 setSeconds(DEFAULT_TIME)
@@ -391,10 +426,10 @@ export const UpdateEndDatePendingScreen = function(props) {
     }
 
     React.useEffect(() => {
-        if (isDateInTheFuture(new Date(props.user.userInfos.end))) {
+        if (isDateInTheFuture(new Date(user.userInfos.end))) {
             setPRStatus('validated')
         }
-    }, [props.user])
+    }, [user])
 
     React.useEffect(() => {
         // exit early when we reach 0
@@ -435,27 +470,20 @@ export const UpdateEndDatePendingScreen = function(props) {
         </>}
         {prStatus === 'validated' && <>
             <p>La date de fin est à jour c'est bon on peut passé à l'étape suivante :</p>
-            <button className={'button'} onClick={() => props.next()}>Passer à l'étape suivante</button>
+            <button className={'button'} onClick={() => next()}>Passer à l'étape suivante</button>
         </>}
         {prStatus !== 'validated' && <p>Recheck dans {seconds} secondes</p>}
     </>
 }
 
-const getUser = async (member) => {
-    return await axios.get(routes.API_GET_USER_INFO.replace(':username', member)).then(resp => resp.data)
-}
-
-export const WhichMemberScreen = function(props) {
-    // const [member, setMember] = React.useState(undefined)
+export const WhichMemberScreen = function({ user, setUser, getUser, users }) {
     const [isSearching, setIsSearching] = React.useState(false)
-    const [memberInfo, setMemberInfo] = React.useState(undefined)
 
     const search = async (member: string) => {
         setIsSearching(true)
         try {
             const data = await getUser(member)
-            setMemberInfo(data)
-            props.setUser(data)
+            setUser(data)
         } catch {
             alert(`Aucune info sur l'utilisateur`)
         }
@@ -463,7 +491,7 @@ export const WhichMemberScreen = function(props) {
     }
 
     return <>
-            {!memberInfo && <form className="no-margin">
+            {<form className="no-margin">
                 <h2>Qu'est-ce qu'il se passe ?</h2>
                 <p>Sélectionne le membre que tu veux aider :</p>
                 <div className="form__group">
@@ -472,7 +500,7 @@ export const WhichMemberScreen = function(props) {
                         name="username"
                         placeholder="Sélectionner un membre"
                         onChange={(e) => search(e.value)}
-                        members={props.users.map(u => ({
+                        members={users.map(u => ({
                             value: u.id,
                             label: u.fullname
                         }))}
@@ -491,6 +519,11 @@ export const WhichMemberScreen = function(props) {
 export const CreateEmailScreen = function(props) {
     const [emailValue, setEmailValue] = React.useState(props.secondaryEmail)
     const [isSaving, setIsSaving] = React.useState(false)
+    React.useEffect(() => {
+        if (props.user.hasEmailInfos) {
+            props.next()
+        }
+    }, [props.user.hasEmailInfos])
     const createEmail = async () => {
         if (isSaving) {
             return
@@ -512,8 +545,9 @@ export const CreateEmailScreen = function(props) {
             alert('Un erreur est survenue')
         }
     }
+    const title = `Tu peux créer un compte mail pour ${props.user.userInfos.fullname}.`
 
-    return <ConnectedScreen title={`Tu peux créer un compte mail pour ${props.user.userInfos.fullname}.`}><div>
+    return <ConnectedScreen title={title}><div>
         {!!props.hasPublicServiceEmail && <p>
             Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
             celle à utiliser pour mattermost, et d'autres outils.
@@ -545,6 +579,13 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     const [fixes, setFixes] = React.useState([STEP.whichMember, STEP.showMember])
     const [user, setUser] : [MemberAllInfo, (user: MemberAllInfo) => void] = React.useState(undefined)
     const [pullRequestURL, setPullRequestURL] = React.useState('');
+    const getUser : (string) => Promise<MemberAllInfo> = async (member) => {
+        return await axios.get(routes.API_GET_USER_INFO.replace(':username', member))
+        .then(resp => {
+            setUser(resp.data)
+            return resp.data
+        })
+    }
 
     React.useEffect(() => {
         const state : {
@@ -623,10 +664,11 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         stepView = <WhichMemberScreen
             users={props.users}
             setUser={(user) => {
-                setUser(user)
-                next([STEP.whichMember, STEP.showMember], user)
+                setUser(user);
+                next([STEP.whichMember, STEP.showMember], user);
             }}
-        />
+            user={user}
+            getUser={getUser}/>
     } else if (step === STEP.showMember) {
         stepView = <MemberComponent
             {...user}
@@ -642,16 +684,37 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             next={next}
             user={user} />
     } else if (step === STEP.accountPendingCreation) {
-        stepView = <AccountPendingCreationScreen next={next} user={user} />
+        stepView = <AccountPendingCreationScreen next={next} user={user} getUser={getUser} />
+    } else if (step === STEP.accountCreated) {
+        stepView = <div>
+            <p>Il faut maintenant que {user.userInfos.fullname} se connected à l'espace-membre avec son adresse secondaire.</p>
+            <p>Un fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
+            <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
+        </div>
     } else if (step === STEP.everythingIsGood) {
         stepView = <div>
             <p>Tout semble régler pour {user.userInfos.fullname}.</p>
             <button className="button" onClick={resetLocalStorage}>Terminer</button>
         </div>
+    } else if (step === STEP.emailSuspended) {
+        stepView = <div>
+            <p>La de fin de mission de {user.userInfos.fullname} a été mise à jour un peu tard, son email a été suspendu.</p>
+            <p>Pour le réactiver, iel doit se connecter a l'espace-membre. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
+            <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
+            <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
+        </div>
+    } else if (step === STEP.emailBlocked) {
+        stepView = <div>
+            <p>{user.userInfos.fullname} a du faire une envoie massif d'email par gmail, ou depuis de nombreuse ip différentes. Son email a été bloqué par OVH.</p>
+            <p>Pour le réactiver, iel doit se connecter a l'espace-membre. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
+            <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
+            <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
+        </div>
     } else if (step === STEP.waitingForDateToBeUpdated) {
         stepView = <UpdateEndDatePendingScreen
             user={user}
             next={next}
+            getUser={getUser}
             pullRequestURL={pullRequestURL}/>
     }
     return <div className="container container-small">
