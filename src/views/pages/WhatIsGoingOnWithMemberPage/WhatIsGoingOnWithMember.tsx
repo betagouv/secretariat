@@ -143,7 +143,7 @@ const ConnectedScreen = (props) => {
                 <button className="button" id="primary_email_button">Recevoir le lien de connexion</button>
                 <span><a href="#forgot">J'ai oublié mon email</a></span>
             </form>}
-            { loginSent && <p>
+            { loginSent && !connected && <p>
                 Lien de connexion envoyé ! Clique sur le lien de connexion que tu as reçu par email, puis sur "Me connecter" et reviens sur cette page.<br/>
                 Nouveau test de connexion dans {seconds}s.
             </p>}
@@ -351,9 +351,9 @@ export const UpdateEndDateScreen = function(props) {
 }
 
 const AccountPendingCreationScreen = function(props) {
-    return <div><h2>Création du compte en cours ...</h2>
+    return <div><h2>Création du compte de {props.user.userInfos.id} en cours ...</h2>
         <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
-        <button className="button" onClick={() => props.next()}>C'est bon j'ai bien reçu l'email</button>
+        <button className="button" onClick={() => props.next()}>C'est bon {props.user.userInfos.id} as bien reçu l'email</button>
     </div>
 }
 
@@ -601,6 +601,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
 
     }
     function resetLocalStorage() {
+        setStep(STEP.whichMember)
         localStorage.removeItem('state')
     }
 
