@@ -382,7 +382,7 @@ export const UpdateEndDatePendingScreen = function(props) {
 
     const checkPRChangesAreApplied = async () => {
         try {
-            const data = getUser(props.user.userInfos.id)
+            const data = await getUser(props.user.userInfos.id)
             const isDateInTheFuture = new Date(data.userInfos.end) > new Date()
             if (isDateInTheFuture) {
                 setPRStatus('validated')
