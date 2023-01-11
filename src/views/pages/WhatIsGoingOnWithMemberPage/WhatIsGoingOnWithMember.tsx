@@ -382,11 +382,12 @@ const AccountPendingCreationScreen = function({ getUser, next, user} : { getUser
         {user && user.primaryEmailStatus !== EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_ACTIVE] && <>
             <p>Création en cours ...</p>
             <p>Un email informant de la création du compte sera envoyé d'ici 10min</p>
-            <button className="button" onClick={() => next()}>C'est bon {user.userInfos.id} as bien reçu l'email</button></>
+            <p>Recheck automatique d'ici {seconds}s</p>
+            <button className="button" onClick={() => next()}>C'est bon {user.userInfos.fullname} as bien reçu l'email</button></>
         }
         {user && user.primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_ACTIVE] && <>
             <p className='notification'>
-                C'est bon le compte de {user.userInfos.id} est actif.
+                C'est bon le compte de {user.userInfos.fullname} est actif.
             </p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
         </>}
