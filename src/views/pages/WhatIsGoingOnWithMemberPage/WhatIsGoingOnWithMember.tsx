@@ -301,8 +301,8 @@ export const UpdateEndDateScreen = function(props) {
             setIsSaving(false)
             props.setPullRequestURL(resp.data.pr_url)
             props.next()
-        }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
-            const ErrorResponse : FormErrorResponse = data
+        }).catch((resp) => {
+            const ErrorResponse : FormErrorResponse = resp.data
             setErrorMessage(ErrorResponse.message)
             setIsSaving(false)
             if (ErrorResponse.errors) {
@@ -632,6 +632,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             startFix={startFix}/>
     } else if (step === STEP.updateEndDate) {
         stepView = <UpdateEndDateScreen
+            setPullRequestURL={setPullRequestURL}
             user={user}
             next={next} />
     } else if (step === STEP.createEmail) {
@@ -640,7 +641,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             next={next}
             user={user} />
     } else if (step === STEP.accountPendingCreation) {
-        stepView = <AccountPendingCreationScreen next={next} user={user} setPullRequestURL={setPullRequestURL} />
+        stepView = <AccountPendingCreationScreen next={next} user={user} />
     } else if (step === STEP.everythingIsGood) {
         stepView = <div>
             <p>Tout semble régler pour {user.userInfos.fullname}.</p>
