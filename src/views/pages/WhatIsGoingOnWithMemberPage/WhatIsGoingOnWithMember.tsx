@@ -613,9 +613,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             }
             if (state.user) {
                 setUser(state.user)
-                getUser(state.user.userInfos.id).then(() => {
-                    setUser(state.user)
-                }).catch(e => {
+                getUser(state.user.userInfos.id).catch(e => {
                     console.error(e)
                 })
                 
@@ -689,7 +687,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         stepView = <AccountPendingCreationScreen next={next} user={user} getUser={getUser} />
     } else if (step === STEP.accountCreated) {
         stepView = <div>
-            <p>Il faut maintenant que {user.userInfos.fullname} se connected à l'espace-membre avec son adresse secondaire.</p>
+            <p>Il faut maintenant que {user.userInfos.fullname} se connecte à l'espace-membre avec son adresse secondaire.</p>
             <p>Un fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
         </div>
@@ -707,7 +705,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         </div>
     } else if (step === STEP.emailBlocked) {
         stepView = <div>
-            <p>{user.userInfos.fullname} a du faire une envoie massif d'email par gmail, ou depuis de nombreuse ip différentes. Son email a été bloqué par OVH.</p>
+            <p>{user.userInfos.fullname} a du faire une envoie massif d'email par gmail, ou depuis de nombreuses ips différentes. Son email a été bloqué par OVH.</p>
             <p>Pour le réactiver, iel doit se connecter a l'espace-membre. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
             <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
