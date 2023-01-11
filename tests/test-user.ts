@@ -257,7 +257,7 @@ describe('User', () => {
     });
   });
 
-  describe('GET /api/public/users/:username authenticated', () => {
+  describe('GET /api/public/users/:username unauthenticated', () => {
     let sendEmailStub;
     beforeEach((done) => {
       sendEmailStub = sinon
