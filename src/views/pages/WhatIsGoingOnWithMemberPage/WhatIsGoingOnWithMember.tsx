@@ -573,6 +573,8 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
                 setUser(state.user)
                 getUser(state.user.userInfos.id).then(() => {
                     setUser(state.user)
+                }).catch(e => {
+                    console.error(e)
                 })
                 
             }
