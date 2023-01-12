@@ -30,8 +30,8 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
         .then((res) => {
             const yaml = require('js-yaml');
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-            let [doc, doc1] = content.split('---')
-            doc = yaml.load(doc)
+            let splitDoc = content.split('---')
+            const doc = yaml.load(splitDoc[1])
             for (const key of Object.keys(changes)) {
                 const value = changes[key]
                 if (!value || (Array.isArray(value) && !value.length)) {
@@ -47,8 +47,8 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
             }) + '\n---'
-            if (doc1) {
-                content = content + '\n' + yaml.dump(doc1)
+            if (splitDoc[2]) {
+                content = content + '\n' + yaml.dump(splitDoc[2])
             }
             return createGithubFile(path, branch, content, res.data.sha);
         })
