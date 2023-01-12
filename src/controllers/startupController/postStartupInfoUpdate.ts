@@ -3,7 +3,7 @@ import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { requiredError } from '@/controllers/validator';
+import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupInfo } from '@/models/startup';
 import { GithubStartupChange, updateStartupGithubFile } from '../helpers/githubHelpers';
 
@@ -20,8 +20,8 @@ export async function postStartupInfoUpdate(req, res) {
             formValidationErrors[field] = errorMessagesForKey
         }
         const phase = req.body.phase || requiredError('phase', errorHandler)
-        const date = req.body.date || requiredError('date', errorHandler)
-
+        const date = req.body.date || isValidDate('nouvelle date de fin', new Date(req.body.date), errorHandler) || requiredError('date', errorHandler)
+        const dateInDateFormat = new Date(date)
 
         if (Object.keys(formValidationErrors).length) {
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
@@ -34,10 +34,10 @@ export async function postStartupInfoUpdate(req, res) {
             end: phase.end ? new Date(phase.end) : undefined,
             start: phase.start ? new Date(phase.start) : undefined,
         }))
-        phases[phases.length-1].end = date
+        phases[phases.length-1].end = dateInDateFormat
         phases.push({
             name: phase,
-            start: date,
+            start: dateInDateFormat,
             end: undefined
         })
         const changes : GithubStartupChange = { phases };
@@ -47,7 +47,7 @@ export async function postStartupInfoUpdate(req, res) {
             action_metadata: { 
                 value: {
                     phase: phase,
-                    date: date,
+                    date,
                 }
             }
         })

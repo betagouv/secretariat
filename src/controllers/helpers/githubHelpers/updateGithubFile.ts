@@ -48,7 +48,7 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
                 schema: schema
             }) + '\n---'
             if (splitDoc[2]) {
-                content = content + '\n' + yaml.dump(splitDoc[2])
+                content = content + '\n' + splitDoc[2]
             }
             return createGithubFile(path, branch, content, res.data.sha);
         })
