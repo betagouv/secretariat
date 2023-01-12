@@ -4,7 +4,7 @@ class routes {
   // startup
   static STARTUP_GET_ALL = '/startups'
   static STARTUP_GET_DETAIL = '/startups/:startup'
-  static STARTUP_GET_INFO_UPDATE_FORM = '/startups/info-form'
+  static STARTUP_GET_INFO_UPDATE_FORM = '/startups/:startup/info-form'
   static STARTUP_POST_INFO_UPDATE_FORM = '/startups/:startup/info-form'
   // page de diagnostic
   static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-ce-passe-t-il'

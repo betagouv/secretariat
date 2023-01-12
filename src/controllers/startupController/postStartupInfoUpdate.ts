@@ -5,7 +5,17 @@ import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupInfo } from '@/models/startup';
-import { GithubStartupChange, updateStartupGithubFile } from '../helpers/githubHelpers';
+import { GithubStartupChange, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubFile';
+import { StartupPhase } from '@/schedulers/startups';
+
+const isValidPhase = (field, value, callback) => {
+    console.log(Object.values(StartupPhase))
+    if (Object.values(StartupPhase).includes(value)) {
+        return
+    }
+    callback(field, `La phase n'as pas une valeur valide`)
+    return
+}
 
 export async function postStartupInfoUpdate(req, res) {
     const { startup } = req.params;
@@ -20,7 +30,11 @@ export async function postStartupInfoUpdate(req, res) {
             formValidationErrors[field] = errorMessagesForKey
         }
         const phase = req.body.phase || requiredError('phase', errorHandler)
-        const date = req.body.date || isValidDate('nouvelle date de fin', new Date(req.body.date), errorHandler) || requiredError('date', errorHandler)
+        isValidPhase('phase', phase, errorHandler) 
+
+        const date = req.body.date || requiredError('date', errorHandler)
+        isValidDate('date', new Date(date), errorHandler)
+
         const dateInDateFormat = new Date(date)
 
         if (Object.keys(formValidationErrors).length) {
@@ -53,6 +67,7 @@ export async function postStartupInfoUpdate(req, res) {
         })
         await db('pull_requests').insert({
             url: prInfo.html_url,
+            startup: startup,
             type: PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE,
             status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
             info: JSON.stringify(changes)

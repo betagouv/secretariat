@@ -6,7 +6,7 @@ import { InnerPageLayout } from '../components/InnerPageLayout';
 import SESelect from '../components/SESelect';
 import axios from 'axios';
 import { DBPullRequest } from '@/models/pullRequests';
-import { StartupInfo } from '@/models/startup';
+import { PHASE_READABLE_NAME, StartupInfo } from '@/models/startup';
 import SEPhaseSelect from '../components/SEPhaseSelect';
 import routes from '@/routes/routes';
 import DatepickerSelect from '../components/DatepickerSelect';
@@ -20,6 +20,7 @@ interface StartupInfoUpdateProps {
     errors: string[],
     messages: string[],
     activeTab: string,
+    subActiveTab: string,
     request: Request,
     formData: StartupInfoFormData,
     startupsInfos: StartupInfo[]
@@ -28,6 +29,7 @@ interface StartupInfoUpdateProps {
         value: string,
         label: string
     }[],
+    startup?: string,
     username: string,
     updatePullRequest?: DBPullRequest
 }
@@ -41,25 +43,14 @@ function getCurrentPhase(startup : StartupInfo) {
     return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
-const PHASE_READABLE_NAME = {
-    'acceleration': 'En Accélération',
-    'investigation': 'En Investigation',
-    'transfert': 'Transférée',
-    'construction': 'En Construction',
-    'alumni': 'Partenariat terminé',
-    'success': 'Pérennisé'
-}
-
-
 /* Pure component */
 export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps) => {
-    const [startup, setStartup] = React.useState('')
+    const [startup, setStartup] = React.useState(props.startup)
     const [phase, setPhase] = React.useState('')
     const [date, setDate] = React.useState((new Date()))
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
     const [isSaving, setIsSaving] = React.useState(false)
-
 
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
@@ -70,7 +61,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             phase,
             date
         }).then(() => {
-            window.location.replace('/account');
+            window.location.replace(`/startups/${startup}`);
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
             setErrorMessage(ErrorResponse.message)
@@ -91,7 +82,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             </div>
             <div className="margin-top-m"></div>
             <div className="panel">
-                    <h3>Mise à jour des informations de mon produit</h3>
+                    <h3>Mise à jour des informations de {startupInfo.attributes.name}</h3>
                     { !!props.updatePullRequest && <div className="notification">
                             ⚠️ Une pull request existe déjà sur cette startup. Quelqu'un doit la merger pour que le changement soit pris en compte.
                             <a href={props.updatePullRequest.url} target="_blank">{props.updatePullRequest.url}</a>
@@ -103,7 +94,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                     }
                     <div className="beta-banner"></div>
                     <div>
-                        <div className="form__group">
+                        {/* <div className="form__group">
                             <label htmlFor="startup">
                                 <strong>Quel startup veux tu modifier ?</strong><br />
                             </label>
@@ -118,15 +109,18 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                             { !!formErrors['gender'] && 
                                 <p className="text-small text-color-red">{formErrors['startups']}</p>
                             }
-                        </div>
+                        </div> */}
                         {startupInfo && <>
-                            <h3>Produit : </h3>
+                            {/* <h3>Produit : </h3>
                             <p className="font-weight-bold">Nom : <span className='font-weight-bold text-color-blue'>{startupInfo.attributes.name}</span></p>
                             <p><b>Mission</b> : {startupInfo.attributes.pitch}</p>
                             <p>
                                 <b>Phase actuelle :</b> { PHASE_READABLE_NAME[getCurrentPhase(startupInfo)]}
                             </p>
-                            <h3>Mettre à jour la phase :</h3>
+                            <h3>Mettre à jour la phase :</h3> */}
+                            <p>
+                                <b>Phase inscrite sur la fiche:</b> { PHASE_READABLE_NAME[getCurrentPhase(startupInfo)]}
+                            </p>
                             <form className='no-margin' onSubmit={save}>
                                 <div className="form__group">
                                     <label htmlFor="startup">

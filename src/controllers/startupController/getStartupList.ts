@@ -13,6 +13,7 @@ export async function getStartupList(req, res) {
         startups,
         domain: config.domain,
         activeTab: 'startups',
+        subActiveTab: 'list',
         errors: req.flash('error'),
         messages: req.flash('message'),
       });

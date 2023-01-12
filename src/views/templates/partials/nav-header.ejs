@@ -54,13 +54,32 @@
                         </ul>
                     <% } %>
                 </li>
-                <!-- <li>
+                <li class="<% if(activeTab === 'startups') { %>active<% } %> nav-sub-menu-container">
                     <a href="/startups" id="startups"
                         class="nav-item <% if(activeTab === 'startups') { %> active <% } %>">
                         🚀 Startups
+                        <% if(activeTab !== 'startups') { %>
+                            <br/><small>Rechercher les startups, changer la phase d'une startup</small>
+                        <% } %>  
                     </a>
+                    <% if(activeTab === 'startups') { %>
+                        <ul>
+                            <li>
+                                <a href="/startups" id="account" 
+                                    class="nav-sub-item <% if(subActiveTab === 'list') { %> active <% } %>">
+                                    🔎 Rechercher une startup
+                                </a>
+                            </li>
+                            <!-- <li>
+                                <a href="/startups/info-form"
+                                    class="nav-sub-item <% if(subActiveTab === 'update-phase') { %> active <% } %>">
+                                📍 Changer la phase d'une startup
+                                </a>
+                            </li> -->
+                        </ul>
+                    <% } %>
                 </li>
-                    <li>
+                <!--    <li>
                         <a href="/admin" id="admin" 
                             class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
                             ⚙️ Administration

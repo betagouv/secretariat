@@ -7,6 +7,15 @@ interface Relationship {
     }
 }
 
+export const PHASE_READABLE_NAME = {
+    'acceleration': 'En Accélération',
+    'investigation': 'En Investigation',
+    'transfert': 'Transférée',
+    'construction': 'En Construction',
+    'alumni': 'Partenariat terminé',
+    'success': 'Pérennisé'
+}
+
 export interface Startup {
     id: string;
     name: string;
@@ -15,6 +24,7 @@ export interface Startup {
     expired_members: string[];
     active_members: string[];
     previous_members: string[];
+    phases: Phase[]
 }
 
 export interface StartupInfo {

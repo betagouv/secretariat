@@ -1,7 +1,6 @@
 import knex from "@/db";
 import hstore from "@/lib/hstore";
 
-
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
     MEMBER_REDIRECTION_DELETED = "MEMBER_REDIRECTION_DELETED",

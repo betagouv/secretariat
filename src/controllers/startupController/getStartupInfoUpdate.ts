@@ -27,8 +27,10 @@ export async function getStartupInfoUpdate(req, res) {
           formValidationErrors,
           currentUserId: req.auth.id,
           startupOptions,
+          startup: req.params.startup,
           startupsInfos: startups,
-          activeTab: 'account',
+          activeTab: 'startups',
+          subActiveTab: 'udpate-phase',
           username: req.auth.id,
           updatePullRequest,
           formData: {
