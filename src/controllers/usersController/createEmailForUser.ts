@@ -7,52 +7,55 @@ import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
 
+export async function createEmailAndUpdateSecondaryEmail({username, email} : {username:string, email:string}, currentUser: string) {
+    const isCurrentUser = currentUser === username;
+    const [user, dbUser]: [MemberWithPermission, DBUser] = await Promise.all([
+        utils.userInfos(username, isCurrentUser),
+        knex('users').where({ username }).first()
+    ]);
+    console.log(currentUser, username, user)
+    if (!user.userInfos) {
+        throw new Error(
+            `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
+        );
+    }
+
+    if (user.isExpired) {
+        throw new Error(
+            `Le compte du membre ${username} est expiré.`,
+        );
+    }
+
+    if (!user.canCreateEmail) {
+        throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
+    }
+
+    if (!isCurrentUser) {
+        const loggedUserInfo = await BetaGouv.userInfosById(currentUser);
+        if (utils.checkUserIsExpired(loggedUserInfo)) {
+            throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
+        }
+    }
+    let emailIsRecreated = false
+    if (dbUser) {
+        emailIsRecreated = dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED
+        await updateSecondaryEmail(username, email)
+    } else {
+        await knex('users').insert({
+            username,
+            primary_email_status: EmailStatusCode.EMAIL_UNSET,
+            secondary_email: email
+        })
+    }
+    await createEmail(username, currentUser, emailIsRecreated);
+}
 
 export async function createEmailForUser(req, res) {
     const username = req.sanitize(req.params.username);
-    const isCurrentUser = req.auth.id === username;
+    const email = req.sanitize(req.body.to_email);
 
     try {
-        const [user, dbUser]: [MemberWithPermission, DBUser] = await Promise.all([
-            utils.userInfos(username, isCurrentUser),
-            knex('users').where({ username }).first()
-        ]);
-
-        if (!user.userInfos) {
-            throw new Error(
-                `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,
-            );
-        }
-
-        if (user.isExpired) {
-            throw new Error(
-                `Le compte du membre ${username} est expiré.`,
-            );
-        }
-
-        if (!user.canCreateEmail) {
-            throw new Error('Vous n\'avez pas le droit de créer le compte email du membre.');
-        }
-
-        if (!isCurrentUser) {
-            const loggedUserInfo = await BetaGouv.userInfosById(req.auth.id);
-            if (utils.checkUserIsExpired(loggedUserInfo)) {
-                throw new Error('Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github.');
-            }
-        }
-        let emailIsRecreated = false
-        if (dbUser) {
-            emailIsRecreated = dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED
-            await updateSecondaryEmail(username, req.body.to_email)
-        } else {
-            await knex('users').insert({
-                username,
-                primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                secondary_email: req.body.to_email
-            })
-        }
-        await createEmail(username, req.auth.id, emailIsRecreated);
-
+        await createEmailAndUpdateSecondaryEmail({username, email}, req.auth.id)
         req.flash('message', 'Le compte email a bien été créé.');
         res.redirect(`/community/${username}`);
     } catch (err) {

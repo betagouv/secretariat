@@ -5,16 +5,7 @@ import knex from "../db";
 import { MemberWithPermission } from "@models/member";
 import { CommunityPage } from '../views';
 import betagouv from "../betagouv";
-
-const EMAIL_STATUS_READABLE_FORMAT = {
-  EMAIL_ACTIVE: 'Actif',
-  EMAIL_SUSPENDED: 'Suspendu',
-  EMAIL_DELETED: 'Supprimé',
-  EMAIL_EXPIRED: 'Expiré',
-  EMAIL_CREATION_PENDING: 'Création en cours',
-  EMAIL_RECREATION_PENDING: 'Recréation en cours',
-  EMAIL_UNSET: 'Non défini'
-}
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 
 export async function getCommunity(req, res) {
   if (req.query.username) {

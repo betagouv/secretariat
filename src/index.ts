@@ -24,11 +24,14 @@ import * as startupController from '@controllers/startupController';
 import * as usersController from '@controllers/usersController';
 import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
+import * as pullRequestsController from '@controllers/pullRequestsController';
+import { getWhatIsGoingOnWithMemberController } from '@/controllers/whatIsGoingOnWithMemberController/whatIsGoingOnWithMemberController';
 import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
-import permit, { MemberRole } from './routes/authorization';
+import permit, { MemberRole } from './middlewares/authorization';
+import { publicGetRouteRateLimiter, publicPostRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -75,6 +78,7 @@ app.use(expressSanitizer());
 // const router = express.Router()
 // router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(rateLimiter);
 
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
@@ -88,14 +92,19 @@ app.use(
     path: [
       '/',
       '/login',
+      routes.LOGIN_API,
       '/signin',
       '/marrainage/accept',
       '/marrainage/decline',
       '/notifications/github',
+      routes.WHAT_IS_GOING_ON_WITH_MEMBER,
+      routes.PULL_REQUEST_GET_PRS,
       routes.ONBOARDING,
       routes.ONBOARDING_ACTION,
+      /api\/public\/users\/*/,
       /hook\/*/,
       /onboardingSuccess\/*/,
+      /api\/public\/account\/base-info\/*/
     ],
   })
 );
@@ -126,11 +135,16 @@ app.use((err, req, res, next) => {
 app.get('/', indexController.getIndex);
 app.get('/login', loginController.getLogin);
 app.post('/login', loginController.postLogin);
+app.post(routes.LOGIN_API, express.json({type: '*/*'}), loginController.postLoginApi);
 app.get('/signin', loginController.getSignIn);
 app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
+// que ce passe-t-il
+app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER, getWhatIsGoingOnWithMemberController)
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
+app.post(routes.USER_CREATE_EMAIL_API, express.json({type: '*/*'}), usersController.createEmailApi);
+
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
 app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
 app.post(routes.USER_CREATE_REDIRECTION, usersController.createRedirectionForUser);
@@ -139,6 +153,8 @@ app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
 app.post(routes.USER_UPDATE_SECONDARY_EMAIL, usersController.manageSecondaryEmailForUser);
 app.post(routes.USER_UPDATE_PRIMARY_EMAIL, usersController.managePrimaryEmailForUser);
 app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
+app.get(routes.API_GET_PUBLIC_USER_INFO, publicGetRouteRateLimiter, usersController.getUserInfo);
+app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests)
 //
 app.post(
   '/notifications/github',
@@ -153,12 +169,13 @@ app.post('/marrainage/reload', marrainageController.reloadRequest);
 app.get('/startups', startupController.getStartupList);
 app.get('/startups/:startup', startupController.getStartup);
 
+app.get(routes.ME, express.json({type: '*/*'}), accountController.getCurrentUser);
 app.get(routes.ACCOUNT_GET, accountController.getCurrentAccount);
 app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpdate);
 app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo);
 app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
 app.post(routes.ACCOUNT_POST_BASE_INFO_FORM, express.json({type: '*/*'}), usersController.postBaseInfoUpdate);
-
+app.post(routes.API_PUBLIC_POST_BASE_INFO_FORM, publicPostRouteRateLimiter, express.json({ type: '*/*'}), usersController.publicPostBaseInfoUpdate)
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);

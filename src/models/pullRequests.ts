@@ -9,7 +9,10 @@ export interface DBPullRequest {
         name: string,
         isEmailBetaAsked: boolean,
         referent: string,
-        startup?: string
+        startup?: string,
+        missions?: any,
+        role?: string,
+        startups: string[]
     }
 }
 

@@ -116,7 +116,6 @@ describe('Admin', () => {
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(200);
-      console.log(sendInfoToChat.getCall(0).args)
       getUserWithParams.callCount.should.be.eq(1)
       getAdminStub.restore()
       getUserWithParams.restore()

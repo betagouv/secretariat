@@ -205,6 +205,81 @@ describe('User', () => {
 
   });
 
+  describe('POST /api/users/:username/create-email unauthenticated', () => {
+    it('should return an Unauthorized error', (done) => {
+      chai
+        .request(app)
+        .post('/api/users/membre.parti/create-email')
+        .send({
+          _method: 'POST',
+          to_email: 'test@example.com',
+        })
+        .end((err, res) => {
+          res.should.have.status(401);
+          done();
+        });
+    });
+  });
+  describe('POST /api/users/:username/create-email authenticated', () => {
+
+
+    let sendEmailStub;
+    beforeEach((done) => {
+      sendEmailStub = sinon
+        .stub(controllerUtils, 'sendMail')
+        .returns(Promise.resolve(true))
+      done()
+    });
+
+    afterEach((done) => {
+      sendEmailStub.restore()
+      done()
+    });
+
+    it('should ask OVH to create an email', async () => {
+      const ovhEmailCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/account/)
+        .reply(200);
+          await knex('users').where({ username: 'membre.nouveau'}).update({
+            primary_email: null
+          })
+          await chai
+            .request(app)
+            .post('/api/users/membre.nouveau/create-email')
+            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+            .send({
+              to_email: 'test@example.com',
+            })
+          
+          const res = await knex('users').where({ username: 'membre.nouveau'}).first()
+          res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
+          ovhEmailCreation.isDone().should.be.true;
+    });
+  });
+
+  describe('GET /api/public/users/:username unauthenticated', () => {
+    let sendEmailStub;
+    beforeEach((done) => {
+      sendEmailStub = sinon
+        .stub(controllerUtils, 'sendMail')
+        .returns(Promise.resolve(true))
+      done()
+    });
+
+    afterEach((done) => {
+      sendEmailStub.restore()
+      done()
+    });
+
+    it('should get user public info', async () => {
+        const res = await chai
+          .request(app)
+          .get('/api/public/users/membre.nouveau')
+        res.should.have.status(200);
+        res.body.username.should.equal('membre.nouveau')
+    });
+  });
+
   describe('POST /users/:username/redirections unauthenticated', () => {
     it('should return an Unauthorized error', (done) => {
       chai
@@ -584,7 +659,6 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/secondary_email', () => {
-    let mattermostStub
     it('should return 200 to add secondary email', (done) => {
       chai
         .request(app)
@@ -884,7 +958,7 @@ describe('User', () => {
           done();
         });
     });
-  });
+  }); 
 
   describe('cronjob', () => {
     before(async () => {
