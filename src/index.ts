@@ -40,7 +40,6 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
 app.use(compression());
-app.use(rateLimiter);
 app.use('/public', express.static(path.join(__dirname, './public')));
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use(
@@ -79,6 +78,7 @@ app.use(expressSanitizer());
 // const router = express.Router()
 // router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(rateLimiter);
 
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
