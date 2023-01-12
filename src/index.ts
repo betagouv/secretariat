@@ -31,6 +31,7 @@ import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import permit, { MemberRole } from './routes/authorization';
+import { publicGetRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -39,6 +40,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
 app.use(compression());
+app.use(rateLimiter);
 app.use('/public', express.static(path.join(__dirname, './public')));
 app.use('/static', express.static(path.join(__dirname, '../static')));
 app.use(
@@ -151,7 +153,7 @@ app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
 app.post(routes.USER_UPDATE_SECONDARY_EMAIL, usersController.manageSecondaryEmailForUser);
 app.post(routes.USER_UPDATE_PRIMARY_EMAIL, usersController.managePrimaryEmailForUser);
 app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
-app.get(routes.API_GET_PUBLIC_USER_INFO, usersController.getUserInfo);
+app.get(routes.API_GET_PUBLIC_USER_INFO, publicGetRouteRateLimiter, usersController.getUserInfo);
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests)
 //
 app.post(
@@ -173,7 +175,7 @@ app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpda
 app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo);
 app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
 app.post(routes.ACCOUNT_POST_BASE_INFO_FORM, express.json({type: '*/*'}), usersController.postBaseInfoUpdate);
-app.post(routes.API_PUBLIC_POST_BASE_INFO_FORM, express.json({ type: '*/*'}), usersController.publicPostBaseInfoUpdate)
+app.post(routes.API_PUBLIC_POST_BASE_INFO_FORM, publicPostRouteRateLimiter, express.json({ type: '*/*'}), usersController.publicPostBaseInfoUpdate)
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
