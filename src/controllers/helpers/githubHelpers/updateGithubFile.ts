@@ -30,7 +30,8 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
         .then((res) => {
             const yaml = require('js-yaml');
             let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-            const [doc, doc1] = yaml.loadAll(content)
+            let [doc, doc1] = content.split('---')
+            doc = yaml.load(doc)
             for (const key of Object.keys(changes)) {
                 const value = changes[key]
                 if (!value || (Array.isArray(value) && !value.length)) {
