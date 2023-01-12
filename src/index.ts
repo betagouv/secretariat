@@ -30,8 +30,8 @@ import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
-import permit, { MemberRole } from './routes/authorization';
-import { publicGetRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
+import permit, { MemberRole } from './middlewares/authorization';
+import { publicGetRouteRateLimiter, publicPostRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
