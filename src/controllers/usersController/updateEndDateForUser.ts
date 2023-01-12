@@ -1,9 +1,9 @@
 import config from "@config";
 import { addEvent, EventCode } from '@/lib/events'
-import { updateAuthorGithubFile } from "./usersControllerUtils";
 import { requiredError, isValidDate } from "@controllers/validator"
 
 import betagouv from "@/betagouv";
+import { GithubAuthorChange, updateAuthorGithubFile } from "../helpers/githubHelpers";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;
@@ -45,7 +45,7 @@ export async function updateEndDateForUser(req, res) {
             start: mission.start ? new Date(mission.start) : undefined,
         }))
         missions[missions.length-1].end = newEndDate
-        const changes = { missions };
+        const changes : GithubAuthorChange = { missions };
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
             created_by_username: req.auth.id,

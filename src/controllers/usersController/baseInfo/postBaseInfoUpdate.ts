@@ -1,17 +1,10 @@
 import { addEvent, EventCode } from '@/lib/events'
-import { updateAuthorGithubFile } from "../usersControllerUtils";
 import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from '@/controllers/validator';
-import { GithubMission } from '@/models/mission';
-
-interface GithubCardChange {
-    role?: string,
-    missions?: GithubMission[],
-    startups?: string[]
-}
+import { GithubAuthorChange, updateAuthorGithubFile } from '@/controllers/helpers/githubHelpers';
 
 export async function postBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -48,7 +41,7 @@ export async function postBaseInfoUpdate(req, res) {
             start: mission.start ? new Date(mission.start) : undefined,
         }))
         missions[missions.length-1].end = newEndDate
-        const changes : GithubCardChange = { missions, role, startups };
+        const changes : GithubAuthorChange = { missions, role, startups };
         const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth.id,

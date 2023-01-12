@@ -35,10 +35,10 @@ export interface StartupInfo {
     relationships: Relationship;
 }
 
-interface Phase {
+export interface Phase {
     name: string;
     start: Date;
-    end: Date;
+    end?: Date;
 }
 
 export interface DBStartup {

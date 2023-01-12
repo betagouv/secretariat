@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import config from "@config";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
@@ -6,7 +5,6 @@ import { DBUser, EmailStatusCode, USER_EVENT } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@/modules/email";
 import { sendEmail } from "@/config/email.config";
 import EventBus from "@/infra/eventBus/eventBus";
-import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex('users').where({
@@ -70,64 +68,6 @@ export async function sendEmailCreatedEmail(username) {
     }
 }
 
-export function createBranchName(username) {
-    const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
-    const randomSuffix = crypto.randomBytes(3).toString('hex');
-    return `author${username.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
-}
 
-export async function updateAuthorGithubFile(username, changes) : Promise<PRInfo> {
-    const branch = createBranchName(username);
-    const path = `content/_authors/${username}.md`;
-    console.log(`Début de la mise à jour de la fiche pour ${username}...`);
 
-    return await getGithubMasterSha()
-        .then((response) => {
-            const { sha } = response.data.object;
-            console.log('SHA du master obtenu');
-            return createGithubBranch(sha, branch);
-        })
-        .then(() => {
-            console.log(`Branche ${branch} créée`);
-            return getGithubFile(path, branch);
-        })
-        .then((res) => {
-            const yaml = require('js-yaml');
-            let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-            const [doc, doc1] = yaml.loadAll(content)
-            for (const key of Object.keys(changes)) {
-                const value = changes[key]
-                if (!value || (Array.isArray(value) && !value.length)) {
-                    delete doc[key]
-                } else {
-                    doc[key] = changes[key]
-                }
-            }
-            const schema = yaml.DEFAULT_SCHEMA
-            schema.compiledTypeMap.scalar['tag:yaml.org,2002:timestamp'].represent = function(object) {
-                return object.toISOString().split('T')[0];
-            }
-            content = '---\n' + yaml.dump(doc, {
-                schema: schema
-            }) + '\n---'
-            if (doc1) {
-                content = content + '\n' + yaml.dump(doc1)
-            }
-            return createGithubFile(path, branch, content, res.data.sha);
-        })
-        .then(() => {
-            console.log(`Fiche Github pour ${username} mise à jour dans la branche ${branch}`);
-            return makeGithubPullRequest(branch, `Mise à jour de la date de fin pour ${username}`);
-        })
-        .then((response) => {
-            console.log(`Pull request pour la mise à jour de la fiche de ${username} ouverte`);
-            if (response.status !== 201 && response.data.html_url) {
-                throw new Error('Il y a eu une erreur merci de recommencer plus tard')
-            }
-            return response.data
-        })
-        .catch((err) => {
-            console.log(err);
-            throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${username}`);
-        });
-}
+
