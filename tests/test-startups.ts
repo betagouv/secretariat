@@ -41,9 +41,7 @@ describe('Startup page', () => {
       const res = await chai.request(app)
         .post(`/startups/a-dock/info-form`)
         .redirects(0)
-          res.should.have.status(302);
-          res.header.location.should.include('/login');
-          res.header.location.should.equal('/login?next=/admin');
+          res.should.have.status(401);
     });
   });
 
