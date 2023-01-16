@@ -47,6 +47,7 @@ describe('Startup page', () => {
 
   describe('post /startups/:startup/info-form authenticated', () => {
     let updateAuthorGithubFileStub
+    utils.mockStartupsDetails()
     beforeEach(() => {
       updateAuthorGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
       updateAuthorGithubFileStub.returns(Promise.resolve({

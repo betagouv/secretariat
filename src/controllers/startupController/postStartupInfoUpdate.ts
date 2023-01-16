@@ -9,7 +9,6 @@ import { GithubStartupChange, updateStartupGithubFile } from '@/controllers/help
 import { StartupPhase } from '@/schedulers/startups';
 
 const isValidPhase = (field, value, callback) => {
-    console.log(Object.values(StartupPhase))
     if (Object.values(StartupPhase).includes(value)) {
         return
     }
