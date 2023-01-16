@@ -47,7 +47,6 @@ describe('Startup page', () => {
 
   describe('post /startups/:startup/info-form authenticated', () => {
     let updateAuthorGithubFileStub
-    utils.mockStartupsDetails()
     beforeEach(() => {
       updateAuthorGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
       updateAuthorGithubFileStub.returns(Promise.resolve({
@@ -61,6 +60,7 @@ describe('Startup page', () => {
     })
 
     it('should not work if phase is not valid', async () => {
+      utils.mockStartupsDetails()
       const res = await chai.request(app)
         .post(`/startups/a-dock/info-form`)
         .send({
@@ -74,6 +74,7 @@ describe('Startup page', () => {
     });
 
     it('should not work if date is not valid', async () => {
+      utils.mockStartupsDetails()
       const res = await chai.request(app)
         .post(`/startups/a-dock/info-form`)
         .send({
