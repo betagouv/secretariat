@@ -43,6 +43,11 @@ export async function postStartupInfoUpdate(req, res) {
  
         const startupsInfos = await betagouv.startupsInfos()
         const info : StartupInfo = startupsInfos.find(s => s.id === startup)
+        if (!info) {
+            res.status(404).json({
+                message: "La startup indiqué n'existe pas"
+            })
+        }
         const phases = info.attributes.phases.map(phase => ({
             ...phase,
             end: phase.end ? new Date(phase.end) : undefined,
