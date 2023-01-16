@@ -26,6 +26,13 @@ export default {
       .reply(200, testStartups)
       .persist();
   },
+  mockStartupsDetails() {
+    const url = process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
+    return nock(url)
+      .get((uri) => uri.includes('startups.json'))
+      .reply(200, testStartups)
+      .persist();
+  },
   mockSlackSecretariat() {
     if (config.slackWebhookURLSecretariat) {
       return nock(config.slackWebhookURLSecretariat)
