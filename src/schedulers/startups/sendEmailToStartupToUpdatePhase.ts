@@ -20,6 +20,7 @@ export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[])
                     startup: startup.name,
                     link: `https://espace-membre.incubateur.net/startups/${startup.id}/info-form`
                 },
+                forceTemplate: true,
                 toEmail: [startup.mailing_list]
             })
         } catch (e) {
