@@ -16,6 +16,15 @@ export const PHASE_READABLE_NAME = {
     'success': 'Pérennisé'
 }
 
+export enum StartupPhase {
+    PHASE_INVESTIGATION="investigation",
+    PHASE_CONSTRUCTION="construction",
+    PHASE_ACCELERATION="acceleration",
+    PHASE_TRANSFER="transfer",
+    PHASE_SUCCESS="success",
+    PHASE_ALUMNI="alumni",
+}
+
 export interface Startup {
     id: string;
     name: string;
@@ -46,7 +55,7 @@ export interface StartupInfo {
 }
 
 export interface Phase {
-    name: string;
+    name: StartupPhase;
     start: Date;
     end?: Date;
 }
