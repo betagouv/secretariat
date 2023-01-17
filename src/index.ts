@@ -32,6 +32,7 @@ import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import permit, { MemberRole } from './middlewares/authorization';
 import { publicGetRouteRateLimiter, publicPostRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
+import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/startupController';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -166,9 +167,6 @@ app.get('/marrainage/decline', marrainageController.declineRequest);
 app.post('/marrainage/cancel', marrainageController.cancelRequest);
 app.post('/marrainage/reload', marrainageController.reloadRequest);
 
-app.get('/startups', startupController.getStartupList);
-app.get('/startups/:startup', startupController.getStartup);
-
 app.get(routes.ME, express.json({type: '*/*'}), accountController.getCurrentUser);
 app.get(routes.ACCOUNT_GET, accountController.getCurrentAccount);
 app.get(routes.ACCOUNT_GET_DETAIL_INFO_FORM, accountController.getDetailInfoUpdate);
@@ -181,6 +179,12 @@ app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);
 
 app.get(routes.ADMIN, adminController.getEmailLists);
+
+// STARTUP
+app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
+app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
+app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate)
+app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
 
 // ONLY FOR ADMIN
 app.get(routes.ADMIN_MATTERMOST, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostAdmin);

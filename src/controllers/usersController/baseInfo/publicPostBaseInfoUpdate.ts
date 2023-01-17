@@ -1,11 +1,10 @@
 import { addEvent, EventCode } from '@/lib/events'
-import { updateAuthorGithubFile } from "../usersControllerUtils";
 import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from '@/controllers/validator';
-import { GithubMission } from '@/models/mission';
+import { GithubAuthorChange, updateAuthorGithubFile } from '@/controllers/helpers/githubHelpers';
 
 export async function publicPostBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -39,7 +38,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
             start: mission.start ? new Date(mission.start) : undefined,
         }))
         missions[missions.length-1].end = newEndDate
-        const changes : { missions: GithubMission[]}= { missions };
+        const changes : GithubAuthorChange = { missions };
         const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth ? req.auth.id : 'what-is-going-on-with-member',

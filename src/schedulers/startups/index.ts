@@ -13,7 +13,8 @@ export enum StartupPhase {
     PHASE_CONSTRUCTION="construction",
     PHASE_ACCELERATION="acceleration",
     PHASE_TRANSFER="transfer",
-    PHASE_SUCCESS="success"
+    PHASE_SUCCESS="success",
+    PHASE_ALUMNI="alumni",
 }
 
 

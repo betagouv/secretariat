@@ -9,6 +9,7 @@ interface InnerPageLayout {
   errors: string[],
   messages: string[],
   activeTab: string,
+  subActiveTab?: string,
   request: Request
 }
 
@@ -65,6 +66,30 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 </li>
 
                             </ul>}
+                        </li>
+                        <li className={`nav-sub-menu-container ${props.activeTab === 'startups' ? 'active' : ''}`}>
+                            <a href="/startups" id="startups"
+                                className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
+                                🚀 Startups
+                                { props.activeTab !== 'startups' && <><br/><small>Rechercher les startups, changer la phase d'une startup</small>
+                                </>}  
+                            </a>
+                            { props.activeTab === 'startups' &&
+                                <ul>
+                                    <li>
+                                        <a href="/startups" id="account" 
+                                            className={`nav-sub-item ${props.subActiveTab === 'list' ? 'active' : ''}`}>
+                                            🔎 Rechercher une startup
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/startups/info-form"
+                                            className={`nav-sub-item ${props.subActiveTab === 'update-phase' ? 'active' : ''}`}>
+                                        📍 Changer la phase d'une startup
+                                        </a>
+                                    </li>
+                                </ul>
+                            }
                         </li>
                         {/* <li>
                             <a href="/startups" id="startups"

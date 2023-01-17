@@ -1,7 +1,6 @@
 import knex from "@/db";
 import hstore from "@/lib/hstore";
 
-
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
     MEMBER_REDIRECTION_DELETED = "MEMBER_REDIRECTION_DELETED",
@@ -20,12 +19,13 @@ export enum EventCode {
     MEMBER_COMMUNICATION_EMAIL_UPDATE = "MEMBER_COMMUNICATION_EMAIL_UPDATE",
     MEMBER_EMAIL_RECREATED = "MEMBER_EMAIL_RECREATED",
     MEMBER_EMAIL_UPGRADED = "MEMBER_EMAIL_UPGRADED",
-    MEMBER_BASE_INFO_UPDATED = "MEMBER_BASE_INFO_UPDATED"
+    MEMBER_BASE_INFO_UPDATED = "MEMBER_BASE_INFO_UPDATED",
+    STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED"
 }
 
 interface ActionMetadata {
     old_value?: string,
-    value?: string
+    value?: any
 }
 
 interface Event {

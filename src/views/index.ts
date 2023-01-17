@@ -7,6 +7,7 @@ import { Community } from './pages/CommunityPage'
 import { AdminMattermost } from './pages/AdminMattermostPage'
 import { BaseInfoUpdate } from './pages/BaseInfoUpdatePage'
 import { WhatIsGoingOnWithMember } from './pages/WhatIsGoingOnWithMemberPage'
+import { StartupInfoUpdate } from './pages/StartupInfoUpdatePage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
@@ -78,4 +79,12 @@ export const WhatIsGoingOnWithMemberPage = (props: Parameters<typeof WhatIsGoing
   hydrate: true,
   title: 'Que ce passe-t-il Page',
   pageName: 'WhatIsGoingOnWithMember', // This must match the Component name
+})
+
+export const StartupInfoUpdatePage = (props: Parameters<typeof StartupInfoUpdatePage>[0]) => makeHtml({
+  Component: StartupInfoUpdate,
+  props,
+  hydrate: true,
+  title: 'Que ce passe-t-il Page',
+  pageName: 'StartupInfoUpdate', // This must match the Component name
 })

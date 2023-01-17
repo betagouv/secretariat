@@ -20,7 +20,14 @@ export default {
       .persist();
   },
   mockStartups() {
-    const url = process.env.STARTUPS_API || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
+    const url = config.startupsAPI || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
+    return nock(url)
+      .get((uri) => uri.includes('startups.json'))
+      .reply(200, testStartups)
+      .persist();
+  },
+  mockStartupsDetails() {
+    const url = config.startupsDetailsAPI || 'https://beta.gouv.fr'; // can't replace with config.startupsApi ?
     return nock(url)
       .get((uri) => uri.includes('startups.json'))
       .reply(200, testStartups)

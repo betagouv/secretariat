@@ -1,6 +1,14 @@
 
 class routes {
+
+  // startup
+  static STARTUP_GET_ALL = '/startups'
+  static STARTUP_GET_DETAIL = '/startups/:startup'
+  static STARTUP_GET_INFO_UPDATE_FORM = '/startups/:startup/info-form'
+  static STARTUP_POST_INFO_UPDATE_FORM = '/startups/:startup/info-form'
+  // page de diagnostic
   static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-ce-passe-t-il'
+  // ADMIN
   static ADMIN = '/admin'
   static ADMIN_MATTERMOST = '/admin/mattermost'
   static ADMIN_MATTERMOST_MESSAGE_API = '/api/admin/mattermost/message/users'
