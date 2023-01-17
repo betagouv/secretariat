@@ -1,5 +1,6 @@
 import { Member } from "@models/member"
 import { Job } from "@/models/job"
+import { StartupPhase } from "@/models/startup"
 
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL = 'MARRAINAGE_NEWCOMER_EMAIL',
@@ -24,7 +25,8 @@ export enum EMAIL_TYPES {
     EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR",
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE = "EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE",
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
-    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE"
+    EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE",
+    EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
 }
 
 export type SubjectFunction = {
@@ -216,6 +218,14 @@ export type EmailStartupEnterInvestigationPhase = {
     }
 }
 
+export type EmailStartupAskPhase = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE,
+    variables: {
+        startup: string,
+        phase: StartupPhase.PHASE_ACCELERATION | StartupPhase.PHASE_CONSTRUCTION | StartupPhase.PHASE_INVESTIGATION
+    }
+}
+
 export type EmailVariants =
  | EmailMarrainageNewcomer
  | EmailMarrainageOnboarder
@@ -236,6 +246,7 @@ export type EmailVariants =
  | EmailStartupEnterConstructionPhase
  | EmailStartupEnterAccelerationPhase
  | EmailStartupEnterInvestigationPhase
+ | EmailStartupAskPhase
 
 export type EmailProps = BaseEmail & EmailVariants
 

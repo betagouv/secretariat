@@ -48,6 +48,7 @@ import { createMailingListForStartups } from './startups/createMailingListForSta
 import { pullRequestStateMachine } from './onboarding/pullRequestStateMachine';
 import { unblockEmailsThatAreActive } from './unblockEmailsThatAreActive';
 import { recreateEmailIfUserActive } from './recreateEmailIfUserActive';
+import { sendEmailToStartupToUpdatePhase } from './startups/sendEmailToStartupToUpdatePhase';
 
 interface Job {
   cronTime: string;
@@ -122,6 +123,12 @@ const startupJobs: Job[] = [
     onTick: createMailingListForStartups,
     isActive: true,
     name: 'createMailingListForStartups',
+  },
+  {
+    cronTime: '30 09 01 Jan,Apr,Jul,Oct *',
+    onTick: sendEmailToStartupToUpdatePhase,
+    isActive: config.FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE,
+    name: 'sendEmailToStartupToUpdatePhase'
   }
 ]
 

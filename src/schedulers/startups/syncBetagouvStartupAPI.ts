@@ -4,24 +4,18 @@ import betagouv from "@/betagouv";
 import config from "@/config";
 import { sendEmail } from "@/config/email.config";
 import db from "@/db";
-import { DBStartup, StartupInfo } from "@/models/startup";
+import { DBStartup, StartupInfo, StartupPhase } from "@/models/startup";
 import { EMAIL_TYPES } from "@/modules/email";
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
-enum Phase {
-  PHASE_INVESTIGATION='investigation',
-  PHASE_CONSTRUCTION='construction',
-  PHASE_ACCELERATION='acceleration',
-}
-
 async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
   if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
     const startupInfos = await betagouv.startupInfosById(newStartupInfo.id)
     console.log(startupInfos.active_members)
-    if (newStartupInfo.current_phase === Phase.PHASE_CONSTRUCTION) {
+    if (newStartupInfo.current_phase === StartupPhase.PHASE_CONSTRUCTION) {
       if (newStartupInfo.mailing_list) {
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
@@ -31,7 +25,7 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
           }
         })
       }
-    } else if (newStartupInfo.current_phase === Phase.PHASE_ACCELERATION) {
+    } else if (newStartupInfo.current_phase === StartupPhase.PHASE_ACCELERATION) {
       if (newStartupInfo.mailing_list) {
         sendEmail({
           toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
