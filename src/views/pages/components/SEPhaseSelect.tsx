@@ -4,12 +4,12 @@ import Select from 'react-select'
 import { ClientOnly } from "./ClientOnly"
 
 const options = [
-  { value: 'acceleration', label: 'acceleration'},
-  { value: 'success', label: 'success'},
-  { value: 'transfer', label: 'transfer'},
-  { value: 'investigation', label: 'investigation'},
-  { value: 'construction', label: 'construction'},
-  { value: 'alumni', label: 'alumni' }
+  { value: 'acceleration', label: 'En Accélération'},
+  { value: 'success', label: 'Pérennisé (success)'},
+  { value: 'transfer', label: 'Transféré'},
+  { value: 'investigation', label: 'En Investigation'},
+  { value: 'construction', label: 'En Construction'},
+  { value: 'alumni', label: 'Partenariat terminé (alumni)' }
 ]
 
 export default ({ onChange, isMulti, placeholder, defaultValue }: {

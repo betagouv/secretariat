@@ -120,7 +120,7 @@ const betaGouv = {
       .get<Startup[]>(config.startupsDetailsAPI)
       .then((response) => Object.keys(response.data).map(key => response.data[key]))
       .catch((err) => {
-        throw new Error(`Error to get users infos in ${config.domain}: ${err}`);
+        throw new Error(`Error to get startups infos in ${config.domain}: ${err}`);
       })
   },
   startupInfosById: async (id: string): Promise<Startup> => {
