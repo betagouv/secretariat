@@ -1,8 +1,8 @@
 import betagouv from "@/betagouv"
 import db from "@/db"
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser"
-import axios from "axios"
-import { generateMailingListName, StartupDetail, StartupPhase } from "."
+import { Startup, StartupPhase } from "@/models/startup"
+import { generateMailingListName } from "."
 
 const ACTIVE_PHASES = [
     StartupPhase.PHASE_ACCELERATION,
@@ -10,16 +10,16 @@ const ACTIVE_PHASES = [
     StartupPhase.PHASE_INVESTIGATION
 ]
 
-function getCurrentPhase(startup : StartupDetail) {
+function getCurrentPhase(startup : Startup) : StartupPhase {
     return startup.phases ? startup.phases[startup.phases.length - 1].name : undefined
 }
 
-const createMailingListForStartup = async(startup: StartupDetail) => { 
+const createMailingListForStartup = async(startup: Startup) => { 
     const mailingListName = generateMailingListName(startup)
     return betagouv.createMailingList(mailingListName)
 }
 
-const addAndRemoveMemberToMailingListForStartup = async(startup: StartupDetail) => {
+const addAndRemoveMemberToMailingListForStartup = async(startup: Startup) => {
     const mailingListName = generateMailingListName(startup)
     const dbUsers : DBUser[] = await db('users').whereIn('username', startup.active_members)
     const emails = dbUsers.map(dbUser => {
@@ -38,27 +38,23 @@ const addAndRemoveMemberToMailingListForStartup = async(startup: StartupDetail) 
     }
 }
   
-
 export const createMailingListForStartups = async () => {
     const mailingLists : string[] = await betagouv.getAllMailingList()
-    const startupDetails : Record<string,StartupDetail> = await axios.get(`https://beta.gouv.fr/api/v2.3/startups_details.json`).then(res => res.data)
-    console.log(`Will create ${Object.keys(startupDetails).length} mailing lists`)
-    for (const startupId of Object.keys(startupDetails)) {
-        const startup = startupDetails[startupId]
+    const startupDetails : Startup[] = await betagouv.startupInfos()
+    console.log(`Will create ${startupDetails.length} mailing lists`)
+    for (const startup of startupDetails) {
         const phase = getCurrentPhase(startup)
         if (ACTIVE_PHASES.includes(phase)) {
             try {
-                if (process.env.CREATE_MAILING_LIST) {
-                    if (!mailingLists.includes(generateMailingListName(startup))) {
-                        await createMailingListForStartup(startup)
-                    }
-                    await db('startups').where({
-                        id: startup.id
-                    }).update({
-                        mailing_list: generateMailingListName(startup)
-                    })
-                    await addAndRemoveMemberToMailingListForStartup(startup)
+                if (!mailingLists.includes(generateMailingListName(startup))) {
+                    await createMailingListForStartup(startup)
                 }
+                await db('startups').where({
+                    id: startup.id
+                }).update({
+                    mailing_list: generateMailingListName(startup)
+                })
+                await addAndRemoveMemberToMailingListForStartup(startup)
                 console.log(`Create mailing list for : ${generateMailingListName(startup)}`)
             } catch (e) {
                 console.error(e)
