@@ -55,7 +55,7 @@ describe('Startup page', () => {
         html_url: 'https://djkajdlskjad.com',
         number: 12151
       }))
-      startupInfosStub = sinon.stub(betagouv.default, 'startupInfos')
+      startupInfosStub = sinon.stub(betagouv.default, 'startupsInfos')
       startupInfosStub.returns(Promise.resolve([
         { "id"        : "a-dock"
         , "type"      : "startup"
