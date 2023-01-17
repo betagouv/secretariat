@@ -100,7 +100,6 @@ describe('Startup page', () => {
           date: (new Date()).toISOString()
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .redirects(0)
         res.should.have.status(400);
         res.body.errors.phase[0].should.equal(`La phase n'as pas une valeur valide`)
     });
@@ -126,7 +125,6 @@ describe('Startup page', () => {
           date: (new Date()).toISOString()
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .redirects(0)
         res.should.have.status(200);
     });
   });

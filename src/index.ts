@@ -181,10 +181,10 @@ app.get('/community/:username', communityController.getUser);
 app.get(routes.ADMIN, adminController.getEmailLists);
 
 // STARTUP
-app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate)
-app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
 app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
 app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
+app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate)
+app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
 
 // ONLY FOR ADMIN
 app.get(routes.ADMIN_MATTERMOST, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostAdmin);
