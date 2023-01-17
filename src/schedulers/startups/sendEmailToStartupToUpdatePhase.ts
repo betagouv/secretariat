@@ -1,6 +1,6 @@
 import { sendEmail } from "@/config/email.config"
 import db from "@/db"
-import { ACTIVE_PHASES, DBStartup, PHASE_READABLE_NAME, Startup } from "@/models/startup"
+import { ACTIVE_PHASES, DBStartup, PHASE_READABLE_NAME } from "@/models/startup"
 import { EMAIL_TYPES } from "@/modules/email"
 
 export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[]) => {
