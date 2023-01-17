@@ -25,6 +25,12 @@ export enum StartupPhase {
     PHASE_ALUMNI="alumni",
 }
 
+export const ACTIVE_PHASES = [
+    StartupPhase.PHASE_ACCELERATION,
+    StartupPhase.PHASE_CONSTRUCTION,
+    StartupPhase.PHASE_INVESTIGATION
+]
+
 export interface Startup {
     id: string;
     name: string;
@@ -70,6 +76,6 @@ export interface DBStartup {
     repository: string;
     contact: string;
     phases: Phase[];
-    current_phase: string;
+    current_phase: StartupPhase;
     incubator: string;
 }

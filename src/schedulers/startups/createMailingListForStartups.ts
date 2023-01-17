@@ -1,14 +1,8 @@
 import betagouv from "@/betagouv"
 import db from "@/db"
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser"
-import { Startup, StartupPhase } from "@/models/startup"
+import { ACTIVE_PHASES, Startup, StartupPhase } from "@/models/startup"
 import { generateMailingListName } from "."
-
-const ACTIVE_PHASES = [
-    StartupPhase.PHASE_ACCELERATION,
-    StartupPhase.PHASE_CONSTRUCTION,
-    StartupPhase.PHASE_INVESTIGATION
-]
 
 function getCurrentPhase(startup : Startup) : StartupPhase {
     return startup.phases ? startup.phases[startup.phases.length - 1].name : undefined
