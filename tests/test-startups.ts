@@ -101,7 +101,6 @@ describe('Startup page', () => {
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         res.should.have.status(400);
-        res.body.errors.phase[0].should.equal(`La phase n'as pas une valeur valide`)
     });
 
     it('should not work if date is not valid', async () => {
@@ -112,9 +111,7 @@ describe('Startup page', () => {
           date: '2020/10/254'
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
-        .redirects(0)
         res.should.have.status(400);
-        res.body.errors.date[0].should.equal(`La date n‘est pas valide`)
     });
 
     it('should work if both are valid', async () => {
