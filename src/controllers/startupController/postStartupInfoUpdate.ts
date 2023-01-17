@@ -4,9 +4,8 @@ import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
-import { StartupInfo } from '@/models/startup';
+import { StartupInfo, StartupPhase } from '@/models/startup';
 import { GithubStartupChange, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubFile';
-import { StartupPhase } from '@/schedulers/startups';
 
 const isValidPhase = (field, value, callback) => {
     if (Object.values(StartupPhase).includes(value)) {
