@@ -367,7 +367,7 @@ const betaOVH = {
         password,
       });
     } catch (err) {
-      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
+      throw new Error(`OVH Error POST on ${url}, account ${id}: ${JSON.stringify(err)}`);
     }
   },
   deleteEmail: async (id) => {
