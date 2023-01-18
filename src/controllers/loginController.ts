@@ -103,7 +103,7 @@ export async function postLoginApi(req, res) {
     const dbResponse = await knex('users')
     .select()
     .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-    .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
+    .orWhereRaw(`(LOWER(primary_email) = ? and (primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}' or primary_email_status = '${EmailStatusCode.EMAIL_SUSPENDED}'))`, emailInput)
     username = dbResponse[0].username;
   } catch (e) {
     return res.json({
