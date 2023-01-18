@@ -1,4 +1,3 @@
-import { StartupPhase } from "@/models/startup"
 import { sendEmailToStartupToUpdatePhase } from "@/schedulers/startups/sendEmailToStartupToUpdatePhase"
 
 const runSendEmailToStartupToUpdatePhase = async () => {
