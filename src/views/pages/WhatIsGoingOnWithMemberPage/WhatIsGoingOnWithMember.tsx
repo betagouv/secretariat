@@ -220,7 +220,7 @@ const MemberComponent = function({
                 <li>Le contrat de {userInfos.fullname} est arrivé à terme le <strong>{userInfos.end}</strong>.</li>
             }
             {
-                primaryEmailStatus === 'suspendu' && <li>
+                primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] && <li>
                     Son email @beta.gouv.fr est suspendu car sa date de fin a été mise à jour en retard
                 </li>
             }
@@ -237,7 +237,7 @@ const MemberComponent = function({
             <ol>
                 {!!isExpired && <li>changer sa date de fin et merger la PR</li>}
                 {!hasEmailInfos && <li>Re-créer son email beta</li>}
-                {primaryEmailStatus === 'suspendu' && <li>changer son mot de passe pour réactiver son email</li>}
+                {primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] && <li>changer son mot de passe pour réactiver son email</li>}
                 {!!isEmailBlocked && <li>L'email est bloqué pour cause de spam, il faut le réactiver en changeant le mot de passe</li>}
             </ol>
             {!hasEmailInfos && !!hasSecondaryEmail && <p>
