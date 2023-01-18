@@ -685,7 +685,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
     } else if (step === STEP.emailBlocked) {
         stepView = <div>
             <p>{user.userInfos.fullname} a du faire un envoie massif d'email par gmail, ou depuis de nombreuses ips différentes. Son email a été bloqué par OVH.</p>
-            <p>Pour le réactiver, iel doit se connecter a l'espace-membre. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
+            <p>Pour le réactiver, iel doit se connecter a l'espace-membre avec son adresse secondaire. Une fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
             <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
         </div>
