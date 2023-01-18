@@ -192,7 +192,7 @@ const MemberComponent = function({
     startFix
 }) {
     const steps = [STEP.whichMember, STEP.showMember]
-    const showSteps = (!!isExpired || !hasEmailInfos || primaryEmailStatus === 'suspendu' || !!isEmailBlocked)
+    const showSteps = (!!isExpired || !hasEmailInfos || primaryEmailStatus === EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] || !!isEmailBlocked)
     if (!!isExpired) {
         steps.push(STEP.updateEndDate)
         steps.push(STEP.waitingForDateToBeUpdated)
