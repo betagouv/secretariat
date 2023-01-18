@@ -21,7 +21,7 @@ export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[])
                     link: `https://espace-membre.incubateur.net/startups/${startup.id}/info-form`
                 },
                 forceTemplate: true,
-                toEmail: [startup.mailing_list]
+                toEmail: [`${startup.mailing_list}@beta.gouv.fr`]
             })
         } catch (e) {
             console.error(e)
