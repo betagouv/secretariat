@@ -672,7 +672,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         </div>
     } else if (step === STEP.everythingIsGood) {
         stepView = <div>
-            <p>Tout semble régler pour {user.userInfos.fullname}.</p>
+            <p>Tout semble réglé pour {user.userInfos.fullname}.</p>
             <button className="button" onClick={resetLocalStorage}>Terminer</button>
         </div>
     } else if (step === STEP.emailSuspended) {
