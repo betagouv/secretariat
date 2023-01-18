@@ -5,7 +5,7 @@ import { EMAIL_TYPES } from "@/modules/email"
 
 export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[]) => {
     const startups : DBStartup[] = startupsArg || await db('startups')
-        .whereIn('phase', ACTIVE_PHASES)
+        .whereIn('current_phase', ACTIVE_PHASES)
         .whereNotNull('mailing_list')
     console.log(`Will send email to ${startups.length} mailing lists`)
 
