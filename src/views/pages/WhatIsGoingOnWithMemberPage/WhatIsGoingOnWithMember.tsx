@@ -178,6 +178,9 @@ const UserInfo = function(props) {
                 </p>}
             </p>
         }
+        <p>
+            <strong>Email secondaire :</strong> {props.hasSecondaryEmail ? `un email secondaire est renseigné sur la fiche` : `pas d'email secondaire renseigné`}
+        </p>
     </>
 }
 
@@ -211,7 +214,7 @@ const MemberComponent = function({
     steps.push(STEP.everythingIsGood)
     return <div>
     <h2>{userInfos.fullname}</h2>
-    {!!userInfos && <UserInfo userInfos={userInfos}/>}
+    {!!userInfos && <UserInfo userInfos={userInfos} hasSecondaryEmail={hasSecondaryEmail}/>}
     {!!emailInfos && <EmailInfo emailInfos={emailInfos} primaryEmailStatus={primaryEmailStatus} />}
     {showSteps && <>
         <h3>Quels sont les problèmes ?</h3>
