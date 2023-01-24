@@ -1,3 +1,4 @@
+import config from '@/config';
 import { getMattermostUsersWithStatus } from '@/schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 import { AdminMattermostPage } from '../../views';
 
@@ -14,7 +15,8 @@ export async function getMattermostAdmin(req, res) {
       title,
       users,
       currentUserId: req.auth.id,
-      activeTab: 'administration',
+      activeTab: 'admin',
+      isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       errors: req.flash('error'),
       messages: req.flash('message'),
       request: req

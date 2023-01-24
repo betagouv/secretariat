@@ -100,9 +100,9 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                         </li> */}
                         { props.isAdmin && <li>
                             <a href="/admin/mattermost" id="admin" 
-                                className={`nav-item ${props.activeTab === 'administration' ? 'active' : ''}`}>
+                                className={`nav-item ${props.activeTab === 'admin' ? 'active' : ''}`}>
                                 ⚙️ Admin
-                                { props.activeTab !== 'administration' && <><br/><small>Admin bot mattermost</small></> }
+                                { props.activeTab !== 'admin' && <><br/><small>Admin bot mattermost</small></> }
                             </a>
                         </li>}
                         {/* <li>
