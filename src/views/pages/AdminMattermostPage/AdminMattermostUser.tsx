@@ -32,7 +32,7 @@ var groupBy = function(xs, key) {
 /* Pure component */
 export const AdminMattermostUser = (props: CommunityProps) => {
 
-    const [state, setState] = React.useState<any>({
+    const [state] = React.useState<any>({
         users: props.users,
         selectedName: '',
         fromBeta: true,
