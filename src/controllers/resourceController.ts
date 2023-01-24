@@ -16,6 +16,7 @@ export async function getResources(req, res) {
     channels,
     errors: req.flash('error'),
     messages: req.flash('message'),
+    isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
     investigationReportsIframeURL: config.investigationReportsIframeURL,
   });
 }
