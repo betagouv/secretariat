@@ -26,6 +26,7 @@ interface AdminProps {
   users: Member[],
   activeTab: string,
   request: Request,
+  isAdmin: boolean
 }
 
 /* Pure component */
