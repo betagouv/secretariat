@@ -10,6 +10,7 @@ export const postEventsOnMattermost = async () => {
     const calendarURL = process.env.CALENDAR_URL
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
     const titles = []
+    console.log(events)
     let readableEvents = events.sort(event => event.startDate).map(event => ({
         startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
         endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
