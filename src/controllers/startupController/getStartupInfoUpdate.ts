@@ -3,6 +3,7 @@ import { StartupInfoUpdatePage } from '@views';
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@/db";
 import { StartupInfo } from "@/models/startup";
+import config from "@/config";
 
 export async function getStartupInfoUpdate(req, res) {
     try {
@@ -27,6 +28,7 @@ export async function getStartupInfoUpdate(req, res) {
           formValidationErrors,
           currentUserId: req.auth.id,
           startupOptions,
+          isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
           startup: req.params.startup,
           startupsInfos: startups,
           activeTab: 'startups',

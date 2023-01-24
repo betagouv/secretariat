@@ -41,7 +41,8 @@ interface BaseInfoUpdateProps {
         label: string
     }[],
     username: string,
-    updatePullRequest?: DBPullRequest
+    updatePullRequest?: DBPullRequest,
+    isAdmin: boolean
 }
 
 interface FormErrorResponse {

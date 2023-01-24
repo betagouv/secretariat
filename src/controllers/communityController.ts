@@ -32,6 +32,7 @@ export async function getCommunity(req, res) {
           label: startup.attributes.name
         }
       }),
+      isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       domaineOptions: [{
           value: "ANIMATION",
           label: "Animation"

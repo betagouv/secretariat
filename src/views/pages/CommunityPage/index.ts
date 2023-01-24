@@ -17,6 +17,7 @@ export interface CommunityProps {
     incubatorOptions: Option[],
     startupOptions: Option[],
     domaineOptions: Option[],
+    isAdmin: boolean
 }
 
 export * from './Community';

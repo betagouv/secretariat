@@ -30,7 +30,8 @@ interface StartupInfoUpdateProps {
     }[],
     startup?: string,
     username: string,
-    updatePullRequest?: DBPullRequest
+    updatePullRequest?: DBPullRequest,
+    isAdmin: boolean
 }
 
 interface FormErrorResponse {

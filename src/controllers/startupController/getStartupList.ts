@@ -13,6 +13,7 @@ export async function getStartupList(req, res) {
         startups,
         domain: config.domain,
         activeTab: 'startups',
+        isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
         subActiveTab: 'list',
         errors: req.flash('error'),
         messages: req.flash('message'),

@@ -34,6 +34,7 @@ export async function getStartup(req, res) {
       startupInfos: startupInfos,
       currentPhase: PHASE_READABLE_NAME[getCurrentPhase(startupInfos)],
       members,
+      isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       subActiveTab: 'list',
       domain: config.domain,
       activeTab: 'startups',

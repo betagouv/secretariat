@@ -6,6 +6,7 @@ import { MemberWithPermission } from "@/models/member";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@/db";
 import { StartupInfo } from "@/models/startup";
+import config from "@/config";
 
 export async function getBaseInfoUpdate(req, res) {
     try {
@@ -44,6 +45,7 @@ export async function getBaseInfoUpdate(req, res) {
         BaseInfoUpdatePage({
           title,
           formValidationErrors,
+          isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
           currentUserId: req.auth.id,
           genderOptions,
           statusOptions,

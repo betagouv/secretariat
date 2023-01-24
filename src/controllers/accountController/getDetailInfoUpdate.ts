@@ -4,6 +4,7 @@ import * as utils from "@controllers/utils";
 import { DBUserDetail, DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 import { InfoUpdatePage } from '@views';
+import config from "@/config";
 
 export async function getDetailInfoUpdate(req, res) {
     try {
@@ -36,6 +37,7 @@ export async function getDetailInfoUpdate(req, res) {
           genderOptions,
           statusOptions,
           startupOptions,
+          isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
           activeTab: 'account',
           communeInfo: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code) : null,
           formData: {

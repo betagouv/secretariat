@@ -10,7 +10,8 @@ interface InnerPageLayout {
   messages: string[],
   activeTab: string,
   subActiveTab?: string,
-  request: Request
+  request: Request,
+  isAdmin: boolean,
 }
 
 export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T) => JSX.Element) => (
@@ -96,13 +97,14 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
                                 🚀 Startups
                             </a>
-                        </li>
-                        <li>
-                            <a href="/admin" id="admin" 
-                                className={`nav-item ${props.activeTab === 'administration' ? 'active' : ''}`}>
-                                ⚙️ Administration
-                            </a>
                         </li> */}
+                        { props.isAdmin && <li>
+                            <a href="/admin/mattermost" id="admin" 
+                                className={`nav-item ${props.activeTab === 'admin' ? 'active' : ''}`}>
+                                ⚙️ Admin
+                                { props.activeTab !== 'admin' && <><br/><small>Admin bot mattermost</small></> }
+                            </a>
+                        </li>}
                         {/* <li>
                             <a href="/newsletters" id="newsletter" 
                                 className={`nav-item ${props.activeTab === 'newsletter' ? 'active' : ''}`}>

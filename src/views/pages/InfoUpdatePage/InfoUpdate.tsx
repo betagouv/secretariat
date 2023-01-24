@@ -32,6 +32,7 @@ interface InfoUpdateProps {
   communeInfo: CommuneInfo,
   startups: string[],
   startupOptions: Option[],
+  isAdmin: boolean
 }
 
 /* Pure component */
