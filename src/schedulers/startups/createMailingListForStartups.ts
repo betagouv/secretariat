@@ -25,7 +25,7 @@ const addAndRemoveMemberToMailingListForStartup = async(startup: Startup) => {
     })
     const subscribers = await betagouv.getMailingListSubscribers(mailingListName)
     console.log(`Subscriber in ${mailingListName} : ${subscribers.length}`)
-    for (const email of emails.filter(email => subscribers.includes(email))) {
+    for (const email of emails.filter(email => !subscribers.includes(email))) {
         betagouv.subscribeToMailingList(mailingListName, email)
     }
     for (const subscriber of subscribers.filter(subscriber => !emails.includes(subscriber))) {
