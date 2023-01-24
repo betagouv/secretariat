@@ -12,6 +12,7 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
   currentUserId: req.auth.id,
   currentNewsletter,
   newsletters,
+  isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
   activeTab: 'newsletter',
 });
 
