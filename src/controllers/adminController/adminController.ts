@@ -69,6 +69,7 @@ export async function getEmailLists(req, res) {
           currentUserId: req.auth.id,
           users: users.splice(0, 100),
           emails,
+          isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
           expiredEmails,
           activeTab: 'admin',
           errors: req.flash('error'),

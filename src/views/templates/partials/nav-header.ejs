@@ -79,13 +79,17 @@
                         </ul>
                     <% } %>
                 </li>
-                <!--    <li>
-                        <a href="/admin" id="admin" 
-                            class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
+                <% if (isAdmin) { %><li>
+                        <a href="/admin/mattermost" id="admin" 
+                            class="nav-item <% if(activeTab === 'administration') { %> active <% } %>">
                             ⚙️ Administration
+                            <% if(activeTab !== 'administration') { %>
+                                <br/>
+                                <small>Admin bot mattermost</small>
+                            <% } %>  
                         </a>
                     </li>
-                -->
+                <% } %>
                 <!-- <li>
                     <a href="/newsletters" id="newsletter" 
                         class="nav-item <% if(activeTab === 'newsletter') { %> active <% } %>">

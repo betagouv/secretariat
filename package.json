@@ -13,7 +13,7 @@
     "test": "NODE_ENV=test ts-mocha  --paths -p tsconfig.json --icu-data-dir=./node_modules/full-icu src/**/*.spec.ts tests/*.ts tests/*.ts --exit --require ./tests/env-setup.ts --timeout 5000",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "dev": "concurrently \"npm run watch:back\" \"npm run watch:front\"",
+    "dev": "NODE_ENV=development concurrently \"npm run watch:back\" \"npm run watch:front\"",
     "watch:back": "ts-node-dev --transpile-only -r tsconfig-paths/register src/index.ts",
     "watch:front": "webpack --config=webpack.config.js --watch",
     "build": "npm run build:front && npm run build:back",

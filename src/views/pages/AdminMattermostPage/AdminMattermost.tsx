@@ -16,6 +16,7 @@ interface CommunityProps {
     users: Member[],
     activeTab: string,
     request: Request,
+    isAdmin: boolean
 }
   
 const columns: ColumnDefinition[] = [
@@ -114,8 +115,12 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
             fromBeta: state.fromBeta
         }
         const queryParamsString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
-        const usersForMessage = await axios.get(`${routes.ADMIN_MATTERMOST_MESSAGE_API}?${queryParamsString}`, ).then(resp => resp.data.users)
-        setUsersForMessage(usersForMessage)
+        try {
+            const usersForMessage = await axios.get(`${routes.ADMIN_MATTERMOST_MESSAGE_API}?${queryParamsString}`, ).then(resp => resp.data.users)
+            setUsersForMessage(usersForMessage)
+        } catch(e) {
+
+        }
     }
 
     const usersValidWithDomain = countData['USER_IS_VALID_WITH_DOMAIN'] || []
@@ -130,28 +135,6 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
     return (
     <>
         <div className="module">
-            <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
-                <h3>
-                    Membre mattermost et status
-                </h3>
-                { Object.keys(countData).map(key => {
-                    return <div>{key} : {countData[key].length}</div>
-                })}
-                { Object.keys(usersByDomain).map(key => {
-                    return <div>{key} : {usersByDomain[key].length}</div>
-                })}
-                { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
-                <br/>
-                <br/>
-                <ReactTabulator
-                    data-instance={'user-table'}
-                    columns={columns}
-                    data={state.users}
-                    options={{ pagination: 'local', paginationSize: 50 }}
-                />
-                <br/>
-                <br/>
-            </div>
             <div key={'mattermost-message'} className="panel panel-full-width" id="mattermost-message">
                 <h3>
                     Envoyer un message aux utilisateurs mattermot
@@ -230,6 +213,28 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                     </label>
                     <button className="button" type="submit">Envoyer</button>
                 </form>
+                <br/>
+            </div>
+            <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
+                <h3>
+                    Membre mattermost et status
+                </h3>
+                { Object.keys(countData).map(key => {
+                    return <div>{key} : {countData[key].length}</div>
+                })}
+                { Object.keys(usersByDomain).map(key => {
+                    return <div>{key} : {usersByDomain[key].length}</div>
+                })}
+                { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
+                <br/>
+                <br/>
+                <ReactTabulator
+                    data-instance={'user-table'}
+                    columns={columns}
+                    data={state.users}
+                    options={{ pagination: 'local', paginationSize: 50 }}
+                />
+                <br/>
                 <br/>
             </div>
         </div>
