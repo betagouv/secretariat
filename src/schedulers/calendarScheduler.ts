@@ -43,6 +43,7 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
     if (forumBetaEvent) {
       const messageContent = await ejs.renderFile('./src/views/templates/emails/forumBetaMessage.ejs', {
         event: forumBetaEvent,
+        CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
       });
       await betagouv.sendInfoToChat(messageContent, canal);
       if (process.env.FEATURE_SEND_FORUM_REMINDER_EMAIL) {
