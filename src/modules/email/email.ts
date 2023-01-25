@@ -333,9 +333,11 @@ export interface IMailingService {
     getAllContactsFromList?: GetAllContactsFromList
 }
 
+
 export enum MAILING_LIST_TYPE {
-    ONBOARDING="ONBOARDING",
-    NEWSLETTER="NEWSLETTER",
-    TEST="TEST"
+  ONBOARDING = "ONBOARDING",
+  NEWSLETTER = "NEWSLETTER",
+  TEST = "TEST",
+  FORUM_REMINDER = "FORUM_REMINDER"
 }
 
