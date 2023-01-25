@@ -150,6 +150,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 return <li key={i}><strong>Erreur : </strong>{error}</li>
             })}
         </div>}
+        { !!props.formValidationErrors['utilisateur existant'] && <p className="text-small text-color-red">{props.formValidationErrors['utilisateur existant']}</p>}
         { !!props.messages.length && <div className="notification">
             {props.messages}
         </div>}
