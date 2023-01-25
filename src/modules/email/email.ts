@@ -232,7 +232,8 @@ export type EmailForumReminder = {
     type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
     variables: {
         date: string,
-        calendar_public_url: string
+        calendar_public_url: string,
+        location: string
     }
 }
 

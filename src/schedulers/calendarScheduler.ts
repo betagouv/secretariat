@@ -45,6 +45,8 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
     if (forumBetaEvent) {
       const messageContent = await ejs.renderFile('./src/views/templates/emails/forumBetaMessage.ejs', {
         event: forumBetaEvent,
+        date: utils.formatDateToFrenchTextReadableFormat(forumBetaEvent.startDateAsDate, false),
+        location: forumBetaEvent.location,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
       });
       console.log(forumBetaEvent)
@@ -54,8 +56,9 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
         mailingListType: MAILING_LIST_TYPE.FORUM_REMINDER,
         type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
         variables: {
-          date: forumBetaEvent.startDateAsDate.toISOString(),
-          calendar_public_url: process.env.CALENDAR_PUBLIC_URL
+          date: utils.formatDateToFrenchTextReadableFormat(forumBetaEvent.startDateAsDate, false),
+          calendar_public_url: process.env.CALENDAR_PUBLIC_URL,
+          location: forumBetaEvent.location
         },
         forceTemplate: true,
         campaignName: `Forum beta reminder du ${forumBetaEvent.startDate}`,

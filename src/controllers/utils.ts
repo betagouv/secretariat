@@ -169,7 +169,7 @@ export function nbOfDaysBetweenDate(date1, date2) {
   return totalDays;
 }
 
-export function formatDateToFrenchTextReadableFormat(date) {
+export function formatDateToFrenchTextReadableFormat(date: Date, withYear:boolean=true) {
   const frenchMonth = [
     'janvier',
     'février',
@@ -186,7 +186,11 @@ export function formatDateToFrenchTextReadableFormat(date) {
   ];
   const day = date.getDate().toString();
   const month = frenchMonth[date.getMonth()];
-  return `${day} ${month} ${date.getFullYear()}`;
+  let res = `${day} ${month}`;
+  if (withYear) {
+    res = `${res} ${date.getFullYear()}`
+  }
+  return res
 }
 
 export const NUMBER_OF_DAY_IN_A_WEEK = 7;
