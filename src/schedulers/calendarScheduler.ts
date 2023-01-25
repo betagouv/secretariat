@@ -34,12 +34,14 @@ const makeReadableEvent = events => {
   })  
 }
 
-export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string='general') => {
+export const sendForumBetaReminder = async (numberOfDays:number=12, canal: string='general') => {
     const today = new Date()
-    const dayInSixDays = new Date()
-    dayInSixDays.setDate(today.getDate() + numberOfDays)
+    const dayInXDays = new Date()
+    dayInXDays.setDate(today.getDate() + numberOfDays)
+    const dayInXDaysMoreOnWeek = new Date()
+    dayInXDaysMoreOnWeek.setDate(dayInXDays.getDate() + 6)
     const calendarURL = process.env.CALENDAR_URL
-    const events : {} = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
+    const events : {} = await getEventsForCalendarFromDateToDate(calendarURL, dayInXDays, dayInXDaysMoreOnWeek)
     let readableEvents : ReadableEvents[] = makeReadableEvent(events)
     const forumBetaEvent = readableEvents.find(event => event.title.toLowerCase().includes('forum beta.gouv'))
     if (forumBetaEvent) {
@@ -52,7 +54,7 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
       console.log(forumBetaEvent)
       await betagouv.sendInfoToChat(messageContent, canal);
       await sendCampaignEmail({
-        subject: 'Forum Beta',
+        subject: 'Ne manquez pas le forum beta.gouv.fr du <%= date %> !',
         mailingListType: MAILING_LIST_TYPE.FORUM_REMINDER,
         type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
         variables: {
