@@ -50,6 +50,7 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
       console.log(forumBetaEvent)
       await betagouv.sendInfoToChat(messageContent, canal);
       await sendCampaignEmail({
+        subject: 'Forum Beta',
         mailingListType: MAILING_LIST_TYPE.FORUM_REMINDER,
         type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
         variables: {
