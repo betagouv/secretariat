@@ -95,7 +95,15 @@ const sendEmailToTeam = async({ prUrl, prInfo: {
 const MemberUpdateStateMachine = async (dbPullRequest, pullRequestURLs) => {
     const url = dbPullRequest.url
     if (!pullRequestURLs.includes(dbPullRequest.url)) {
-        // sendEmail to referent
+        await db('pull_requests').where({ url }).update({
+            status: PULL_REQUEST_STATE.PR_CLOSED
+        })
+    }
+}
+
+const StartupUpdateStateMachine = async (dbPullRequest, pullRequestURLs) => {
+    const url = dbPullRequest.url
+    if (!pullRequestURLs.includes(dbPullRequest.url)) {
         await db('pull_requests').where({ url }).update({
             status: PULL_REQUEST_STATE.PR_CLOSED
         })
@@ -149,6 +157,8 @@ export async function pullRequestStateMachine() {
                 await OnboardingStateMachine(dbPullRequest, pullRequestURLs)
             } else if (dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE) {
                 await MemberUpdateStateMachine(dbPullRequest, pullRequestURLs)
+            } else if (dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE) {
+                await StartupUpdateStateMachine(dbPullRequest, pullRequestURLs)
             }
         } catch(e) {
             console.error(e)
