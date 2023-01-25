@@ -203,7 +203,8 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     const html = renderHtmlFromMd(newsletterContent);
 
     await sendCampaignEmail({
-        type: MAILING_LIST_TYPE.NEWSLETTER,
+        mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
         variables: undefined,
         campaignName: `${getTitle(newsletterContent)}`,
         subject: `${getTitle(newsletterContent)}`,
