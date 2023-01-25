@@ -237,7 +237,8 @@ export type EmailForumReminder = {
 }
 
 export type EmailTest = {
-    type: EMAIL_TYPES.EMAIL_TEST
+    type: EMAIL_TYPES.EMAIL_TEST,
+    variables?: {} 
 }
 
 export type EmailVariants =
