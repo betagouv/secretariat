@@ -18,7 +18,8 @@ export async function getStartupInfoUpdate(req, res) {
       })
       const updatePullRequest = await db('pull_requests')
         .where({
-          status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED
+          status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
+          startup: req.params.startup,
         })
         .orderBy('created_at', 'desc')
         .first()
