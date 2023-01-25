@@ -6,34 +6,43 @@ import { sendEmail } from "@/config/email.config";
 import db from "@/db";
 import { DBStartup, StartupInfo, StartupPhase } from "@/models/startup";
 import { EMAIL_TYPES } from "@/modules/email";
+import { nbOfDaysBetweenDate } from '@/controllers/utils';
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
+function isRecent(phaseDate: Date) {
+  const TWO_MONTHS_IN_DAYS = 30*2
+  return Math.abs(nbOfDaysBetweenDate(phaseDate, new Date())) < TWO_MONTHS_IN_DAYS
+}
+
 async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
   if (previousStartupInfo && newStartupInfo.current_phase !== previousStartupInfo.current_phase) {
     const startupInfos = await betagouv.startupInfosById(newStartupInfo.id)
-    console.log(startupInfos.active_members)
-    if (newStartupInfo.current_phase === StartupPhase.PHASE_CONSTRUCTION) {
-      if (newStartupInfo.mailing_list) {
-        sendEmail({
-          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
-          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
-          variables: {
-            startup: newStartupInfo.id
-          }
-        })
-      }
-    } else if (newStartupInfo.current_phase === StartupPhase.PHASE_ACCELERATION) {
-      if (newStartupInfo.mailing_list) {
-        sendEmail({
-          toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
-          type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
-          variables: {
-            startup: newStartupInfo.id
-          }
-        })
+    const phase = startupInfos.phases.find(phase => phase.name === newStartupInfo.current_phase)
+    const phaseDate = new Date(phase.start)
+    if (isRecent(phaseDate)) {
+      if (newStartupInfo.current_phase === StartupPhase.PHASE_CONSTRUCTION) {
+        if (newStartupInfo.mailing_list) {
+          sendEmail({
+            toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+            type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE,
+            variables: {
+              startup: newStartupInfo.id
+            }
+          })
+        }
+      } else if (newStartupInfo.current_phase === StartupPhase.PHASE_ACCELERATION) {
+        if (newStartupInfo.mailing_list) {
+          sendEmail({
+            toEmail: [`${newStartupInfo.mailing_list}@${config.domain}`],
+            type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE,
+            variables: {
+              startup: newStartupInfo.id
+            }
+          })
+        }
       }
     }
     console.info(`Changement de phase de startups pour ${newStartupInfo.id}`)
