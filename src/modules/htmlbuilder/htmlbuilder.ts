@@ -26,7 +26,9 @@ const TEMPLATES_BY_TYPE : Record<EmailProps['type'], string | null> = {
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: './src/views/templates/emails/startupEnterConstructionPhase.ejs',
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: './src/views/templates/emails/startupEnterAccelerationPhase.ejs',
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: null,
-    EMAIL_STARTUP_ASK_PHASE : null,
+    EMAIL_STARTUP_ASK_PHASE: null,
+    EMAIL_FORUM_REMINDER: null,
+    EMAIL_TEST: null
 }
 
 const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > = {
@@ -62,7 +64,9 @@ const SUBJECTS_BY_TYPE : Record<EmailProps['type'], string | SubjectFunction > =
         return `${startup} passe en acceleration : les bonnes pratiques`
     },
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: '',
-    EMAIL_STARTUP_ASK_PHASE: ''
+    EMAIL_STARTUP_ASK_PHASE: '',
+    EMAIL_FORUM_REMINDER: '',
+    EMAIL_TEST: ''
 }
 
 const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
@@ -88,7 +92,9 @@ const MARKDOWN_BY_TYPE : Record<EmailProps['type'], boolean> = {
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: true,
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: true,
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: false,
-    EMAIL_STARTUP_ASK_PHASE: false
+    EMAIL_STARTUP_ASK_PHASE: false,
+    EMAIL_FORUM_REMINDER: false,
+    EMAIL_TEST: false
 }
 
 const htmlBuilder : HtmlBuilderType = {

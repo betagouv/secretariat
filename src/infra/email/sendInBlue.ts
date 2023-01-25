@@ -27,7 +27,9 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps['type'], number> = {
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: 1,
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: 3,
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: 2,
-    EMAIL_STARTUP_ASK_PHASE: 15
+    EMAIL_STARTUP_ASK_PHASE: 15,
+    EMAIL_FORUM_REMINDER: 0,
+    EMAIL_TEST: 0
 }
 
 type SendEmailFromSendinblueDeps = {
@@ -46,7 +48,7 @@ const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
     NEWSLETTER: config.MAILING_LIST_NEWSLETTER || 332,
     ONBOARDING: config.MAILING_LIST_ONBOARDING || 333,
     TEST: 336,
-    FORUM_REMINDER: 0
+    FORUM_REMINDER: config.MAILING_LIST_REMINDER || 7
 } 
 
 type SendinblueDeps = {
@@ -125,6 +127,7 @@ export const makeSendCampaignEmail = ({
             htmlContent,
             campaignName,
             type,
+            mailingListType,
             forceTemplate
         } = props
 
@@ -159,7 +162,7 @@ export const makeSendCampaignEmail = ({
             },
             html,
             templateId,
-            listIds: [MAILING_LIST_ID_BY_TYPE[type]],
+            listIds: [MAILING_LIST_ID_BY_TYPE[mailingListType]],
             campaignName
         })
         let apiInstance = new SibApiV3Sdk.EmailCampaignsApi();

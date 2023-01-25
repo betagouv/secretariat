@@ -1,8 +1,9 @@
 import { sendCampaignEmail } from "@/config/email.config";
-import { MAILING_LIST_TYPE } from "@/modules/email";
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@/modules/email";
 
 sendCampaignEmail({
-    type: MAILING_LIST_TYPE.TEST,
+    mailingListType: MAILING_LIST_TYPE.TEST,
+    type: EMAIL_TYPES.EMAIL_TEST,
     variables: undefined,
     campaignName: "TEST",
     subject: "TEST",

@@ -3,12 +3,13 @@ import { getEventsForCalendarFromDateToDate } from "../lib/icalhelper"
 import betagouv from '../betagouv'
 import * as utils from '@controllers/utils';
 import { sendCampaignEmail } from '@/config/email.config';
-import { MAILING_LIST_TYPE } from '@/modules/email';
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
 
 
 interface ReadableEvents {
-  startDate: Date,
-  endDate: Date,
+  startDate: string,
+  endDate: string,
+  startDateAsDate: Date,
   location: string,
   title: string
 }
@@ -17,6 +18,7 @@ const makeReadableEvent = events => {
   const titles = []
   return events.sort(event => event.startDate).map(event => ({
     startDate: utils.formatDateToReadableDateAndTimeFormat(event.startDate),
+    startDateAsDate: event.startDate,
     endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
     location: event.location,
     title: event.title
@@ -45,15 +47,18 @@ export const sendForumBetaReminder = async (numberOfDays:number=6, canal: string
         event: forumBetaEvent,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
       });
+      console.log(forumBetaEvent)
       await betagouv.sendInfoToChat(messageContent, canal);
-      if (process.env.FEATURE_SEND_FORUM_REMINDER_EMAIL) {
-        await sendCampaignEmail({
-          type: MAILING_LIST_TYPE.FORUM_REMINDER,
-          variables: undefined,
-          forceTemplate: true,
-          campaignName: `Forum beta reminder du ${forumBetaEvent.startDate}`,
-        })
-      }
+      await sendCampaignEmail({
+        mailingListType: MAILING_LIST_TYPE.FORUM_REMINDER,
+        type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
+        variables: {
+          date: forumBetaEvent.startDateAsDate.toISOString(),
+          calendar_public_url: process.env.CALENDAR_PUBLIC_URL
+        },
+        forceTemplate: true,
+        campaignName: `Forum beta reminder du ${forumBetaEvent.startDate}`,
+      })
     }
     return forumBetaEvent
 }

@@ -74,6 +74,7 @@ export default {
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN ? process.env.ESPACE_MEMBRE_ADMIN.split(','):[],
   MAILING_LIST_NEWSLETTER: process.env.MAILING_LIST_NEWSLETTER ? parseInt(process.env.MAILING_LIST_NEWSLETTER) : null,
   MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING ? parseInt(process.env.MAILING_LIST_ONBOARDING) : null,
+  MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER ? parseInt(process.env.MAILING_LIST_REMINDER) : null,
   MARRAINAGE_GROUP_LIMIT: parseInt(process.env.MARRAINAGE_GROUP_LIMIT) || 5,
   MARRAINAGE_GROUP_WEEK_LIMIT:  parseInt(process.env.MARRAINAGE_GROUP_WEEK_LIMIT) || 2,
   mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,

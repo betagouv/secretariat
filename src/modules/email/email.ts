@@ -27,6 +27,8 @@ export enum EMAIL_TYPES {
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE",
     EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
+    EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
+    EMAIL_TEST = "EMAIL_TEST"
 }
 
 export type SubjectFunction = {
@@ -226,6 +228,19 @@ export type EmailStartupAskPhase = {
     }
 }
 
+export type EmailForumReminder = {
+    type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
+    variables: {
+        date: string,
+        calendar_public_url: string
+    }
+}
+
+export type EmailTest = {
+    type: EMAIL_TYPES.EMAIL_TEST,
+    variables?: {} 
+}
+
 export type EmailVariants =
  | EmailMarrainageNewcomer
  | EmailMarrainageOnboarder
@@ -247,12 +262,14 @@ export type EmailVariants =
  | EmailStartupEnterAccelerationPhase
  | EmailStartupEnterInvestigationPhase
  | EmailStartupAskPhase
+ | EmailForumReminder
+ | EmailTest
 
 export type EmailProps = BaseEmail & EmailVariants
 
 export type SendEmailProps = {
-    subject?: string
-    type: EmailProps['type']
+    subject?: string,
+    type: EmailProps['type'],
     variables: EmailProps['variables'],
     forceTemplate?: boolean,
     toEmail: string[],
@@ -265,15 +282,16 @@ export type SendEmailProps = {
 }
 
 export type SendCampaignEmailProps = {
-    subject?: string
-    variables: Record<string, string>,
+    subject?: string,
+    variables: EmailProps['variables'],
+    type: EmailProps['type'],
     forceTemplate?: boolean,
     extraParams?: Record<string, string>, 
     attachments?: any[],
     replyTo?: string,
     headers?: Record<string, string|number>,
     htmlContent?: string,
-    type: MAILING_LIST_TYPE,
+    mailingListType: MAILING_LIST_TYPE,
     campaignName: string,
 }
 
