@@ -46,6 +46,7 @@ const MAILING_LIST_ID_BY_TYPE: Record<MAILING_LIST_TYPE, number> = {
     NEWSLETTER: config.MAILING_LIST_NEWSLETTER || 332,
     ONBOARDING: config.MAILING_LIST_ONBOARDING || 333,
     TEST: 336,
+    FORUM_REMINDER: 0
 } 
 
 type SendinblueDeps = {
