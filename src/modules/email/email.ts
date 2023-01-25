@@ -27,7 +27,8 @@ export enum EMAIL_TYPES {
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE",
     EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
-    EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER"
+    EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
+    EMAIL_TEST = "EMAIL_TEST"
 }
 
 export type SubjectFunction = {
@@ -235,6 +236,10 @@ export type EmailForumReminder = {
     }
 }
 
+export type EmailTest = {
+    type: EMAIL_TYPES.EMAIL_TEST
+}
+
 export type EmailVariants =
  | EmailMarrainageNewcomer
  | EmailMarrainageOnboarder
@@ -256,7 +261,8 @@ export type EmailVariants =
  | EmailStartupEnterAccelerationPhase
  | EmailStartupEnterInvestigationPhase
  | EmailStartupAskPhase
- | EmailForumReminder 
+ | EmailForumReminder
+ | EmailTest
 
 export type EmailProps = BaseEmail & EmailVariants
 
