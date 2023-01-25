@@ -71,13 +71,17 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             }
         })
     }
+    let disabled = false
     const startupInfo : StartupInfo = startup ? props.startupsInfos.find(s => s.id === startup) : null
+    if (startupInfo && phase === getCurrentPhase(startupInfo)) {
+        disabled = true
+    }
     return (
         <>
             <div className="module">
             <div>
                 <small>
-                    <a href="/account">Produit</a> &gt; <a href="">Mise à jour de la phase</a>
+                    <a href="/startups">Produit</a> &gt; <a href={`/startups/${props.startup}`}>{props.startup}</a> &gt; <a href="">Mise à jour de la phase</a>
                 </small>
             </div>
             <div className="margin-top-m"></div>
@@ -112,6 +116,9 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                         isMulti={false}
                                         placeholder={"Selectionne la phase"}
                                     />
+                                    { disabled && 
+                                        <p className="text-small text-color-red">{startupInfo.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
+                                    }
                                 </div>
                                 <div className="form__group">
                                     <label htmlFor="end">
@@ -131,7 +138,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                 </div>
                                 <input
                                     type="submit"
-                                    disabled={isSaving}
+                                    disabled={isSaving || disabled}
                                     value={isSaving ? `Enregistrement en cours...` : `Enregistrer`}
                                     className="button"
                                 />

@@ -24,14 +24,14 @@ async function sendMessageToReferent({ prUrl, prInfo }: { prUrl: string, prInfo:
         const dbReferent = await db('users').where({ username: prInfo.referent }).first()
         const email = dbReferent.communication_email === CommunicationEmailCode.SECONDARY && dbReferent.secondary_email ? dbReferent.secondary_email : dbReferent.primary_email
         await sendEmail({
-        toEmail: [email],
-        type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
-        variables: {
-            referent,
-            prUrl,
-            name,
-            isEmailBetaAsked
-        }
+            toEmail: [email],
+            type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+            variables: {
+                referent,
+                prUrl,
+                name,
+                isEmailBetaAsked
+            }
         })
     } catch (e) {
         Sentry.captureException(e);

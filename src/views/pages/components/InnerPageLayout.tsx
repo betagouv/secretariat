@@ -83,12 +83,6 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                             🔎 Rechercher une startup
                                         </a>
                                     </li>
-                                    <li>
-                                        <a href="/startups/info-form"
-                                            className={`nav-sub-item ${props.subActiveTab === 'update-phase' ? 'active' : ''}`}>
-                                        📍 Changer la phase d'une startup
-                                        </a>
-                                    </li>
                                 </ul>
                             }
                         </li>
