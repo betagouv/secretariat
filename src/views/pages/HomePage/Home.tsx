@@ -6,7 +6,7 @@ import { PageLayout } from '../components/PageLayout'
 interface Props {
   request: Request,
   errors: any[],
-  messages: any[],
+  messages: string,
   domain: string,
   next: string,
 }
@@ -31,7 +31,9 @@ export const Home = PageLayout(function (props: Props) {
         <h4>Me connecter</h4>
 
         { !!props.messages.length && 
-          <div className="notification">{ props.messages }</div>
+          <div
+            className="notification"
+            dangerouslySetInnerHTML={{__html: props.messages}}></div>
         }
         <form action={`/login${props.next}`} method="POST" id="login_form">
           <label htmlFor="emailInput"><b>Mon email</b></label>
