@@ -185,9 +185,9 @@ export async function postLogin(req, res) {
     return renderLogin(req, res, {
       messages: req.flash(
         'message',
-        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.<br>
-        <small>⚠️ Si tu utilises gmail, les messages peuvent mettre du temps à arriver.
-        Pour les récupérer instantanément aller dans Paramètres ⚙️ > comptes et importation > Consulter d'autres comptes de messagerie → Consulter votre messagerie maintenant.</small>`
+        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.<br><br>
+        <small>⚠️ Sur gmail, les emails peuvent arriver avec un délai.
+        Pour les récupérer instantanément aller dans Paramètres ⚙️ → comptes et importation → Consulter d'autres comptes de messagerie → Consulter votre messagerie maintenant.</small>`
       ),
     });
   } catch (err) {
