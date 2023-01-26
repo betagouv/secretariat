@@ -58,7 +58,7 @@ async function sendLoginEmail(email: string, username: string, loginUrlWithToken
 export async function saveToken(username: string, token: string, email: string) {
   try {
     const expirationDate = new Date();
-    expirationDate.setHours(expirationDate.getHours() + 1);
+    expirationDate.setMinutes(expirationDate.getMinutes() + 90); // set duration to 1h30, some users receives emails one hours after
 
     await knex('login_tokens').insert({
       token,
@@ -185,7 +185,9 @@ export async function postLogin(req, res) {
     return renderLogin(req, res, {
       messages: req.flash(
         'message',
-        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.`
+        `Un lien de connexion a été envoyé à l'adresse ${emailInput}. Il est valable une heure.<br>
+        <small>⚠️ Si tu utilises gmail, les messages peuvent mettre du temps à arriver.
+        Pour les récupérer instantanément aller dans Paramètres ⚙️ > comptes et importation > Consulter d'autres comptes de messagerie → Consulter votre messagerie maintenant.</small>`
       ),
     });
   } catch (err) {
