@@ -149,7 +149,7 @@ export async function postLogin(req, res) {
   const emailSplit = emailInput.split('@');
   if (emailSplit[1] === config.domain) {
     username = emailSplit[0];
-    if (username === undefined || !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)) {
+    if (username === undefined || !/^[a-z0-9_\-\.]+$/.test(username)) {
       req.flash(
         'error',
         `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
