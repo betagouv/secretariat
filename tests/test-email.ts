@@ -91,9 +91,10 @@ describe('Reinit password for expired users', () => {
 describe('Set email active', () => {
  
   let sendEmailStub;
-
+  let unblacklistContactEmail
   beforeEach((done) => {
-    sendEmailStub = sinon.stub(email, 'sendEmail').returns(Promise.resolve(true));
+    sendEmailStub = sinon.stub(email, 'sendEmail').returns(Promise.resolve(null));
+    unblacklistContactEmail = sinon.stub(email, 'unblacklistContactEmail').returns(Promise.resolve())
     utilsTest.cleanMocks();
     utilsTest.mockOvhTime();
     done();
@@ -101,6 +102,7 @@ describe('Set email active', () => {
 
   afterEach((done) => {
     sendEmailStub.restore()
+    unblacklistContactEmail.restore()
     done()
   })
 
@@ -147,6 +149,7 @@ describe('Set email active', () => {
     }).returning('*')
     users[0].username.should.be.equal('membre.nouveau')
     sendEmailStub.calledOnce.should.be.true;
+    unblacklistContactEmail.calledOnce.should.be.true;
     await knex('users').where({
       username: 'membre.nouveau'
     }).update({
@@ -197,6 +200,7 @@ describe('Set email active', () => {
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     }).returning('*')
     sendEmailStub.calledOnce.should.be.true;
+    unblacklistContactEmail.calledOnce.should.be.true;
     users[0].username.should.be.equal('membre.nouveau')
     await knex('users').where({
       username: 'membre.nouveau'
