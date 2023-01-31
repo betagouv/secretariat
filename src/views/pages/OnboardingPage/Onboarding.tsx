@@ -428,7 +428,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 </div>
                 <div className="form__group">
                     <label htmlFor="employer">
-                        <strong>Est-tu ?</strong><br />
+                        <strong>Es-tu ?</strong><br />
                         { props.userConfig.memberOptions.map((memberType) => {
                             return (<span key={memberType.key}><input type="radio" name="memberType"
                                 value={memberType.key}
