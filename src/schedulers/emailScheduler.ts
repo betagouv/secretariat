@@ -10,7 +10,7 @@ import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/m
 import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
 import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
-import { addContactsToMailingLists } from '@/config/email.config';
+import { addContactsToMailingLists, smtpBlockedContactsEmailDelete } from '@/config/email.config';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -45,6 +45,7 @@ export async function setEmailAddressesActive() {
         })
       }
       await setEmailActive(user.username)
+      await smtpBlockedContactsEmailDelete({ email: user.primary_email })
       // once email created we create marrainage
     })
   );
