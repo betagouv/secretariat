@@ -20,6 +20,7 @@ import {
   addUsersNotInCommunityToCommunityTeam,
   syncMattermostUserStatusWithMattermostMemberInfosTable,
   syncMattermostUserWithMattermostMemberInfosTable,
+  sendGroupDeSoutienReminder,
 } from './mattermostScheduler';
 import {
   newsletterReminder,
@@ -106,6 +107,14 @@ const mattermostJobs: Job[] = [
     isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
     name: 'sendReminderToUserAtDays',
   },
+  {
+    cronTime: '0 0 10 * * *',
+    onTick: () => {
+      sendGroupDeSoutienReminder('tmp-lucas-test', 2, 1)
+    },
+    isActive: true,
+    name: 'sendGroupDeSoutienReminder'
+  }
 ]
 
 const emailJobs: Job[] = [
