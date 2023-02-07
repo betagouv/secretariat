@@ -7,7 +7,9 @@ class routes {
   static STARTUP_GET_INFO_UPDATE_FORM = '/startups/:startup/info-form'
   static STARTUP_POST_INFO_UPDATE_FORM = '/startups/:startup/info-form'
   // page de diagnostic
-  static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-ce-passe-t-il'
+  static WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO = '/que-ce-passe-t-il'
+  static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-se-passe-t-il'
+  static WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE = '/keskispasse'
   // ADMIN
   static ADMIN = '/admin'
   static ADMIN_MATTERMOST = '/admin/mattermost'
