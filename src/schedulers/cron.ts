@@ -110,7 +110,7 @@ const mattermostJobs: Job[] = [
   {
     cronTime: '0 0 10 * * *',
     onTick: () => {
-      sendGroupDeSoutienReminder('tmp-lucas-test', 2, 0)
+      sendGroupDeSoutienReminder('general', 1, 0)
     },
     isActive: true,
     name: 'sendGroupDeSoutienReminder'

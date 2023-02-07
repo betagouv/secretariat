@@ -44,8 +44,8 @@ export async function setEmailAddressesActive() {
           }] 
         })
       }
-      await setEmailActive(user.username)
       await smtpBlockedContactsEmailDelete({ email: user.primary_email })
+      await setEmailActive(user.username)
       // once email created we create marrainage
     })
   );
