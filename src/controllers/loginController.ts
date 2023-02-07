@@ -102,7 +102,7 @@ export async function postLoginApi(req, res) {
 
   const dbResponse : DBUser = await knex('users')
   .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-  .orWhereRaw(`(LOWER(primary_email) = ?`, emailInput)
+  .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
   .first()
 
   if (!dbResponse) {
@@ -168,7 +168,7 @@ export async function postLogin(req, res) {
 
   const dbResponse : DBUser = await knex('users')
   .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-  .orWhereRaw(`(LOWER(primary_email) = ?`, emailInput)
+  .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
   .first()
 
   if (!dbResponse) {
@@ -186,6 +186,7 @@ export async function postLogin(req, res) {
     );
     return res.redirect(`/login${next}`);
   }
+  username = dbResponse.username;
 
   try {
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
