@@ -142,6 +142,9 @@ app.post('/signin', loginController.postSignIn);
 app.get('/logout', logoutController.getLogout);
 // que ce passe-t-il
 app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER, getWhatIsGoingOnWithMemberController)
+app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO, (req, res) => res.redirect(routes.WHAT_IS_GOING_ON_WITH_MEMBER))
+app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE, (req, res) => res.redirect(routes.WHAT_IS_GOING_ON_WITH_MEMBER))
+
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 app.post(routes.USER_CREATE_EMAIL_API, express.json({type: '*/*'}), usersController.createEmailApi);
