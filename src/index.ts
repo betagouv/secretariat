@@ -99,6 +99,8 @@ app.use(
       '/marrainage/decline',
       '/notifications/github',
       routes.WHAT_IS_GOING_ON_WITH_MEMBER,
+      routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE,
+      routes.WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO,
       routes.PULL_REQUEST_GET_PRS,
       routes.ONBOARDING,
       routes.ONBOARDING_ACTION,
