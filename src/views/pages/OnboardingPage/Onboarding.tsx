@@ -56,6 +56,7 @@ interface Props {
     request: Request,
     formData: FormData,
     users: Member[],
+    allUsers: Member[],
     domaineOptions?: Option[],
     statusOptions?: Option[],
     genderOptions?: Option[],
@@ -171,8 +172,7 @@ export const Onboarding = PageLayout(function (props: Props) {
 
     const checkUserExists = React.useMemo(() => _.debounce(() => {
             const username: string = createUsername(state.formData.firstName, state.formData.lastName);
-            console.log(username)
-            const userExists : Member = props.users.find(user => user.id === username)
+            const userExists : Member = props.allUsers.find(user => user.id === username)
             if (userExists) {
                 openModal()
             }
