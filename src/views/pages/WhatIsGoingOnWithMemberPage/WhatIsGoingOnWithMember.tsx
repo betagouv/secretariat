@@ -717,20 +717,20 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
       </div>  
     } else if (step === STEP.hasMattermostProblem) {
-        stepView = <div>
-            <p>Tu as un problème pour te connecter à mattermost</p>
+        stepView = <div className="keskipasse-mattermost-container">
+            <p>Tu as un problème pour te connecter à mattermost :</p>
             <ol>
                 <li>Vérifie que tu es bien sur <a href="https://mattermost.incubateur.net" target={'_blank'}>https://mattermost.incubateur.net</a></li>
                 <li>Si tu as déjà un mot de passe : 
                     <ul>
-                        <li>Tentes de te connecter avec ton mot de passe. <br/>⚠️ Le mot de passe de ton adresse @beta.gouv.fr et le mot de passe de mattermost sont deux mot de passe différents.</li>
+                        <li>Tente de te connecter avec ton mot de passe. <br/>⚠️ Le mot de passe de ton adresse @beta.gouv.fr et le mot de passe de mattermost sont deux mot de passe différents.</li>
                         <li>Si tu as l'erreur suivante : "La connexion a échoué car le compte a été désactivé", il faut contacter les admins à l'adresse espace-membre@beta.gouv.fr, mettre en copie l'intra de startup et demander une réactivation du compte.</li>
                         <li>Si tu as l'erreur suivante : "Spécifiez une adresse e­­-mail et/ou un mot de passe valide" ou "Trop grand nombre de tentative de connexion", c'est probablement que le mot de passe n'est pas bon, tu peux essayer de faire un renouvellement de mot de passe (voir point suivant)</li>
                     </ul>
                 </li>
                 <li>Si tu n'as pas de mot de passe ou que tu n'arrives toujours pas a te connecter
                     <ul>
-                        <li>Fait un renouvellement de mot de passe : <a href="https://mattermost.incubateur.net/reset_password" target={'_blank'}>https://mattermost.incubateur.net/reset_password</a></li>
+                        <li>Fais un renouvellement de mot de passe : <a href="https://mattermost.incubateur.net/reset_password" target={'_blank'}>https://mattermost.incubateur.net/reset_password</a></li>
                         <li>Tu devrais recevoir un email pour redéfinir ton mot de passe.
                             <br/>⚠️ L'email est peut-être dans les spams.
                             <br/>⚠️ Si tu utilises gmail, les emails peuvent arriver avec un délai. Pour les récupérer instantanément aller dans Paramètres ⚙️ → comptes et importation → Consulter d'autres comptes de messagerie → Consulter votre messagerie maintenant.</li>
