@@ -216,7 +216,8 @@ export async function postForm(req, res) {
           label: startup.attributes.name
         }
       })
-      const users = await BetaGouv.usersInfos();
+      const allUsers = await BetaGouv.usersInfos();
+      const users = await BetaGouv.getActiveUsers();
       res.send(OnboardingPage({
         errors: req.flash('error'),
         formValidationErrors,
@@ -230,6 +231,7 @@ export async function postForm(req, res) {
         domaineOptions: DOMAINE_OPTIONS,
         communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
         users,
+        allUsers,
         formData: req.body,
       }));
     }
