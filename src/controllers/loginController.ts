@@ -106,15 +106,15 @@ export async function postLoginApi(req, res) {
   .first()
 
   if (!dbResponse) {
-    return res.json({
+    return res.status(404).json({
       errors: `L'adresse email ${emailInput} n'est pas connue.`
-    }).status(404);
+    })
   }
 
   if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE) {
-    return res.json({
+    return res.status(403).json({
       errors: `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
-    }).status(403);
+    })
   }
 
   username = dbResponse.username;
