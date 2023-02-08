@@ -118,7 +118,7 @@ describe('Login token', () => {
       primary_email: null,
       secondary_email: userEmail,
       username: 'membre.nouveau',
-      primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE
     }).onConflict('username').merge()
     
     // Make a login request to generate a token

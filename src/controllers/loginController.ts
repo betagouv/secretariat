@@ -4,7 +4,7 @@ import BetaGouv from '../betagouv';
 import config from '@config';
 import knex from '../db';
 import * as utils from './utils';
-import { EmailStatusCode } from '@/models/dbUser/dbUser';
+import { DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
 import { HomePage } from '../views';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
@@ -99,17 +99,25 @@ export async function postLoginApi(req, res) {
       }).status(500);
     }
   }
-  try {
-    const dbResponse = await knex('users')
-    .select()
-    .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-    .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
-    username = dbResponse[0].username;
-  } catch (e) {
+
+  const dbResponse : DBUser = await knex('users')
+  .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+  .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
+  .first()
+
+  if (!dbResponse) {
     return res.json({
       errors: `L'adresse email ${emailInput} n'est pas connue.`
-    }).status(500);
+    }).status(404);
   }
+
+  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE) {
+    return res.json({
+      errors: `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
+    }).status(403);
+  }
+
+  username = dbResponse.username;
 
   try {
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
@@ -157,19 +165,28 @@ export async function postLogin(req, res) {
       return res.redirect(`/login${next}`);
     }
   }
-  try {
-    const dbResponse = await knex('users')
-    .select()
-    .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-    .orWhereRaw(`(LOWER(primary_email) = ? and primary_email_status = '${EmailStatusCode.EMAIL_ACTIVE}')`, emailInput)
-    username = dbResponse[0].username;
-  } catch (e) {
+
+  const dbResponse : DBUser = await knex('users')
+  .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
+  .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
+  .first()
+
+  if (!dbResponse) {
     req.flash(
       'error',
       `L'adresse email ${emailInput} n'est pas connue.`
     );
     return res.redirect(`/login${next}`);
   }
+
+  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE) {
+    req.flash(
+      'error',
+      `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
+    );
+    return res.redirect(`/login${next}`);
+  }
+  username = dbResponse.username;
 
   try {
     const secretariatUrl = `${config.protocol}://${req.get('host')}`;
