@@ -11,6 +11,7 @@ import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { getGithubMasterSha, createGithubBranch, createGithubFile, makeGithubPullRequest, deleteGithubBranch, PRInfo } from "@/lib/github";
+import { createUsername } from "../helpers/userHelpers";
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -135,7 +136,7 @@ export async function postForm(req, res) {
       }
   
       const name = `${firstName} ${lastName}`;
-      const username = utils.createUsername(firstName, lastName);
+      const username = createUsername(firstName, lastName);
       const content = await ejs.renderFile('./src/views/templates/markdown/githubAuthor.ejs', {
         name,
         description,
@@ -215,7 +216,8 @@ export async function postForm(req, res) {
           label: startup.attributes.name
         }
       })
-      const users = await BetaGouv.usersInfos();
+      const allUsers = await BetaGouv.usersInfos();
+      const users = await BetaGouv.getActiveUsers();
       res.send(OnboardingPage({
         errors: req.flash('error'),
         formValidationErrors,
@@ -229,6 +231,7 @@ export async function postForm(req, res) {
         domaineOptions: DOMAINE_OPTIONS,
         communeInfo: req.body.workplace_insee_code ? await fetchCommuneDetails(req.body.workplace_insee_code) : null,
         users,
+        allUsers,
         formData: req.body,
       }));
     }

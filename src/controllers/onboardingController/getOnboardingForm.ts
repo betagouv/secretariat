@@ -10,6 +10,7 @@ export async function getForm(req, res) {
       const formValidationErrors = {}
       const startups = await BetaGouv.startupsInfos();
       const users : Member[] = await BetaGouv.getActiveUsers();
+      const allUsers: Member[] = await BetaGouv.usersInfos();
       const startupOptions = startups.map(startup => {
         return {
           value: startup.id,
@@ -27,6 +28,7 @@ export async function getForm(req, res) {
           domaineOptions: DOMAINE_OPTIONS,
           userConfig: config.user,
           users,
+          allUsers,
           formData: {
             gender: '',
             legal_status: '',
