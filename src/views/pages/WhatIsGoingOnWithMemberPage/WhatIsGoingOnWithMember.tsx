@@ -101,7 +101,7 @@ const ConnectedScreen = (props) => {
             setLoginSent(true)
             await pingConnection()
         } catch(e) {
-            console.log(e)
+            alert(e.response.data.errors)
         }
     }
 
