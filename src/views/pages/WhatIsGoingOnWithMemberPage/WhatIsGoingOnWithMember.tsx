@@ -21,7 +21,9 @@ enum STEP {
     emailSuspended = "emailSuspended",
     showMember = "showMember",
     accountCreated = "accountCreated",
-    emailBlocked = "emailBlocked"
+    emailBlocked = "emailBlocked",
+    shouldChangedPassword = "shouldChangedPassword",
+    hasMattermostProblem = "hasMattermostProblem"
 }
 
 type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfos,
@@ -252,9 +254,23 @@ const MemberComponent = function({
             </p>}
         </div>
     </>}{
-        !showSteps && <div className="notification">
-            <p>Il n'y a pas de soucis avec cet utilisateur</p>
+        !showSteps && <><div className="notification">
+            <p>A priori, il n'y a pas de soucis avec cet utilisateur</p>
         </div>
+        <p>Cependant {userInfos.fullname} rencontre peut être un des problèmes <span>suivants :</span></p>
+        <ul>
+            <li>Je n'arrive pas à accéder a mon email @beta.gouv.fr/Mon mot de passe ne marche plus.<br/>➡️ <a
+                onClick={() => startFix([STEP.whichMember, STEP.showMember, STEP.shouldChangedPassword])}
+                role="button">Régler ce problème</a>
+            </li>
+        </ul>
+        <ul>
+            <li>Je n'arrive pas à me connecter à mattermost.<br/> ➡️ <a
+                onClick={() => startFix([STEP.whichMember, STEP.showMember, STEP.hasMattermostProblem])}
+                role="button">Régler ce problème</a>
+            </li>
+        </ul>
+        </>
     }
     {showSteps && <>
         <div style={{
@@ -669,7 +685,7 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
         stepView = <AccountPendingCreationScreen next={next} user={user} getUser={getUser} />
     } else if (step === STEP.accountCreated) {
         stepView = <div>
-            <p>Il faut maintenant que {user.userInfos.fullname} se connecte à l'espace-membre avec son adresse secondaire.</p>
+            <p>Il faut maintenant que {user.userInfos.fullname} se connecte à <a href="/account#password" target="_blank">l'espace-membre</a> avec son adresse secondaire.</p>
             <p>Un fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
         </div>
@@ -692,6 +708,38 @@ export const WhatIsGoingOnWithMember = PageLayout(function (props: Props) {
             <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
             <button className="button" onClick={() => next()}>Passer à l'étape suivante</button>
         </div>
+    } else if (step === STEP.shouldChangedPassword) {
+      stepView = <div>
+            <p>Si {user.userInfos.fullname} n'arrive plus accéder a son email @beta.gouv.fr, iel peut  faire un changement de mot de passe.</p>
+            <p>Il faut que {user.userInfos.fullname} se connecte à <a href="/account#password" target="_blank">l'espace-membre</a> avec son adresse secondaire.
+            </p>
+            <p>Un fois dans l'espace membre iel doit définir son mot de passe pour son adresse @beta.gouv.fr dans "changer mot de passe".</p>
+            <p>Iel aura alors de nouveau accès a son email en utilisant ce mdp dans son client email ou sur mail.ovh.net</p>
+      </div>  
+    } else if (step === STEP.hasMattermostProblem) {
+        stepView = <div className="keskipasse-mattermost-container">
+            <p>Tu as un problème pour te connecter à mattermost :</p>
+            <ol>
+                <li>Vérifie que tu es bien sur <a href="https://mattermost.incubateur.net" target={'_blank'}>https://mattermost.incubateur.net</a></li>
+                <li>Si tu as déjà un mot de passe : 
+                    <ul>
+                        <li>Tente de te connecter avec ton mot de passe. <br/>⚠️ Le mot de passe de ton adresse @beta.gouv.fr et le mot de passe de mattermost sont deux mot de passe différents.</li>
+                        <li>Si tu as l'erreur suivante : "La connexion a échoué car le compte a été désactivé", il faut contacter les admins à l'adresse espace-membre@beta.gouv.fr, mettre en copie l'intra de startup et demander une réactivation du compte.</li>
+                        <li>Si tu as l'erreur suivante : "Spécifiez une adresse e­­-mail et/ou un mot de passe valide" ou "Trop grand nombre de tentative de connexion", c'est probablement que le mot de passe n'est pas bon, tu peux essayer de faire un renouvellement de mot de passe (voir point suivant)</li>
+                    </ul>
+                </li>
+                <li>Si tu n'as pas de mot de passe ou que tu n'arrives toujours pas a te connecter :
+                    <ul>
+                        <li>Fais un renouvellement de mot de passe : <a href="https://mattermost.incubateur.net/reset_password" target={'_blank'}>https://mattermost.incubateur.net/reset_password</a></li>
+                        <li>Tu devrais recevoir un email pour redéfinir ton mot de passe.
+                            <br/>⚠️ L'email est peut-être dans les spams.
+                            <br/>⚠️ Si tu utilises gmail, les emails peuvent arriver avec un délai. Pour les récupérer instantanément aller dans Paramètres ⚙️ → comptes et importation → Consulter d'autres comptes de messagerie → Consulter votre messagerie maintenant.</li>
+                    </ul>
+                </li>
+                <li>Si le problème n'est toujours pas réglé envoie un email à espace-membre@beta.gouv.fr avec en copie l'intra ou un membre de l'équipe d'animation de beta que tu connais</li>
+            </ol>
+
+        </div>  
     } else if (step === STEP.waitingForDateToBeUpdated) {
         stepView = <UpdateEndDatePendingScreen
             user={user}
