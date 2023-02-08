@@ -11,6 +11,7 @@ import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { getGithubMasterSha, createGithubBranch, createGithubFile, makeGithubPullRequest, deleteGithubBranch, PRInfo } from "@/lib/github";
+import { createUsername } from "../helpers/userHelpers";
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -135,7 +136,7 @@ export async function postForm(req, res) {
       }
   
       const name = `${firstName} ${lastName}`;
-      const username = utils.createUsername(firstName, lastName);
+      const username = createUsername(firstName, lastName);
       const content = await ejs.renderFile('./src/views/templates/markdown/githubAuthor.ejs', {
         name,
         description,

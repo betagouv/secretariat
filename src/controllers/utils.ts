@@ -27,14 +27,6 @@ const mailTransport = nodemailer.createTransport({
   },
 });
 
-function hyphenateWhitespace(str) {
-  return str.trim().replace(/\s+/g, '-');
-}
-
-function replaceSpecialCharacters(str) {
-  return str.replace(/( |'|\.)/gi, ' ');
-}
-
 export async function sendMail(toEmail, subject, html, extraParams = {}, attachments=[]) {
   const mail = {
     to: toEmail,
@@ -300,20 +292,6 @@ export async function userInfos(id, isCurrentUser) {
 
     throw new Error(`Problème pour récupérer les infos du membre ${id}`);
   }
-}
-
-export function createUsername(firstName, lastName) {
-  const prepareName = function (str) {
-    let normalizedStr = replaceSpecialCharacters(str)
-      .split(' ').map(x => _.deburr(x.toLowerCase()).replace(/[^a-z\-]/g, '')).filter(x => x) // remove empty value
-    normalizedStr = normalizedStr.join('.')
-      .split(' ')
-      // .map((x) => _.deburr(x.toLowerCase()))
-      .join(' ')
-      .trim();
-    return hyphenateWhitespace(normalizedStr);
-  };
-  return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 }
 
 export function sleep(ms) {

@@ -1,5 +1,7 @@
 import React from 'react';
 import type { Request } from 'express'
+import _ from 'lodash'
+import Modal from 'react-modal';
 
 import { hydrateOnClient } from '../../hydrateOnClient'
 import { PageLayout } from '../components/PageLayout';
@@ -10,6 +12,7 @@ import MemberSelect from '../components/MemberSelect';
 import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';
 import CommunicationEmailSelect from '../components/CommunicationEmailSelect';
+import { createUsername } from '@/controllers/helpers/userHelpers';
 
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();
@@ -36,6 +39,8 @@ interface FormData {
     tjm: number,
     secondary_email: string,
     osm_city: string,
+    firstName?: string,
+    lastName?: string,
     start?: string,
     end?: string,
     average_nb_of_days?: number,
@@ -69,6 +74,19 @@ interface Props {
     }
 }
 
+const customStyles = {
+    content: {
+      top: '50%',
+      left: '50%',
+      right: 'auto',
+      bottom: 'auto',
+      marginRight: '-50%',
+      maxWidth: '550px',
+      width: '80%',
+      transform: 'translate(-50%, -50%)',
+    },
+  };
+
 /* Pure component */
 export const Onboarding = PageLayout(function (props: Props) {
     const [state, setState] = React.useState<any>({
@@ -76,10 +94,32 @@ export const Onboarding = PageLayout(function (props: Props) {
         ...props,
         formData: {
             ...props.formData,
+            firstName: props.formData.firstName || '',
+            lastName: props.formData.lastName || '',
             start: props.formData.start ? new Date(props.formData.start) : '',
             end: props.formData.end ? new Date(props.formData.end) : '',
         }
     });
+
+    const [modalIsOpen, setIsOpen] = React.useState(false);
+
+    function openModal() {
+        setIsOpen(true);
+    }
+
+    function afterOpenModal() {
+        // references are now sync'd and can be accessed.
+        //subtitle.style.color = '#f00';
+    }
+
+    function closeModal() {
+        setIsOpen(false);
+    }
+
+    React.useEffect(() => {
+        checkUserExists()
+    },[state.formData.firstName, state.formData.lastName])
+
     const css = ".panel { overflow: scroll; }"
 
     const changeFormData = (key, value) => {
@@ -129,6 +169,15 @@ export const Onboarding = PageLayout(function (props: Props) {
         }
     }
 
+    const checkUserExists = React.useMemo(() => _.debounce(() => {
+            const username: string = createUsername(state.formData.firstName, state.formData.lastName);
+            console.log(username)
+            const userExists : Member = props.users.find(user => user.id === username)
+            if (userExists) {
+                openModal()
+            }
+        }, 500), [])
+
     const getDefaultValue = () => {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`: null
@@ -142,6 +191,7 @@ export const Onboarding = PageLayout(function (props: Props) {
         return formatDateToReadableFormat(date)
     }
 
+    const previewEmail: string = createUsername(state.formData.firstName, state.formData.lastName);
     return (
         <>
         <div className="container container-small">
@@ -154,7 +204,29 @@ export const Onboarding = PageLayout(function (props: Props) {
         { !!props.messages.length && <div className="notification">
             {props.messages}
         </div>}
-            <div className="panel margin-top-m">
+        <Modal
+            isOpen={modalIsOpen}
+            onAfterOpen={afterOpenModal}
+            onRequestClose={closeModal}
+            style={customStyles}
+            contentLabel="Example Modal"
+        >
+            <p>Attention un utilisateur avec ce nom existe déjà.</p>
+            <p>Si c'est toi, il faut que tu récupère ton compte, tu peux trouver les instructions sur <a href="http://espace-membre.incubateur.net/keskipasse">http://espace-membre.incubateur.net/keskipasse</a>.</p> 
+            <p>S'il s'agit d'un homonyme, il risque d'y avoir un soucis lors de la création de ton email car l'email existe déjà.</p>
+            <p>Tu peux ajouter la première lettre de ton second prénom dans le champs prénom. Par exemple pour {state.formData.firstName} Camille :
+                <br/>
+                <br/>
+                <label htmlFor="firstName">
+                    <strong>Prénom (obligatoire)</strong>
+                </label>
+                <input
+                    disabled={true}
+                    value={`${state.formData.firstName} C.`}
+                />
+            </p>
+        </Modal>
+        <div className="panel margin-top-m">
             <h3>Créer ma fiche Github</h3>
             <div className="beta-banner"></div>
             <form action="/onboarding" method="POST">
@@ -177,6 +249,9 @@ export const Onboarding = PageLayout(function (props: Props) {
                         defaultValue={state.formData.lastName}
                         onChange={(e) => { changeFormData('lastName', e.currentTarget.value)}}
                         required/>
+                    <br/>
+                    <br/>
+                    Ton email sera : {previewEmail || 'prenom.nom'}@beta.gouv.fr
                 </div>
                 <div className="form__group">
                     <label htmlFor="description">
