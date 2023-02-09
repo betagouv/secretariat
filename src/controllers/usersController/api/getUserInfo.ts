@@ -25,11 +25,12 @@ export async function getUserInfo(req, res) {
         const dbUser: DBUser = await db('users').where({ username }).first()
         const secondaryEmail:string = dbUser?.secondary_email || '';
         let mattermostUser: MattermostUser = dbUser?.primary_email ? await getUserByEmail(dbUser.primary_email).catch(e => null) : null
-        let [mattermostUserInfo]: MattermostUser[] = dbUser?.primary_email ? await searchUsers({
-            term: dbUser.primary_email.split('@')[0],
+        let [mattermostUserInTeamAndActive]: MattermostUser[] = dbUser?.primary_email ? await searchUsers({
+            term: dbUser.primary_email,
             team_id: config.mattermostTeamId,
             allow_inactive: false
         }).catch(e => []) : []
+        console.log('Find mattermost in team and active', mattermostUserInTeamAndActive)
         res.json({
             // info public
             userInfos: user.userInfos,
@@ -39,9 +40,8 @@ export async function getUserInfo(req, res) {
             hasSecondaryEmail: !!secondaryEmail,
             mattermostInfo: {
                 hasMattermostAccount: !!mattermostUser,
-                isInactiveOrNotInTeam: !!mattermostUserInfo
+                isInactiveOrNotInTeam: !!mattermostUserInTeamAndActive
             },
-            hasInactiveOrMissingFromTeamMattermostAccount: !!mattermostUserInfo,
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
             username,
             // info filled if connected users
