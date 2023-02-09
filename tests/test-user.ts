@@ -259,15 +259,25 @@ describe('User', () => {
 
   describe('GET /api/public/users/:username unauthenticated', () => {
     let sendEmailStub;
+    let mattermostSearchUserStub;
+    let mattermostGetUserStub;
     beforeEach((done) => {
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
         .returns(Promise.resolve(true))
+        mattermostSearchUserStub = sinon.stub(mattermost, 'searchUsers').returns(Promise.resolve([{
+        email: 'adresse.email@beta.gouv.fr'
+      }]))
+      mattermostGetUserStub = sinon.stub(mattermost, 'getUserByEmail').returns(Promise.resolve({
+        email: 'adresse.email@beta.gouv.fr'
+      } as mattermost.MattermostUser))
       done()
     });
 
     afterEach((done) => {
       sendEmailStub.restore()
+      mattermostGetUserStub.restore()
+      mattermostSearchUserStub.restore()
       done()
     });
 
@@ -277,6 +287,8 @@ describe('User', () => {
           .get('/api/public/users/membre.nouveau')
         res.should.have.status(200);
         res.body.username.should.equal('membre.nouveau')
+        mattermostSearchUserStub.calledOnce.should.be.true
+        mattermostGetUserStub.calledOnce.should.be.true
     });
   });
 
