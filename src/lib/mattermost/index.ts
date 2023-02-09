@@ -48,7 +48,7 @@ export async function searchUsers(params = {}) {
     .then((response) => response.data);
 }
 
-export async function getUserByEmail(email) {
+export async function getUserByEmail(email: string) : Promise<MattermostUser> {
   return await axios
     .get(`${config.mattermostURL}/api/v4/users/email/${email}`, {
       ...getMattermostConfig(),
