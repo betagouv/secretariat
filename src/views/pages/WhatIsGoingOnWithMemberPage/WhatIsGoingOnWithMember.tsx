@@ -192,7 +192,7 @@ const UserInfo = function(props:{
             <strong>Email secondaire :</strong> {props.hasSecondaryEmail ? `un email secondaire est renseigné sur la fiche` : `pas d'email secondaire renseigné`}
         </p>
         <p>
-            <strong>Compte mattermost:</strong> {props.mattermostInfo.hasMattermostAccount ? `un compte mattermost a été trouvé ${props.mattermostInfo.isInactiveOrNotInTeam ? `mais il est inactif ou pas dans l'espace Communauté` :''}` : `pas de compte mattermost trouvé`}
+            <strong>Compte mattermost:</strong> {props.mattermostInfo?.hasMattermostAccount ? `un compte mattermost a été trouvé ${props.mattermostInfo?.isInactiveOrNotInTeam ? `mais il est inactif ou pas dans l'espace Communauté` :''}` : `pas de compte mattermost trouvé`}
         </p>
     </>
 }

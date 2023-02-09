@@ -26,7 +26,7 @@ export async function getUserInfo(req, res) {
         const secondaryEmail:string = dbUser?.secondary_email || '';
         let mattermostUser: MattermostUser = dbUser?.primary_email ? await getUserByEmail(dbUser.primary_email).catch(e => null) : null
         let [mattermostUserInfo]: MattermostUser[] = dbUser?.primary_email ? await searchUsers({
-            term: dbUser.primary_email,
+            term: dbUser.primary_email.split('@')[0],
             team_id: config.mattermostTeamId,
             allow_inactive: false
         }).catch(e => []) : []
