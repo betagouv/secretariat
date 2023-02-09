@@ -202,7 +202,7 @@ const MemberComponent = function({
     isEmailBlocked,
     hasEmailInfos,
     hasSecondaryEmail,
-    hasMattermostAccount,
+    mattermostInfo,
     isExpired,
     userInfos,
     primaryEmailStatus,
@@ -230,7 +230,7 @@ const MemberComponent = function({
     <h2>{userInfos.fullname}</h2>
     {!!userInfos && <UserInfo
         userInfos={userInfos}
-        hasMattermostAccount={hasMattermostAccount}
+        mattermostInfo={mattermostInfo}
         hasSecondaryEmail={hasSecondaryEmail}/>}
     {!!emailInfos && <EmailInfo emailInfos={emailInfos} primaryEmailStatus={primaryEmailStatus} />}
     {showSteps && <>
