@@ -561,7 +561,9 @@ export const CreateEmailScreen = function(props) {
             <div className="form__group  margin-10-0">
                 <label>
                     <span className="text-color-almost-black">Email personnel ou professionnel</span><br />
-                    Le mot de passe et les informations de connexion seront envoyées à cet email
+                    Les informations de connexion seront envoyées à cet email.
+                    ⚠️ Il ne s'agit pas de l'adresse @beta.gouv.fr mais d'une autre adresse perso ou pro
+                    à utiliser pour se connecter la première fois à l'espace-membre.
                 </label>
             <input
                 defaultValue={props.secondaryEmail}
