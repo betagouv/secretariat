@@ -3,7 +3,7 @@ import { MemberWithPermission } from "@/models/member";
 import db from "@/db";
 import config from "@/config";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { getUserByEmail, MattermostUser } from "@/lib/mattermost";
+import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";
 
 export async function getUserInfo(req, res) {
@@ -23,8 +23,15 @@ export async function getUserInfo(req, res) {
             });
         }
         const dbUser: DBUser = await db('users').where({ username }).first()
-        const secondaryEmail:string = dbUser ? dbUser.secondary_email : '';
+        const secondaryEmail:string = dbUser?.secondary_email || '';
         let mattermostUser: MattermostUser = dbUser?.primary_email ? await getUserByEmail(dbUser.primary_email).catch(e => null) : null
+        console.log(`Get mattermost infos for ${dbUser?.primary_email}`, mattermostUser)
+        let [mattermostUserInfo]: MattermostUser[] = dbUser?.primary_email ? await searchUsers({
+            term: dbUser.primary_email,
+            team_id: config.mattermostTeamId,
+            allow_inactive: false
+        }) : []
+        console.log(`Get mattermost infos in team for ${dbUser?.primary_email}`, mattermostUserInfo)
         res.json({
             // info public
             userInfos: user.userInfos,
@@ -33,6 +40,7 @@ export async function getUserInfo(req, res) {
             isEmailBlocked: user.emailInfos?.isBlocked,
             hasSecondaryEmail: !!secondaryEmail,
             hasMattermostAccount: !!mattermostUser,
+            hasInactiveOrMissingFromTeamMattermostAccount: !!mattermostUserInfo,
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
             username,
             // info filled if connected users
