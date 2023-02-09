@@ -30,6 +30,7 @@ type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfo
     isExpired?: boolean,
     isEmailBlocked: boolean,
     hasEmailInfos: boolean,
+    hasMattermostAccount: boolean,
     hasSecondaryEmail: boolean,
     primaryEmailStatus: string }
 
@@ -182,6 +183,9 @@ const UserInfo = function(props) {
         }
         <p>
             <strong>Email secondaire :</strong> {props.hasSecondaryEmail ? `un email secondaire est renseigné sur la fiche` : `pas d'email secondaire renseigné`}
+        </p>
+        <p>
+            <strong>Compte mattermost:</strong> {props.hasMattermostAccount ? `un compte mattermost a été trouvé` : `pas de compte mattermost trouvé`}
         </p>
     </>
 }
