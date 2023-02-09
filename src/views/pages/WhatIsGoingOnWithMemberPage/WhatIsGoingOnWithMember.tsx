@@ -30,7 +30,10 @@ type MemberAllInfo = MemberWithPermission & { secondaryEmail?: string, emailInfo
     isExpired?: boolean,
     isEmailBlocked: boolean,
     hasEmailInfos: boolean,
-    hasMattermostAccount: boolean,
+    mattermostInfo: {
+        hasMattermostAccount: boolean,
+        isInactiveOrNotInTeam: boolean
+    },
     hasSecondaryEmail: boolean,
     primaryEmailStatus: string }
 
@@ -151,7 +154,11 @@ const EmailInfo = function({ emailInfos, primaryEmailStatus}) {
     </>
 }
 
-const UserInfo = function(props) {
+const UserInfo = function(props:{
+    userInfos: MemberAllInfo['userInfos'],
+    hasSecondaryEmail: MemberAllInfo['hasSecondaryEmail'],
+    mattermostInfo : MemberAllInfo['mattermostInfo']
+}) {
     return <>
         <p><span className="font-weight-bold">Nom</span>: {props.userInfos.fullname}</p>
         <p><span className="font-weight-bold">Rôle:</span> {props.userInfos.role}</p>
@@ -185,7 +192,7 @@ const UserInfo = function(props) {
             <strong>Email secondaire :</strong> {props.hasSecondaryEmail ? `un email secondaire est renseigné sur la fiche` : `pas d'email secondaire renseigné`}
         </p>
         <p>
-            <strong>Compte mattermost:</strong> {props.hasMattermostAccount ? `un compte mattermost a été trouvé` : `pas de compte mattermost trouvé`}
+            <strong>Compte mattermost:</strong> {props.mattermostInfo.hasMattermostAccount ? `un compte mattermost a été trouvé ${props.mattermostInfo.isInactiveOrNotInTeam ? `mais il est inactif ou pas dans l'espace Communauté` :''}` : `pas de compte mattermost trouvé`}
         </p>
     </>
 }
@@ -195,6 +202,7 @@ const MemberComponent = function({
     isEmailBlocked,
     hasEmailInfos,
     hasSecondaryEmail,
+    hasMattermostAccount,
     isExpired,
     userInfos,
     primaryEmailStatus,
@@ -220,7 +228,10 @@ const MemberComponent = function({
     steps.push(STEP.everythingIsGood)
     return <div>
     <h2>{userInfos.fullname}</h2>
-    {!!userInfos && <UserInfo userInfos={userInfos} hasSecondaryEmail={hasSecondaryEmail}/>}
+    {!!userInfos && <UserInfo
+        userInfos={userInfos}
+        hasMattermostAccount={hasMattermostAccount}
+        hasSecondaryEmail={hasSecondaryEmail}/>}
     {!!emailInfos && <EmailInfo emailInfos={emailInfos} primaryEmailStatus={primaryEmailStatus} />}
     {showSteps && <>
         <h3>Quels sont les problèmes ?</h3>
