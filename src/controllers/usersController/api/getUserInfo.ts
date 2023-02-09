@@ -30,7 +30,7 @@ export async function getUserInfo(req, res) {
             term: dbUser.primary_email,
             team_id: config.mattermostTeamId,
             allow_inactive: false
-        }) : []
+        }).catch(e => []) : []
         console.log(`Get mattermost infos in team for ${dbUser?.primary_email}`, mattermostUserInfo)
         res.json({
             // info public
