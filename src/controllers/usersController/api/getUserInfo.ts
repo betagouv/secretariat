@@ -42,7 +42,6 @@ export async function getUserInfo(req, res) {
                 hasMattermostAccount: !!mattermostUser,
                 isInactiveOrNotInTeam: !!mattermostUserInTeamAndActive
             },
-            hasInactiveOrMissingFromTeamMattermostAccount: !!mattermostUserInfo,
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
             username,
             // info filled if connected users
