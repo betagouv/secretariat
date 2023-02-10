@@ -30,7 +30,6 @@ export async function getUserInfo(req, res) {
             team_id: config.mattermostTeamId,
             allow_inactive: false
         }).catch(e => []) : []
-        console.log('Find mattermost in team and active', mattermostUserInTeamAndActive)
         res.json({
             // info public
             userInfos: user.userInfos,
@@ -40,7 +39,7 @@ export async function getUserInfo(req, res) {
             hasSecondaryEmail: !!secondaryEmail,
             mattermostInfo: {
                 hasMattermostAccount: !!mattermostUser,
-                isInactiveOrNotInTeam: !!mattermostUserInTeamAndActive
+                isInactiveOrNotInTeam: !mattermostUserInTeamAndActive
             },
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
             username,
