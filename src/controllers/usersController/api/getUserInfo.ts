@@ -40,7 +40,7 @@ export async function getUserInfo(req, res) {
             hasSecondaryEmail: !!secondaryEmail,
             mattermostInfo: {
                 hasMattermostAccount: !!mattermostUser,
-                isInactiveOrNotInTeam: !!mattermostUserInTeamAndActive
+                isInactiveOrNotInTeam: !mattermostUserInTeamAndActive
             },
             primaryEmailStatus: dbUser ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status] : '',
             username,
