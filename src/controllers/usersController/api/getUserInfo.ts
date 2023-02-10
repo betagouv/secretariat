@@ -30,7 +30,6 @@ export async function getUserInfo(req, res) {
             team_id: config.mattermostTeamId,
             allow_inactive: false
         }).catch(e => []) : []
-        console.log('Find mattermost in team and active', mattermostUserInTeamAndActive)
         res.json({
             // info public
             userInfos: user.userInfos,
