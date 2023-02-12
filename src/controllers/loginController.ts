@@ -111,7 +111,7 @@ export async function postLoginApi(req, res) {
     })
   }
 
-  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE) {
+  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE && dbResponse.primary_email === emailInput) {
     return res.status(403).json({
       errors: `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
     })
@@ -179,7 +179,7 @@ export async function postLogin(req, res) {
     return res.redirect(`/login${next}`);
   }
 
-  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE) {
+  if (dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE && dbResponse.primary_email === emailInput) {
     req.flash(
       'error',
       `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
