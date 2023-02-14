@@ -11,6 +11,7 @@ import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
 import * as mattermost from '@/lib/mattermost';
 import { DBStartup } from '@/models/startup';
 import { DBPullRequest, PULL_REQUEST_STATE, PULL_REQUEST_TYPE } from '@/models/pullRequests';
+import { nbOfDaysBetweenDate } from '@/controllers/utils';
 
 async function sendMessageToReferent({ prUrl, prInfo }: { prUrl: string, prInfo: {
     referent: string,
@@ -35,7 +36,7 @@ async function sendMessageToReferent({ prUrl, prInfo }: { prUrl: string, prInfo:
         })
     } catch (e) {
         Sentry.captureException(e);
-        throw new Error(`It was not able to find referent ${referent}`, e)
+        // user has a github card but is not in database
     }
     try {
         const [mattermostUser] : mattermost.MattermostUser[] = await mattermost.searchUsers({
@@ -110,7 +111,7 @@ const StartupUpdateStateMachine = async (dbPullRequest, pullRequestURLs) => {
     }
 }
 
-const OnboardingStateMachine = async (dbPullRequest, pullRequestURLs) => {
+const OnboardingStateMachine = async (dbPullRequest: DBPullRequest, pullRequestURLs: string[]) => {
     const url = dbPullRequest.url
     if (dbPullRequest.status === PULL_REQUEST_STATE.PR_CREATED) {
         // sendEmail to referent
@@ -123,11 +124,14 @@ const OnboardingStateMachine = async (dbPullRequest, pullRequestURLs) => {
         })
     } else if (dbPullRequest.status === PULL_REQUEST_STATE.PR_SENT_TO_REFERENT) {
         // sendEmail to team
-        await sendEmailToTeam({
-            username: dbPullRequest.username,
-            prUrl: url,
-            prInfo: dbPullRequest.info, 
-        })
+        if(nbOfDaysBetweenDate(Date.now(), dbPullRequest.created_at) < 7) {
+            // the check on the date should be temporary to fix old PR stucked on previous state that should not triggered email sent
+            await sendEmailToTeam({
+                username: dbPullRequest.username,
+                prUrl: url,
+                prInfo: dbPullRequest.info, 
+            })
+        }
         await db('pull_requests').where({ url }).update({
             status: PULL_REQUEST_STATE.PR_SENT_TO_TEAM
         })

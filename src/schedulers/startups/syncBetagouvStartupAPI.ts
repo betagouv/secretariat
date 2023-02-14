@@ -14,7 +14,7 @@ function getCurrentPhase(startup : StartupInfo) {
 
 function isRecent(phaseDate: Date) {
   const TWO_MONTHS_IN_DAYS = 30*2
-  return Math.abs(nbOfDaysBetweenDate(phaseDate, new Date())) < TWO_MONTHS_IN_DAYS
+  return nbOfDaysBetweenDate(phaseDate, new Date()) < TWO_MONTHS_IN_DAYS
 }
 
 async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStartupInfo: DBStartup) {
