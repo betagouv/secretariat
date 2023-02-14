@@ -64,12 +64,14 @@ interface Job {
 }
 
 const onTickWrapper = async(name: string, onTick: Function, onComplete: Function) => {
-  try {
-    await onTick()
-    await onComplete()
-  } catch(e) {
-    // Job Failed unexpectedly
-    Sentry.captureException(e);
+  return async function() {
+    try {
+      await onTick()
+      await onComplete()
+    } catch(e) {
+      // Job Failed unexpectedly
+      Sentry.captureException(e);
+    }
   }
 }
 
