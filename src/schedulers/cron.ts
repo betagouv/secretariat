@@ -443,12 +443,7 @@ for (const job of jobs) {
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-    new CronJob({
-      ...cronjob,
-      onTick: onTickWrapper(cronjob.name, cronjob.onTick, function() {
-        return `Job ${cronjob.name} complete : ${(new Date()).toDateString()}`
-      })
-    });
+    new CronJob(cronjob);
     activeJobs++;
   } else {
     console.log(`❌ The job "${cronjob.name}" is OFF`);
