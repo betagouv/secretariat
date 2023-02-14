@@ -158,7 +158,7 @@ export function formatDateToReadableDateAndTimeFormat(date) {
 export function nbOfDaysBetweenDate(date1, date2) {
   let difference = date1.getTime() - date2.getTime();
   let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
-  return totalDays;
+  return Math.abs(totalDays);
 }
 
 export function formatDateToFrenchTextReadableFormat(date: Date, withYear:boolean=true) {
