@@ -63,7 +63,7 @@ interface Job {
   start?: boolean;
 }
 
-const onTickWrapper = async(name: string, onTick: Function, onComplete: Function) => {
+const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => {
   console.log('Create ontick wrapper')
   return async function() {
     console.log(`Run ${name}`)
