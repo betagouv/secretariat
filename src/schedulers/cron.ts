@@ -1,6 +1,5 @@
 import { CronJob } from 'cron';
 import config from '@config';
-import * as Sentry from '@sentry/node';
 
 import {
   createEmailAddresses,
@@ -61,16 +60,6 @@ interface Job {
   description?: string;
   timeZone?: string;
   start?: boolean;
-}
-
-const onTickWrapper = async(name: string, onTick: Function, onComplete: Function) => {
-  try {
-    await onTick()
-    await onComplete()
-  } catch(e) {
-    // Job Failed unexpectedly
-    Sentry.captureException(e);
-  }
 }
 
 const marrainageJobs: Job[] = [
@@ -443,12 +432,7 @@ for (const job of jobs) {
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-    new CronJob({
-      ...cronjob,
-      onTick: onTickWrapper(cronjob.name, cronjob.onTick, function() {
-        return `Job ${cronjob.name} complete : ${(new Date()).toDateString()}`
-      })
-    });
+    new CronJob(cronjob);
     activeJobs++;
   } else {
     console.log(`❌ The job "${cronjob.name}" is OFF`);
