@@ -124,7 +124,7 @@ const OnboardingStateMachine = async (dbPullRequest: DBPullRequest, pullRequestU
         })
     } else if (dbPullRequest.status === PULL_REQUEST_STATE.PR_SENT_TO_REFERENT) {
         // sendEmail to team
-        if(nbOfDaysBetweenDate(Date.now(), dbPullRequest.created_at) < 7) {
+        if(nbOfDaysBetweenDate(new Date(), dbPullRequest.created_at) < 7) {
             // the check on the date should be temporary to fix old PR stucked on previous state that should not triggered email sent
             await sendEmailToTeam({
                 username: dbPullRequest.username,
