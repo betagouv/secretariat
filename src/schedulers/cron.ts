@@ -71,6 +71,8 @@ const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => 
       await onTick()
       console.log(`Run  after on tick ${name}`)
       await onComplete()
+      console.log(`Run  after on Complete ${name}`)
+
     } catch(e) {
       console.log(`Cron ${name}: on fail Catch error ${e}`)
       // Job Failed unexpectedly
@@ -452,7 +454,7 @@ for (const job of filteredJobs) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
     new CronJob({
       ...cronjob,
-      onTick: onTickWrapper(cronjob.name, cronjob.onTick, function() {
+      onTick: onTickWrapper(cronjob.name, cronjob.onTick, async function() {
         return `Job ${cronjob.name} complete : ${(new Date()).toDateString()}`
       })
     });
