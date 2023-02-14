@@ -69,6 +69,7 @@ const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => 
     console.log(`Run ${name}`)
     try {
       await onTick()
+      console.log(`Run  after on tick ${name}`)
       await onComplete()
     } catch(e) {
       console.log(`Cron ${name}: on fail Catch error ${e}`)
@@ -443,7 +444,8 @@ const jobs: Job[] = [
 ];
 
 let activeJobs = 0;
-for (const job of jobs) {
+const filteredJobs = jobs.filter(job => job.name === 'setEmailAddressesActive')
+for (const job of filteredJobs) {
   const cronjob: Job = { timeZone: 'Europe/Paris', start: true, ...job };
 
   if (cronjob.isActive) {
