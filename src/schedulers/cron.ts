@@ -455,7 +455,8 @@ for (const job of filteredJobs) {
     new CronJob({
       ...cronjob,
       onTick: onTickWrapper(cronjob.name, cronjob.onTick, async function() {
-        return `Job ${cronjob.name} complete : ${(new Date()).toDateString()}`
+        console.log(`Job ${cronjob.name} complete : ${(new Date()).toDateString()}`)
+        return
       })
     });
     activeJobs++;
