@@ -63,16 +63,6 @@ interface Job {
   start?: boolean;
 }
 
-const onTickWrapper = async(name: string, onTick: Function, onComplete: Function) => {
-  try {
-    await onTick()
-    await onComplete()
-  } catch(e) {
-    // Job Failed unexpectedly
-    Sentry.captureException(e);
-  }
-}
-
 const marrainageJobs: Job[] = [
   {
     cronTime: '0 0 10 * * 1-5',
