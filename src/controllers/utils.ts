@@ -155,7 +155,7 @@ export function formatDateToReadableDateAndTimeFormat(date) {
   return `${day}/${month} à ${hour}:${minutes}`;
 }
 
-export function nbOfDaysBetweenDate(date1, date2) {
+export function nbOfDaysBetweenDate(date1: Date, date2: Date) {
   let difference = date1.getTime() - date2.getTime();
   let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
   return Math.abs(totalDays);
