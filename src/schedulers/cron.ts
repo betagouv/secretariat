@@ -396,7 +396,7 @@ const jobs: Job[] = [
     name: "Synchronize user info from beta.gouv.fr api with bdd",
   },
   {
-    cronTime: "10 * * * *", // every day at 10,
+    cronTime: "0 10 * * *", // every day at 10,
     onTick: syncBetagouvStartupAPI,
     start: true,
     timeZone: "Europe/Paris",
