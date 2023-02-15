@@ -446,8 +446,7 @@ const jobs: Job[] = [
 ];
 
 let activeJobs = 0;
-const filteredJobs = jobs.filter(job => job.name === 'setEmailAddressesActive')
-for (const job of filteredJobs) {
+for (const job of jobs) {
   const cronjob: Job = { timeZone: 'Europe/Paris', start: true, ...job };
 
   if (cronjob.isActive) {
