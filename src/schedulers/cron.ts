@@ -89,7 +89,7 @@ const onTickWrapper = (name: string, onTick: Function, onComplete: Function, onE
 
     } catch(e) {
       Sentry.captureException(e);
-      await onError()
+      await onError(e)
       // Job Failed unexpectedly
     }
   }
