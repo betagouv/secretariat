@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
-import config from '@config';
+import * as Sentry from '@sentry/node';
 
+import config from '@config';
 import {
   createEmailAddresses,
   reinitPasswordEmail,
@@ -60,6 +61,24 @@ interface Job {
   description?: string;
   timeZone?: string;
   start?: boolean;
+}
+
+const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => {
+  console.log('Create ontick wrapper')
+  return async function() {
+    console.log(`Run ${name}`)
+    try {
+      await onTick()
+      console.log(`Run  after on tick ${name}`)
+      await onComplete()
+      console.log(`Run  after on Complete ${name}`)
+
+    } catch(e) {
+      console.log(`Cron ${name}: on fail Catch error ${e}`)
+      // Job Failed unexpectedly
+      Sentry.captureException(e);
+    }
+  }
 }
 
 const marrainageJobs: Job[] = [
@@ -208,13 +227,13 @@ const jobs: Job[] = [
     name: 'Post event of the week from betagouv calendar',
   },
   {
-    cronTime: '* */8 * * * *', 
+    cronTime: '0 */8 * * * *', 
     onTick: recreateEmailIfUserActive,
     isActive: true,
     name: 'Recreate email for user active again',
   },
   {
-    cronTime: '* */4 * * * *',
+    cronTime: '0 */4 * * * *',
     onTick: setEmailAddressesActive,
     isActive: true,
     name: 'setEmailAddressesActive'
@@ -427,12 +446,19 @@ const jobs: Job[] = [
 ];
 
 let activeJobs = 0;
-for (const job of jobs) {
+const filteredJobs = jobs.filter(job => job.name === 'setEmailAddressesActive')
+for (const job of filteredJobs) {
   const cronjob: Job = { timeZone: 'Europe/Paris', start: true, ...job };
 
   if (cronjob.isActive) {
     console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-    new CronJob(cronjob);
+    new CronJob({
+      ...cronjob,
+      onTick: onTickWrapper(cronjob.name, cronjob.onTick, async function() {
+        console.log(`Job ${cronjob.name} complete : ${(new Date()).toDateString()}`)
+        return
+      })
+    });
     activeJobs++;
   } else {
     console.log(`❌ The job "${cronjob.name}" is OFF`);
