@@ -148,7 +148,66 @@ const mattermostJobs: Job[] = [
     },
     isActive: true,
     name: 'sendGroupDeSoutienReminder'
-  }
+  },
+  {
+    cronTime: '0 */8 * * * *',
+    onTick: createUsersByEmail,
+    isActive: !!config.featureCreateUserOnMattermost,
+    name: 'createUsersByEmail',
+    description: 'Cron job to create user on mattermost by email',
+  },
+  {
+    cronTime: '0 */8 * * * *',
+    onTick: addUsersNotInCommunityToCommunityTeam,
+    isActive: !!config.featureAddUserToCommunityTeam,
+    name: 'addUsersNotInCommunityToCommunityTeam',
+    description: 'Cron job to add user existing on mattermost to community team if there not in'
+  },
+  {
+    cronTime: '0 0 8 1 * *',
+    onTick: reactivateUsers,
+    isActive: !!config.featureReactiveMattermostUsers,
+    name: 'reactivateUsers',
+  },
+  {
+    cronTime: '0 0 10 * * *',
+    onTick: removeUsersFromCommunityTeam,
+    isActive: !!config.featureRemoveExpiredUsersFromCommunityOnMattermost,
+    name: 'removeUsersFromCommunityTeam',
+    description: 'Cron job to remove user from community on mattermost',
+  },
+  {
+    cronTime: '0 10 10 * * *',
+    onTick: moveUsersToAlumniTeam,
+    isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
+    name: 'moveUsersToAlumniTeam',
+    description: 'Cron job to add user to alumni on mattermost',
+  },
+  // Post automatic
+  {
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
+    onTick: postEventsOnMattermost,
+    isActive: true,
+    name: 'Post event of the week from betagouv calendar',
+  },
+  {
+    cronTime: "0 10 * * *", // every day at 10,
+    onTick: publishJobsToMattermost,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
+    name: "publishJobsToMattermost",
+    description: "Publish job offer to mattermost on dedicated channel"
+  },
+  {
+    cronTime: "0 10 * * *", // every day at 10,
+    onTick: publishJobsWTTJToMattermost,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_PUBLISH_WTTJ_JOBS_TO_MATTERMOST,
+    name: "publishJobsWTTJToMattermost",
+    description: "Publish wttj job offer to mattermost on dedicated channel"
+  },
 ]
 
 const emailJobs: Job[] = [
@@ -220,6 +279,45 @@ const newsletterJobs = [
   }
 ]
 
+const synchronizationJobs = [
+  {
+    cronTime: "0 10 * * *", // every day at 10,
+    onTick: syncBetagouvUserAPI,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
+    name: "syncBetagouvUserAPI",
+    description: "Synchronize user info from beta.gouv.fr api with bdd"
+  },
+  {
+    cronTime: "0 10 * * *", // every day at 10,
+    onTick: syncBetagouvStartupAPI,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: true,
+    name: "syncBetagouvStartupAPI",
+    description: "Synchronize startup info from beta.gouv.fr api with bdd"
+  },
+  {
+    cronTime: "0 0 10 * * *",
+    onTick: syncMattermostUserWithMattermostMemberInfosTable,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: true,
+    name: "syncMattermostUserWithMattermostMemberInfosTable",
+    description: "Add new mattermost user to mattermost_member_info table",
+  },
+  {
+    cronTime: "0 5 10 * * *",
+    onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: true,
+    name: "syncMattermostUserStatusWithMattermostMemberInfosTable",
+    description: "Get mattermost user activity info from api and sync with mattermost_member_info table",
+  }
+]
+
 const jobs: Job[] = [
   ...newsletterJobs,
   ...marrainageJobs,
@@ -228,17 +326,12 @@ const jobs: Job[] = [
   ...startupJobs,
   ...metricJobs,
   ...pullRequestJobs,
+  ...synchronizationJobs,
   {
-    cronTime: '0 0 0 * * 1', // every week a 8:00 on monday
+    cronTime: '0 0 0 * * 1', // every week a 0:00 on monday
     onTick: unblockEmailsThatAreActive,
     isActive: true,
     name: 'Unblock blacklisted email',
-  },
-  {
-    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
-    onTick: postEventsOnMattermost,
-    isActive: true,
-    name: 'Post event of the week from betagouv calendar',
   },
   {
     cronTime: '0 */8 * * * *', 
@@ -333,26 +426,6 @@ const jobs: Job[] = [
     name: 'reinitPasswordEmail',
   },
   {
-    cronTime: '0 */8 * * * *',
-    onTick: createUsersByEmail,
-    isActive: !!config.featureCreateUserOnMattermost,
-    name: 'createUsersByEmail',
-    description: 'Cron job to create user on mattermost by email',
-  },
-  {
-    cronTime: '0 0 10 * * *',
-    onTick: addUsersNotInCommunityToCommunityTeam,
-    isActive: !!config.featureAddUserToCommunityTeam,
-    name: 'addUsersNotInCommunityToCommunityTeam',
-    description: 'Cron job to add user existing on mattermost to community team if there not in'
-  },
-  {
-    cronTime: '0 0 8 1 * *',
-    onTick: reactivateUsers,
-    isActive: !!config.featureReactiveMattermostUsers,
-    name: 'reactivateUsers',
-  },
-  {
     cronTime: '0 0 10 * * *',
     onTick: () => sendContractEndingMessageToUsers('mail15days', true),
     isActive: !!config.featureOnUserContractEnd,
@@ -374,20 +447,6 @@ const jobs: Job[] = [
     description: 'Create cron job for sending contract ending message to users',
   },
   {
-    cronTime: '0 0 10 * * *',
-    onTick: removeUsersFromCommunityTeam,
-    isActive: !!config.featureRemoveExpiredUsersFromCommunityOnMattermost,
-    name: 'removeUsersFromCommunityTeam',
-    description: 'Cron job to remove user from community on mattermost',
-  },
-  {
-    cronTime: '0 10 10 * * *',
-    onTick: moveUsersToAlumniTeam,
-    isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
-    name: 'moveUsersToAlumniTeam',
-    description: 'Cron job to add user to alumni on mattermost',
-  },
-  {
     cronTime: "0 10 * * *", // every day at 10,
     onTick: pullRequestWatcher,
     isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
@@ -404,42 +463,6 @@ const jobs: Job[] = [
    description: "Send message to active user without secondary email to update secondary email",
   },
   {
-    cronTime: "0 10 * * *", // every day at 10,
-    onTick: syncBetagouvUserAPI,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
-    name: "syncBetagouvUserAPI",
-    description: "Synchronize user info from beta.gouv.fr api with bdd"
-  },
-  {
-    cronTime: "0 10 * * *", // every day at 10,
-    onTick: syncBetagouvStartupAPI,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "syncBetagouvStartupAPI",
-    description: "Synchronize startup info from beta.gouv.fr api with bdd"
-  },
-  {
-    cronTime: "0 10 * * *", // every day at 10,
-    onTick: publishJobsToMattermost,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
-    name: "publishJobsToMattermost",
-    description: "Publish job offer to mattermost on dedicated channel"
-  },
-  {
-    cronTime: "0 10 * * *", // every day at 10,
-    onTick: publishJobsWTTJToMattermost,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: !!config.FEATURE_PUBLISH_WTTJ_JOBS_TO_MATTERMOST,
-    name: "publishJobsWTTJToMattermost",
-    description: "Publish wttj job offer to mattermost on dedicated channel"
-  },
-  {
     cronTime: "0 0 10 * * 1",
     onTick: sendMessageToTeamForJobOpenedForALongTime,
     start: true,
@@ -448,24 +471,6 @@ const jobs: Job[] = [
     name: "sendMessageToTeamForJobOpenedForALongTime",
     description: "Send message to team to remind them to close job offer"
   },
-  {
-    cronTime: "0 0 10 * * *",
-    onTick: syncMattermostUserWithMattermostMemberInfosTable,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "syncMattermostUserWithMattermostMemberInfosTable",
-    description: "Add new mattermost user to mattermost_member_info table",
-  },
-  {
-    cronTime: "0 5 10 * * *",
-    onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "syncMattermostUserStatusWithMattermostMemberInfosTable",
-    description: "Get mattermost user activity info from api and sync with mattermost_member_info table",
-  }
 ];
 
 let activeJobs = 0;
