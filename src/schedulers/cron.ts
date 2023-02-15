@@ -336,7 +336,7 @@ const jobs: Job[] = [
   {
     cronTime: '0 */8 * * * *', 
     onTick: recreateEmailIfUserActive,
-    isActive: true,
+    isActive: false,
     name: 'recreateEmailIfUserActive',
     description: 'Recreate email for user active again'
   },
