@@ -1,6 +1,7 @@
 import { CronJob } from 'cron';
-import config from '@config';
+import * as Sentry from '@sentry/node';
 
+import config from '@config';
 import {
   createEmailAddresses,
   reinitPasswordEmail,
