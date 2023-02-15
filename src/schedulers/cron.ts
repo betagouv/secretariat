@@ -69,9 +69,9 @@ interface DBTask {
   description?: string,
   created_at: Date,
   updated_at: Date,
-  last_completed?: Date,
-  last_failed?: Date,
-  error_message?: string
+  last_completed: Date,
+  last_failed: Date,
+  error_message: string
 }
 
 interface DBTaskInsertSucceed extends Omit<DBTask, 'last_failed' | 'error_message' | 'created_at'>{}
@@ -480,7 +480,8 @@ for (const job of jobs) {
         const dbTaskSucceed : DBTaskInsertSucceed = {
           name: cronjob.name,
           description: cronjob.description,
-          updated_at: new Date()
+          updated_at: new Date(),
+          last_completed: new Date()
         }
         await db('tasks').insert(dbTaskSucceed)
         .onConflict('name')
