@@ -52,6 +52,7 @@ import { pullRequestStateMachine } from './onboarding/pullRequestStateMachine';
 import { unblockEmailsThatAreActive } from './unblockEmailsThatAreActive';
 import { recreateEmailIfUserActive } from './recreateEmailIfUserActive';
 import { sendEmailToStartupToUpdatePhase } from './startups/sendEmailToStartupToUpdatePhase';
+import db from '@/db';
 
 interface Job {
   cronTime: string;
@@ -63,7 +64,20 @@ interface Job {
   start?: boolean;
 }
 
-const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => {
+interface DBTask {
+  name: string,
+  description?: string,
+  created_at: Date,
+  updated_at: Date,
+  last_completed: Date,
+  last_failed: Date,
+  error_message: string
+}
+
+interface DBTaskInsertSucceed extends Omit<DBTask, 'last_failed' | 'error_message' | 'created_at'>{}
+interface DBTaskInsertFailed extends Omit<DBTask, 'last_completed' | 'created_at'>{}
+
+const onTickWrapper = (name: string, onTick: Function, onComplete: Function, onError: Function) => {
   console.log('Create ontick wrapper')
   return async function() {
     console.log(`Run ${name}`)
@@ -74,9 +88,9 @@ const onTickWrapper = (name: string, onTick: Function, onComplete: Function) => 
       console.log(`Run  after on Complete ${name}`)
 
     } catch(e) {
-      console.log(`Cron ${name}: on fail Catch error ${e}`)
-      // Job Failed unexpectedly
       Sentry.captureException(e);
+      await onError(e)
+      // Job Failed unexpectedly
     }
   }
 }
@@ -230,7 +244,8 @@ const jobs: Job[] = [
     cronTime: '0 */8 * * * *', 
     onTick: recreateEmailIfUserActive,
     isActive: true,
-    name: 'Recreate email for user active again',
+    name: 'recreateEmailIfUserActive',
+    description: 'Recreate email for user active again'
   },
   {
     cronTime: '0 */4 * * * *',
@@ -385,7 +400,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.featureSendMessageToActiveUsersWithoutSecondaryEmail,
-    name: "Send message to active user without secondary email to update secondary email",
+    name: 'sendMessageToActiveUsersWithoutSecondaryEmail',
+   description: "Send message to active user without secondary email to update secondary email",
   },
   {
     cronTime: "0 10 * * *", // every day at 10,
@@ -393,7 +409,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
-    name: "Synchronize user info from beta.gouv.fr api with bdd",
+    name: "syncBetagouvUserAPI",
+    description: "Synchronize user info from beta.gouv.fr api with bdd"
   },
   {
     cronTime: "0 10 * * *", // every day at 10,
@@ -401,7 +418,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: true,
-    name: "Synchronize startup info from beta.gouv.fr api with bdd",
+    name: "syncBetagouvStartupAPI",
+    description: "Synchronize startup info from beta.gouv.fr api with bdd"
   },
   {
     cronTime: "0 10 * * *", // every day at 10,
@@ -409,7 +427,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
-    name: "Publish job offer to mattermost on dedicated channel",
+    name: "publishJobsToMattermost",
+    description: "Publish job offer to mattermost on dedicated channel"
   },
   {
     cronTime: "0 10 * * *", // every day at 10,
@@ -417,7 +436,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_PUBLISH_WTTJ_JOBS_TO_MATTERMOST,
-    name: "Publish wttj job offer to mattermost on dedicated channel",
+    name: "publishJobsWTTJToMattermost",
+    description: "Publish wttj job offer to mattermost on dedicated channel"
   },
   {
     cronTime: "0 0 10 * * 1",
@@ -425,7 +445,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: !!config.FEATURE_SEND_MESSAGE_TO_TEAM_FOR_JOB_OPENED_FOR_A_LONG_TIME,
-    name: "Send message to team to remind them to close job offer",
+    name: "sendMessageToTeamForJobOpenedForALongTime",
+    description: "Send message to team to remind them to close job offer"
   },
   {
     cronTime: "0 0 10 * * *",
@@ -433,7 +454,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: true,
-    name: "Add new mattermost user to mattermost_member_info table",
+    name: "syncMattermostUserWithMattermostMemberInfosTable",
+    description: "Add new mattermost user to mattermost_member_info table",
   },
   {
     cronTime: "0 5 10 * * *",
@@ -441,7 +463,8 @@ const jobs: Job[] = [
     start: true,
     timeZone: "Europe/Paris",
     isActive: true,
-    name: "Get mattermost user activity info from api and sync with mattermost_member_info table",
+    name: "syncMattermostUserStatusWithMattermostMemberInfosTable",
+    description: "Get mattermost user activity info from api and sync with mattermost_member_info table",
   }
 ];
 
@@ -454,7 +477,28 @@ for (const job of jobs) {
     new CronJob({
       ...cronjob,
       onTick: onTickWrapper(cronjob.name, cronjob.onTick, async function() {
-        console.log(`Job ${cronjob.name} complete : ${(new Date()).toDateString()}`)
+        const dbTaskSucceed : DBTaskInsertSucceed = {
+          name: cronjob.name,
+          description: cronjob.description,
+          updated_at: new Date(),
+          last_completed: new Date()
+        }
+        await db('tasks').insert(dbTaskSucceed)
+        .onConflict('name')
+        .merge()
+        return
+      },
+      async function(error) {
+        const dbTaskFailed : DBTaskInsertFailed = {
+          name: cronjob.name,
+          description: cronjob.description,
+          updated_at: new Date(),
+          last_failed: new Date(),
+          error_message: error.message
+        }
+        await db('tasks').insert(dbTaskFailed)
+        .onConflict('name')
+        .merge()
         return
       })
     });
