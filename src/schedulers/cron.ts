@@ -494,7 +494,7 @@ for (const job of jobs) {
           description: cronjob.description,
           updated_at: new Date(),
           last_failed: new Date(),
-          error_message: error
+          error_message: error.message
         }
         await db('tasks').insert(dbTaskFailed)
         .onConflict('name')
