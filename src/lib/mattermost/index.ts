@@ -22,11 +22,9 @@ export interface MattermostUser {
 
 export async function getUserWithParams(params = {}, i = 0) {
   const mattermostUsers = await axios
-    .get(`${config.mattermostURL}/api/v4/users`, {
+    .get(`${config.mattermostURL}/api/v4/users?per_page=200&page=${i}`, {
       params: {
-        ...params,
-        per_page: 100,
-        page: i,
+        ...params
       },
       ...getMattermostConfig(),
     })
