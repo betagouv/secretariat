@@ -1,2 +1,4 @@
 import { addUsersNotInCommunityToCommunityTeam } from "@schedulers/mattermostScheduler";
-addUsersNotInCommunityToCommunityTeam()
+addUsersNotInCommunityToCommunityTeam().then(() => {
+    console.log('Done')
+})

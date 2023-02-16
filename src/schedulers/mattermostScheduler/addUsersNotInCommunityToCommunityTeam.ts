@@ -8,6 +8,7 @@ export async function addUsersNotInCommunityToCommunityTeam() {
     const mattermostUsersActiveGithubUsersNotInCommunityTeam: MattermostUser[] =
       await getMattermostUsersActiveGithubUsersNotInTeam(config.mattermostTeamId);
     let userCount = 0
+    console.log('Log mattermost users not in community', mattermostUsersActiveGithubUsersNotInCommunityTeam.length)
     for (const mattermostUser of mattermostUsersActiveGithubUsersNotInCommunityTeam) {
       try {
         await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
