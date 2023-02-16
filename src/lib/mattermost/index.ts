@@ -25,13 +25,13 @@ export async function getUserWithParams(params = {}, i = 0) {
     .get(`${config.mattermostURL}/api/v4/users`, {
       params: {
         ...params,
-        per_page: 200,
+        per_page: 100,
         page: i,
       },
       ...getMattermostConfig(),
     })
     .then((response) => response.data);
-  console.log(`Get user with params page ${i} : ${mattermostUsers.length}`)
+  console.log(`Get user with params page ${i} : ${mattermostUsers.length}`, params)
   if (!mattermostUsers.length) {
     return [];
   }
