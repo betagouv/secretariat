@@ -1,4 +1,6 @@
 <%- include('partials/nav-header'); -%>
+<link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
+<script src="/static/collapse/collapse.js"></script>
 
 <div class="module">
 
@@ -171,6 +173,28 @@
         <% if (redirections.length === 0) { %>
             <p><strong>Aucune</strong></p>
         <% } %>
+        <% if (isAdmin) { %>
+        <hr>
+            <h4>Actions admin</h4>
+            <div class="collapse">
+                <h6 class="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="change-secondary-email">
+                        Définir/changer l'email secondaire pour cette personne
+                        <div class="icon fa fa-chevron-down"></div>
+                    </button>
+                </h6>
+                <div hidden class="collapse-content">
+                    <p>
+                        L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ.
+                    </p>
+                    <form class="no-margin" action="/users/<%= userInfos.id %>/secondary_email" method="POST" onsubmit="event.submitter && (event.submitter.disabled = true);">
+                        <input id="secondaryEmail" name="secondaryEmail" value="<%= secondaryEmail %>" type="email">
+                        <button class="button margin-10-0" type="submit">Sauvegarder l'email secondaire</button>
+                    </form>
+                    <hr />
+                </div> 
+            </div>
+        <% }%>
     </div>
 </div>
 <%- include('partials/nav-footer'); -%>

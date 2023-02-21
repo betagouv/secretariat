@@ -1,6 +1,7 @@
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
 import { addEvent, EventCode } from '@/lib/events'
+import config from "@/config";
 
 export async function manageSecondaryEmailForUser(req, res) {
     const { username } = req.params;
@@ -9,7 +10,7 @@ export async function manageSecondaryEmailForUser(req, res) {
     const user = await utils.userInfos(username, isCurrentUser);
 
     try {
-        if (user.canChangeEmails) {
+        if (user.canChangeEmails || config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
             const dbUser = await knex('users').where({
                 username,
             }).then(db => db[0])
