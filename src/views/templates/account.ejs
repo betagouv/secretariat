@@ -133,21 +133,28 @@
             </div>
         </div>
         <div class="panel margin-top-0 panel-partial-width">
-            <h6>Observatoire de la Communauté</h6>
+            <h6>Observatoire de la Communauté (<a href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5" target="_blank">consulter l'observatoire</a>)</h6>
+                <br>
                 <p>
                     <span class="font-weight-bold">Lieu de travail principal : </span> <%= workplace || 'Non renseigné' %>
                 </p>
                 <p>
-                    <span class="font-weight-bold">Genre : </span> <%= gender || 'Non renseigné' %>
+                    <span class="font-weight-bold">Genre : </span> <span class="hide-info-detail"><span><%= gender || 'Non renseigné' %></span></span>
                 </p>
-    
                 <p>
-                    <span class="font-weight-bold">TJM : </span> <%= tjm || 'Non renseigné' %>
+                    <span class="font-weight-bold">TJM : </span> <span class="hide-info-detail"><span><%= tjm || 'Non renseigné' %></span></span>
                 </p>
                 <p>
                     <span class="font-weight-bold">Statut Legal : </span><nobr><%= legal_status || 'Non renseigné' %></nobr>
                 </p>
-                <a class="button" href="/account/info">Participez</a>  <a class="button secondary" target="_blank" href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5">Consulter</a>
+                <p>
+                    <span class="font-weight-bold">Nombre de jours par semaine : </span> <%= average_nb_of_days || 'Non renseigné' %>
+                </p>
+                <center>
+                    <small>Une de ces informations n'est plus juste ?</small>
+                    <br>
+                    <a class="button" href="/account/info">Mettre à jour</a>
+                </center>
                 <br/>
                 <br/>
         </div>

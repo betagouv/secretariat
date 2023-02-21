@@ -66,6 +66,7 @@ export async function getCurrentAccount(req, res) {
         activeTab: 'account',
         marrainageState,
         tjm: dbUserDetail.tjm ? `${dbUserDetail.tjm} euros` : 'Non renseigné',
+        average_nb_of_days: dbUserDetail.average_nb_of_days,
         gender: genderOptions.find(opt => opt.key.toLowerCase() === gender.toLowerCase()).name,
         legal_status: dbUser.legal_status ? statusOptions.find(opt => opt.key === dbUser.legal_status).name : 'Non renseigné',
         workplace: dbUser.workplace_insee_code ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(commune => commune.nom) : 'Non renseigné',
