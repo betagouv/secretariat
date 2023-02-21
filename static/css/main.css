@@ -229,6 +229,13 @@ h4, h5, h6 {
   margin: var(--space-xs) 0;
 }
 
+.hide-info-detail span {
+  display: none;
+}
+.hide-info-detail:after {
+  content: '••••';
+}
+
 #logo {
   padding: 32px;
   font-size: 1.25em;

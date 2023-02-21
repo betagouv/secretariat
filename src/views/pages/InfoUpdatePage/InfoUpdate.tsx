@@ -99,7 +99,8 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                         <div className="beta-banner"></div>
                         <form action="/account/info" method="POST">
                             <h4>Participez à notre observatoire statisique </h4>
-                            ⚠️ À aucun moment nous n'afficherons vos nom et prénom.
+                            ⚠️ Ces valeurs servent à alimenter l'<a href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5" target="_blank">observatoire de la communauté</a>.
+                    Elles sont confidentielles et anonymisées mis à part le lieu de travail.<br></br>
                             <div className="form__group">
                                 <p>
                                     
