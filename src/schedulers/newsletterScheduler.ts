@@ -154,6 +154,15 @@ export async function newsletterReminder(reminder) {
         icon_url: config.NEWSLETTER_BOT_ICON_URL
       }
     });
+    await sendInfoToChat({
+      text: computeMessageReminder(reminder, currentNewsletter),
+      channel: 'town-square',
+      space: 'dinum',
+      extra: {
+        username: 'Pikachu (équipe Communauté beta.gouv.fr)',
+        icon_url: config.NEWSLETTER_BOT_ICON_URL
+      }
+    });
   }
 }
 

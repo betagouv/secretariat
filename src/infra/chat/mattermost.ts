@@ -4,6 +4,7 @@ interface SendInfoToChatProps {
     text: string,
     channel?: string,
     username?: string,
+    space?: 'communaute' | 'dinum',
     extra?: {
       username?: string,	// Overrides the username the message posts as. Defaults to the username set during webhook creation or the webhook creator’s username if the former was not set.
       icon_url?: string, //	Overrides the profile picture the message posts with.
@@ -13,7 +14,8 @@ interface SendInfoToChatProps {
 
 enum WEEBHOOK_CHANNEL_TYPE {
     WEBHOOK_SECRETARIAT='WEBHOOK_SECRETARIAT',
-    WEBHOOK_GENERAL='WEBHOOK_GENERAL'
+    WEBHOOK_GENERAL='WEBHOOK_GENERAL',
+    WEBHOOK_DINUM_CENTREVILLE='WEBHOOK_DINUM_CENTREVILLE'
 }
 
 interface SendIntoToChatFromMattermostDeps {
@@ -29,7 +31,8 @@ export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMatterm
             text,
             channel,
             username,
-            extra
+            extra,
+            space
         } = props
 
         let hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_SECRETARIAT]
@@ -40,7 +43,9 @@ export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMatterm
           icon_url?: string,
           icon_emoji?: string,
         } = { text, channel: channel === 'general' ? 'town-square' : channel };
-        if (channel && channel !== 'secretariat') {
+        if (space === 'dinum') {
+          hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_DINUM_CENTREVILLE]
+        } else if (channel && channel !== 'secretariat') {
           hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_GENERAL]
         }
         if (username) {

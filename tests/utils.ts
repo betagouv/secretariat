@@ -34,22 +34,22 @@ export default {
       .persist();
   },
   mockSlackSecretariat() {
-    if (config.slackWebhookURLSecretariat) {
-      return nock(config.slackWebhookURLSecretariat)
+    if (config.CHAT_WEBHOOK_URL_SECRETARIAT) {
+      return nock(config.CHAT_WEBHOOK_URL_SECRETARIAT)
         .post(/.*/)
         .reply(200)
         .persist();
     }
-    throw new Error('config.slackWebhookURLSecretariat not defined');
+    throw new Error('config.CHAT_WEBHOOK_URL_SECRETARIAT not defined');
   },
   mockSlackGeneral() {
-    if (config.slackWebhookURLGeneral) {
-      return nock(config.slackWebhookURLGeneral)
+    if (config.CHAT_WEBHOOK_URL_GENERAL) {
+      return nock(config.CHAT_WEBHOOK_URL_GENERAL)
         .post(/.*/)
         .reply(200)
         .persist();
     }
-    throw new Error('config.slackWebhookURLGeneral not defined');
+    throw new Error('config.CHAT_WEBHOOK_URL_GENERAL not defined');
   },
   mockOvhUserEmailInfos() {
     return nock(/.*ovh.com/)

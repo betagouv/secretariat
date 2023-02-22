@@ -238,6 +238,7 @@ describe('Newsletter', () => {
       slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('FIRST_REMINDER', mockNewsletter)
       );
+      slack.calledTwice.should.be.true
       clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
@@ -250,6 +251,7 @@ describe('Newsletter', () => {
       slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('SECOND_REMINDER', mockNewsletter)
       );
+      slack.calledTwice.should.be.true
       clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
@@ -262,12 +264,13 @@ describe('Newsletter', () => {
       slack.firstCall.args[0].text.should.equal(
         computeMessageReminder('THIRD_REMINDER', mockNewsletter)
       );
+      slack.calledTwice.should.be.true
       clock.restore();
       slack.restore();
       await knex('newsletters').truncate();
     });
 
-    it('should send remind on friday at 8am', async () => {
+    it('should not send remind if no newsletter', async () => {
       clock = sinon.useFakeTimers(new Date('2021-03-05T07:59:59+01:00'));
       await newsletterReminder('THIRD_REMINDER');
       slack.notCalled.should.be.true;
