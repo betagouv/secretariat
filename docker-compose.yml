@@ -30,6 +30,9 @@ services:
     env_file:
       - .env
     environment:
+      CHAT_WEBHOOK_URL_GENERAL: 'https://example.com'
+      CHAT_WEBHOOK_URL_SECRETARIAT: 'https://example.com'
+      CHAT_WEBHOOK_URL_DINUM: 'https://example.com'
       DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
       MAIL_PASS: mailpassword
       MAIL_USER: mailuser
@@ -44,7 +47,7 @@ services:
       REDIS_PORT: 6379
       REDIS_HOST: localhost
       REDIS_PASSWORD: localpwd
-      REDIS_EVENT_BUS_STREAM_NAME: potentiel-eventbus-local
+      REDIS_EVENT_BUS_STREAM_NAME: eventbus-local
       HASH_SALT: "FakeHashSaltToChangeInProduction"
     ports:
       - "8100:8100"
