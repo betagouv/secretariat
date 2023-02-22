@@ -59,15 +59,34 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: strin
     return allMattermostUsers.filter(
       (user) => concernedUsersEmails.includes(user.email)
     );
-  };
+};
 
-  export * from './createUsersByEmail'
-  export * from './inviteUserToTeamByEmail'
-  export * from './moveUsersToAlumniTeam'
-  export * from './reactivateUsers'
-  export * from './removeUsersFromCommunityTeam'
-  export * from './addUsersNotInCommunityToCommunityTeam'
-  export * from './syncMattermostUserWithMattermostMemberInfosTable'
-  export * from './syncMattermostUserStatusWithMattermostMemberInfosTable'
-  export * from './sendGroupeDeSoutienReminder'
+export const getMattermostUsersActiveGithubUsersInTeam = async (teamId: string) : Promise<MattermostUser[]> => {
+  const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams({ in_team: teamId });
+  const dbUsers : DBUser[] = await knex('users').select();
+  const githubUsers : Member[] = await betagouv.usersInfos();
+  const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
+  console.log(`Active github users ${activeGithubUsers.length}`)
+  const concernedUsers: MemberWithPrimaryEmail[] = activeGithubUsers.map((user: Member) => {
+    const dbUser = findDBUser(dbUsers, user)
+    return mergedMemberAndDBUser(user, dbUser);
+  }).filter(filterActiveUser)
+  console.log(`Active github users ${activeGithubUsers.length}`)
+  const concernedUsersEmails = concernedUsers.map(user => user.primary_email)
+  console.log(`Concerned users emails ${concernedUsersEmails.length}`, concernedUsersEmails)
+  console.log(`Mattermost user`, allMattermostUsers.length)
+  return allMattermostUsers.filter(
+    (user) => concernedUsersEmails.includes(user.email)
+  );
+};
+
+export * from './createUsersByEmail'
+export * from './inviteUserToTeamByEmail'
+export * from './moveUsersToAlumniTeam'
+export * from './reactivateUsers'
+export * from './removeUsersFromCommunityTeam'
+export * from './addUsersNotInCommunityToCommunityTeam'
+export * from './syncMattermostUserWithMattermostMemberInfosTable'
+export * from './syncMattermostUserStatusWithMattermostMemberInfosTable'
+export * from './sendGroupeDeSoutienReminder'
   
