@@ -51,8 +51,9 @@ export default {
   NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
   mattermostURL: process.env.MATTERMOST_URL || 'https://mattermost.incubateur.net',
   senderEmail: process.env.MAIL_SENDER || 'espace-membre@incubateur.net',
-  slackWebhookURLSecretariat: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
-  slackWebhookURLGeneral: process.env.SLACK_WEBHOOK_URL_GENERAL,
+  CHAT_WEBHOOK_URL_SECRETARIAT: process.env.SLACK_WEBHOOK_URL_SECRETARIAT,
+  CHAT_WEBHOOK_URL_GENERAL: process.env.SLACK_WEBHOOK_URL_GENERAL,
+  CHAT_WEBHOOK_URL_DINUM: process.env.CHAT_WEBHOOK_URL_DINUM,
   usersAPI:
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
   incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.3/incubators.json',

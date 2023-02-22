@@ -43,13 +43,14 @@ const betaGouv = {
     channel: string = null,
     username: string = null
   ) => {
-    let hookURL = config.slackWebhookURLSecretariat;
+    let hookURL = config.CHAT_WEBHOOK_URL_SECRETARIAT;
     const params: any = { text, channel: channel === 'general' ? 'town-square' : channel };
     if (channel === 'general') {
-      hookURL = config.slackWebhookURLGeneral;
-    }
-    if (channel && channel !== 'secretariat') {
-      hookURL = config.slackWebhookURLGeneral;
+      hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
+    } else if(channel === 'dinum') {
+      hookURL = config.CHAT_WEBHOOK_URL_DINUM
+    } else if (channel && channel !== 'secretariat') {
+      hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
     }
     if (username) {
       params.channel = `@${username}`;
