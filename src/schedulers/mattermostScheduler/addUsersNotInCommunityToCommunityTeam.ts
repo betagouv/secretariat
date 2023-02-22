@@ -13,7 +13,7 @@ export async function addUsersNotInCommunityToCommunityTeam() {
     const mattermostUsers: MattermostUser[] = await getMattermostUsersActiveGithubUsersInTeam(config.mattermostAlumniTeamId);
     let userCount = 0
     console.log('Log mattermost users not in community', mattermostUsers.length)
-    for (const mattermostUser of mattermostUsersm) {
+    for (const mattermostUser of mattermostUsers) {
       try {
         await mattermost.addUserToTeam(mattermostUser.id, config.mattermostTeamId)
         userCount += 1
