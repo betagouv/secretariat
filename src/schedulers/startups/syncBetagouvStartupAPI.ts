@@ -13,9 +13,9 @@ function getCurrentPhase(startup : StartupInfo) {
 }
 
 function getCurrentPhaseDate(startup : StartupInfo) : Date | null {
-  let date = null;
+  let date;
   if (startup.attributes.phases) {
-    date = startup.attributes.phases[startup.attributes.phases.length - 1].start
+    date = startup.attributes.phases[startup.attributes.phases.length - 1].start || undefined
     if (date) {
       date = new Date(date)
     }
