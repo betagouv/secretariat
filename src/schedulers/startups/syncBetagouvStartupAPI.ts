@@ -24,6 +24,9 @@ function getCurrentPhaseDate(startup : StartupInfo) : Date | null {
 }
 
 function isRecent(phaseDate: Date) {
+  if (process.env.FEATURE_ALWAYS_SEND_STARTUP_PHASE_CHANGE_EMAIL === 'true') {
+    return true
+  }
   const TWO_MONTHS_IN_DAYS = 30*2
   return nbOfDaysBetweenDate(phaseDate, new Date()) < TWO_MONTHS_IN_DAYS
 }
