@@ -290,7 +290,7 @@ const synchronizationJobs = [
     description: "Synchronize user info from beta.gouv.fr api with bdd"
   },
   {
-    cronTime: "0 10 * * *", // every day at 10,
+    cronTime: "5 10 * * *", // every day at 10,
     onTick: syncBetagouvStartupAPI,
     start: true,
     timeZone: "Europe/Paris",
@@ -299,7 +299,7 @@ const synchronizationJobs = [
     description: "Synchronize startup info from beta.gouv.fr api with bdd"
   },
   {
-    cronTime: "0 0 10 * * *",
+    cronTime: "0 10 10 * * *",
     onTick: syncMattermostUserWithMattermostMemberInfosTable,
     start: true,
     timeZone: "Europe/Paris",
@@ -308,7 +308,7 @@ const synchronizationJobs = [
     description: "Add new mattermost user to mattermost_member_info table",
   },
   {
-    cronTime: "0 5 10 * * *",
+    cronTime: "0 15 10 * * *",
     onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
     start: true,
     timeZone: "Europe/Paris",
