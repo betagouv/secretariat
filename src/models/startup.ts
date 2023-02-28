@@ -77,5 +77,6 @@ export interface DBStartup {
     contact: string;
     phases: Phase[];
     current_phase: StartupPhase;
+    current_phase_date: Date;
     incubator: string;
 }
