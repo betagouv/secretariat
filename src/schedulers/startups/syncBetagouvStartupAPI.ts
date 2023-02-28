@@ -20,7 +20,6 @@ function getCurrentPhaseDate(startup : StartupInfo) : Date | null {
       date = new Date(date)
     }
   }
-  console.log('Get current phase date', date)
   return date
 }
 
