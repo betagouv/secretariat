@@ -12,6 +12,17 @@ function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
 }
 
+function getCurrentPhaseDate(startup : StartupInfo) : Date | null {
+  let date;
+  if (startup.attributes.phases) {
+    date = startup.attributes.phases[startup.attributes.phases.length - 1].start || undefined
+    if (date) {
+      date = new Date(date)
+    }
+  }
+  return date
+}
+
 function isRecent(phaseDate: Date) {
   const TWO_MONTHS_IN_DAYS = 30*2
   return nbOfDaysBetweenDate(phaseDate, new Date()) < TWO_MONTHS_IN_DAYS
@@ -63,6 +74,7 @@ export async function syncBetagouvStartupAPI() {
         contact: startup.attributes.contact,
         phases: JSON.stringify(startup.attributes.phases),
         current_phase: getCurrentPhase(startup),
+        current_phase_date: getCurrentPhaseDate(startup),
         mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
       }
