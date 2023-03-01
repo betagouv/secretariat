@@ -12,7 +12,7 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
     const mattermostUsers : mattermost.MattermostUser[] = await mattermost.getActiveMattermostUsers({
         in_team: config.mattermostTeamId
     })
-    const mattermostUserEmails : string[] = mattermostUsers.map(user => user.email)
+    // const mattermostUserEmails : string[] = mattermostUsers.map(user => user.email)
     const mattermostMemberInfos : mattermost.MattermostUser[] = await db('mattermost_member_infos')
     const dbUsers : DBUser[] = await db('users')
         .whereNotIn('username', mattermostMemberInfos.map(m => m.username))
