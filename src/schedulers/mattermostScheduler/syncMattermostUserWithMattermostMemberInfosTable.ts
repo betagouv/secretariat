@@ -16,10 +16,6 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
     const mattermostMemberInfos : mattermost.MattermostUser[] = await db('mattermost_member_infos')
     const dbUsers : DBUser[] = await db('users')
         .whereNotIn('username', mattermostMemberInfos.map(m => m.username))
-        .where((qb) => {
-            qb.whereIn('secondary_email', mattermostUserEmails)
-            qb.orWhereIn('primary_email', mattermostUserEmails)
-        })
     
     for (const dbUser of dbUsers) {
         const mattermostUser = mattermostUsers.find(mUser => isSameUser(mUser, dbUser))
