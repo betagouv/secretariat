@@ -18,14 +18,16 @@ export async function syncMattermostUserWithMattermostMemberInfosTable () {
         .orWhereIn('primary_email', mattermostUserEmails)
         .join('mattermost_member_infos as mattermost', 'users.username', '=', 'mattermost.username')
         .whereNull('mattermost.username')
-    
-    for (const dbUser of dbUsers) {
-        const mattermostUser = mattermostUsers.find(mUser => isSameUser(mUser, dbUser))
-        const mattermostMemberInfo : MattermostMemberInfo = {
-            username: dbUser.username,
-            mattermost_user_id: mattermostUser.id,
+    console.log('DBUser', dbUsers.map(dbUser => dbUser.primary_email)) 
+    if (process.env.FEATURE_APPLY_INSERT_MATTERMOST_USER_TO_DB === 'true') {
+        for (const dbUser of dbUsers) {
+            const mattermostUser = mattermostUsers.find(mUser => isSameUser(mUser, dbUser))
+            const mattermostMemberInfo : MattermostMemberInfo = {
+                username: dbUser.username,
+                mattermost_user_id: mattermostUser.id,
+            }
+            await db('mattermost_member_infos').insert(mattermostMemberInfo)
+            console.log(`Ajoute ${dbUser.username} à la table mattermost`)
         }
-        await db('mattermost_member_infos').insert(mattermostMemberInfo)
-        console.log(`Ajoute ${dbUser.username} à la table mattermost`)
     }
 }

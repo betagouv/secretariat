@@ -29,7 +29,6 @@ export async function getUserWithParams(params = {}, i = 0) {
       ...getMattermostConfig(),
     })
     .then((response) => response.data);
-  console.log(`Get user with params page ${i} : ${mattermostUsers.length}`, params)
   if (!mattermostUsers.length) {
     return [];
   }
