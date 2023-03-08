@@ -33,6 +33,9 @@ import routes from './routes/routes';
 import permit, { MemberRole } from './middlewares/authorization';
 import { publicGetRouteRateLimiter, publicPostRouteRateLimiter, rateLimiter } from './middlewares/rateLimiter';
 import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/startupController';
+import { getBadgePage } from './controllers/accountController/getBadgePage';
+import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
+import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -150,7 +153,6 @@ app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE, (req, res) => res.redirect(r
 // users
 app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 app.post(routes.USER_CREATE_EMAIL_API, express.json({type: '*/*'}), usersController.createEmailApi);
-
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
 app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
 app.post(routes.USER_CREATE_REDIRECTION, usersController.createRedirectionForUser);
@@ -179,6 +181,9 @@ app.post(routes.ACCOUNT_POST_DETAIL_INFO_FORM, accountController.postCurrentInfo
 app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
 app.post(routes.ACCOUNT_POST_BASE_INFO_FORM, express.json({type: '*/*'}), usersController.postBaseInfoUpdate);
 app.post(routes.API_PUBLIC_POST_BASE_INFO_FORM, publicPostRouteRateLimiter, express.json({ type: '*/*'}), usersController.publicPostBaseInfoUpdate)
+app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE, getBadgePage)
+app.post(routes.API_POST_BADGE_REQUEST, express.json({ type: '*/*'}), postBadgeRequest)
+app.put(routes.API_UPDATE_BADGE_REQUEST_STATUS, express.json({ type: '*/*'}), updateBadgeRequestStatus)
 
 app.get('/community', communityController.getCommunity);
 app.get('/community/:username', communityController.getUser);

@@ -36,5 +36,17 @@ https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversat
       `
       console.log(`Post message : `, message) // Call your action on the request here
       await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`, {text: message});
+    } else if (req.params.hookId === config.CHATWOOT_BADGE_ID) {
+      let conversationId = ''
+      try {
+        conversationId = req.body.id
+      } catch (e) {
+        console.error('Could not get conversation Id')
+      }
+      const message = `:toolbox: Nouvelle demande de badge de ${req.body.meta.sender.email} : ${req.body.messages.map(m => m.content).join('/n')}
+https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversationId}
+      `
+      console.log(`Post message : `, message) // Call your action on the request here
+      await axios.post(`https://mattermost.incubateur.net/hooks/${config.CHATWOOT_BADGE_ID}`, {text: message});
     }
 }

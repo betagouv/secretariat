@@ -7,6 +7,7 @@ import { Community } from './pages/CommunityPage'
 import { AdminMattermost } from './pages/AdminMattermostPage'
 import { BaseInfoUpdate } from './pages/BaseInfoUpdatePage'
 import { WhatIsGoingOnWithMember } from './pages/WhatIsGoingOnWithMemberPage'
+import { Badge } from './pages/BadgePage/Badge'
 import { StartupInfoUpdate } from './pages/StartupInfoUpdatePage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
@@ -87,4 +88,12 @@ export const StartupInfoUpdatePage = (props: Parameters<typeof StartupInfoUpdate
   hydrate: true,
   title: 'Que ce passe-t-il Page',
   pageName: 'StartupInfoUpdate', // This must match the Component name
+})
+
+export const BadgePage = (props: Parameters<typeof BadgePage>[0]) => makeHtml({
+  Component: Badge,
+  props,
+  hydrate: true,
+  title: 'Faire une demande de badge',
+  pageName: 'Badge', // This must match the Component name
 })
