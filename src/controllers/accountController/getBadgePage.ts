@@ -1,18 +1,12 @@
 import config from "@config";
 import * as utils from "@controllers/utils";
 import { MemberWithPermission } from "@models/member";
-import { DBUser } from "@/models/dbUser/dbUser";
-import db from "@/db";
 import { BadgePage } from "@/views";
 
 export async function getBadgePage(req, res) {
     try {
-      const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
-        (async () => utils.userInfos(req.auth.id, true))(),
-        (async () => {
-          const rows = await db('users').where({ username: req.auth.id });
-          return rows.length === 1 ? rows[0] : null;
-        })()
+      const [currentUser] : [MemberWithPermission] = await Promise.all([
+        (async () => utils.userInfos(req.auth.id, true))()
       ]);
       const title = 'Demande de badge';
       res.send(
