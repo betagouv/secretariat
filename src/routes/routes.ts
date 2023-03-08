@@ -1,6 +1,5 @@
 
 class routes {
-
   // startup
   static STARTUP_GET_ALL = '/startups'
   static STARTUP_GET_DETAIL = '/startups/:startup'
@@ -37,12 +36,15 @@ class routes {
   static ACCOUNT_GET_DETAIL_INFO_FORM = '/account/info'
   static ACCOUNT_POST_DETAIL_INFO_FORM = '/account/info'
   static API_PUBLIC_POST_BASE_INFO_FORM = '/api/public/account/base-info/:username'
-
+  static ACCOUNT_GET_BADGE_REQUEST_PAGE = '/account/badge-demande'
+  static API_POST_BADGE_REQUEST = '/api/badge'
+  static API_UPDATE_BADGE_REQUEST_STATUS = '/api/badge/status'
 
   static PULL_REQUEST_GET_PRS: string = '/api/pull-requests'
   static ME: string = '/api/me'
 
   static LOGIN_API: string = '/api/login'
+    static API_UPDATE_BADGE_STATUS: string
 }
 
 export default routes
