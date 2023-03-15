@@ -41,16 +41,19 @@ const betaGouv = {
   sendInfoToChat: async (
     text: string,
     channel: string = null,
-    username: string = null
+    username: string = null,
+    hookURL: string = null
   ) => {
-    let hookURL = config.CHAT_WEBHOOK_URL_SECRETARIAT;
     const params: any = { text, channel: channel === 'general' ? 'town-square' : channel };
-    if (channel === 'general') {
-      hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
-    } else if(channel === 'dinum') {
-      hookURL = config.CHAT_WEBHOOK_URL_DINUM
-    } else if (channel && channel !== 'secretariat') {
-      hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
+    if (!hookURL) {
+      hookURL = config.CHAT_WEBHOOK_URL_SECRETARIAT;
+      if (channel === 'general') {
+        hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
+      } else if(channel === 'dinum') {
+        hookURL = config.CHAT_WEBHOOK_URL_DINUM
+      } else if (channel && channel !== 'secretariat') {
+        hookURL = config.CHAT_WEBHOOK_URL_GENERAL;
+      }
     }
     if (username) {
       params.channel = `@${username}`;

@@ -186,7 +186,23 @@ const mattermostJobs: Job[] = [
   // Post automatic
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
-    onTick: postEventsOnMattermost,
+    onTick: () => postEventsOnMattermost({
+      numberOfDays:6,
+      canal:'general',
+      calendarURL: config.CALENDAR_URL,
+      chatWebhook: config.CHAT_WEBHOOK_URL_GENERAL
+    }),
+    isActive: true,
+    name: 'Post event of the week from betagouv calendar',
+  },
+  {
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
+    onTick: () => postEventsOnMattermost({
+      numberOfDays:6,
+      canal:'general',
+      calendarURL: config.CALENDAR_GIP_URL,
+      chatWebhook: config.CHAT_WEBHOOK_URL_GIP
+    }),
     isActive: true,
     name: 'Post event of the week from betagouv calendar',
   },
