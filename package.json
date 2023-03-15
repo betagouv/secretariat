@@ -98,7 +98,7 @@
     "tsconfig-paths-webpack-plugin": "^4.0.0",
     "typescript-transform-paths": "^3.4.4",
     "uuid": "^9.0.0",
-    "webpack": "^5.75.0",
+    "webpack": "^5.76.0",
     "webpack-cli": "^5.0.1"
   },
   "devDependencies": {
