@@ -51,7 +51,6 @@ export const sendForumBetaReminder = async (numberOfDays:number=12, canal: strin
         location: forumBetaEvent.location,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
       });
-      console.log(forumBetaEvent)
       await betagouv.sendInfoToChat(messageContent, canal);
       await sendCampaignEmail({
         subject: 'Ne manquez pas le forum beta.gouv.fr du <%= date %> !',
@@ -71,7 +70,7 @@ export const sendForumBetaReminder = async (numberOfDays:number=12, canal: strin
 
 export const postEventsOnMattermost = async ({
   numberOfDays=6,
-  canal='general',
+  canal,
   calendarURL,
   chatWebhook} : { numberOfDays:number, canal?:string, calendarURL:string, chatWebhook?: string}) => {
     const today = new Date()
