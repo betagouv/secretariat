@@ -4,7 +4,6 @@ import betagouv from '../betagouv'
 import * as utils from '@controllers/utils';
 import { sendCampaignEmail } from '@/config/email.config';
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
-import config from '@/config';
 
 
 interface ReadableEvents {

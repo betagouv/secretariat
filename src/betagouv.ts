@@ -42,7 +42,7 @@ const betaGouv = {
     text: string,
     channel: string = null,
     username: string = null,
-    hookURL: string
+    hookURL: string = null
   ) => {
     const params: any = { text, channel: channel === 'general' ? 'town-square' : channel };
     if (!hookURL) {
