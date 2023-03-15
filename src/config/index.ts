@@ -29,6 +29,8 @@ export default {
   protocol: isSecure ? 'https' : 'http',
   host: process.env.HOSTNAME,
   port: process.env.PORT || 8100,
+  CALENDAR_URL: process.env.CALENDAR_URL,
+  CALENDAR_GIP_URL: process.env.CALENDAR_GIP_URL,
   CHATWOOT_ID: process.env.CHATWOOT_ID,
   CHATWOOT_IGNORE_EMAILS: process.env.CHATWOOT_IGNORE_EMAILS || [],
   CHATWOOT_BADGE_ID: process.env.CHATWOOT_BADGE_ID,
@@ -55,6 +57,7 @@ export default {
   CHAT_WEBHOOK_URL_SECRETARIAT: process.env.CHAT_WEBHOOK_URL_SECRETARIAT,
   CHAT_WEBHOOK_URL_GENERAL: process.env.CHAT_WEBHOOK_URL_GENERAL,
   CHAT_WEBHOOK_URL_DINUM: process.env.CHAT_WEBHOOK_URL_DINUM,
+  CHAT_WEBHOOK_URL_GIP: process.env.CHAT_WEBHOOK_URL_GIP,
   usersAPI:
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
   incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.3/incubators.json',
