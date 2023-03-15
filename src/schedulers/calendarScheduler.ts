@@ -69,19 +69,21 @@ export const sendForumBetaReminder = async (numberOfDays:number=12, canal: strin
     return forumBetaEvent
 }
 
-export const postEventsOnMattermost = async (numberOfDays:number=6, canal: string='general') => {
+export const postEventsOnMattermost = async ({
+  numberOfDays=6,
+  canal='general',
+  calendarURL,
+  chatWebhook} : { numberOfDays:number, canal?:string, calendarURL:string, chatWebhook?: string}) => {
     const today = new Date()
     const dayInSixDays = new Date()
     dayInSixDays.setDate(today.getDate() + numberOfDays)
-    const calendarURL = process.env.CALENDAR_URL
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
-    console.log(events)
     let readableEvents : ReadableEvents[] = makeReadableEvent(events)
     
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
     });
-    await betagouv.sendInfoToChat(messageContent, canal);
+    await betagouv.sendInfoToChat(messageContent, canal, undefined, chatWebhook);
 }
 
