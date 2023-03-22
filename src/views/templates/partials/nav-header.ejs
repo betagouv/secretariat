@@ -22,12 +22,28 @@
             <button id="drawer-toggle" class="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
             <a href="/account" class="home-logo"><h4 id="logo">Espace Membre</h4></a>
             <ul class="hidden-mobile margin-bottom-5" id="drawer">
-                <li>
+                <li class="<% if(activeTab === 'account') { %>active<% } %> nav-sub-menu-container">
                     <a href="/account" id="account" 
-                        class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
+                        class="nav-item">
                         🔓 Mon compte
                         <br><small>Administrer mon email, mes infos</small>
                     </a>
+                    <% if(activeTab === 'account') { %>
+                        <ul>
+                            <li>
+                                <a href="/account" id="account" 
+                                    class="nav-sub-item <% if(subActiveTab === 'account') { %> active <% } %>">
+                                    🔎 Mes infos, mes emails
+                                </a>
+                            </li>
+                            <% if (isAdmin) { %><li>
+                                <a href="/account/badge-demande"
+                                    class="nav-sub-item <% if(subActiveTab === 'badge') { %> active <% } %>">
+                                    💳 Badge
+                                </a>
+                            </li><% } %>
+                        </ul>
+                    <% } %>
                 </li>
                 <li class="<% if(activeTab === 'community') { %>active<% } %> nav-sub-menu-container">
                     <a href="/community" id="community"
