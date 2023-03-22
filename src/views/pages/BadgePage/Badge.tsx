@@ -73,7 +73,6 @@ export const WelcomeScreen = function(props) {
             }
             setIsSaving(true)
             axios.post(routes.API_POST_BADGE_REQUEST).then((resp) => {
-                console.log('LCS CREATE BADGE REQUEST', resp.data.request_id, resp.data)
                 setIsSaving(false)
                 props.setRequestId(resp.data.request_id)
                 props.next()
@@ -102,7 +101,6 @@ export const WelcomeScreen = function(props) {
 export const Badge = InnerPageLayout(function (props: Props) {
     const [step, setStep] = React.useState((props.badgeRequest || props.dossier) ? STEP.documentScreen : STEP.welcomeScreen)
     const [fixes] = React.useState([STEP.welcomeScreen, STEP.documentScreen])
-    const [requestId, setRequestId] = React.useState()
 
     function goBack() {
         const currentStepIndex = fixes.findIndex(s => s === step)
