@@ -11,5 +11,7 @@ export interface BadgeRequest {
     created_at: Date,
     updated_at: Date,
     request_id: string,
-    username: string
+    username: string,
+    dossier_number: number,
+    ds_token: string
 }

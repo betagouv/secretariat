@@ -64,6 +64,7 @@ export async function getCurrentAccount(req, res) {
         secondaryEmail: dbUser.secondary_email,
         primaryEmail: dbUser.primary_email,
         activeTab: 'account',
+        subActiveTab: 'account',
         marrainageState,
         tjm: dbUserDetail.tjm ? `${dbUserDetail.tjm} euros` : 'Non renseigné',
         average_nb_of_days: dbUserDetail.average_nb_of_days,

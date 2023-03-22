@@ -25,12 +25,28 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                     <button id="drawer-toggle" className="button-outline small primary">Menu <span id="drawer-toggle-arrow">▼</span></button>
                     <a href="/account" className="home-logo"><h4 id="logo">Espace Membre</h4></a>
                     <ul className="hidden-mobile margin-bottom-5" id="drawer">
-                        <li>
+                        <li className={`nav-sub-menu-container ${props.activeTab === 'account' ? 'active' : ''}`}>
                             <a href="/account" id="account" 
-                                className={`nav-item ${props.activeTab === 'account' ? 'active' : ''}`}>
+                                className={`nav-item`}>
                                 🔓 Mon compte
                                 <br/><small>Administrer mon email, mes infos</small>
                             </a>
+                            { props.activeTab === 'account' && 
+                                <ul>
+                                    <li>
+                                        <a href="/account" id="account" 
+                                            className={`nav-sub-item ${props.subActiveTab === 'account' ? 'active' : ''}`}>
+                                            🔎 Mes infos, mes emails
+                                        </a>
+                                    </li>
+                                    {props.isAdmin && <li>
+                                        <a href="/account/badge-demande"
+                                            className={`nav-sub-item ${props.subActiveTab === 'badge' ? 'active' : ''}`}>
+                                            💳 Badge
+                                        </a>
+                                    </li>}
+                                </ul>
+                            }
                         </li>
                         <li className={`nav-sub-menu-container ${props.activeTab === 'community' ? 'active' : ''}`}>
                             <a href="/community" id="community"
