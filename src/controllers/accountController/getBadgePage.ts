@@ -6,11 +6,14 @@ import DS from "@/config/ds/ds.config";
 import { BadgeDossier } from "@/models/badgeDemande";
 import { BadgeRequest } from "@/models/badgeRequests";
 import { getBadgeRequest } from "@/db/dbBadgeRequests";
+import db from "@/db";
+import { DBUser } from "@/models/dbUser";
 
 export async function getBadgePage(req, res) {
     try {
-      const [currentUser] : [MemberWithPermission] = await Promise.all([
-        (async () => utils.userInfos(req.auth.id, true))()
+      const [currentUser, dbUser] : [MemberWithPermission, DBUser] = await Promise.all([
+        (async () => utils.userInfos(req.auth.id, true))(),
+        db('users').where({ username: req.auth.id }).first()
       ]);
       // const dossiers = await DS.getAllDossiersForDemarche(config.DS_DEMARCHE_NUMBER)
       let badgeRequest : BadgeRequest = await getBadgeRequest(req.auth.id)
@@ -28,6 +31,7 @@ export async function getBadgePage(req, res) {
           title,
           dossier,
           currentUserId: req.auth.id,
+          primaryEmail: dbUser.primary_email,
           firstName: currentUser.userInfos.fullname.split(' ')[0],
           lastName: currentUser.userInfos.fullname.split(' ')[1].toUpperCase(),
           attributaire: currentUser.userInfos.employer.split('/')[1],

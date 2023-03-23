@@ -436,7 +436,11 @@ const makeDS = ({ DS_TOKEN }) => {
           "champ_Q2hhbXAtNjYxNzM3": lastname,
           "champ_Q2hhbXAtNjYxNzM4": attributaire.split('/')[1],
           "champ_Q2hhbXAtNjcxODAy": date,
-          "champ_Q2hhbXAtMzE0MzkxNA": 'true'
+          "champ_Q2hhbXAtMzE0MzkxNA":["Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine"],
+          // "champ_Q2hhbXAtMzE0MzkxNA":["Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine","Parking"],
+          // "champ_Q2hhbXAtMzE4MjQ0Ng":"Texte court",
+          // "champ_Q2hhbXAtMzE4MjQ0Nw":"true",
+          // "champ_Q2hhbXAtMzE4MjQ0Mw":"Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine"
         }, {
           headers: {
             'Content-Type': 'application/json'
