@@ -31,6 +31,7 @@ interface Props {
     lastName: string,
     attributaire: string,
     endDate: Date,
+    primaryEmail: string
 }
 
 const STATUS = {
@@ -42,11 +43,11 @@ const STATUS = {
         status: `En attente de traitement`,
         description: `La demande est en attente de traitement. Tu recevras un email quand le demande sera traité côté DINUM`
     },
-    'En attente de validation par resp': {
+    'En attente de validation par responsable incubateur': {
         status: `En attente de validation par le responsable d'incubateur`,
         description: `Ta demande a été traité côté DINUM et en attente de validation par le responsable d'incubateur.`
     },
-    'En attente du bureau des badges': {
+    'En attente de création par bureau des badges': {
         status: `En attente du bureau des badges`,
         description: `Ta demande a été validée par le responsable d'incubateur et commandé auprès du bureau des badges.`
     },
@@ -54,10 +55,14 @@ const STATUS = {
         status: `En attente de récupération`,
         description: `Tu peux aller chercher ton badge au bureau des badges qui est en attente de récupération.`
     },
-    'Récupérer': {
+    'Récupéré': {
         status: `Récupéré`,
         description: `Tu as récupéré ton badge.`
     },
+    'Formulaire non valide': {
+        status: `Formulaire non valide`,
+        description: `Ton formulaire est non valide tu as du recevoir un message dans tes emails.`
+    }
 }
 
 export const WelcomeScreen = function(props) {
@@ -89,7 +94,7 @@ export const WelcomeScreen = function(props) {
         <p>Pour faire une demande de badge il te faut les document suivants:</p>
         <ul>
             <li>une photo de ta piéce d'identité</li>
-            <li>une photo</li>
+            <li>une photo d'identité</li>
         </ul>
         <button
             onClick={askForBadge}
@@ -141,8 +146,8 @@ export const Badge = InnerPageLayout(function (props: Props) {
             <p>Votre démarche a été préremplie, vous pouvez maintenant cliquer sur le boutton ci-dessus pour la terminer.</p>
             <p>⚠️ Veillez à respecter les régles suviantes :</p>
             <ul>
-                <li>La demande doit être faite avec votre compte Beta, le compte a utiliser pour remplir la demande doit être lié à votre adresse : prenom.nom@adresse.fr</li>
-                <li>La date de fin de votre badge à été préremplie, si vous la changer, mettez maximum 1 ans </li>
+                <li>Le compte a utiliser pour remplir la demande doit être lié à votre adresse : {props.primaryEmail}</li>
+                <li>La date de fin de votre badge à été préremplie, si vous la changer, mettez maximum 1 an </li>
             </ul>
             <a
             className='button'
