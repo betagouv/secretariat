@@ -3,7 +3,7 @@ import { BadgeRequest, BADGE_REQUEST } from "@/models/badgeRequests";
 import DS from "@/config/ds/ds.config";
 import config from "@/config";
 import { MemberWithPermission } from "@/models/member";
-import { userInfos } from "../utils";
+import { capitalizeWords, userInfos } from "../utils";
 
 const buildRequestId = () => {
     return ''
@@ -28,11 +28,16 @@ export async function postBadgeRequest(req, res) {
 
     if (!badgeRequest) {
         try {
+            
+            const names = req.auth.id.split('.')
+            const firstname = capitalizeWords(names.shift())
+            const lastname = names.map(name => capitalizeWords(name)).join(' ')
+            console.log('firstname', firstname)
             let dossier = await DS.createPrefillDossier(config.DS_DEMARCHE_NUMBER, {
-                firsname: req.auth.id.split('.')[0],
-                lastname: req.auth.id.split('.')[1],
+                firstname,
+                lastname,
                 date: endDate,
-                attributaire: 'Octo',
+                attributaire: currentUser.userInfos.employer,
             }) as unknown as { dossier_number: number, dossier_url: string, dossier_prefill_token: string }
             if (dossier && typeof dossier.dossier_number) {
                 let dossier_number = dossier.dossier_number

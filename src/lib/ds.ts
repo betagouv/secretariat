@@ -420,8 +420,8 @@ const makeDS = ({ DS_TOKEN }) => {
     }
 
     function createPrefillDossier(demarcheId, {
-        firstName,
-        lastName,
+        firstname,
+        lastname,
         date,
         attributaire
     }) : Promise<{  
@@ -432,10 +432,11 @@ const makeDS = ({ DS_TOKEN }) => {
           dossier_prefill_token: string
     }> {
         return axios.post(`https://www.demarches-simplifiees.fr/api/public/v1/demarches/${demarcheId}/dossiers`, {
-          "champ_Q2hhbXAtNjYxNzM3": firstName,
-          "champ_Q2hhbXAtNjYxNzM5": lastName,
-          "champ_Q2hhbXAtNjYxNzM4": attributaire,
-          "champ_Q2hhbXAtNjcxODAy": date
+          "champ_Q2hhbXAtNjYxNzM5": firstname,
+          "champ_Q2hhbXAtNjYxNzM3": lastname,
+          "champ_Q2hhbXAtNjYxNzM4": attributaire.split('/')[1],
+          "champ_Q2hhbXAtNjcxODAy": date,
+          "champ_Q2hhbXAtMzE0MzkxNA": 'true'
         }, {
           headers: {
             'Content-Type': 'application/json'

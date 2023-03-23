@@ -67,14 +67,13 @@ export const WelcomeScreen = function(props) {
         if (props.dossier || props.badgeRequest) {
             props.next()
         } else {
-            console.log('LCS CREATE FILE')
             if (isSaving) {
                 return
             }
             setIsSaving(true)
             axios.post(routes.API_POST_BADGE_REQUEST).then((resp) => {
                 setIsSaving(false)
-                props.setRequestId(resp.data.request_id)
+                props.setDSToken(resp.data.dossier_token)
                 props.next()
             }).catch((resp) => {
                 setIsSaving(false)
@@ -101,6 +100,7 @@ export const WelcomeScreen = function(props) {
 export const Badge = InnerPageLayout(function (props: Props) {
     const [step, setStep] = React.useState((props.badgeRequest || props.dossier) ? STEP.documentScreen : STEP.welcomeScreen)
     const [fixes] = React.useState([STEP.welcomeScreen, STEP.documentScreen])
+    const [dsToken, setDSToken] = React.useState(props.badgeRequest ? props.badgeRequest.ds_token : null)
 
     function goBack() {
         const currentStepIndex = fixes.findIndex(s => s === step)
@@ -130,10 +130,14 @@ export const Badge = InnerPageLayout(function (props: Props) {
     let stepView
     
     if (step === STEP.welcomeScreen) {
-        stepView = <WelcomeScreen next={next} dossier={props.dossier} badgeRequest={props.badgeRequest}></WelcomeScreen>
+        stepView = <WelcomeScreen
+            setDSToken={setDSToken}
+            next={next}
+            dossier={props.dossier}
+            badgeRequest={props.badgeRequest}/>
     } else {
         stepView = <><h2>Demande de badge</h2>
-        {(props.badgeRequest && !props.dossier) && <>
+        {(dsToken && !props.dossier) && <>
             <p>Votre démarche a été préremplie, vous pouvez maintenant cliquer sur le boutton ci-dessus pour la terminer.</p>
             <p>⚠️ Veillez à respecter les régles suviantes :</p>
             <ul>
@@ -143,7 +147,7 @@ export const Badge = InnerPageLayout(function (props: Props) {
             <a
             className='button'
             target={'_blank'}
-            href={`https://www.demarches-simplifiees.fr/commencer/demande-de-badge-segur?prefill_token=${props.badgeRequest.ds_token}`}>
+            href={`https://www.demarches-simplifiees.fr/commencer/demande-de-badge-segur?prefill_token=${dsToken}`}>
                 J'ai compris. Poursuivre la démarche sur démarche-simplifiees.fr
             </a>    
         </>}
