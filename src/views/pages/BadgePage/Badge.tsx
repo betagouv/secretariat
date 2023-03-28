@@ -37,15 +37,15 @@ interface Props {
 const STATUS = {
     'En attente de traitement': {
         status: `En attente de traitement`,
-        description: `La demande est en attente de traitement. Tu recevras un email quand le demande sera traité côté DINUM`
+        description: `La demande est en attente de traitement. Tu recevras un email quand la demande sera traitée côté DINUM`
     },
     '': {
         status: `En attente de traitement`,
-        description: `La demande est en attente de traitement. Tu recevras un email quand le demande sera traité côté DINUM`
+        description: `La demande est en attente de traitement. Tu recevras un email quand la demande sera traitée côté DINUM`
     },
     'En attente de validation par responsable incubateur': {
         status: `En attente de validation par le responsable d'incubateur`,
-        description: `Ta demande a été traité côté DINUM et en attente de validation par le responsable d'incubateur.`
+        description: `Ta demande a été traitée côté DINUM et en attente de validation par le responsable d'incubateur.`
     },
     'En attente de création par bureau des badges': {
         status: `En attente du bureau des badges`,
@@ -127,7 +127,7 @@ export const Badge = InnerPageLayout(function (props: Props) {
         const status = dossier.annotations.find(annotation => annotation.label === 'Status').stringValue
         console.log(status)
         return <>
-            <p><b>Status du badge :</b>{STATUS[status].status}</p>
+            <p><b>Statut du badge :</b>{STATUS[status].status}</p>
             <p>{STATUS[status].description}</p>
         </>
     }
@@ -143,17 +143,17 @@ export const Badge = InnerPageLayout(function (props: Props) {
     } else {
         stepView = <><h2>Demande de badge</h2>
         {(dsToken && !props.dossier) && <>
-            <p>Votre démarche a été préremplie, vous pouvez maintenant cliquer sur le boutton ci-dessus pour la terminer.</p>
-            <p>⚠️ Veillez à respecter les régles suviantes :</p>
+            <p>Votre démarche a été préremplie, vous pouvez maintenant cliquer sur le bouton ci-dessous pour la terminer.</p>
+            <p>⚠️ Veillez à respecter les règles suivantes :</p>
             <ul>
-                <li>Le compte a utiliser pour remplir la demande doit être lié à votre adresse : {props.primaryEmail}</li>
-                <li>La date de fin de votre badge à été préremplie, si vous la changer, mettez maximum 1 an </li>
+                <li>Le compte à utiliser pour remplir la demande doit être lié à votre adresse : {props.primaryEmail}</li>
+                <li>La date de fin de votre badge a été préremplie, si vous la changez, mettez maximum 1 an </li>
             </ul>
             <a
             className='button'
             target={'_blank'}
             href={`https://www.demarches-simplifiees.fr/commencer/demande-de-badge-segur?prefill_token=${dsToken}`}>
-                J'ai compris. Poursuivre la démarche sur démarche-simplifiees.fr
+                J'ai compris. Poursuivre la démarche sur démarches-simplifiees.fr
             </a>    
         </>}
         {props.dossier && <>
