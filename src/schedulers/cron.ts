@@ -190,6 +190,7 @@ const mattermostJobs: Job[] = [
       numberOfDays:6,
       canal:'general',
       calendarURL: config.CALENDAR_URL,
+      calendarPublicUrl: config.CALENDAR_PUBLIC_URL,
       chatWebhook: config.CHAT_WEBHOOK_URL_GENERAL
     }),
     isActive: true,
@@ -200,6 +201,7 @@ const mattermostJobs: Job[] = [
     onTick: () => postEventsOnMattermost({
       numberOfDays:6,
       calendarURL: config.CALENDAR_GIP_URL,
+      calendarPublicUrl: config.CALENDAR_GIP_PUBLIC_URL,
       chatWebhook: config.CHAT_WEBHOOK_URL_GIP
     }),
     isActive: true,
