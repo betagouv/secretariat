@@ -72,7 +72,8 @@ export const postEventsOnMattermost = async ({
   numberOfDays=6,
   canal,
   calendarURL,
-  chatWebhook} : { numberOfDays:number, canal?:string, calendarURL:string, chatWebhook?: string}) => {
+  calendarPublicUrl,
+  chatWebhook} : { numberOfDays:number, canal?:string, calendarURL:string, chatWebhook?: string, calendarPublicUrl: string }) => {
     const today = new Date()
     const dayInSixDays = new Date()
     dayInSixDays.setDate(today.getDate() + numberOfDays)
@@ -81,7 +82,7 @@ export const postEventsOnMattermost = async ({
     
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
-        CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL
+        CALENDAR_PUBLIC_URL: calendarPublicUrl
     });
     await betagouv.sendInfoToChat(messageContent, canal, undefined, chatWebhook);
 }
