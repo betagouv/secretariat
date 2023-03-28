@@ -88,7 +88,7 @@ export const WelcomeScreen = function(props) {
 
     return <>
         <h2>Demande de badge</h2>
-        <p>Tu t'apprêtes à faire une demande de badge.<br/>Pour demander un badge, il faut que tu viennes au minimum une fois par semaine.</p>
+        <p>Tu t'apprêtes à faire une demande de badge.<br/>Pour demander un badge, il faut que tu viennes au minimum deux fois par semaine.</p>
         <p>Sinon tu devras demander un badge invité à chacune des tes venues. Ce sont les régles du batiment Ségur nous n'y pouvont rien.</p>
 
         <p>Pour faire une demande de badge il te faut les document suivants:</p>
