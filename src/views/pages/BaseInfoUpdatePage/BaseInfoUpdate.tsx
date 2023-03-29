@@ -77,6 +77,9 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     }
 
     const save = async (event) => {
+        if (isSaving) {
+            return
+        }
         event.preventDefault();
         setIsSaving(true)
         axios.post(`/account/base-info/${props.username}`, {
