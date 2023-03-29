@@ -76,7 +76,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     }
     let disabled = false
     const startupInfo : StartupInfo = startup ? props.startupsInfos.find(s => s.id === startup) : null
-    if (startupInfo && phase === getCurrentPhase(startupInfo)) {
+    if ((startupInfo && phase === getCurrentPhase(startupInfo)) || !phase) {
         disabled = true
     }
     return (
@@ -119,7 +119,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                         isMulti={false}
                                         placeholder={"Selectionne la phase"}
                                     />
-                                    { disabled && 
+                                    { phase && disabled && 
                                         <p className="text-small text-color-red">{startupInfo.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
                                     }
                                 </div>

@@ -18,6 +18,10 @@ interface BaseInfoFormData {
     missions: Mission[],
     end: string,
     start: string,
+    previously?: {
+        value: string,
+        label: string
+    }[],
     startups: {
         value: string,
         label: string
@@ -70,10 +74,27 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     const changeFormData = (key, value) => {
         const formData = state.formData
         formData[key] = value
+        setIsDirty(true)
+        console.log(props.formData)
+        console.log(formData)
         setState({
             ...state,
             formData
         })
+    }
+
+    const changesExist = () => {
+        let changed = false
+        if (state.formData.role !== props.formData.role) {
+            changed = true
+        } else if (state.formData.end.toISOString().split('T')[0] !== props.formData.end) {
+            changed = true
+        } else if (state.formData.startups.map(s => s.value).sort().join(',') !== props.formData.startups.map(s => s.value).sort().join(',')) {
+            changed = true
+        } else if (state.formData.previously.map(s => s.value).sort().join(',') !== props.formData.previously.map(s => s.value).sort().join(',')) {
+            changed = true
+        }
+        return changed
     }
 
     const save = async (event) => {
@@ -84,7 +105,8 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         setIsSaving(true)
         axios.post(`/account/base-info/${props.username}`, {
             ...state.formData,
-            startups: state.formData.startups.map(s => s.value)
+            startups: state.formData.startups.map(s => s.value),
+            previously: state.formData.previously.map(s => s.value),
         }).then(() => {
             window.location.replace('/account');
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
@@ -121,7 +143,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                     <form className='no-margin' onSubmit={save}>
                         <div className="form__group">
                             <label htmlFor="role">
-                                <strong>Rôle chez BetaGouv</strong><br />
+                                <strong>Rôle chez BetaGouv :3</strong><br />
                             </label>
                             <input name="role"
                                 onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
@@ -133,7 +155,8 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                         </div>
                         <div className="form__group">
                             <label htmlFor="startup">
-                                <strong>Startups (actuelles)</strong><br />
+                                <strong>Produits actuels :</strong><br />
+                                Produits auxquels tu participes actuellement.
                             </label>
                             <SESelect
                                 startups={props.startupOptions}
@@ -150,8 +173,27 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                             }
                         </div>
                         <div className="form__group">
+                            <label htmlFor="startup">
+                                <strong>Produits précédents :</strong><br />
+                                Produits auxquels tu as participé précédemment.
+                            </label>
+                            <SESelect
+                                startups={props.startupOptions}
+                                onChange={(startups) => {
+                                    console.log(startups)
+                                    changeFormData('previously', startups)
+                                }}
+                                isMulti={true}
+                                placeholder={"Selectionne ta startup"}
+                                defaultValue={props.formData.previously}
+                            />
+                            { !!formErrors['gender'] && 
+                                <p className="text-small text-color-red">{formErrors['startups']}</p>
+                            }
+                        </div>
+                        <div className="form__group">
                             <label htmlFor="end">
-                                <strong>Fin de la mission (obligatoire)</strong><br />
+                                <strong>Fin de la mission (obligatoire) :</strong><br />
                                 Si tu ne la connais pas, mets une date dans 6 mois, tu pourras la corriger plus tard.<br />
                                 <i>Au format JJ/MM/YYYY</i>
                             </label>
@@ -168,7 +210,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                         </div>
                         <input
                             type="submit"
-                            disabled={isSaving}
+                            disabled={isSaving || !changesExist()}
                             value={isSaving ? `Enregistrement en cours...` : `Enregistrer`}
                             className="button"
                         />

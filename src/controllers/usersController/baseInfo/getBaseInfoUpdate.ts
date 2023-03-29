@@ -34,6 +34,14 @@ export async function getBaseInfoUpdate(req, res) {
             label: startupInfo?.attributes.name
           }
         })
+      const userPreviousStartups = (currentUser.userInfos.previously || [])
+      .map(userStartup => {
+        const startupInfo = startups.find(s => s.id === userStartup)
+        return {
+          value: userStartup,
+          label: startupInfo?.attributes.name
+        }
+      })
       const updatePullRequest = await db('pull_requests')
         .where({
           username: req.auth.id,
@@ -58,7 +66,8 @@ export async function getBaseInfoUpdate(req, res) {
             role: currentUser.userInfos.role,
             missions: currentUser.userInfos.missions,
             end: currentUser.userInfos.end,
-            start: currentUser.userInfos.start
+            start: currentUser.userInfos.start,
+            previously: userPreviousStartups
           },
           errors: req.flash('error'),
           messages: req.flash('message'),

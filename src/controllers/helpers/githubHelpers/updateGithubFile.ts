@@ -6,7 +6,8 @@ import { createBranchName } from "./createBranchName";
 export interface GithubAuthorChange {
     role?: string,
     missions?: GithubMission[],
-    startups?: string[]
+    startups?: string[],
+    previously?: string[],
 }
 
 export interface GithubStartupChange {
