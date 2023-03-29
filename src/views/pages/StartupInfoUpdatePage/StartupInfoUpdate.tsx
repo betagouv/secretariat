@@ -55,6 +55,9 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
     const save = async (event) => {
+        if (isSaving) {
+            return
+        }
         event.preventDefault();
         setIsSaving(true)
         axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', startup), {
