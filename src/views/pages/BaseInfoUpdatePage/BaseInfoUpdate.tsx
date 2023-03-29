@@ -74,9 +74,6 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
     const changeFormData = (key, value) => {
         const formData = state.formData
         formData[key] = value
-        setIsDirty(true)
-        console.log(props.formData)
-        console.log(formData)
         setState({
             ...state,
             formData
@@ -161,7 +158,6 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                             <SESelect
                                 startups={props.startupOptions}
                                 onChange={(startups) => {
-                                    console.log(startups)
                                     changeFormData('startups', startups)
                                 }}
                                 isMulti={true}
@@ -180,7 +176,6 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                             <SESelect
                                 startups={props.startupOptions}
                                 onChange={(startups) => {
-                                    console.log(startups)
                                     changeFormData('previously', startups)
                                 }}
                                 isMulti={true}
