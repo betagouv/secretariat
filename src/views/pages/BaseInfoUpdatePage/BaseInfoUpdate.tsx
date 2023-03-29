@@ -8,6 +8,7 @@ import DatepickerSelect from '../components/DatepickerSelect';
 import { Mission } from '@/models/mission';
 import axios from 'axios';
 import { DBPullRequest } from '@/models/pullRequests';
+import routes from '@/routes/routes';
 
 interface Option {
   key: string,
@@ -100,7 +101,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         }
         event.preventDefault();
         setIsSaving(true)
-        axios.post(`/account/base-info/${props.username}`, {
+        axios.post(routes.API_PUBLIC_POST_BASE_INFO_FORM.replace(':username', props.username), {
             ...state.formData,
             startups: state.formData.startups.map(s => s.value),
             previously: state.formData.previously.map(s => s.value),
@@ -201,6 +202,22 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                 onChange={(date:Date) => changeFormData('end', date)} />
                             { !!formErrors['nouvelle date de fin'] && 
                                 <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
+                            }
+                        </div>
+                        <div className="form__group">
+                            <label htmlFor="startup">
+                                <strong>Produits précédents :</strong><br />
+                                Produits auxquels tu as participé précédemment.
+                            </label>
+                            <textarea
+                                onChange={(bio) => {
+                                    changeFormData('bio', bio)
+                                }}
+                                value={state.formData.bio}
+                                placeholder={"Bio"}
+                            />
+                            { !!formErrors['gender'] && 
+                                <p className="text-small text-color-red">{formErrors['startups']}</p>
                             }
                         </div>
                         <input
