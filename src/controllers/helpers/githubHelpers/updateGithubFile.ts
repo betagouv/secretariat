@@ -14,7 +14,7 @@ export interface GithubStartupChange {
     phases: Phase[]
 }
 
-async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent: string) : Promise<PRInfo> {
+async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
     console.log(`Début de la mise à jour de la fiche pour ${name}...`);
 
