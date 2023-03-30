@@ -263,7 +263,7 @@ h4, h5, h6 {
   padding: var(--space-l);
 }
 
-.dashboard .main .section:not(.sec-md), .dashboard .main .section:not(.sec-html) {
+.dashboard .main .section:not(.sec-md):not(.sec-html) {
   margin-bottom: 100vh; /* to allow scroll to container even when the container is at the bottom of the page*/
 }
 
