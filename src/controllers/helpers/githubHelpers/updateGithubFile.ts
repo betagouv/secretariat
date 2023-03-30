@@ -6,7 +6,8 @@ import { createBranchName } from "./createBranchName";
 export interface GithubAuthorChange {
     role?: string,
     missions?: GithubMission[],
-    startups?: string[]
+    startups?: string[],
+    previously?: string[],
 }
 
 export interface GithubStartupChange {
@@ -46,9 +47,9 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
             }
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
-            }) + '\n---'
+            }) + '---'
             if (splitDoc[2]) {
-                content = content + '\n' + splitDoc[2]
+                content = content + splitDoc[2]
             }
             return createGithubFile(path, branch, content, res.data.sha);
         })

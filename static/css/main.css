@@ -38,6 +38,17 @@ fieldset {
   cursor: pointer;
 }
 
+input[type="submit"]:disabled {
+  background-color: #ccc;
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+input[type="submit"]:disabled {
+  -webkit-transform: translateY(0px);
+  transform: translateY(0px);
+}
+
 #list-container-city li:hover {
   opacity: 0.8;
 }

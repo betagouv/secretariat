@@ -20,6 +20,7 @@ export async function postBaseInfoUpdate(req, res) {
         }
         const role = req.body.role || requiredError('role', errorHandler)
         const startups = req.body.startups || requiredError('startups', errorHandler)
+        const previously = req.body.previously || requiredError('previously', errorHandler)
         const { start, end } = req.body;
         const newEnd = req.body.end || requiredError('nouvelle date de fin', errorHandler);
         const startDate = new Date(start);
@@ -41,7 +42,7 @@ export async function postBaseInfoUpdate(req, res) {
             start: mission.start ? new Date(mission.start) : undefined,
         }))
         missions[missions.length-1].end = newEndDate
-        const changes : GithubAuthorChange = { missions, role, startups };
+        const changes : GithubAuthorChange = { missions, role, startups, previously };
         const prInfo : PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth.id,

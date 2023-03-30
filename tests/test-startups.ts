@@ -47,11 +47,11 @@ describe('Startup page', () => {
   });
 
   describe('post /startups/:startup/info-form authenticated', () => {
-    let updateAuthorGithubFileStub
+    let updateStartupGithubFileStub
     let startupInfosStub
     beforeEach(() => {
-      updateAuthorGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
-      updateAuthorGithubFileStub.returns(Promise.resolve({
+      updateStartupGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
+      updateStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
         number: 12151
       }))
@@ -88,7 +88,7 @@ describe('Startup page', () => {
     })
 
     afterEach(() => {
-      updateAuthorGithubFileStub.restore()
+      updateStartupGithubFileStub.restore()
       startupInfosStub.restore()
     })
 
