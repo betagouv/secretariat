@@ -101,7 +101,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         }
         event.preventDefault();
         setIsSaving(true)
-        axios.post(routes.API_PUBLIC_POST_BASE_INFO_FORM.replace(':username', props.username), {
+        axios.post(routes.ACCOUNT_POST_BASE_INFO_FORM.replace(':username', props.username), {
             ...state.formData,
             startups: state.formData.startups.map(s => s.value),
             previously: state.formData.previously.map(s => s.value),
