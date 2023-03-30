@@ -204,22 +204,6 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                 <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
                             }
                         </div>
-                        <div className="form__group">
-                            <label htmlFor="startup">
-                                <strong>Produits précédents :</strong><br />
-                                Produits auxquels tu as participé précédemment.
-                            </label>
-                            <textarea
-                                onChange={(bio) => {
-                                    changeFormData('bio', bio)
-                                }}
-                                value={state.formData.bio}
-                                placeholder={"Bio"}
-                            />
-                            { !!formErrors['gender'] && 
-                                <p className="text-small text-color-red">{formErrors['startups']}</p>
-                            }
-                        </div>
                         <input
                             type="submit"
                             disabled={isSaving || !changesExist()}
