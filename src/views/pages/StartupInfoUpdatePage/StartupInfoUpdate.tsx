@@ -9,6 +9,12 @@ import { PHASE_READABLE_NAME, StartupInfo } from '@/models/startup';
 import SEPhaseSelect from '../components/SEPhaseSelect';
 import routes from '@/routes/routes';
 import DatepickerSelect from '../components/DatepickerSelect';
+import { ClientOnly } from '../components/ClientOnly';
+import MdEditor from 'react-markdown-editor-lite';
+import MarkdownIt from 'markdown-it';
+
+// import style manually
+const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 interface StartupInfoFormData {
 }
@@ -48,10 +54,11 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [startup] = React.useState(props.startup)
     const [phase, setPhase] = React.useState('')
     const [date, setDate] = React.useState((new Date()))
+    const [text, setText] = React.useState('')
+
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
     const [isSaving, setIsSaving] = React.useState(false)
-
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
     const save = async (event) => {
@@ -62,7 +69,8 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
         setIsSaving(true)
         axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', startup), {
             phase,
-            date
+            date,
+            text
         }).then(() => {
             window.location.replace(`/startups/${startup}`);
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
@@ -73,6 +81,9 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                 setFormErrors(ErrorResponse.errors)
             }
         })
+    }
+    function handleEditorChange({ html, text }) {
+        setText(text);
     }
     let disabled = false
     const startupInfo : StartupInfo = startup ? props.startupsInfos.find(s => s.id === startup) : null
@@ -138,6 +149,17 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                     { !!formErrors['nouvelle date de fin'] && 
                                         <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
                                     }
+                                </div>
+                                <div className="form__group">
+                                    <label htmlFor="end">
+                                        <strong>Description du produit : </strong><br />
+                                    </label>
+                                    <ClientOnly>
+                                        <MdEditor
+                                            defaultValue={decodeURIComponent(startupInfo.attributes.content_url_encoded_markdown)}
+                                            style={{ height: '500px' }}
+                                            renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
+                                    </ClientOnly>
                                 </div>
                                 <input
                                     type="submit"

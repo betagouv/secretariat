@@ -14,7 +14,7 @@ export interface GithubStartupChange {
     phases: Phase[]
 }
 
-async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange) : Promise<PRInfo> {
+async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
     console.log(`Début de la mise à jour de la fiche pour ${name}...`);
 
@@ -48,7 +48,9 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
             content = '---\n' + yaml.dump(doc, {
                 schema: schema
             }) + '---'
-            if (splitDoc[2]) {
+            if (mainContent) {
+                content = content + mainContent
+            } else if (splitDoc[2]) {
                 content = content + splitDoc[2]
             }
             return createGithubFile(path, branch, content, res.data.sha);
@@ -75,7 +77,7 @@ export async function updateAuthorGithubFile(username: string, changes: GithubAu
     return updateGithubFile(username, path, changes)
 }
 
-export async function updateStartupGithubFile(startupname: string, changes: GithubStartupChange) : Promise<PRInfo> {
+export async function updateStartupGithubFile(startupname: string, changes: GithubStartupChange, content: string) : Promise<PRInfo> {
     const path = `content/_startups/${startupname}.md`;
-    return updateGithubFile(startupname, path, changes)
+    return updateGithubFile(startupname, path, changes, content)
 }

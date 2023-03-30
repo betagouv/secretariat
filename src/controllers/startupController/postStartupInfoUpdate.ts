@@ -33,6 +33,8 @@ export async function postStartupInfoUpdate(req, res) {
         const date = req.body.date || requiredError('date', errorHandler)
         isValidDate('date', new Date(date), errorHandler)
 
+        const content = req.body.text
+
         const dateInDateFormat = new Date(date)
 
         if (Object.keys(formValidationErrors).length) {
@@ -58,7 +60,7 @@ export async function postStartupInfoUpdate(req, res) {
             end: undefined
         })
         const changes : GithubStartupChange = { phases };
-        const prInfo : PRInfo = await updateStartupGithubFile(startup, changes);
+        const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
         addEvent(EventCode.STARTUP_PHASE_UPDATED, {
             created_by_username: req.auth.id,
             action_metadata: { 

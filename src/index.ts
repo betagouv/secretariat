@@ -71,6 +71,12 @@ app.use(
   )
 ); 
 app.use(
+  '/react-markdown-editor-lite/index.css',
+  express.static(
+    path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/react-markdown-editor-lite/lib/index.css')
+  )
+)
+app.use(
   '/topbar.js',
   express.static(path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
 );

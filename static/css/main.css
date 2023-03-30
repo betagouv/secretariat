@@ -12,6 +12,11 @@ body {
   padding-bottom: 2.5em;
 }
 
+.section.sec-md, .section.sec-html {
+  padding: 0;
+  height: auto;
+}
+
 fieldset {
   /* border: inherit; */
   border: 2px groove rgb(192, 192, 192);
@@ -258,7 +263,7 @@ h4, h5, h6 {
   padding: var(--space-l);
 }
 
-.dashboard .main .section {
+.dashboard .main .section:not(.sec-md), .dashboard .main .section:not(.sec-html) {
   margin-bottom: 100vh; /* to allow scroll to container even when the container is at the bottom of the page*/
 }
 
