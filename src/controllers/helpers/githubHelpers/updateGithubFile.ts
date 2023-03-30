@@ -49,7 +49,7 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
                 schema: schema
             }) + '---'
             if (mainContent) {
-                content = content + mainContent
+                content = content + '\n' + mainContent
             } else if (splitDoc[2]) {
                 content = content + splitDoc[2]
             }
