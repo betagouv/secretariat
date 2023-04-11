@@ -56,6 +56,7 @@ export interface StartupInfo {
         link: string;
         incubator: string;
         phases: Phase[];
+        content_url_encoded_markdown: string;
     };
     relationships: Relationship;
 }

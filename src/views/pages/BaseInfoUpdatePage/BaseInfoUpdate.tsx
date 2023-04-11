@@ -63,7 +63,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
         formData: {
             ...props.formData,
             start: props.formData.start ? new Date(props.formData.start) : '',
-            end: props.formData.end ? new Date(props.formData.end) : ''
+            end: props.formData.end ? new Date(props.formData.end) : '',
         }
     });
     const [formErrors, setFormErrors] = React.useState({});

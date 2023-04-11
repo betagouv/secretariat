@@ -5,6 +5,7 @@ import utils from './utils';
 import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGithubFile'
 import sinon from 'sinon';
 import * as betagouv from '@/betagouv';
+import routes from '@/routes/routes';
 
 chai.use(chaiHttp);
 
@@ -40,7 +41,7 @@ describe('Startup page', () => {
   describe('post /startups/:startup/info-form unauthenticated', () => {
     it('should redirect to login', async () => {
       const res = await chai.request(app)
-        .post(`/startups/a-dock/info-form`)
+        .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .redirects(0)
           res.should.have.status(401);
     });
@@ -94,7 +95,7 @@ describe('Startup page', () => {
 
     it('should not work if phase is not valid', async () => {
       const res = await chai.request(app)
-        .post(`/startups/a-dock/info-form`)
+        .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           phase: 'jhdkljasdjajda',
           date: (new Date()).toISOString()
@@ -105,7 +106,7 @@ describe('Startup page', () => {
 
     it('should not work if date is not valid', async () => {
       const res = await chai.request(app)
-        .post(`/startups/a-dock/info-form`)
+        .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           phase: 'alumni',
           date: '2020/10/254'
@@ -116,12 +117,25 @@ describe('Startup page', () => {
 
     it('should work if both are valid', async () => {
       const res = await chai.request(app)
-        .post(`/startups/a-dock/info-form`)
+        .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           phase: 'alumni',
           date: (new Date()).toISOString()
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        res.should.have.status(200);
+    });
+
+    it('should be able to send text content to change', async () => {
+      const res = await chai.request(app)
+        .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
+        .send({
+          phase: 'alumni',
+          date: (new Date()).toISOString(),
+          text: 'test'
+        })
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+        updateStartupGithubFileStub.args[0][2].should.equals('test')
         res.should.have.status(200);
     });
   });

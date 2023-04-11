@@ -45,6 +45,7 @@ export const makeHtml = <T extends HasRequest>(args: PageProps<T>) => {
       <link rel="stylesheet" media="screen,print" href='/react-tabulator/styles.css'/>
       <link rel="stylesheet" media="screen,print" href='/react-tabulator/tabulator.min.css'/>
       <link rel="stylesheet" media="screen,print" href='/react-datepicker/react-datepicker.css'/>
+      <link rel="stylesheet" media="screen,print" href='/react-markdown-editor-lite/index.css'/>
 
       <link rel="stylesheet" href="/static/css/main.css">
         ${args.hydrate

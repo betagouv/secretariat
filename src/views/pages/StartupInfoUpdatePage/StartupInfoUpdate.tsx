@@ -9,6 +9,12 @@ import { PHASE_READABLE_NAME, StartupInfo } from '@/models/startup';
 import SEPhaseSelect from '../components/SEPhaseSelect';
 import routes from '@/routes/routes';
 import DatepickerSelect from '../components/DatepickerSelect';
+import { ClientOnly } from '../components/ClientOnly';
+import MdEditor from 'react-markdown-editor-lite';
+import MarkdownIt from 'markdown-it';
+
+// import style manually
+const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 interface StartupInfoFormData {
 }
@@ -48,10 +54,12 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [startup] = React.useState(props.startup)
     const [phase, setPhase] = React.useState('')
     const [date, setDate] = React.useState((new Date()))
+    const [text, setText] = React.useState('')
+    const [showAddPhase, setShowAddPhase] = React.useState(false)
+
     const [formErrors, setFormErrors] = React.useState({});
     const [errorMessage, setErrorMessage] = React.useState('');
     const [isSaving, setIsSaving] = React.useState(false)
-
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
     const save = async (event) => {
@@ -62,7 +70,8 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
         setIsSaving(true)
         axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', startup), {
             phase,
-            date
+            date,
+            text
         }).then(() => {
             window.location.replace(`/startups/${startup}`);
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
@@ -74,9 +83,20 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             }
         })
     }
+
+    function toggleShowAddPhase(showPhase) {
+        setShowAddPhase(showPhase)
+        if (!showPhase) {
+            setPhase('')
+        }
+    }
+
+    function handleEditorChange({ html, text }) {
+        setText(text);
+    }
     let disabled = false
     const startupInfo : StartupInfo = startup ? props.startupsInfos.find(s => s.id === startup) : null
-    if ((startupInfo && phase === getCurrentPhase(startupInfo)) || !phase) {
+    if ((startupInfo && ((!phase || phase === getCurrentPhase(startupInfo)) && text === decodeURIComponent(startupInfo.attributes.content_url_encoded_markdown))) || (!phase && !text)) {
         disabled = true
     }
     return (
@@ -103,13 +123,20 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                     <div>
                         {startupInfo && <>
 
-                            <p>
-                                <b>Phase inscrite sur la fiche:</b> { PHASE_READABLE_NAME[getCurrentPhase(startupInfo)]}
-                            </p>
                             <form className='no-margin' onSubmit={save}>
-                                <div className="form__group">
+                                <h5>Phases : </h5>
+                                <div style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10}}>
+                                    <p>
+                                        <b>Phase inscrite sur la fiche:</b> { PHASE_READABLE_NAME[getCurrentPhase(startupInfo)]}
+                                    </p>
+                                {!showAddPhase  && <a onClick={() => toggleShowAddPhase(true)}>{`Changer la phase actuelle`}</a>}
+                                {showAddPhase && <>
+                                <div style={{ border: '1px solid #ccc', padding: 10, position: 'relative' }}><div className="form__group">
+                                    <div style={{ position: 'absolute', top: -10, right: -5 }}>
+                                        <a style={{ textDecoration: 'none' }} onClick={() => toggleShowAddPhase(false)}>❌</a>
+                                    </div>
                                     <label htmlFor="startup">
-                                        <strong>Dans quelles phase se trouve {startupInfo.attributes.name} actuellement ?</strong><br />
+                                        <strong>Dans quelle phase se trouve {startupInfo.attributes.name} actuellement ?</strong><br />
                                     </label>
                                     <SEPhaseSelect
                                         onChange={(phase) => {
@@ -119,13 +146,13 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                         isMulti={false}
                                         placeholder={"Selectionne la phase"}
                                     />
-                                    { phase && disabled && 
+                                    { phase && phase === getCurrentPhase(startupInfo) && 
                                         <p className="text-small text-color-red">{startupInfo.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
                                     }
                                 </div>
                                 <div className="form__group">
                                     <label htmlFor="end">
-                                        <strong>Depuis quand ?</strong><br />
+                                        <strong>Depuis quand ?</strong>
                                         <i>Au format JJ/MM/YYYY</i>
                                     </label>
                                     <DatepickerSelect
@@ -138,6 +165,16 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                     { !!formErrors['nouvelle date de fin'] && 
                                         <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
                                     }
+                                </div></div></>}
+                                </div>
+                                <h5>Description du produit : </h5>
+                                <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>
+                                    <ClientOnly>
+                                        <MdEditor
+                                            defaultValue={decodeURIComponent(startupInfo.attributes.content_url_encoded_markdown)}
+                                            style={{ height: '500px' }}
+                                            renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
+                                    </ClientOnly>
                                 </div>
                                 <input
                                     type="submit"

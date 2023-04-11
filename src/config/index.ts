@@ -65,9 +65,9 @@ export default {
   CHAT_WEBHOOK_URL_GIP: process.env.CHAT_WEBHOOK_URL_GIP,
   usersAPI:
     process.env.USERS_API || 'https://beta.gouv.fr/api/v2.3/authors.json',
-  incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.3/incubators.json',
+  incubatorAPI: process.env.INCUBATOR_API || 'https://beta.gouv.fr/api/v2.5/incubators.json',
   startupsAPI:
-    process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2/startups.json',
+    process.env.STARTUPS_API || 'https://beta.gouv.fr/api/v2.5/startups.json',
   startupsDetailsAPI:
     process.env.STARTUPS_DETAILS_API || 'https://beta.gouv.fr/api/v2.3/startups_details.json',
   githubToken: process.env.GITHUB_TOKEN,
