@@ -6,7 +6,6 @@ import app from '@/index';
 import routes from '@/routes/routes';
 import utils from './utils';
 import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGithubFile'
-import * as betagouv from '@/betagouv';
 
 chai.use(chaiHttp);
 

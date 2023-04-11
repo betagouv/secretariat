@@ -8,7 +8,7 @@ import { StartupInfo, StartupPhase } from '@/models/startup';
 import { GithubStartupChange, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubFile';
 
 const isValidPhase = (field, value, callback) => {
-    if (Object.values(StartupPhase).includes(value)) {
+    if (!value || Object.values(StartupPhase).includes(value)) {
         return
     }
     callback(field, `La phase n'as pas une valeur valide`)
@@ -27,7 +27,7 @@ export async function postStartupInfoUpdate(req, res) {
             // make it one message
             formValidationErrors[field] = errorMessagesForKey
         }
-        const phase = req.body.phase || requiredError('phase', errorHandler)
+        const phase = req.body.phase
         isValidPhase('phase', phase, errorHandler) 
 
         const date = req.body.date || requiredError('date', errorHandler)
@@ -48,18 +48,22 @@ export async function postStartupInfoUpdate(req, res) {
                 message: "La startup indiqué n'existe pas"
             })
         }
-        const phases = info.attributes.phases.map(phase => ({
-            ...phase,
-            end: phase.end ? new Date(phase.end) : undefined,
-            start: phase.start ? new Date(phase.start) : undefined,
-        }))
-        phases[phases.length-1].end = dateInDateFormat
-        phases.push({
-            name: phase,
-            start: dateInDateFormat,
-            end: undefined
-        })
-        const changes : GithubStartupChange = { phases };
+
+        let changes : GithubStartupChange = {};
+        if (phase) {
+            const phases = info.attributes.phases.map(phase => ({
+                ...phase,
+                end: phase.end ? new Date(phase.end) : undefined,
+                start: phase.start ? new Date(phase.start) : undefined,
+            }))
+            phases[phases.length-1].end = dateInDateFormat
+            phases.push({
+                name: phase,
+                start: dateInDateFormat,
+                end: undefined
+            })
+            changes['phases'] = phases
+        }
         const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
         addEvent(EventCode.STARTUP_PHASE_UPDATED, {
             created_by_username: req.auth.id,
