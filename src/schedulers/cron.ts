@@ -185,7 +185,7 @@ const mattermostJobs: Job[] = [
   },
   // Post automatic
   {
-    cronTime: '0 30 8 * * 1', // every week a 8:30 on monday
+    cronTime: '0 0 10 * * 1', // every week a 10 on monday
     onTick: () => postEventsOnMattermost({
       numberOfDays:6,
       canal:'general',
@@ -197,7 +197,7 @@ const mattermostJobs: Job[] = [
     name: 'Post event of the week from betagouv calendar',
   },
   {
-    cronTime: '0 0 8 * * 1', // every week a 8:30 on monday
+    cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
     onTick: () => postEventsOnMattermost({
       numberOfDays:6,
       calendarURL: config.CALENDAR_GIP_URL,
