@@ -17,6 +17,11 @@ import MarkdownIt from 'markdown-it';
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 interface StartupInfoFormData {
+    pitch?: string;
+    stats_url?: string;
+    website?: string,
+    dashlord_url?: string,
+    github?: string
 }
 
 interface StartupInfoUpdateProps {
@@ -28,13 +33,12 @@ interface StartupInfoUpdateProps {
     subActiveTab: string,
     request: Request,
     formData: StartupInfoFormData,
-    startupsInfos: StartupInfo[]
+    startup: StartupInfo,
     formValidationErrors: any,
     startupOptions: {
         value: string,
         label: string
     }[],
-    startup?: string,
     username: string,
     updatePullRequest?: DBPullRequest,
     isAdmin: boolean
@@ -51,10 +55,15 @@ function getCurrentPhase(startup : StartupInfo) {
 
 /* Pure component */
 export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps) => {
-    const [startup] = React.useState(props.startup)
     const [phase, setPhase] = React.useState('')
     const [date, setDate] = React.useState((new Date()))
     const [text, setText] = React.useState('')
+    const [website, setWebsite] = React.useState(props.formData.website)
+    const [github, setGithub] = React.useState(props.formData.github)
+    const [pitch, setPitch] = React.useState(props.formData.pitch)
+    const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
+     const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
+
     const [showAddPhase, setShowAddPhase] = React.useState(false)
 
     const [formErrors, setFormErrors] = React.useState({});
@@ -68,12 +77,12 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
         }
         event.preventDefault();
         setIsSaving(true)
-        axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', startup), {
+        axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
             phase,
             date,
             text
         }).then(() => {
-            window.location.replace(`/startups/${startup}`);
+            window.location.replace(`/startups/${props.startup.id}`);
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
             setErrorMessage(ErrorResponse.message)
@@ -95,8 +104,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
         setText(text);
     }
     let disabled = false
-    const startupInfo : StartupInfo = startup ? props.startupsInfos.find(s => s.id === startup) : null
-    if ((startupInfo && ((!phase || phase === getCurrentPhase(startupInfo)) && text === decodeURIComponent(startupInfo.attributes.content_url_encoded_markdown))) || (!phase && !text)) {
+    if ((props.startup && ((!phase || phase === getCurrentPhase(props.startup)) && text === decodeURIComponent(props.startup.attributes.content_url_encoded_markdown))) || (!phase && !text)) {
         disabled = true
     }
     return (
@@ -104,12 +112,12 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             <div className="module">
             <div>
                 <small>
-                    <a href="/startups">Produit</a> &gt; <a href={`/startups/${props.startup}`}>{props.startup}</a> &gt; <a href="">Mise à jour de la phase</a>
+                    <a href="/startups">Produit</a> &gt; <a href={`/startups/${props.startup.id}`}>{props.startup.id}</a> &gt; <a href="">Mise à jour de la phase</a>
                 </small>
             </div>
             <div className="margin-top-m"></div>
             <div className="panel">
-                    <h3>Mise à jour des informations de {startupInfo.attributes.name}</h3>
+                    <h3>Mise à jour des informations de {props.startup.attributes.name}</h3>
                     { !!props.updatePullRequest && <div className="notification">
                             ⚠️ Une pull request existe déjà sur cette startup. Quelqu'un doit la merger pour que le changement soit pris en compte.
                             <a href={props.updatePullRequest.url} target="_blank">{props.updatePullRequest.url}</a>
@@ -121,13 +129,13 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                     }
                     <div className="beta-banner"></div>
                     <div>
-                        {startupInfo && <>
+                        {props.startup && <>
 
                             <form className='no-margin' onSubmit={save}>
                                 <h5>Phases : </h5>
                                 <div style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10}}>
                                     <p>
-                                        <b>Phase inscrite sur la fiche:</b> { PHASE_READABLE_NAME[getCurrentPhase(startupInfo)]}
+                                        <b>Phase inscrite sur la fiche:</b> { PHASE_READABLE_NAME[getCurrentPhase(props.startup)]}
                                     </p>
                                 {!showAddPhase  && <a onClick={() => toggleShowAddPhase(true)}>{`Changer la phase actuelle`}</a>}
                                 {showAddPhase && <>
@@ -136,18 +144,18 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                         <a style={{ textDecoration: 'none' }} onClick={() => toggleShowAddPhase(false)}>❌</a>
                                     </div>
                                     <label htmlFor="startup">
-                                        <strong>Dans quelle phase se trouve {startupInfo.attributes.name} actuellement ?</strong><br />
+                                        <strong>Dans quelle phase se trouve {props.startup.attributes.name} actuellement ?</strong><br />
                                     </label>
                                     <SEPhaseSelect
                                         onChange={(phase) => {
                                             setPhase(phase.value)
                                         }}
-                                        defaultValue={getCurrentPhase(startupInfo)}
+                                        defaultValue={getCurrentPhase(props.startup)}
                                         isMulti={false}
                                         placeholder={"Selectionne la phase"}
                                     />
-                                    { phase && phase === getCurrentPhase(startupInfo) && 
-                                        <p className="text-small text-color-red">{startupInfo.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
+                                    { phase && phase === getCurrentPhase(props.startup) && 
+                                        <p className="text-small text-color-red">{props.startup.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
                                     }
                                 </div>
                                 <div className="form__group">
@@ -167,11 +175,46 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                     }
                                 </div></div></>}
                                 </div>
+                                <h5>Url du site : </h5>
+                                <div className="form__group">
+                                    <input name="website"
+                                    onChange={(e) => { setWebsite(e.currentTarget.value)}}
+                                    value={website}
+                                    required/>
+                                </div>
+                                <h5>Lien du repo github : </h5>
+                                <div className="form__group">
+                                    <input name="github"
+                                    onChange={(e) => { setGithub(e.currentTarget.value)}}
+                                    value={github}
+                                    required/>
+                                </div>
+                                <h5>Lien du dashlord : </h5>
+                                <div className="form__group">
+                                    <input name="dashlord"
+                                    onChange={(e) => { setDashlord(e.currentTarget.value)}}
+                                    value={dashlord_url}
+                                    required/>
+                                </div>
+                                <h5>Lien de la page stats : </h5>
+                                <div className="form__group">
+                                    <input name="stats_url"
+                                    onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
+                                    value={stats_url}
+                                    required/>
+                                </div>
+                                <h5>Pitch : </h5>
+                                <div className="form__group">
+                                    <textarea name="pitch"
+                                    onChange={(e) => { setPitch(e.currentTarget.value)}}
+                                    value={pitch}
+                                    required/>
+                                </div>                                
                                 <h5>Description du produit : </h5>
                                 <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>
                                     <ClientOnly>
                                         <MdEditor
-                                            defaultValue={decodeURIComponent(startupInfo.attributes.content_url_encoded_markdown)}
+                                            defaultValue={decodeURIComponent(props.startup.attributes.content_url_encoded_markdown)}
                                             style={{ height: '500px' }}
                                             renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
                                     </ClientOnly>

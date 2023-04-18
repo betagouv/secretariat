@@ -9,13 +9,7 @@ export async function getStartupInfoUpdate(req, res) {
     try {
       const title = 'Changer une startup de phase';
       const formValidationErrors = {}
-      const startups : StartupInfo[] = await betagouv.startupsInfos();
-      const startupOptions = startups.map(startup => {
-        return {
-          value: startup.id,
-          label: startup.attributes.name
-        }
-      })
+      const startup : StartupInfo = await betagouv.startupsInfos().then(startups => startups.find(s => s.id === req.params.startup))
       const updatePullRequest = await db('pull_requests')
         .where({
           status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
@@ -28,16 +22,19 @@ export async function getStartupInfoUpdate(req, res) {
           title,
           formValidationErrors,
           currentUserId: req.auth.id,
-          startupOptions,
           isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
-          startup: req.params.startup,
-          startupsInfos: startups,
           activeTab: 'startups',
           subActiveTab: 'udpate-phase',
           username: req.auth.id,
-          updatePullRequest,
           formData: {
+            website: startup.attributes.link,
+            dashlord_url: startup.attributes.dashlord_url,
+            github: startup.attributes.repository,
+            pitch: startup.attributes.pitch,
+            stats_url: startup.attributes.stats_url
           },
+          updatePullRequest,
+          startup,
           errors: req.flash('error'),
           messages: req.flash('message'),
           request: req

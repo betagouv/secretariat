@@ -11,7 +11,12 @@ export interface GithubAuthorChange {
 }
 
 export interface GithubStartupChange {
-    phases?: Phase[]
+    phases?: Phase[],
+    website?: string,
+    dashlord_url: string,
+    pitch: string,
+    stats_url: string,
+    repository: string
 }
 
 async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {

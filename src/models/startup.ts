@@ -32,6 +32,9 @@ export const ACTIVE_PHASES = [
 ]
 
 export interface Startup {
+    github?:string
+    website?: string
+    dashlord_url?: string
     id: string;
     name: string;
     repository: string;
@@ -45,7 +48,10 @@ export interface Startup {
 export interface StartupInfo {
     id: string;
     attributes: {
-        name: string;
+        github: string
+        dashlord_url: string
+        website: any
+        name: string
         repository: string;
         contact: string;
         expired_members: string[];
