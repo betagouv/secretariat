@@ -37,7 +37,7 @@ export async function postStartupInfoUpdate(req, res) {
         const dashlord_url = req.body.dashlord_url
         const pitch = req.body.pitch
         const stats_url = req.body.stats_url
-        const repository = req.bodu.repository
+        const repository = req.body.repository
 
         const content = req.body.text
 
