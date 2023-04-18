@@ -59,7 +59,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [date, setDate] = React.useState((new Date()))
     const [text, setText] = React.useState('')
     const [website, setWebsite] = React.useState(props.formData.website)
-    const [github, setGithub] = React.useState(props.formData.github)
+    const [repository, setGithub] = React.useState(props.formData.github)
     const [pitch, setPitch] = React.useState(props.formData.pitch)
     const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
      const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
@@ -80,7 +80,12 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
         axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
             phase,
             date,
-            text
+            text,
+            website,
+            dashlord_url,
+            pitch,
+            stats_url,
+            repository
         }).then(() => {
             window.location.replace(`/startups/${props.startup.id}`);
         }).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
