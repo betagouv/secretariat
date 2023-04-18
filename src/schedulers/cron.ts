@@ -99,7 +99,7 @@ const marrainageJobs: Job[] = [
   {
     cronTime: '0 0 10 * * 1-5',
     onTick: reloadMarrainages,
-    isActive: true,
+    isActive: false,
     name: 'reloadMarrainageJob',
   },
   {
