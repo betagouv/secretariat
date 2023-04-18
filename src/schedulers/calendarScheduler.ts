@@ -78,7 +78,7 @@ export const postEventsOnMattermost = async ({
     const dayInSixDays = new Date()
     dayInSixDays.setDate(today.getDate() + numberOfDays)
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
-    let readableEvents : ReadableEvents[] = makeReadableEvent(events)
+    const readableEvents : ReadableEvents[] = makeReadableEvent(events)
     
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
