@@ -33,17 +33,19 @@ export async function setEmailAddressesActive() {
   })
   return Promise.all(
     concernedUsers.map(async (user) => {
+      const listTypes = [MAILING_LIST_TYPE.NEWSLETTER]
       if (user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING) {
-        addContactsToMailingLists({
-          listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-          contacts: [{
-            email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
-            firstname: utils.capitalizeWords(user.username.split('.')[0]),
-            lastname: utils.capitalizeWords(user.username.split('.')[1]),
-            domaine: githubUsers.find((x) => user.username === x.id).domaine
-          }] 
-        })
+        listTypes.push(MAILING_LIST_TYPE.ONBOARDING)
       }
+      addContactsToMailingLists({
+        listTypes: listTypes,
+        contacts: [{
+          email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
+          firstname: utils.capitalizeWords(user.username.split('.')[0]),
+          lastname: utils.capitalizeWords(user.username.split('.')[1]),
+          domaine: githubUsers.find((x) => user.username === x.id).domaine
+        }]
+      })
       await smtpBlockedContactsEmailDelete({ email: user.primary_email })
       await setEmailActive(user.username)
       // once email created we create marrainage
