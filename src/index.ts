@@ -91,7 +91,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(rateLimiter);
 
 const getJwtTokenForUser = (id) =>
-  jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
+  jwt.sign({ id }, config.secret, { expiresIn: '30 days' });
 
 app.use(
   expressjwt({
