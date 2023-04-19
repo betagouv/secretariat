@@ -204,8 +204,8 @@ app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), post
 
 // ONLY FOR ADMIN
 app.get(routes.ADMIN_MATTERMOST, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostAdmin);
-app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostUsersInfo);
-app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.sendMessageToUsersOnChat);
+app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, permit(MemberRole.MEMBER_ROLE_ADMIN), express.json({type: '*/*'}), adminController.getMattermostUsersInfo);
+app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, permit(MemberRole.MEMBER_ROLE_ADMIN), express.json({type: '*/*'}), adminController.sendMessageToUsersOnChat);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);

@@ -10,6 +10,8 @@ import routes from '@/routes/routes'
 import * as mattermostScheduler from '@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam'
 import * as mattermost from '@lib/mattermost'
 import * as chat from "@/infra/chat"
+import * as sendMattermostMessage from '@/controllers/adminController/sendMattermostMessage';
+
 
 chai.use(chaiHttp);
 
@@ -56,7 +58,6 @@ describe('Admin', () => {
     it('should return a forbidden error if user not in admin', async() => {
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
-        .type('form')
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(403);
     });
@@ -82,10 +83,11 @@ describe('Admin', () => {
       getUserWithParams.onCall(1).returns([]);
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
-        .type('form')
         .send({
           fromBeta: 'true',
-          excludeEmails: []
+          excludeEmails: '',
+          includeEmails: '',
+          text: ''
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(200);
@@ -108,14 +110,44 @@ describe('Admin', () => {
       getUserWithParams.onCall(1).returns([]);
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
-        .type('form')
         .send({
           fromBeta: 'true',
-          excludeEmails: [],
+          excludeEmails: '',
+          includeEmails: '',
           prod: 'true'
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(200);
+      getUserWithParams.callCount.should.be.eq(1)
+      getAdminStub.restore()
+      getUserWithParams.restore()
+      getMattermostUsersWithStatus.restore()
+      sendInfoToChat.restore()
+    });
+
+    it('should take exclude in consideration', async () => {
+      const getAdminStub = sinon.stub(adminConfig, 'getAdmin').returns(['membre.actif']);
+      const getMattermostUsersWithStatus = sinon.stub(mattermostScheduler ,'getMattermostUsersWithStatus').returns(Promise.resolve([]))
+      const getMattermostUsersSpy = sinon.spy(sendMattermostMessage, 'getMattermostUsers')
+      const getUserWithParams = sinon.stub(mattermost, 'getUserWithParams')
+      const sendInfoToChat = sinon.stub(chat, 'sendInfoToChat')
+      getUserWithParams.onCall(0).returns([{
+        username: 'membre.actif',
+        email: `membre.actif@${config.domain}`
+      }]);
+      getUserWithParams.onCall(1).returns([]);
+      const res = await chai.request(app)
+        .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
+        .send({
+          fromBeta: 'true',
+          // excludeEmails: `membre.actif@${config.domain},membre.parti@${config.domain}`,
+          includeEmails: '',
+          prod: 'true'
+        })
+        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
+      res.should.have.status(200);
+      const resMatterUser = await getMattermostUsersSpy.returnValues[0]
+      resMatterUser.length.should.be.eq(1)
       getUserWithParams.callCount.should.be.eq(1)
       getAdminStub.restore()
       getUserWithParams.restore()
@@ -135,7 +167,6 @@ describe('Admin', () => {
       getUserWithParams.onCall(1).returns([]);
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
-        .type('form')
         .send({
           fromBeta: 'true',
           excludeEmails: [],

@@ -171,12 +171,6 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                                 isMulti={false}
                                 onChange={(e) => setChannel(e.value)}
                                 placeholder={'Sélectionne le canal sur lequel envoyé le message'} />
-                            <input
-                                onChange={(e) => setChannel(e.target.value)}
-                                type="text"
-                                id="channel"
-                                name="channel"
-                            />
                         </label>
                         <br/>
                         </>}
