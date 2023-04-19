@@ -59,7 +59,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [date, setDate] = React.useState((new Date()))
     const [text, setText] = React.useState('')
     const [website, setWebsite] = React.useState(props.formData.website)
-    const [repository, setGithub] = React.useState(props.formData.github)
+    const [repository, setRepository] = React.useState(props.formData.github)
     const [pitch, setPitch] = React.useState(props.formData.pitch)
     const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
      const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
@@ -108,8 +108,19 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     function handleEditorChange({ html, text }) {
         setText(text);
     }
+
+    function hasChanged() {
+        return (((!phase || phase === getCurrentPhase(props.startup)) &&
+            (!text || text === decodeURIComponent(props.startup.attributes.content_url_encoded_markdown)) &&
+            website === props.formData.website &&
+            dashlord_url === props.formData.dashlord_url &&
+            stats_url === props.formData.stats_url &&
+            pitch === props.formData.pitch &&
+            repository === props.formData.github
+        ))
+    }
     let disabled = false
-    if ((props.startup && ((!phase || phase === getCurrentPhase(props.startup)) && text === decodeURIComponent(props.startup.attributes.content_url_encoded_markdown))) || (!phase && !text)) {
+    if (hasChanged()) {
         disabled = true
     }
     return (
@@ -184,36 +195,31 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                 <div className="form__group">
                                     <input name="website"
                                     onChange={(e) => { setWebsite(e.currentTarget.value)}}
-                                    value={website}
-                                    required/>
+                                    value={website}/>
                                 </div>
                                 <h5>Lien du repo github : </h5>
                                 <div className="form__group">
                                     <input name="github"
-                                    onChange={(e) => { setGithub(e.currentTarget.value)}}
-                                    value={github}
-                                    required/>
+                                    onChange={(e) => { setRepository(e.currentTarget.value)}}
+                                    value={repository}/>
                                 </div>
                                 <h5>Lien du dashlord : </h5>
                                 <div className="form__group">
                                     <input name="dashlord"
                                     onChange={(e) => { setDashlord(e.currentTarget.value)}}
-                                    value={dashlord_url}
-                                    required/>
+                                    value={dashlord_url}/>
                                 </div>
                                 <h5>Lien de la page stats : </h5>
                                 <div className="form__group">
                                     <input name="stats_url"
                                     onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
-                                    value={stats_url}
-                                    required/>
+                                    value={stats_url}/>
                                 </div>
                                 <h5>Pitch : </h5>
                                 <div className="form__group">
                                     <textarea name="pitch"
                                     onChange={(e) => { setPitch(e.currentTarget.value)}}
-                                    value={pitch}
-                                    required/>
+                                    value={pitch}/>
                                 </div>                                
                                 <h5>Description du produit : </h5>
                                 <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>
