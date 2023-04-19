@@ -141,7 +141,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                     <form className='no-margin' onSubmit={save}>
                         <div className="form__group">
                             <label htmlFor="role">
-                                <strong>Rôle chez BetaGouv :3</strong><br />
+                                <strong>Rôle chez BetaGouv :</strong><br />
                             </label>
                             <input name="role"
                                 onChange={(e) => { changeFormData('role', e.currentTarget.value)}}
