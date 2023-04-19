@@ -26,7 +26,8 @@ interface StartupListProps {
 export const StartupList = InnerPageLayout((props: StartupListProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
     const [startup, setStartup] = React.useState('')
-    const save = () => {
+    const save = (event) => {
+        event.preventDefault();
         window.location.href = `/startups/${startup}`;
     }
     return (
