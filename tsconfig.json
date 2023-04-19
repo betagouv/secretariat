@@ -36,6 +36,9 @@
             "@controllers/*": [
                 "src/controllers/*"
             ],
+            "@components/*": [
+                "src/views/pages/components/*"
+            ],
             "@infra/*": [
                 "src/infra/*"
             ],
