@@ -20,6 +20,15 @@ export interface MattermostUser {
   last_activity_at: string,
 }
 
+export interface MattermostChannel {
+  name: string,
+  display_name: string,
+  purpose: string,
+  header: string,
+  last_post_at: string,
+  total_msg_count: string
+}
+
 export async function getUserWithParams(params = {}, i = 0) {
   const mattermostUsers = await axios
     .get(`${config.mattermostURL}/api/v4/users?per_page=200&page=${i}`, {

@@ -5,11 +5,21 @@ import { DBUser, EmailStatusCode } from "@/models/dbUser"
 import * as mattermost from '@lib/mattermost'
 import { MattermostUser } from "@lib/mattermost"
 
-const getMattermostUsers = async({ fromBeta } : { fromBeta: boolean}) => {
+const getMattermostUsers = async({
+    fromBeta,
+    includeEmails,
+    excludeEmails
+} : { fromBeta: boolean, includeEmails: string[], excludeEmails: string[]}) => {
     let activeUsers : MattermostUser[] = await mattermost.getUserWithParams({params: {
         in_team: config.mattermostTeamId,
         active: true
     }})
+    if (includeEmails && includeEmails.length) {
+        activeUsers = activeUsers.filter(user => includeEmails.includes(user.email))
+    }
+    if (excludeEmails && excludeEmails.length) {
+        activeUsers = activeUsers.filter(user => !excludeEmails.includes(user.email))
+    }
     if (fromBeta) {
         const dbUsers : DBUser[] = await db('users').where({
             primary_email_status: EmailStatusCode.EMAIL_ACTIVE
@@ -24,8 +34,12 @@ const getMattermostUsers = async({ fromBeta } : { fromBeta: boolean}) => {
 
 export const getMattermostUsersInfo = async(req, res) => {
     const fromBeta = req.query.fromBeta === 'true'
+    const excludeEmails = req.query.excludeEmails
+    const includeEmails = req.query.includeEmails
     const users : MattermostUser[] = await getMattermostUsers({
-        fromBeta
+        fromBeta,
+        excludeEmails,
+        includeEmails
     })
     res.json({
         users,
@@ -41,10 +55,19 @@ const sendMessageToChannel = async ({ channel, text } : { channel: string, text:
 
 const sendDirectMessageToUsers = async ({
     fromBeta,
-    text
-} : {fromBeta: boolean, text: string}) => {
+    text,
+    excludeEmails,
+    includeEmails
+} : {
+    fromBeta: boolean,
+    text: string,
+    excludeEmails: string[],
+    includeEmails: string[]
+}) => {
     const activeUsers = await getMattermostUsers({
-        fromBeta
+        fromBeta,
+        includeEmails,
+        excludeEmails
     })
     console.log(`Will send message to ${activeUsers.length}`)
     let nbUsers = 0
@@ -69,9 +92,11 @@ const sendDirectMessageToUsers = async ({
 export const sendMessageToUsersOnChat = async(req, res) => {
     const text = req.body.text
     const fromBeta = req.body.fromBeta === 'true'
+    const excludeEmails = req.body.excludeEmails
+    const includeEmails = req.body.includeEmails
     const channel = req.body.channel
     const prod = req.body.prod === 'true'
-    if (prod) {
+    if (prod && process.env.FEATURE_SEND_MESSAGE_PROD) {
         if (channel) {
             await sendMessageToChannel({
                 text,
@@ -79,11 +104,12 @@ export const sendMessageToUsersOnChat = async(req, res) => {
             })
         } else {
             console.log('will send direct message to users')
-            const { nbUsers } = await sendDirectMessageToUsers({
+            await sendDirectMessageToUsers({
                 text,
-                fromBeta
+                fromBeta,
+                excludeEmails,
+                includeEmails
             })
-            req.flash('message', `Le message a été envoyé à : ${nbUsers} membres`);
         }
     }
     // send message to admin
@@ -92,5 +118,7 @@ export const sendMessageToUsersOnChat = async(req, res) => {
         username: req.auth.id,
         channel: 'secretariat',
     })
-    res.redirect('/admin/mattermost');
+    res.json({
+        'message': `Envoye un message en ${prod ? 'prod' : 'test'}`
+    });
 }
