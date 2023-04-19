@@ -19,9 +19,9 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 interface StartupInfoFormData {
     pitch?: string;
     stats_url?: string;
-    website?: string,
+    link?: string,
     dashlord_url?: string,
-    github?: string
+    repository?: string
 }
 
 interface StartupInfoUpdateProps {
@@ -58,8 +58,8 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [phase, setPhase] = React.useState('')
     const [date, setDate] = React.useState((new Date()))
     const [text, setText] = React.useState('')
-    const [website, setWebsite] = React.useState(props.formData.website)
-    const [repository, setRepository] = React.useState(props.formData.github)
+    const [link, setLink] = React.useState(props.formData.link)
+    const [repository, setRepository] = React.useState(props.formData.repository)
     const [pitch, setPitch] = React.useState(props.formData.pitch)
     const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
      const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
@@ -81,7 +81,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             phase,
             date,
             text,
-            website,
+            link,
             dashlord_url,
             pitch,
             stats_url,
@@ -112,11 +112,11 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     function hasChanged() {
         return (((!phase || phase === getCurrentPhase(props.startup)) &&
             (!text || text === decodeURIComponent(props.startup.attributes.content_url_encoded_markdown)) &&
-            website === props.formData.website &&
+            link === props.formData.link &&
             dashlord_url === props.formData.dashlord_url &&
             stats_url === props.formData.stats_url &&
             pitch === props.formData.pitch &&
-            repository === props.formData.github
+            repository === props.formData.repository
         ))
     }
     let disabled = false
@@ -193,9 +193,9 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                 </div>
                                 <h5>Url du site : </h5>
                                 <div className="form__group">
-                                    <input name="website"
-                                    onChange={(e) => { setWebsite(e.currentTarget.value)}}
-                                    value={website}/>
+                                    <input name="link"
+                                    onChange={(e) => { setLink(e.currentTarget.value)}}
+                                    value={link}/>
                                 </div>
                                 <h5>Lien du repo github : </h5>
                                 <div className="form__group">

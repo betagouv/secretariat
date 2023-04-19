@@ -33,7 +33,7 @@ export async function postStartupInfoUpdate(req, res) {
         const date = req.body.date || requiredError('date', errorHandler)
         isValidDate('date', new Date(date), errorHandler)
 
-        const website = req.body.website
+        const link = req.body.link
         const dashlord_url = req.body.dashlord_url
         const pitch = req.body.pitch
         const stats_url = req.body.stats_url
@@ -56,7 +56,7 @@ export async function postStartupInfoUpdate(req, res) {
         }
 
         let changes : GithubStartupChange = {
-            website,
+            link,
             dashlord_url,
             pitch,
             stats_url,

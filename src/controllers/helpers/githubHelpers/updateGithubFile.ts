@@ -12,7 +12,7 @@ export interface GithubAuthorChange {
 
 export interface GithubStartupChange {
     phases?: Phase[],
-    website?: string,
+    link: string,
     dashlord_url: string,
     pitch: string,
     stats_url: string,

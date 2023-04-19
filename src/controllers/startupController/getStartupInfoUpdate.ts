@@ -27,9 +27,9 @@ export async function getStartupInfoUpdate(req, res) {
           subActiveTab: 'udpate-phase',
           username: req.auth.id,
           formData: {
-            website: startup.attributes.link,
+            link: startup.attributes.link,
             dashlord_url: startup.attributes.dashlord_url,
-            github: startup.attributes.repository,
+            repository: startup.attributes.repository,
             pitch: startup.attributes.pitch,
             stats_url: startup.attributes.stats_url
           },
