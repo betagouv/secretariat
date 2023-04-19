@@ -39,6 +39,12 @@ export const AdminMattermostUser = (props: CommunityProps) => {
         excludeEmails: [],
     });
 
+    const [showMattermostAndStatus, setShowMattermostAndStatus] = React.useState(false)
+    
+    function toggleShowMattermostAndStatus() {
+        setShowMattermostAndStatus(!showMattermostAndStatus)
+    }
+
     function exportToCsv(filename, rows) {
 
         const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
@@ -85,26 +91,31 @@ export const AdminMattermostUser = (props: CommunityProps) => {
     <>
         <div className="module">
             <div key={'filter-user'} className="panel panel-full-width" id="filter-user">
-                <h3>
+                <h3 className="margin-10-0 collapse-header">
+                    <button aria-expanded="false" id="webmail" onClick={toggleShowMattermostAndStatus}>
                     Membre mattermost et status
+                        <div className="icon fa fa-chevron-down"></div>
+                    </button>
                 </h3>
-                { Object.keys(countData).map(key => {
-                    return <div>{key} : {countData[key].length}</div>
-                })}
-                { Object.keys(usersByDomain).map(key => {
-                    return <div>{key} : {usersByDomain[key].length}</div>
-                })}
-                { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
-                <br/>
-                <br/>
-                <ReactTabulator
-                    data-instance={'user-table'}
-                    columns={columns}
-                    data={state.users}
-                    options={{ pagination: 'local', paginationSize: 50 }}
-                />
-                <br/>
-                <br/>
+                {showMattermostAndStatus && <div>
+                    { Object.keys(countData).map(key => {
+                        return <div>{key} : {countData[key].length}</div>
+                    })}
+                    { Object.keys(usersByDomain).map(key => {
+                        return <div>{key} : {usersByDomain[key].length}</div>
+                    })}
+                    { Boolean(state.users.length) && <button onClick={onClickDownload}  className="button">Télécharger</button> }
+                    <br/>
+                    <br/>
+                    <ReactTabulator
+                        data-instance={'user-table'}
+                        columns={columns}
+                        data={state.users}
+                        options={{ pagination: 'local', paginationSize: 50 }}
+                    />
+                    <br/>
+                    <br/>
+                </div>}
             </div>
         </div>
         <style media="screen">
