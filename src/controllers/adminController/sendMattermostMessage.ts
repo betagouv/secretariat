@@ -96,7 +96,7 @@ export const sendMessageToUsersOnChat = async(req, res) => {
     const includeEmails = req.body.includeEmails
     const channel = req.body.channel
     const prod = req.body.prod === 'true'
-    if (prod && process.env.FEATURE_SEND_MESSAGE_PROD) {
+    if (prod) {
         if (channel) {
             await sendMessageToChannel({
                 text,
