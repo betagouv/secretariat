@@ -1,8 +1,7 @@
 import config from "@/config"
 import db from "@/db"
-import { sendInfoToChat } from "@/infra/chat"
+import { getUserWithParams, sendInfoToChat } from "@/infra/chat"
 import { DBUser, EmailStatusCode } from "@/models/dbUser"
-import * as mattermost from '@lib/mattermost'
 import { MattermostUser } from "@lib/mattermost"
 
 export const getMattermostUsers = async({
@@ -10,7 +9,7 @@ export const getMattermostUsers = async({
     includeEmails,
     excludeEmails
 } : { fromBeta: boolean, includeEmails: string[], excludeEmails: string[]}) => {
-    let activeUsers : MattermostUser[] = await mattermost.getUserWithParams({params: {
+    let activeUsers : MattermostUser[] = await getUserWithParams({params: {
         in_team: config.mattermostTeamId,
         active: true
     }})
@@ -90,16 +89,14 @@ const sendDirectMessageToUsers = async ({
 }
 
 export const sendMessageToUsersOnChat = async(req, res) => {
-    console.log('SEND MESSAGE TO USERS ON CHAT 1')
+    let nbUsers
     try {
         const text = req.body.text
-        const fromBeta = req.body.fromBeta === 'true'
+        const fromBeta = req.body.fromBeta === true
         const excludeEmails = (req.body.excludeEmails || '').split(',').map(email => email.trim()).filter(email => email)
         const includeEmails = (req.body.includeEmails || '').split(',').map(email => email.trim()).filter(email => email)
         const channel = req.body.channel
-        const prod = req.body.prod === 'true'
-        console.log('SEND MESSAGE TO USERS ON CHAT 2')
-        console.log(excludeEmails, includeEmails, fromBeta)
+        const prod = req.body.prod === true
         if (prod) {
             if (channel) {
                 await sendMessageToChannel({
@@ -108,12 +105,12 @@ export const sendMessageToUsersOnChat = async(req, res) => {
                 })
             } else {
                 console.log('will send direct message to users')
-                await sendDirectMessageToUsers({
+                nbUsers = await sendDirectMessageToUsers({
                     text,
                     fromBeta,
                     excludeEmails,
                     includeEmails
-                })
+                }).then(res => res.nbUsers)
             }
         }
         // send message to admin
@@ -123,7 +120,7 @@ export const sendMessageToUsersOnChat = async(req, res) => {
             channel: 'secretariat',
         })
         res.json({
-            'message': `Envoye un message en ${prod ? 'prod' : 'test'}`
+            'message': `Envoyé un message en ${prod ? 'prod' : 'test'} à ${nbUsers !== undefined ? nbUsers : channel}`
         });
     } catch (e) {
         console.log(e)

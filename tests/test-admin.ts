@@ -74,7 +74,7 @@ describe('Admin', () => {
     it('should return /admin/send-message page if user is admin', async () => {
       const getAdminStub = sinon.stub(adminConfig, 'getAdmin').returns(['membre.actif']);
       const getMattermostUsersWithStatus = sinon.stub(mattermostScheduler ,'getMattermostUsersWithStatus').returns(Promise.resolve([]))
-      const getUserWithParams = sinon.stub(mattermost, 'getUserWithParams')
+      const getUserWithParams = sinon.stub(chat, 'getUserWithParams')
       const sendInfoToChat = sinon.stub(chat, 'sendInfoToChat')
       getUserWithParams.onCall(0).returns([{
         username: 'membre.actif',
@@ -84,7 +84,7 @@ describe('Admin', () => {
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
         .send({
-          fromBeta: 'true',
+          fromBeta: true,
           excludeEmails: '',
           includeEmails: '',
           text: ''
@@ -101,7 +101,7 @@ describe('Admin', () => {
     it('should send message to all users if prod is true and channel undefined', async () => {
       const getAdminStub = sinon.stub(adminConfig, 'getAdmin').returns(['membre.actif']);
       const getMattermostUsersWithStatus = sinon.stub(mattermostScheduler ,'getMattermostUsersWithStatus').returns(Promise.resolve([]))
-      const getUserWithParams = sinon.stub(mattermost, 'getUserWithParams')
+      const getUserWithParams = sinon.stub(chat, 'getUserWithParams')
       const sendInfoToChat = sinon.stub(chat, 'sendInfoToChat')
       getUserWithParams.onCall(0).returns([{
         username: 'membre.actif',
@@ -111,10 +111,10 @@ describe('Admin', () => {
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
         .send({
-          fromBeta: 'true',
+          fromBeta: true,
           excludeEmails: '',
           includeEmails: '',
-          prod: 'true'
+          prod: true
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(200);
@@ -129,7 +129,7 @@ describe('Admin', () => {
       const getAdminStub = sinon.stub(adminConfig, 'getAdmin').returns(['membre.actif']);
       const getMattermostUsersWithStatus = sinon.stub(mattermostScheduler ,'getMattermostUsersWithStatus').returns(Promise.resolve([]))
       const getMattermostUsersSpy = sinon.spy(sendMattermostMessage, 'getMattermostUsers')
-      const getUserWithParams = sinon.stub(mattermost, 'getUserWithParams')
+      const getUserWithParams = sinon.stub(chat, 'getUserWithParams')
       const sendInfoToChat = sinon.stub(chat, 'sendInfoToChat')
       getUserWithParams.onCall(0).returns([{
         username: 'membre.actif',
@@ -139,10 +139,9 @@ describe('Admin', () => {
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
         .send({
-          fromBeta: 'true',
-          // excludeEmails: `membre.actif@${config.domain},membre.parti@${config.domain}`,
+          fromBeta: true,
           includeEmails: '',
-          prod: 'true'
+          prod: true
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.should.have.status(200);
@@ -158,7 +157,7 @@ describe('Admin', () => {
     it('should send message to all users if prod is true and channel set', async () => {
       const getAdminStub = sinon.stub(adminConfig, 'getAdmin').returns(['membre.actif']);
       const getMattermostUsersWithStatus = sinon.stub(mattermostScheduler ,'getMattermostUsersWithStatus').returns(Promise.resolve([]))
-      const getUserWithParams = sinon.stub(mattermost, 'getUserWithParams')
+      const getUserWithParams = sinon.stub(chat, 'getUserWithParams')
       const sendInfoToChat = sinon.stub(chat, 'sendInfoToChat')
       getUserWithParams.onCall(0).returns([{
         username: 'membre.actif',
@@ -168,9 +167,9 @@ describe('Admin', () => {
       const res = await chai.request(app)
         .post(routes.ADMIN_MATTERMOST_SEND_MESSAGE)
         .send({
-          fromBeta: 'true',
-          excludeEmails: [],
-          prod: 'true',
+          fromBeta: true,
+          excludeEmails: '',
+          prod: true,
           channel: 'general'
         })
         .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
