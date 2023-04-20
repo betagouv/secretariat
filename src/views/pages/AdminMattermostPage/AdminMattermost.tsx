@@ -30,31 +30,20 @@ const css = ".panel { min-height: 400px; }" // to have enough space to display d
 
 /* Pure component */
 export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
-
-    const [state, setState] = React.useState<any>({
-        selectedName: '',
-        fromBeta: true,
-        excludeEmails: [],
-        ...props,
-    });
-
     const [usersForMessage, setUsersForMessage] = useState([]);
-    const [prod, setProd] = useState(false);
-    const [channel, setChannel] = useState(undefined);
-    const [messageType, setMessageType] = useState(undefined)
+    const [channel, setChannel] = useState('town-square');
+    const [messageType, setMessageType] = useState('channel')
     const [includeEmails, setIncludeEmails] = useState('')
     const [excludeEmails, setExcludeEmails] = useState('')
     const [text, setText] = useState('')
+    const [fromBeta, setFromBeta] = useState(true)
 
     useEffect(() => {
         updateQuery()
-    }, [state.fromBeta, state.excludeEmails, includeEmails])
+    }, [fromBeta, excludeEmails, includeEmails, messageType])
 
     const onChangeFromBeta = async (e) => {
-        setState({
-            ...state,
-            fromBeta: !state.fromBeta
-        })
+        setFromBeta(!fromBeta)
     }
 
     const onChangeExcludeEmail = async (e) => {
@@ -65,19 +54,15 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
         setIncludeEmails(e.target.value)
     }
 
-    const onChangeProd = async (e) => {
-        setProd(!prod)
-    }
-
     const handleMessageTypeChange = async(e) => {
         setMessageType(e.target.value)
     }
 
     const updateQuery = async () => {
         const params = {
-            excludeEmails: state.excludeEmails,
-            includeEmails: includeEmails,
-            fromBeta: state.fromBeta
+            excludeEmails,
+            includeEmails,
+            fromBeta
         }
         const queryParamsString = Object.keys(params).map(key => key + '=' + params[key]).join('&');
         try {
@@ -88,18 +73,34 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
         }
     }
 
-    const send = async() => {
-        console.log('Send prod')
-        await axios.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, {
-            fromBeta: state.fromBeta,
+    const buildParams = (prod) => {
+        return {
+            fromBeta,
+            prod,
             includeEmails,
             excludeEmails,
             text,
-            channel
-        })
+            channel: messageType === 'channel' ? channel : undefined
+        }
+    }
+
+    const send = async() => {
+        if (confirm(`Est-tu sur de vouloir envoyer cette email à ${messageType === 'channel' ? 'au canal ' + props.channelOptions.find(c => c.value === channel).label : 'à ' + usersForMessage.length + ' membres ?'}`) === true) {
+            const res = await axios.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, buildParams(true))
+            alert(`${res.data.message}`)
+        } else {
+            alert(`Le message n'a pas été envoyé`)    
+        }
+
     }
     const sendTest = async() => {
-        console.log('Send test')
+        try {
+            const res = await axios.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, buildParams(false))
+            alert(`${res.data.message}`)
+            console.log('Done')
+        } catch(e) {
+            console.log('Erreur')
+        }
     }
 
     return (
@@ -107,7 +108,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
         <div className="module">
             <div key={'mattermost-message'} className="panel panel-full-width" id="mattermost-message">
                 <h3>
-                    Envoyer un message aux utilisateurs mattermot
+                    Envoyer un message aux utilisateurs mattermost
                 </h3>
                 <div>
                     <div className="form__group">
@@ -133,10 +134,9 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                             <strong>Envoyer uniquement aux membres @beta (pas etalab, ...) ?</strong><br />
                             <input
                                 onChange={onChangeFromBeta}
-                                checked={state.fromBeta}
+                                checked={fromBeta}
                                 type="checkbox"
                                 id="fromBeta"
-                                value={`${state.fromBeta}`}
                                 name="fromBeta"
                             /> Oui
                         </label>
@@ -146,7 +146,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                             <p>Renseigne une liste d'email séparés par une virgule</p>
                             <input
                                 onChange={onChangeExcludeEmail}
-                                value={state.excludeEmails}
+                                value={excludeEmails}
                                 id="excludeEmails"
                                 name="excludeEmails"
                             />
@@ -157,7 +157,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                             <p>Renseigne une liste d'email séparés par une virgule</p>
                             <input
                                 onChange={onChangeIncludeEmail}
-                                value={state.includeEmails}
+                                value={includeEmails}
                                 id="includeEmails"
                                 name="includeEmails"
                             />
@@ -171,12 +171,6 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                                 isMulti={false}
                                 onChange={(e) => setChannel(e.value)}
                                 placeholder={'Sélectionne le canal sur lequel envoyé le message'} />
-                            <input
-                                onChange={(e) => setChannel(e.target.value)}
-                                type="text"
-                                id="channel"
-                                name="channel"
-                            />
                         </label>
                         <br/>
                         </>}
@@ -193,15 +187,7 @@ export const AdminMattermost = InnerPageLayout((props: CommunityProps) => {
                     </label>
                     <br/>
                     <label htmlFor="prod">
-                        <strong>⚠️ Attention si tu coches ce message sera envoyé {channel ? ` au channel ${channel}` : `à ${usersForMessage.length} membres`}</strong><br />
-                        <input
-                            onChange={onChangeProd}
-                            checked={prod}
-                            value={`${prod}`}
-                            type="checkbox"
-                            id="prod"
-                            name="prod"
-                        /> Envoyé {channel ? ` au channel ${channel}` : `à ${usersForMessage.length} membres`}
+                        <strong>⚠️ Attention ce message sera envoyé { messageType === 'channel' ? ` au canal ${props.channelOptions.find(c => c.value === channel).label}` : `à ${usersForMessage.length} membres`}</strong><br />
                     </label>
                     <br/>
                     <button

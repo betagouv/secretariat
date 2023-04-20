@@ -1,7 +1,8 @@
 import config from '@/config';
-import { getAllChannels, MattermostChannel } from '@/lib/mattermost';
+import { MattermostChannel } from '@/lib/mattermost';
 import { getMattermostUsersWithStatus } from '@/schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam';
 import { AdminMattermostPage } from '../../views';
+import { getAllChannels } from '@/infra/chat';
 
 export async function getMattermostAdmin(req, res) {
   let users = []
