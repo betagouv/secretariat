@@ -43,10 +43,12 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
         second: 0,
         isDate: false
     });
-    const vevents = vcalendar.getAllSubcomponents('vevent')
-        .map((c) => new ICAL.Event(c))
+    let vevents = vcalendar.getAllSubcomponents('vevent')
+    console.log('Get events for calendar number of events : ', vevents.length)
+    vevents = vevents.map((c) => new ICAL.Event(c))
+    console.log('Create cal event', vevents.length)
+
     const events = []
-    console.log('Get events for calendar number of events :', vevents.length)
 
     for (const vevent of vevents) {
         if (vevent.isRecurring()) {
