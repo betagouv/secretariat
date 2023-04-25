@@ -394,7 +394,7 @@ const jobs: Job[] = [
     name: 'removeGithubUserFromOrganization',
   },
   {
-    cronTime: '0 0 8 * * *',
+    cronTime: '0 0 8,14 * * *',
     onTick: deleteRedirectionsAfterQuitting,
     isActive: !!config.featureDeleteRedirectionsAfterQuitting,
     name: 'deleteRedirectionsAfterQuitting',
