@@ -77,9 +77,12 @@ export const postEventsOnMattermost = async ({
     const today = new Date()
     const dayInSixDays = new Date()
     dayInSixDays.setDate(today.getDate() + numberOfDays)
+    console.log('Start post event on mattermost')
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
+    console.log('Post event - number of event :', events.length)
+
     const readableEvents : ReadableEvents[] = makeReadableEvent(events)
-    
+    console.log('Post event - number of readble event :', readableEvents.length)
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: calendarPublicUrl
