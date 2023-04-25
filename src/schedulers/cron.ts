@@ -185,7 +185,7 @@ const mattermostJobs: Job[] = [
   },
   // Post automatic
   {
-    cronTime: '0 0 10 * * 1', // every week a 10 on monday
+    cronTime: '0 10 17 * * 1', // every week a 10 on monday
     onTick: () => postEventsOnMattermost({
       numberOfDays:6,
       canal:'general',
