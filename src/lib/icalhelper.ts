@@ -33,6 +33,7 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
     const iCalendarData = await axios.get(calendarIcalUrl).then(res => res.data)
     const jcalData = ICAL.parse(iCalendarData);
     const vcalendar = new ICAL.Component(jcalData);
+    console.log('Get events for calendar from date to date', calendarIcalUrl)
     // Get all non recurrent event
     const time = new ICAL.Time({
         year: startDate.getFullYear(),
@@ -45,6 +46,8 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
     const vevents = vcalendar.getAllSubcomponents('vevent')
         .map((c) => new ICAL.Event(c))
     const events = []
+    console.log('Get events for calendar number of events :', vevents.length)
+
     for (const vevent of vevents) {
         if (vevent.isRecurring()) {
             const iter = vevent.iterator(time)
