@@ -195,7 +195,8 @@ const mattermostJobs: Job[] = [
     }),
     timeZone: "Europe/Paris",
     isActive: true,
-    name: 'Post event of the week from betagouv calendar',
+    name: 'PostEventsFromBetaOnMattermost',
+    description: 'Post event of the week from betagouv calendar'
   },
   {
     cronTime: '0 0 8 * * 1', // every week a 8:00 on monday
