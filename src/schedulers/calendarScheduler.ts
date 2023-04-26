@@ -4,6 +4,7 @@ import betagouv from '../betagouv'
 import * as utils from '@controllers/utils';
 import { sendCampaignEmail } from '@/config/email.config';
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
+import { sendInfoToChat } from '@/infra/chat';
 
 
 interface ReadableEvents {
@@ -77,16 +78,17 @@ export const postEventsOnMattermost = async ({
     const today = new Date()
     const dayInSixDays = new Date()
     dayInSixDays.setDate(today.getDate() + numberOfDays)
-    console.log('Start post event on mattermost')
     const events = await getEventsForCalendarFromDateToDate(calendarURL, today, dayInSixDays)
-    console.log('Post event - number of event :', events.length)
 
     const readableEvents : ReadableEvents[] = makeReadableEvent(events)
-    console.log('Post event - number of readble event :', readableEvents.length)
     const messageContent = await ejs.renderFile('./src/views/templates/emails/eventMessage.ejs', {
         events: readableEvents,
         CALENDAR_PUBLIC_URL: calendarPublicUrl
     });
-    await betagouv.sendInfoToChat(messageContent, canal, undefined, chatWebhook);
+    sendInfoToChat({
+      text: messageContent,
+      channel: canal,
+      hookURL: chatWebhook
+    })
 }
 

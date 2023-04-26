@@ -9,17 +9,19 @@ interface SendInfoToChatProps {
       username?: string,	// Overrides the username the message posts as. Defaults to the username set during webhook creation or the webhook creator’s username if the former was not set.
       icon_url?: string, //	Overrides the profile picture the message posts with.
       icon_emoji?: string, // Overrides the profile picture and icon_url parameter.The expected content is an emoji name, as typed in a messageattachments	Message attachments used for richer formatting options.	If text is not set, yes
-    }
+    },
+    hookURL?: string
 }
 
-enum WEEBHOOK_CHANNEL_TYPE {
+enum WEBHOOK_CHANNEL_TYPE {
     WEBHOOK_SECRETARIAT='WEBHOOK_SECRETARIAT',
     WEBHOOK_GENERAL='WEBHOOK_GENERAL',
-    WEBHOOK_DINUM_CENTREVILLE='WEBHOOK_DINUM_CENTREVILLE'
+    WEBHOOK_DINUM_CENTREVILLE='WEBHOOK_DINUM_CENTREVILLE',
+    WEBHOOK_GIP='WEBHOOK_GIP'
 }
 
 interface SendIntoToChatFromMattermostDeps {
-    config: Record<WEEBHOOK_CHANNEL_TYPE, string>
+    config: Record<WEBHOOK_CHANNEL_TYPE, string>
 }
 
 export type SendInfoToChat = (props: SendInfoToChatProps) => Promise<null>
@@ -32,10 +34,9 @@ export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMatterm
             channel,
             username,
             extra,
-            space
+            space,
         } = props
-
-        let hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_SECRETARIAT]
+        let hookURL = props.hookURL
         let params: {
           text: string,
           channel: string,
@@ -43,10 +44,14 @@ export const makeSendIntoToChatFromMattermost = (deps: SendIntoToChatFromMatterm
           icon_url?: string,
           icon_emoji?: string,
         } = { text, channel: channel === 'general' ? 'town-square' : channel };
-        if (space === 'dinum') {
-          hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_DINUM_CENTREVILLE]
-        } else if (channel && channel !== 'secretariat') {
-          hookURL = config[WEEBHOOK_CHANNEL_TYPE.WEBHOOK_GENERAL]
+        if (!hookURL) {
+          if (space === 'dinum') {
+            hookURL = config[WEBHOOK_CHANNEL_TYPE.WEBHOOK_DINUM_CENTREVILLE]
+          } else if (channel && channel !== 'secretariat') {
+            hookURL = config[WEBHOOK_CHANNEL_TYPE.WEBHOOK_GENERAL]
+          } else {
+            hookURL= config[WEBHOOK_CHANNEL_TYPE.WEBHOOK_SECRETARIAT]
+          }
         }
         if (username) {
           params.channel = `@${username}`;
