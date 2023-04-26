@@ -36,7 +36,6 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
-import { postFormSchema } from '@controllers/onboardingController';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
