@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from 'express-sanitizer';
+import { checkSchema } from 'express-validator'
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import path from 'path';
@@ -82,7 +83,13 @@ app.use(
 );
 
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
+app.use(session({ 
+  cookie: {
+    maxAge: 300000,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' ? true : false,
+    sameSite: 'lax' 
+}})); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
 // const router = express.Router()
@@ -208,7 +215,7 @@ app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, permit(MemberRole.MEMBER_ROLE_ADMIN
 app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, permit(MemberRole.MEMBER_ROLE_ADMIN), express.json({type: '*/*'}), adminController.sendMessageToUsersOnChat);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
-app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);
+app.post(routes.ONBOARDING_ACTION, checkSchema(onboardingController.postFormSchema), onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post('/account/set_email_responder', accountController.setEmailResponder);
 app.post('/account/delete_email_responder', accountController.deleteEmailResponder);
