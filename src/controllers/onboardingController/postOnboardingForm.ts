@@ -1,6 +1,6 @@
 import ejs from "ejs";
 import crypto from "crypto";
-import { Schema, bl } from 'express-validator'
+import { Schema } from 'express-validator'
 
 import config from "@config";
 import * as utils from "@controllers/utils";
