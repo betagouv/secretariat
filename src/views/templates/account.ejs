@@ -508,16 +508,16 @@
     <% if(emailInfos || (redirections && redirections.length > 0)) { %>
         <div class="panel">
             <h3>❗ Clôturer mon compte</h3>
-            <p>Si tu as quitté la communauté, clôture ton compte :</p>
+            <p>Si tu as quitté la communauté, clôture ton compte, ce qui aura pour effet de :</p>
             <ul>
                 <li>
-                    Clôturer ton compte email
+                    Supprimer ton compte email
                 </li>
                 <li>
                     Supprimer toutes tes redirections
                 </li>
                 <li>
-                    Rediriger des éventuels email vers depart@beta.gouv.fr
+                    Rediriger d'éventuels emails vers depart@beta.gouv.fr, ce qui enverra une réponse automatique à l'expéditeur pour l'informer que le compte n'existe plus.
                 </li>
             </ul>
             <form onsubmit="const proceed = confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?'); event.submitter && (event.submitter.disabled = proceed); return proceed;" class="no-margin" action="/users/<%= userInfos.id %>/email/delete" method="POST">
