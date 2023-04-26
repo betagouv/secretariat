@@ -1,6 +1,7 @@
 var map = new maplibregl.Map({
     container: 'mapcontainer', // container id
-    style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL', //style, //https://etalab-tiles.fr/styles/osm-bright/style.json?vector', // style URL
+    style: '/static/json/osm.style.json',
+    // style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL', //style, //https://etalab-tiles.fr/styles/osm-bright/style.json?vector', // style URL
     // center: [2.087, 46],
     zoom: 0,
     zoomMobile: 0
@@ -13,7 +14,8 @@ function capitalizeWord(str) {
     }
 
 // var DEPARTEMENTS_GEOJSON = "https://gist.githubusercontent.com/maximepvrt/26dd5ed5f26a63bc3040cb3f67594325/raw/c6af19f94f2743b9a445a5a2e6d657a4c0bfc3d6/departements-avec-outre-mer.geojson"
-var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson' 
+// var DEPARTEMENTS_GEOJSON = 'https://raw.githubusercontent.com/etalab/barometre-resultats/master/frontend/static/datasets/geodata/departements-1000m.geojson' 
+var DEPARTEMENTS_GEOJSON = '/static/json/departements-1000m.geojson'
 var groupBy = function(xs, key) {
     return xs.reduce(function(rv, x) {
         (rv[x[key]] = rv[x[key]] || []).push(x);
