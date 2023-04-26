@@ -6,7 +6,8 @@ export const sendInfoToChat = makeSendIntoToChatFromMattermost({
     config: {
         WEBHOOK_GENERAL: config.CHAT_WEBHOOK_URL_GENERAL,
         WEBHOOK_SECRETARIAT: config.CHAT_WEBHOOK_URL_SECRETARIAT,
-        WEBHOOK_DINUM_CENTREVILLE: config.CHAT_WEBHOOK_URL_DINUM
+        WEBHOOK_DINUM_CENTREVILLE: config.CHAT_WEBHOOK_URL_DINUM,
+        WEBHOOK_GIP: config.CHAT_WEBHOOK_URL_GIP
     }
 })
 
