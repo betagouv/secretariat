@@ -73,7 +73,7 @@
     "knex": "^2.4.0",
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.1",
-    "marked": "^4.2.3",
+    "marked": "^4.3.0",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.38",
     "nodemailer": "^6.8.0",
@@ -105,7 +105,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
-    "@types/marked": "^4.0.7",
+    "@types/marked": "^4.0.8",
     "@types/mocha": "^10.0.0",
     "@types/node": "^18.11.18",
     "@types/sinon": "^10.0.13",
