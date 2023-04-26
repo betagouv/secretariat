@@ -60,6 +60,7 @@
     "express": "^4.18.2",
     "express-jwt": "^8.2.1",
     "express-rate-limit": "^6.7.0",
+    "express-sanitizer": "^1.0.6",
     "express-session": "^1.17.3",
     "express-validator": "^7.0.1",
     "front-matter": "^4.0.2",

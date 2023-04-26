@@ -4,6 +4,7 @@ import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import { expressjwt, Request } from "express-jwt";
+import expressSanitizer from 'express-sanitizer';
 import { checkSchema } from 'express-validator'
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
@@ -90,6 +91,7 @@ app.use(session({
     sameSite: 'lax' 
 }})); // Only used for Flash not safe for others purposes
 app.use(flash());
+app.use(expressSanitizer());
 // const router = express.Router()
 // router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
