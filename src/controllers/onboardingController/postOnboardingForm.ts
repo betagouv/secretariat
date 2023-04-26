@@ -1,5 +1,6 @@
 import ejs from "ejs";
 import crypto from "crypto";
+import { Schema, bl } from 'express-validator'
 
 import config from "@config";
 import * as utils from "@controllers/utils";
@@ -55,6 +56,46 @@ async function createNewcomerGithubFile(username, content, referent) {
         }
       });
     return prInfo;
+}
+
+export const postFormSchema: Schema = {
+    firstName: {
+      trim: true, 
+      blacklist: {
+        options: ['<>&"/']
+      },
+      notEmpty: {
+      errorMessage: 'Le nom de famille est obligatoire',
+    }},
+    lastName: { trim: true,
+      blacklist: {
+        options: ['<>&"/']
+      },
+      notEmpty: {
+      errorMessage: 'Le prénom  est obligatoire',
+    }},
+    description: {
+      trim: true,
+      blacklist: {
+        options: ['<>&/']
+      },
+    },
+    role: {
+      trim: true,
+      escape: true,
+      notEmpty: {
+        errorMessage: 'Le role est obligatoire',
+      }
+    },
+    start: {
+      escape: true
+    },
+    end: {
+      escape: true
+    },
+    employer: {
+      escape: true
+    }
 }
 
 export async function postForm(req, res) {

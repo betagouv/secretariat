@@ -609,8 +609,8 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'René d\'Herblay',
-          lastName: 'D\'Aramitz',
+          firstName: `René d'Herblay`,
+          lastName: `D'Aramitz`,
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -634,7 +634,7 @@ describe('Onboarding', () => {
         .type('form')
         .send({
           firstName: 'René 123 *ł',
-          lastName: 'D\'A552',
+          lastName: `D'A552`,
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -657,8 +657,8 @@ describe('Onboarding', () => {
         .post('/onboarding')
         .type('form')
         .send({
-          firstName: 'René d\'Herblay',
-          lastName: 'D\'Aramitz',
+          firstName: `René d'Herblay`,
+          lastName: `D'Aramitz`,
           role: 'Dev',
           start: '2020-01-01',
           end: '2021-01-01',
@@ -764,6 +764,27 @@ describe('Onboarding', () => {
         }).update({
           secondary_email: null,
         })
+    });
+
+    it('Field should be sanitized', async () => {
+      await chai.request(app)
+        .post('/onboarding')
+        .type('form')
+        .send({
+          firstName: '</scrip</script>t><img src =q onerror=prompt(8 )>',
+          lastName: '</scrip</script>t><img src =q onerror=prompt(8 )>',
+          role: '</scrip</script>t><img src =q onerror=prompt(8 )>',
+          start: '2020-01-01',
+          end: '2021-01-01',
+          status: 'Independant',
+          domaine: 'Coaching',
+          email: 'xssinjection@example.com',
+          referent: 'membre.actif',
+          memberType: 'beta',
+          isEmailBetaAsked: true,
+        })
+        const dbRes = await knex('users').where({ secondary_email: 'xssinjection@example.com' }).first()
+        dbRes.username.should.equal('scripscripttimg.src.q.onerrorprompt.scripscripttimg.src.q.onerrorprompt')
     });
   });
 });

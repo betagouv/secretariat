@@ -4,7 +4,7 @@ import flash from 'connect-flash';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import { expressjwt, Request } from "express-jwt";
-import expressSanitizer from 'express-sanitizer';
+import { checkSchema } from 'express-validator'
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
 import path from 'path';
@@ -36,6 +36,7 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
+import { postFormSchema } from '@controllers/onboardingController';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -82,9 +83,13 @@ app.use(
 );
 
 app.use(cookieParser(config.secret));
-app.use(session({ cookie: { maxAge: 300000, sameSite: 'lax' } })); // Only used for Flash not safe for others purposes
+app.use(session({ 
+  cookie: {
+    maxAge: 300000,
+    httpOnly: true,
+    sameSite: 'lax' 
+}})); // Only used for Flash not safe for others purposes
 app.use(flash());
-app.use(expressSanitizer());
 // const router = express.Router()
 // router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -208,7 +213,7 @@ app.get(routes.ADMIN_MATTERMOST_MESSAGE_API, permit(MemberRole.MEMBER_ROLE_ADMIN
 app.post(routes.ADMIN_MATTERMOST_SEND_MESSAGE, permit(MemberRole.MEMBER_ROLE_ADMIN), express.json({type: '*/*'}), adminController.sendMessageToUsersOnChat);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
-app.post(routes.ONBOARDING_ACTION, onboardingController.postForm);
+app.post(routes.ONBOARDING_ACTION, checkSchema(onboardingController.postFormSchema), onboardingController.postForm);
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post('/account/set_email_responder', accountController.setEmailResponder);
 app.post('/account/delete_email_responder', accountController.deleteEmailResponder);
