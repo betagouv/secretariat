@@ -37,7 +37,7 @@ export async function setEmailAddressesActive() {
       if (user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING) {
         listTypes.push(MAILING_LIST_TYPE.ONBOARDING)
       }
-      addContactsToMailingLists({
+      await addContactsToMailingLists({
         listTypes: listTypes,
         contacts: [{
           email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
