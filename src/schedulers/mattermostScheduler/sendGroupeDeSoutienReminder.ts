@@ -40,7 +40,10 @@ const datesAreOnSameDay = (first: Date, second: Date) =>
 export const sendGroupDeSoutienReminder = async (canal: string='general', dayOfTheWeek:DAY_OF_THE_WEEK=0, nXDayOfTheWeek: number=0) => {
      const message = `# Groupe de soutien 
 Si vous vous trouvez dans une situation de conflit, mal-être ou souffrance, violence ou harcèlement et que vous souhaitez en parler, un groupe de soutien constitué de membres de la communauté est disponible pour vous écouter en respectant la confidentialité de votre situation. 
-Vous pouvez les joindre à l'adresse mail soutien@beta.gouv.fr ou individuellement. 
+Pour les joindre : 
+👉 [Choisir un créneau](https://app.calendso.incubateur.net/team/soutien/prise-de-contact-avec-l--quipe-de-soutien?duration=60) pour échanger avec un·e des membres (attribution aléatoire)
+👉 Contacter l'équipe par email : soutien@beta.gouv.fr
+👉 Contacter un·e membre individuellement sur Mattermost, par email ou en personne.
 *Les membres du groupe : Anne Poirot, Bréanne Mallat, Camille Garrigue, Caroline Lawson, Clémence Lopez, Denis Baudot, Florian Briand , Mélodie Dahi, Rebecca Dumazert.*` 
      const XMondayOfTheMonth = getAllXDaysOfTheMonth(dayOfTheWeek)[nXDayOfTheWeek]
      if (datesAreOnSameDay(XMondayOfTheMonth, new Date())) {
