@@ -147,5 +147,5 @@ export default {
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
   REDIS_URL: process.env.REDIS_URL,
-  SESSION_SECRET: process.env.SESSION_SECRET || function(){ throw new Error('Session secret should be set')},
+  SESSION_SECRET: process.env.SESSION_SECRET || function(){ throw new Error('Session secret should be set')}(),
 };

@@ -37,7 +37,7 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
-import sessionStore from './infra/sessionStore';
+import sessionStore from './infra/sessionStore/sessionStore';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -83,12 +83,14 @@ app.use(
   express.static(path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
 );
 
-app.use(cookieParser(config.secret));
+// app.use(cookieParser(config.secret));
+console.log('lcs index secret', config.SESSION_SECRET, config.secret, process.env.NODE_ENV)
 app.use(session({ 
   store: process.env.NODE_ENV !== 'test' ? sessionStore : null,
-  secret: config.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: true,
+  secret: config.secret,
+  resave: false, // required: force lightweight session keep alive (touch)
+  saveUninitialized: false, // recommended: only save session when data exists
+  unset: 'destroy',
   cookie: {
     maxAge: 300000,
     httpOnly: true,
@@ -106,11 +108,14 @@ app.use(rateLimiter);
 const getJwtTokenForUser = (id) =>
   jwt.sign({ id }, config.secret, { expiresIn: '30 days' });
 
+
 app.use(
   expressjwt({
     secret: config.secret,
     algorithms: ['HS256'],
-    getToken: (req) => req.cookies.token || null,
+    getToken: (req) => {
+      return req.session && req.session.token || null
+    },
   }).unless({
     path: [
       '/',
@@ -137,7 +142,7 @@ app.use(
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req: Request, res, next) => {
   if (req.auth && req.auth.id) {
-    res.cookie('token', getJwtTokenForUser(req.auth.id), { sameSite: 'lax' });
+    req.session.token = getJwtTokenForUser(req.auth.id), { sameSite: 'lax' };
   }
   next();
 });

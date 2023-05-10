@@ -3,7 +3,6 @@ export function getLogout(req, res) {
       if (err) {
           return console.log(err);
       }
-      res.redirect("/login")
+      res.clearCookie('token').redirect('/login');
   });
-  // res.clearCookie('token').redirect('/login');
 }

@@ -254,7 +254,7 @@ export async function postSignIn(req, res) {
 
     await knex('login_tokens').where({ email: dbToken.email }).del();
 
-    res.cookie('token', getJwtTokenForUser(dbToken.username));
+    req.session.token = getJwtTokenForUser(dbToken.username);
     return res.redirect(`${decodeURIComponent(req.body.next) || '/account'}` + `${req.query.anchor ? `#` + req.query.anchor : ''}`);
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
