@@ -37,6 +37,7 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
+import sessionStore from './infra/sessionStore';
 
 const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -84,12 +85,17 @@ app.use(
 
 app.use(cookieParser(config.secret));
 app.use(session({ 
+  store: process.env.NODE_ENV !== 'test' ? sessionStore : null,
+  secret: config.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
   cookie: {
     maxAge: 300000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
     sameSite: 'lax' 
-}})); // Only used for Flash not safe for others purposes
+  }}
+)); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
 // const router = express.Router()
