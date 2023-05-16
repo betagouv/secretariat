@@ -17,5 +17,4 @@ let sessionStore = new RedisStore({
   client: redisClient,
   prefix: "cookiestore:",
 })
-
 export default sessionStore

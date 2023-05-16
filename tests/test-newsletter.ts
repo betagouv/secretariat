@@ -14,6 +14,8 @@ import { createNewsletter, getJobOfferContent } from '@schedulers/newsletterSche
 import utils from './utils';
 import * as chat from '@/infra/chat';
 import * as Email from '@/config/email.config';
+import * as session from '@/middlewares/session'
+
 chai.use(chaiHttp);
 
 const should = chai.should();
@@ -93,11 +95,15 @@ describe('Newsletter', () => {
   let clock;
 
   describe('should get newsletter data for newsletter page', () => {
+    let getToken
     beforeEach(async () => {
       await knex('newsletters').insert([...mockNewsletters, mockNewsletter]);
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
     });
     afterEach(async () => {
       await knex('newsletters').truncate();
+      getToken.restore()
     });
 
     it('should get previous newsletters and current newsletter', (done) => {
@@ -106,7 +112,6 @@ describe('Newsletter', () => {
       chai
         .request(app)
         .get('/newsletters')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include(`${config.padURL}/5456dsadsahjww`);
           const allNewsletterButMostRecentOne = mockNewsletters.filter(
@@ -134,6 +139,7 @@ describe('Newsletter', () => {
   describe('cronjob newsletter', () => {
     let slack;
     let jobsStub;
+    let getToken
     beforeEach((done) => {
       slack = sinon.spy(chat, 'sendInfoToChat');
       jobsStub = sinon
@@ -149,12 +155,15 @@ describe('Newsletter', () => {
           "recruitment_process": "<p>Le process de recrutement est de deux entretiens (techniques et produit), avant un <strong>démarrage souhaité dès que possible</strong>. </p>\n\n<p>Le poste ouvert pour une indépendante ou un indépendant pour un <strong>premier contrat de 3 mois renouvelable</strong>, à temps plein (3/5 ou 4/5 par semaine négociable selon le profil).</p>\n\n<p>Le télétravail est possible, et une présence ponctuelle à Paris est demandée pour participer aux sessions stratégiques et collaboratives.</p>\n\n<p>Enfin, le TJM est à définir et selon expérience, dans une fourchette entre 500 et 600 euros / jours.</p>\n",
           }],
       ));
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
       done();
     });
 
     afterEach((done) => {
       jobsStub.restore()
       slack.restore();
+      getToken.restore()
       done();
     });
 
@@ -374,6 +383,14 @@ describe('Newsletter', () => {
   });
 
   describe('newsletter interface', () => {
+    let getToken
+    beforeEach(async () => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    });
+    afterEach(async () => {
+      getToken.restore()
+    });
     it('should validate newsletter', async () => {
       await knex('newsletters').insert([
         {
@@ -385,7 +402,6 @@ describe('Newsletter', () => {
       await chai
         .request(app)
         .get('/validateNewsletter')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters')
         .where({ id: mockNewsletter.id })
         .first();
@@ -406,7 +422,6 @@ describe('Newsletter', () => {
       await chai
         .request(app)
         .get('/cancelNewsletter')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       const newsletter = await knex('newsletters')
         .where({ id: mockNewsletter.id })
         .first();

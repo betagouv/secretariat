@@ -8,6 +8,7 @@ import * as controllerUtils from '@controllers/utils';
 import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
+import * as session from '@/middlewares/session';
 
 chai.use(chaiHttp);
 
@@ -47,13 +48,23 @@ describe.skip('Visit', () => {
   });
 
   describe('authenticated visit endpoint tests', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should add visit info in db when sollicited', (done) => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
         .post('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send('visitorList=Membre Nouveau')
         .send('visitorList=Julien Dauphant')
@@ -104,7 +115,6 @@ describe.skip('Visit', () => {
       // use `send` function multiple times instead of json to be able to send visitorList array
       chai.request(app)
         .post('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send('visitorList=Membre Nouveau')
         .send('referentUsername=julien.dauphant')
@@ -138,9 +148,10 @@ describe.skip('Visit', () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       // use `send` function multiple times instead of json to be able to send visitorList array
+      getToken.returns(utils.getJWT('membre.expire'))
+
       chai.request(app)
           .post('/visit')
-          .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
           .send('visitorList=Membre Nouveau')
           .send('visitorList=Julien Dauphant')
@@ -157,9 +168,9 @@ describe.skip('Visit', () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       // use `send` function multiple times instead of json to be able to send visitorList array
+      getToken.returns(utils.getJWT('membre.expire'))
       chai.request(app)
           .post('/visit')
-          .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
           .send('visitorList=Membre Nouveau')
           .send('visitorList=Julien Dauphant')
@@ -176,9 +187,10 @@ describe.skip('Visit', () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       // use `send` function multiple times instead of json to be able to send visitorList array
+      getToken.returns(utils.getJWT('membre.expire'))
+
       chai.request(app)
           .post('/visit')
-          .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
           .send('visitorList=Membre Nouveau')
           .send('visitorList=Julien Dauphant')
@@ -194,9 +206,9 @@ describe.skip('Visit', () => {
       const date = new Date(new Date().setDate(new Date().getDate() + 1));
       date.setHours(0, 0, 0, 0);
       // use `send` function multiple times instead of json to be able to send visitorList array
+      getToken.returns(utils.getJWT('membre.expire'))
       chai.request(app)
           .post('/visit')
-          .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
           .type('form')
           .send('referentUsername=membre.actif')
           .send('referent=Membre Actif')
@@ -210,6 +222,17 @@ describe.skip('Visit', () => {
   });
 
   describe('authenticated visit endpoint get futur visits lists', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should show any visits if no visits in the future', async () => {
       const date = new Date(new Date().setDate(new Date().getDate() - 1));
       date.setHours(0, 0, 0, 0);
@@ -222,9 +245,9 @@ describe.skip('Visit', () => {
       };
       await knex('visits').insert([inviteRequest1]);
       // use `send` function multiple times instead of json to be able to send visitorList array
+      getToken.returns(utils.getJWT('membre.expire'))
       const res = await chai.request(app)
         .get('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       res.text.should.not.include('<td>John Doe</td>');
     });
 
@@ -250,7 +273,6 @@ describe.skip('Visit', () => {
       // use `send` function multiple times instead of json to be able to send visitorList array
       const res = await chai.request(app)
         .get('/visit')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`);
       res.text.should.include('<td>John Doe</td>');
       res.text.should.include('<td>Membre Actif</td>');
       res.text.should.include('<td>Jean Dupont</td>');

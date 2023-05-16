@@ -1,7 +1,7 @@
 import config from "@config";
 
 export function getIndex(req, res) {
-  if (!req.session || !req.session.token) {
+  if (!req.auth) {
     return res.redirect('/login');
   }
 

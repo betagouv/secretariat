@@ -1,5 +1,4 @@
 import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
 import BetaGouv from '../betagouv';
 import config from '@config';
 import knex from '../db';
@@ -9,6 +8,7 @@ import { HomePage } from '../views';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
 import { isValidEmail } from './validator';
+import { getJwtTokenForUser } from '@/middlewares/session';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -21,9 +21,6 @@ function renderLogin(req, res, params) {
     })
   )
 }
-
-const getJwtTokenForUser = (id) =>
-  jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 
 export function generateToken() {
   return crypto.randomBytes(256).toString('base64');

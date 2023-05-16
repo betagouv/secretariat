@@ -1,13 +1,11 @@
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import flash from 'connect-flash';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from 'express-sanitizer';
 import { checkSchema } from 'express-validator'
 import session from 'express-session';
-import jwt from 'jsonwebtoken';
 import path from 'path';
 import config from '@config';
 import * as accountController from '@controllers/accountController';
@@ -38,8 +36,9 @@ import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import sessionStore from './infra/sessionStore/sessionStore';
+import { getJwtTokenForUser, getToken } from '@/middlewares/session';
 
-const app = express();
+export const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
 
 app.set('view engine', 'ejs');
@@ -84,7 +83,6 @@ app.use(
 );
 
 // app.use(cookieParser(config.secret));
-console.log('lcs index secret', config.SESSION_SECRET, config.secret, process.env.NODE_ENV)
 app.use(session({ 
   store: process.env.NODE_ENV !== 'test' ? sessionStore : null,
   secret: config.secret,
@@ -105,20 +103,16 @@ app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(rateLimiter);
 
-const getJwtTokenForUser = (id) =>
-  jwt.sign({ id }, config.secret, { expiresIn: '30 days' });
-
 
 app.use(
   expressjwt({
     secret: config.secret,
     algorithms: ['HS256'],
     getToken: (req) => {
-      return req.session && req.session.token || null
+      return getToken(req)
     },
   }).unless({
     path: [
-      '/',
       '/login',
       routes.LOGIN_API,
       '/signin',

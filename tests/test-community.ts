@@ -1,6 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
+import sinon from 'sinon';
+import * as session from '@/middlewares/session';
 import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
@@ -24,10 +26,21 @@ describe('Community', () => {
 
   describe('GET /community authenticated', () => {
 
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
+
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/community')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
@@ -37,7 +50,6 @@ describe('Community', () => {
     it('should return a valid page for an existing user', (done) => {
       chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -48,7 +60,6 @@ describe('Community', () => {
     it('should redirect to community page if an unknown user is specified', (done) => {
       chai.request(app)
         .get('/community/membre.unknown')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
@@ -60,7 +71,6 @@ describe('Community', () => {
     it('should redirect to account if the user is the current user', (done) => {
       chai.request(app)
         .get('/community/membre.actif')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);
@@ -72,7 +82,6 @@ describe('Community', () => {
     it("should show the user's information if the user exists", (done) => {
       chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('Membre Parti');
           res.text.should.include('du 03/11/2016');
@@ -92,7 +101,6 @@ describe('Community', () => {
       
       const res = await chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.text.should.include('Email secondaire : </span> perso@example.com');
       await knex('users').where({
         username: 'membre.parti',
@@ -105,7 +113,6 @@ describe('Community', () => {
     it('should not show the secondary email if it does not exist', (done) => {
       chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('Email secondaire : </span> Non renseigné');
           done();
@@ -115,7 +122,6 @@ describe('Community', () => {
     it('should show the email creation form for email-less users', (done) => {
       chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('action="/users/membre.parti/email" method="POST"');
           done();
@@ -132,7 +138,6 @@ describe('Community', () => {
       
       const res = await chai.request(app)
             .get('/community/membre.parti')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
 
       res.text.should.include('<input value="perso@example.com" name="to_email"');
       await knex('users').where({ username: 'membre.parti'}).update({
@@ -155,7 +160,6 @@ describe('Community', () => {
       utils.mockOvhTime();
       const res = await chai.request(app)
         .get('/community/membre.parti')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
 
       res.text.should.not.include('action="/users/membre.parti/email" method="POST">');
     });
@@ -174,7 +178,6 @@ describe('Community', () => {
 
       chai.request(app)
         .get('/community/membre.expire')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('Contrat de Membre Expiré arrivé à expiration');
           res.text.should.not.include('action="/users/membre.expire/email" method="POST">');
@@ -187,7 +190,6 @@ describe('Community', () => {
     it('should not show marrainage for expired users', (done) => {
       chai.request(app)
         .get('/community/membre.expire')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.not.include("L'accueillir ?");
           res.text.should.not.include('Chercher un·e marrain·e');

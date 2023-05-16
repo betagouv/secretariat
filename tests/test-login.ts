@@ -23,24 +23,6 @@ describe('Login', () => {
     sendEmailStub.restore();
   });
 
-  // describe("POST /login with user actif", () => {
-  //   it("should render login with message", (done) => {
-  //     utils.mockUsers();
-
-  //     chai.request(app)
-  //       .post('/login')
-  //       .type('form')
-  //       .send({
-  //         id: 'membre.actif'
-  //       })
-  //       .end((err, res) => {
-  //         res.should.have.status(200);
-  //         res.text.should.include('Email de connexion envoyé pour membre.actif');
-  //         done();
-  //       });
-  //   });
-  // });
-
   describe('POST /login with next query param and anchor', () => {
     it('should keep the next query param', async () => {
       const res = await chai.request(app)

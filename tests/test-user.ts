@@ -12,6 +12,7 @@ import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresse
 import testUsers from './users.json';
 import utils from './utils';
 import { EmailStatusCode } from '@/models/dbUser/dbUser'
+import * as session from '@/middlewares/session';
 
 chai.use(chaiHttp);
 
@@ -35,18 +36,20 @@ describe('User', () => {
     });
   });
   describe('POST /users/:username/email authenticated', () => {
-
-
-    let sendEmailStub;
+    let getToken
+        let sendEmailStub;
     beforeEach((done) => {
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
         .returns(Promise.resolve(true))
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
       done()
     });
 
     afterEach((done) => {
       sendEmailStub.restore()
+      getToken.restore()
       done()
     });
 
@@ -60,7 +63,6 @@ describe('User', () => {
           await chai
             .request(app)
             .post('/users/membre.nouveau/email')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .type('form')
             .send({
               to_email: 'test@example.com',
@@ -97,7 +99,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.nouveau/email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -116,7 +117,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.sans.fiche/email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -135,7 +135,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.expire/email')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -150,11 +149,11 @@ describe('User', () => {
       const ovhEmailCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
+      getToken.returns(utils.getJWT('membre.expire'))
 
       chai
         .request(app)
         .post('/users/membre.nouveau/email')
-        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -172,10 +171,10 @@ describe('User', () => {
       await knex('users').where({ username: 'membre.actif'}).update({
         primary_email: null
       })
+      getToken.returns(utils.getJWT('julien.dauphant'))
       await chai
         .request(app)
         .post('/users/membre.actif/email')
-        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -190,10 +189,10 @@ describe('User', () => {
         .post(/^.*email\/domain\/.*\/account/)
         .reply(200);
       await knex('users').where({ username: 'membre.actif'}).delete()
+      getToken.returns(utils.getJWT('julien.dauphant'))
       await chai
         .request(app)
         .post('/users/membre.actif/email')
-        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -221,10 +220,11 @@ describe('User', () => {
     });
   });
   describe('POST /api/users/:username/create-email authenticated', () => {
-
-
+    let getToken
     let sendEmailStub;
     beforeEach((done) => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
       sendEmailStub = sinon
         .stub(controllerUtils, 'sendMail')
         .returns(Promise.resolve(true))
@@ -233,6 +233,7 @@ describe('User', () => {
 
     afterEach((done) => {
       sendEmailStub.restore()
+      getToken.restore()
       done()
     });
 
@@ -246,7 +247,6 @@ describe('User', () => {
           await chai
             .request(app)
             .post('/api/users/membre.nouveau/create-email')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .send({
               to_email: 'test@example.com',
             })
@@ -309,6 +309,17 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should ask OVH to create a redirection', (done) => {
       const ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
@@ -317,7 +328,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/redirections')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -336,7 +346,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.nouveau/redirections')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -351,11 +360,10 @@ describe('User', () => {
       const ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200);
-
+      getToken.returns(utils.getJWT('membre.expire'))
       chai
         .request(app)
         .post('/users/membre.expire/redirections')
-        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
           to_email: 'test@example.com',
@@ -380,6 +388,17 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should ask OVH to delete a redirection', (done) => {
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
@@ -388,7 +407,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.true;
           done();
@@ -403,7 +421,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.nouveau/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.false;
           done();
@@ -414,11 +431,11 @@ describe('User', () => {
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/.*/)
         .reply(200);
+      getToken.returns(utils.getJWT('membre.expire'))
 
       chai
         .request(app)
         .post('/users/membre.expire/redirections/test-2@example.com/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.false;
           done();
@@ -460,11 +477,21 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/password authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should redirect to user page', (done) => {
       chai
         .request(app)
         .post('/users/membre.actif/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
@@ -498,11 +525,10 @@ describe('User', () => {
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
-
+      getToken.returns(utils.getJWT(`${username}`))
       await chai
         .request(app)
         .post(`/users/${username}/password`)
-        .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
@@ -533,11 +559,10 @@ describe('User', () => {
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
-      
+      getToken.returns(utils.getJWT(`${username}`))
       await chai
       .request(app)
       .post(`/users/${username}/password`)
-      .set('Cookie', `token=${utils.getJWT(`${username}`)}`)
       .type('form')
       .send({
         new_password: 'Test_Password_1234',
@@ -555,7 +580,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.nouveau/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
@@ -569,11 +593,11 @@ describe('User', () => {
       ovhPasswordNock = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
         .reply(200);
+      getToken.returns(utils.getJWT('membre.expire'))
 
       chai
         .request(app)
         .post('/users/membre.expire/password')
-        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
           new_password: 'Test_Password_1234',
@@ -591,7 +615,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           new_password: '12345678',
@@ -609,7 +632,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/password')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           new_password: '1234567890123456789012345678901',
@@ -634,6 +656,16 @@ describe('User', () => {
   });
 
   describe('POST /user/:username/email/delete', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
     it('should keep the user in database secretariat', async() => {
       const addRedirection = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
@@ -644,7 +676,6 @@ describe('User', () => {
       await chai
         .request(app)
         .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       const dbNewRes = await knex('users').where({ username: 'membre.actif' })
       dbNewRes.length.should.equal(1);
       addRedirection.isDone().should.be.true;
@@ -662,7 +693,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhRedirectionDepartureEmail.isDone().should.be.true;
           done();
@@ -671,20 +701,30 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/secondary_email', () => {
-    it('should return 200 to add secondary email', (done) => {
-      chai
+    let getToken
+    
+    beforeEach((done) => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.nouveau'))
+      done()
+    })
+
+    afterEach((done) => {
+      getToken.restore()
+      done()
+    })
+    it('should return 200 to add secondary email', async () => {
+      const username = 'membre.nouveau';
+      const secondaryEmail = 'membre.nouveau.perso@example.com';
+      const res = await chai
         .request(app)
-        .post('/users/nouveau.membre/secondary_email')
-        .set('Cookie', `token=${utils.getJWT('nouveau.membre')}`)
+        .post('/users/membre.nouveau/secondary_email')
         .type('form')
         .send({
-          username: 'nouveau.membre',
-          secondaryEmail: 'nouveau.membre.perso@example.com',
+          username,
+          secondaryEmail,
         })
-        .end((err, res) => {
-          res.should.have.status(200);
-        });
-      done();
+      res.should.have.status(200);
     });
 
     it('should add secondary email', async () => {
@@ -696,14 +736,13 @@ describe('User', () => {
         .where({ username: 'membre.nouveau' })
         .first()
       await chai
-            .request(app)
-            .post(`/users/${username}/secondary_email`)
-            .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
-            .type('form')
-            .send({
-              username,
-              secondaryEmail,
-            })
+          .request(app)
+          .post(`/users/${username}/secondary_email`)
+          .type('form')
+          .send({
+            username,
+            secondaryEmail,
+          })
       const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
       dbNewRes.length.should.equal(1);
       dbNewRes[0].secondary_email.should.equal(secondaryEmail);
@@ -723,7 +762,6 @@ describe('User', () => {
         })
       await chai.request(app)
         .post(`/users/${username}/secondary_email/`)
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
         .type('form')
         .send({
           username,
@@ -741,6 +779,8 @@ describe('User', () => {
   describe('POST /users/:username/primary_email', () => {
     let mattermostGetUserByEmailStub
     let isPublicServiceEmailStub
+    let getToken
+
     beforeEach(() => {
       mattermostGetUserByEmailStub = sinon
         .stub(mattermost, 'getUserByEmail')
@@ -748,19 +788,22 @@ describe('User', () => {
       isPublicServiceEmailStub = sinon
         .stub(controllerUtils, 'isPublicServiceEmail')
         .returns(Promise.resolve(true));
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.nouveau'))
     })
     afterEach(() => {
       mattermostGetUserByEmailStub.restore();
       isPublicServiceEmailStub.restore();
+      getToken.restore()
     })
 
     it('should not update primary email if user is not current user', async() => {
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
+      getToken.returns(utils.getJWT('julien.dauphant'))
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
-        .set('Cookie', `token=${utils.getJWT('julien.dauphant')}`)
         .type('form')
         .send({
           username,
@@ -774,11 +817,11 @@ describe('User', () => {
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
       isPublicServiceEmailStub.returns(Promise.resolve(false));
+      getToken.returns(utils.getJWT('membre.nouveau'))
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
         .type('form')
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
         .send({
           username,
           primaryEmail: primaryEmail,
@@ -795,11 +838,11 @@ describe('User', () => {
       mattermostGetUserByEmailStub.returns(Promise.reject('404 error'));
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
+      getToken.returns(utils.getJWT('membre.nouveau'))
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
         .type('form')
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
         .send({
           username,
           primaryEmail: primaryEmail,
@@ -815,11 +858,11 @@ describe('User', () => {
       mattermostGetUserByEmailStub.returns(Promise.resolve(true));
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
+      getToken.returns(utils.getJWT('membre.nouveau'))
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
         .type('form')
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
         .send({
           username,
           primaryEmail: primaryEmail,
@@ -836,6 +879,17 @@ describe('User', () => {
   });
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should ask OVH to delete all redirections', (done) => {
       nock.cleanAll();
 
@@ -869,7 +923,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.expire/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.true;
           done();
@@ -884,7 +937,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhEmailDeletion.isDone().should.be.false;
           done();
@@ -920,11 +972,10 @@ describe('User', () => {
       const ovhRedirectionDeletion = nock(/.*ovh.com/)
         .delete(/^.*email\/domain\/.*\/redirection\/123123/)
         .reply(200);
-
+      getToken.returns(utils.getJWT('membre.nouveau'))
       chai
         .request(app)
         .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.nouveau')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.false;
           done();
@@ -964,7 +1015,6 @@ describe('User', () => {
       chai
         .request(app)
         .post('/users/membre.actif/email/delete')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           ovhRedirectionDeletion.isDone().should.be.true;
           done();
