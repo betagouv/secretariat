@@ -3,7 +3,7 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '@/index';
 import utils from './utils';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 chai.should();

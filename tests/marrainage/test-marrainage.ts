@@ -10,7 +10,7 @@ import knex from '@/db';
 import app from '@/index';
 import { EMAIL_TYPES, SendEmailProps } from '@/modules/email';
 import utils from '../utils';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session';
 
 import testUsers from "../users.json"
 

@@ -6,7 +6,7 @@ import { Response } from 'superagent';
 import config from '@config';
 import knex from '@/db';
 import app from '@/index';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session';
 import * as searchCommune from '@/lib/searchCommune';
 import utils from './utils';
 

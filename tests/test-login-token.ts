@@ -9,7 +9,7 @@ import app from '@/index';
 import db from '@/db';
 import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import utils from './utils';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 

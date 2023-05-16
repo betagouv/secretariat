@@ -12,7 +12,7 @@ import { createEmailAddresses, subscribeEmailAddresses, unsubscribeEmailAddresse
 import testUsers from './users.json';
 import utils from './utils';
 import { EmailStatusCode } from '@/models/dbUser/dbUser'
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session';
 
 chai.use(chaiHttp);
 

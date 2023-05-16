@@ -6,7 +6,7 @@ import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGit
 import sinon from 'sinon';
 import * as betagouv from '@/betagouv';
 import routes from '@/routes/routes';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session';
 
 chai.use(chaiHttp);
 

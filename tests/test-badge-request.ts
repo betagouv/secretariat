@@ -4,7 +4,7 @@ import app from '@/index';
 import routes from '@/routes/routes';
 import utils from './utils';
 import sinon from 'sinon';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 

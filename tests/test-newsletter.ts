@@ -14,7 +14,7 @@ import { createNewsletter, getJobOfferContent } from '@schedulers/newsletterSche
 import utils from './utils';
 import * as chat from '@/infra/chat';
 import * as Email from '@/config/email.config';
-import * as session from '@/middlewares/session'
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 
