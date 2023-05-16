@@ -36,7 +36,7 @@ import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import sessionStore from './infra/sessionStore/sessionStore';
-import { getJwtTokenForUser, getToken } from '@/middlewares/session';
+import { getJwtTokenForUser, getToken } from '@/helpers/session';
 
 export const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])

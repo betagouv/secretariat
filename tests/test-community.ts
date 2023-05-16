@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-import * as session from '@/middlewares/session';
+import * as session from '@/helpers/session';
 import knex from '@/db';
 import app from '@/index';
 import utils from './utils';

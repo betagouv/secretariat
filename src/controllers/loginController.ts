@@ -8,7 +8,7 @@ import { HomePage } from '../views';
 import { sendEmail } from '@/config/email.config';
 import { EMAIL_TYPES } from '@/modules/email';
 import { isValidEmail } from './validator';
-import { getJwtTokenForUser } from '@/middlewares/session';
+import { getJwtTokenForUser } from '@/helpers/session';
 
 function renderLogin(req, res, params) {
   res.send(
