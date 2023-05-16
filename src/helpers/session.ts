@@ -6,5 +6,5 @@ export const getToken = (req) => {
 }
 
 export const getJwtTokenForUser = (id) => {
-    jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
+    return jwt.sign({ id }, config.secret, { expiresIn: '7 days' });
 }
