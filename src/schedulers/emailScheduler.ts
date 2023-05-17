@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
 
-import BetaGouv from '../betagouv';
+import BetaGouv, { OvhRedirection } from '../betagouv';
 import config from '@config';
 import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
@@ -12,6 +12,7 @@ import { IEventBus } from '@/infra/eventBus';
 import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
 import { addContactsToMailingLists, smtpBlockedContactsEmailDelete } from '@/config/email.config';
 import betagouv from '../betagouv';
+import { isBetaEmail } from '@controllers/utils';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -61,21 +62,30 @@ export async function createRedirectionEmailAdresses() {
     .where('email_is_redirection', true)
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
-
+  console.log('User that should have redirection', dbUsers.map(dbUser => dbUser.username))
   const concernedUsers : Member[] = githubUsers.filter((user) => {
     return dbUsers.find((x) => x.username === user.id);
   })
 
-  const allOvhEmails : string[] = await BetaGouv.getAllEmailInfos();
+  const redirections : OvhRedirection[] = await BetaGouv.redirections()
+
+  const allOvhRedirectionEmails = Array.from(
+    new Set([
+      ...redirections.reduce(
+        (acc, r) => !isBetaEmail(r.to) ? [...acc, r.from] : acc,
+        [],
+      ),
+    ]),
+  ).sort();
   const unregisteredMembers : Member[] = _.differenceWith(
     concernedUsers,
-    allOvhEmails,
+    allOvhRedirectionEmails,
     differenceGithubOVH
   );
   console.log(
-    `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+    `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
   );
-
+  console.log('User that should have redirection', unregisteredMembers.map(u => u.id))
   // create email and marrainage
   return Promise.all(
     unregisteredMembers.map(async (member) => {
@@ -89,7 +99,7 @@ export async function createRedirectionEmailAdresses() {
           primary_email_status_updated_at: new Date()
       }).returning('*')
       console.log(
-          `Email suspendu pour ${user.username}`,
+          `Email redirection créée pour ${user.username}`,
       );
       // once email created we create marrainage
     })
