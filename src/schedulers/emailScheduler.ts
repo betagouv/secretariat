@@ -15,7 +15,7 @@ import betagouv from '../betagouv';
 import { isBetaEmail } from '@controllers/utils';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
-  return user.id === ovhAccountName;
+  return utils.buildBetaRedirectionEmail(user.id) === ovhAccountName;
 };
 
 const getValidUsers = async () => {
