@@ -1,13 +1,11 @@
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import flash from 'connect-flash';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from 'express-sanitizer';
 import { checkSchema } from 'express-validator'
 import session from 'express-session';
-import jwt from 'jsonwebtoken';
 import path from 'path';
 import config from '@config';
 import * as accountController from '@controllers/accountController';
@@ -37,8 +35,10 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
+import sessionStore from './infra/sessionStore/sessionStore';
+import { getJwtTokenForUser, getToken } from '@/helpers/session';
 
-const app = express();
+export const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
 
 app.set('view engine', 'ejs');
@@ -82,14 +82,22 @@ app.use(
   express.static(path.join(__dirname, process.env.NODE_ENV === 'production' ? '../..' : '..', 'node_modules/topbar/topbar.min.js'))
 );
 
-app.use(cookieParser(config.secret));
+// app.use(cookieParser(config.secret));
 app.use(session({ 
+  store: process.env.NODE_ENV !== 'test' ? sessionStore : null,
+  secret: config.secret,
+  resave: false, // required: force lightweight session keep alive (touch)
+  saveUninitialized: false, // recommended: only save session when data exists
+  unset: 'destroy',
+  proxy: true, // Required for Heroku & Digital Ocean (regarding X-Forwarded-For)
+  name: 'espaceMembreCookieName',
   cookie: {
     maxAge: 300000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    sameSite: 'lax' 
-}})); // Only used for Flash not safe for others purposes
+    sameSite: 'lax',
+  }}
+)); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
 // const router = express.Router()
@@ -97,17 +105,16 @@ app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(rateLimiter);
 
-const getJwtTokenForUser = (id) =>
-  jwt.sign({ id }, config.secret, { expiresIn: '30 days' });
 
 app.use(
   expressjwt({
     secret: config.secret,
     algorithms: ['HS256'],
-    getToken: (req) => req.cookies.token || null,
+    getToken: (req) => {
+      return getToken(req)
+    },
   }).unless({
     path: [
-      '/',
       '/login',
       routes.LOGIN_API,
       '/signin',
@@ -131,7 +138,7 @@ app.use(
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req: Request, res, next) => {
   if (req.auth && req.auth.id) {
-    res.cookie('token', getJwtTokenForUser(req.auth.id), { sameSite: 'lax' });
+    req.session.token = getJwtTokenForUser(req.auth.id), { sameSite: 'lax' };
   }
   next();
 });

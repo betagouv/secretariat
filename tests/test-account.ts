@@ -6,6 +6,7 @@ import { Response } from 'superagent';
 import config from '@config';
 import knex from '@/db';
 import app from '@/index';
+import * as session from '@/helpers/session';
 import * as searchCommune from '@/lib/searchCommune';
 import utils from './utils';
 
@@ -33,22 +34,32 @@ describe('Account', () => {
 
   describe('GET /account authenticated', () => {
     // first render of template 'account' can be slow and exceed timeout this test may fail if timeout < 2000
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
 
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
         });
     });
 
-    it('should show the logged user name', (done) => {
+    it('should show the logged user name membre actif', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
+          getToken.called.should.be.true
+          console.log(res.text)
           res.text.should.include('Membre Actif');
           done();
         });
@@ -57,7 +68,6 @@ describe('Account', () => {
     it('should show the logged user employer', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('independent/octo');
           done();
@@ -67,7 +77,6 @@ describe('Account', () => {
     it('should include a link to OVH\'s webmail', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include(`href="https://mail.ovh.net/roundcube/?_user=membre.actif@${config.domain}"`);
           done();
@@ -77,7 +86,6 @@ describe('Account', () => {
     it('should include a redirection creation form', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('action="/users/membre.actif/redirections" method="POST"');
           done();
@@ -87,7 +95,6 @@ describe('Account', () => {
     it('should not include a password modification if the email does not exist', (done) => {
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.not.include('action="/users/membre.actif/password" method="POST"');
           res.text.should.not.include('Nouveau mot de passe POP/IMAP/SMTP');
@@ -107,7 +114,6 @@ describe('Account', () => {
       utils.mockOvhRedirections();
       chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.text.should.include('action="/users/membre.actif/password" method="POST"');
           done();
@@ -122,7 +128,6 @@ describe('Account', () => {
         .then(() => {
           chai.request(app)
             .get('/account')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .end((err, res) => {
               res.text.should.not.include('action="/marrainage/reload" method="POST"');
               done();
@@ -139,7 +144,6 @@ describe('Account', () => {
         .then(() => {
           chai.request(app)
             .get('/account')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .end((err, res) => {
               res.text.should.include('action="/marrainage/reload" method="POST"');
               done();
@@ -150,7 +154,6 @@ describe('Account', () => {
     it('should display dates in french locale', async () => {
       const res = await chai.request(app)
         .get('/account')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
       res.text.should.include('2040-11-12');
     });
 
@@ -160,7 +163,6 @@ describe('Account', () => {
       .reply(200)
       chai.request(app)
         .post('/account/set_email_responder')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           from: '2020-01-01',
@@ -179,7 +181,6 @@ describe('Account', () => {
       .reply(200)
       chai.request(app)
         .post('/account/set_email_responder')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           method: 'update',
@@ -197,7 +198,6 @@ describe('Account', () => {
       const fetchCommuneDetailsStub = sinon.stub(searchCommune, 'fetchCommuneDetails').returns(Promise.resolve(null));
       await chai.request(app)
         .post('/account/info')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           gender: 'female',
@@ -212,7 +212,7 @@ describe('Account', () => {
     });
 
     it('should update communication_email value', async() => {
-      const username = 'membre.nouveau'
+      const username = 'membre.actif'
       await knex('users').update({ 
         communication_email: 'secondary',
         secondary_email: 'membre.nouveau@gmail.com'
@@ -222,23 +222,22 @@ describe('Account', () => {
       await chai.request(app)
         .post(`/account/update_communication_email/`)
         .type('form')
-        .set('Cookie', `token=${utils.getJWT(username)}`)
         .send({
           communication_email: 'primary',
         });
-
       const dbNewRes = await knex('users').select().where({ username })
       dbNewRes.length.should.equal(1);
       dbNewRes[0].communication_email.should.equal('primary');
-
+      try {
        await chai.request(app)
         .post(`/account/update_communication_email/`)
         .type('form')
-        .set('Cookie', `token=${utils.getJWT(username)}`)
         .send({
           communication_email: 'secondary',
         });
-
+      } catch (e) {
+        console.log(e)
+      }
       const dbNewRes2 = await knex('users').select().where({ username })
       dbNewRes2.length.should.equal(1);
       dbNewRes2[0].communication_email.should.equal('secondary');

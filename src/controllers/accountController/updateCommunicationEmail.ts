@@ -60,6 +60,7 @@ export async function updateCommunicationEmail(req, res) {
       console.log(`${req.auth.id} a mis à jour son choix d'email de communication.`);
       res.redirect(`/account`);
     };
+    res.redirect(`/account`);
   } catch (err) {
     console.error(err);
     req.flash('error', err.message);

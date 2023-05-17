@@ -18,6 +18,7 @@ services:
   redis:
     image: redis:alpine
     command: redis-server --requirepass localpwd
+    hostname: redis
     restart: always
     ports:
       - 6379:6379
@@ -48,6 +49,7 @@ services:
       REDIS_HOST: localhost
       REDIS_PASSWORD: localpwd
       REDIS_EVENT_BUS_STREAM_NAME: eventbus-local
+      REDIS_URL: redis://:localpwd@redis:6379
       HASH_SALT: "FakeHashSaltToChangeInProduction"
     ports:
       - "8100:8100"

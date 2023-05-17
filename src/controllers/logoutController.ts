@@ -1,3 +1,8 @@
 export function getLogout(req, res) {
-  res.clearCookie('token').redirect('/login');
+  req.session.destroy(err => {
+      if (err) {
+          return console.log(err);
+      }
+      res.clearCookie('token').redirect('/login');
+  });
 }

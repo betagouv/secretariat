@@ -8,19 +8,24 @@ import knex from '@/db';
 import app from '@/index';
 import db from '@/db';
 import { EmailStatusCode } from '@/models/dbUser/dbUser';
+import utils from './utils';
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 
 describe('Login token', () => {
   let sendEmailStub;
+  let getJwtTokenForUser
 
   beforeEach((done) => {
     sendEmailStub = sinon.stub(controllerUtils, 'sendMail').returns(Promise.resolve(true));
+    getJwtTokenForUser = sinon.spy(session, 'getJwtTokenForUser')
     done();
   });
 
   afterEach((done) => {
     sendEmailStub.restore();
+    getJwtTokenForUser.restore()
     done();
   });
 
@@ -95,7 +100,7 @@ describe('Login token', () => {
       token: encodeURIComponent(token)
     })
     .redirects(0)
-    res1.should.have.cookie('token');
+    getJwtTokenForUser.calledOnce.should.be.true;
 
     // Make the same GET request again (second time)
     const res2 = await chai.request(app).post(`/signin`)
@@ -107,7 +112,8 @@ describe('Login token', () => {
     .redirects(0)
 
     // Ensure the response did NOT set an auth cookie
-    res2.should.not.have.cookie('token');
+    getJwtTokenForUser.calledTwice.should.be.false;
+
   });
 
   it('should work if user has no primary_email', async () => {
@@ -167,6 +173,6 @@ describe('Login token', () => {
     // Try to login using this expired token
     const res = await chai.request(app).get(`/community?token=${encodeURIComponent(token)}`).redirects(0)
     // Ensure the response did NOT set an auth cookie
-    res.should.not.have.cookie('token');
+    getJwtTokenForUser.calledOnce.should.be.false;
   });
 });

@@ -10,6 +10,7 @@ import knex from '@/db';
 import app from '@/index';
 import { EMAIL_TYPES, SendEmailProps } from '@/modules/email';
 import utils from '../utils';
+import * as session from '@/helpers/session';
 
 import testUsers from "../users.json"
 
@@ -176,11 +177,21 @@ describe('Marrainage', () => {
   });
 
   describe('authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should generate an email when sollicited', (done) => {
       chai
         .request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           newcomerId: 'membre.actif',
@@ -202,7 +213,6 @@ describe('Marrainage', () => {
       chai
         .request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           newcomerId: 'membre.actif',
@@ -218,10 +228,11 @@ describe('Marrainage', () => {
     });
 
     it('email should include role only when startup not available', async () => {
+      getToken.returns(utils.getJWT('membre.plusieurs.missions'))
+
       await chai
         .request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.plusieurs.missions')}`)
         .type('form')
         .send({
           newcomerId: 'membre.plusieurs.missions',
@@ -237,7 +248,6 @@ describe('Marrainage', () => {
       chai
         .request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .type('form')
         .send({
           newcomerId: 'membre.actif',
@@ -255,10 +265,10 @@ describe('Marrainage', () => {
     });
 
     it('should not allow expired users to create a request', (done) => {
+      getToken.returns(utils.getJWT('membre.expire'))
       chai
         .request(app)
         .post('/marrainage')
-        .set('Cookie', `token=${utils.getJWT('membre.expire')}`)
         .type('form')
         .send({
           newcomerId: 'membre.actif',
@@ -275,6 +285,7 @@ describe('Marrainage', () => {
     it('canceling a request redirects to the newcommer page', (done) => {
       const newcomerId = 'membre.nouveau';
       const onboarderId = 'membre.actif';
+      getToken.returns(utils.getJWT(newcomerId))
 
       knex('marrainage')
         .insert({
@@ -285,7 +296,6 @@ describe('Marrainage', () => {
           chai
             .request(app)
             .post('/marrainage/cancel')
-            .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
             .type('form')
             .send({
               newcomerId,
@@ -302,6 +312,7 @@ describe('Marrainage', () => {
     it('canceling a request removes the DB entry', (done) => {
       const newcomerId = 'membre.nouveau';
       const onboarderId = 'membre.actif';
+      getToken.returns(utils.getJWT(newcomerId))
 
       knex('marrainage')
         .insert({
@@ -312,7 +323,6 @@ describe('Marrainage', () => {
           chai
             .request(app)
             .post('/marrainage/cancel')
-            .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
             .type('form')
             .send({
               newcomerId,
@@ -331,6 +341,7 @@ describe('Marrainage', () => {
     it('reloading a request redirects to the newcommer page', (done) => {
       const newcomerId = 'membre.nouveau';
       const onboarderId = 'membre.actif';
+      getToken.returns(utils.getJWT(newcomerId))
 
       knex('marrainage')
         .insert({
@@ -341,7 +352,6 @@ describe('Marrainage', () => {
           chai
             .request(app)
             .post('/marrainage/reload')
-            .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
             .type('form')
             .send({
               newcomerId,
@@ -358,6 +368,7 @@ describe('Marrainage', () => {
     it('reloading a request increases the count of the DB entry', (done) => {
       const newcomerId = 'membre.nouveau';
       const onboarderId = 'membre.actif';
+      getToken.returns(utils.getJWT(newcomerId))
 
       knex('marrainage')
         .insert({
@@ -368,7 +379,6 @@ describe('Marrainage', () => {
           chai
             .request(app)
             .post('/marrainage/reload')
-            .set('Cookie', `token=${utils.getJWT(newcomerId)}`)
             .type('form')
             .send({
               newcomerId,
@@ -410,7 +420,6 @@ describe('Marrainage', () => {
           chai
             .request(app)
             .post('/marrainage')
-            .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
             .type('form')
             .send({ newcomerId })
             .then(() =>

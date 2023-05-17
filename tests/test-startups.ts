@@ -6,6 +6,7 @@ import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGit
 import sinon from 'sinon';
 import * as betagouv from '@/betagouv';
 import routes from '@/routes/routes';
+import * as session from '@/helpers/session';
 
 chai.use(chaiHttp);
 
@@ -26,10 +27,20 @@ describe('Startup page', () => {
   });
 
   describe('GET /startups authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should return a valid page', (done) => {
       chai.request(app)
         .get('/startups')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .end((err, res) => {
           res.should.have.status(200);
           done();
@@ -48,9 +59,12 @@ describe('Startup page', () => {
   });
 
   describe('post /startups/:startup/info-form authenticated', () => {
+    let getToken
     let updateStartupGithubFileStub
     let startupInfosStub
     beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
       updateStartupGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
       updateStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
@@ -89,6 +103,7 @@ describe('Startup page', () => {
     })
 
     afterEach(() => {
+      getToken.restore()
       updateStartupGithubFileStub.restore()
       startupInfosStub.restore()
     })
@@ -100,7 +115,6 @@ describe('Startup page', () => {
           phase: 'jhdkljasdjajda',
           date: (new Date()).toISOString()
         })
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         res.should.have.status(400);
     });
 
@@ -111,7 +125,6 @@ describe('Startup page', () => {
           phase: 'alumni',
           date: '2020/10/254'
         })
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         res.should.have.status(400);
     });
 
@@ -122,7 +135,6 @@ describe('Startup page', () => {
           phase: 'alumni',
           date: (new Date()).toISOString()
         })
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         res.should.have.status(200);
     });
 
@@ -134,7 +146,6 @@ describe('Startup page', () => {
           date: (new Date()).toISOString(),
           text: 'test'
         })
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         updateStartupGithubFileStub.args[0][2].should.equals('test')
         res.should.have.status(200);
     });

@@ -1,7 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import sinon from 'sinon';
 import app from '@/index';
 import utils from './utils';
+import * as session from '@/helpers/session'
 
 chai.use(chaiHttp);
 chai.should();
@@ -22,7 +24,7 @@ describe('Home', () => {
       chai.request(app)
         .get('/')
         .end((err, res) => {
-          res.text.should.include('<form action="/login" method="POST"');
+          res.text.should.include('<form action="/login?next=/" method="POST"');
           res.text.should.include('<input name="emailInput"');
           res.text.should.include('<button class="button" id="primary_email_button">');
           done();
@@ -30,10 +32,20 @@ describe('Home', () => {
     });
   });
   describe('GET / authenticated', () => {
+    let getToken
+    
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+    })
+
+    afterEach(() => {
+      getToken.restore()
+    })
+
     it('should redirect to community page', (done) => {
       chai.request(app)
         .get('/')
-        .set('Cookie', `token=${utils.getJWT('membre.actif')}`)
         .redirects(0)
         .end((err, res) => {
           res.should.have.status(302);

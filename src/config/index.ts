@@ -146,5 +146,5 @@ export default {
   SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
-  REDIS_URL: process.env.REDIS_URL
+  REDIS_URL: process.env.REDIS_URL,
 };
