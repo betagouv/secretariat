@@ -89,19 +89,20 @@ export async function createRedirectionEmailAdresses() {
   // create email and marrainage
   return Promise.all(
     unregisteredMembers.map(async (member) => {
-      const email = utils.buildBetaRedirectionEmail(member.id, 'attr')
-      await betagouv.createRedirection(email, member.email, false)
-      const [user]: DBUser[] = await knex('users').where({
-          username: member.id,
-      }).update({
-          primary_email: email,
-          primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-          primary_email_status_updated_at: new Date()
-      }).returning('*')
-      console.log(
-          `Email redirection créée pour ${user.username}`,
-      );
-      // once email created we create marrainage
+      if (process.env.FEATURE_APPLY_CREATE_REDIRECTION_EMAIL) {
+        const email = utils.buildBetaRedirectionEmail(member.id, 'attr')
+        await betagouv.createRedirection(email, member.email, false)
+        const [user]: DBUser[] = await knex('users').where({
+            username: member.id,
+        }).update({
+            primary_email: email,
+            primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
+            primary_email_status_updated_at: new Date()
+        }).returning('*')
+        console.log(
+            `Email redirection créée pour ${user.username}`,
+        );
+      }
     })
   );
 }
