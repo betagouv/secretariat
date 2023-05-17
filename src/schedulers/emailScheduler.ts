@@ -89,7 +89,7 @@ export async function createRedirectionEmailAdresses() {
   // create email and marrainage
   return Promise.all(
     unregisteredMembers.map(async (member) => {
-      if (process.env.FEATURE_APPLY_CREATE_REDIRECTION_EMAIL) {
+      if (process.env.FEATURE_APPLY_CREATE_REDIRECTION_EMAIL || process.env.NODE_ENV === 'test') {
         const email = utils.buildBetaRedirectionEmail(member.id, 'attr')
         await betagouv.createRedirection(email, member.email, false)
         const [user]: DBUser[] = await knex('users').where({
