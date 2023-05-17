@@ -68,7 +68,6 @@ export async function createRedirectionEmailAdresses() {
     .where('email_is_redirection', true)
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
-  console.log('User that should have redirection', dbUsers.map(dbUser => dbUser.username))
   const concernedUsers : Member[] = githubUsers.filter((user) => {
     return dbUsers.find((x) => x.username === user.id);
   })
