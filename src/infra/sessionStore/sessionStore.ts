@@ -9,7 +9,15 @@ let redisClient = createClient({
 })
 redisClient.on('error', (err) => {
     console.log('Redis error: ', err);
-});
+})
+
+redisClient.on("ready", () => {
+  console.log('✅ 💃 redis have ready !')
+})
+
+redisClient.on("connect", () => {
+  console.log('✅ 💃 connect redis success !')
+})
       
 const RedisStore = connectRedis(session)
 // Initialize store.
