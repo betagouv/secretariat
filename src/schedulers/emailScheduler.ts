@@ -15,8 +15,14 @@ import betagouv from '../betagouv';
 import { isBetaEmail } from '@controllers/utils';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
+  return user.id === ovhAccountName;
+};
+
+const differenceGithubRedirectionOVH = function differenceGithubOVH(user, ovhAccountName) {
+  console.log(utils.buildBetaRedirectionEmail(user.id), ovhAccountName)
   return utils.buildBetaRedirectionEmail(user.id) === ovhAccountName;
 };
+
 
 const getValidUsers = async () => {
   const githubUsers = await BetaGouv.usersInfos();
@@ -80,7 +86,7 @@ export async function createRedirectionEmailAdresses() {
   const unregisteredMembers : Member[] = _.differenceWith(
     concernedUsers,
     allOvhRedirectionEmails,
-    differenceGithubOVH
+    differenceGithubRedirectionOVH
   );
   console.log(
     `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
