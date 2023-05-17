@@ -58,7 +58,7 @@ export async function postStartupInfoUpdate(req, res) {
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
-            pitch,
+            mission,
             stats_url,
             repository
         };
