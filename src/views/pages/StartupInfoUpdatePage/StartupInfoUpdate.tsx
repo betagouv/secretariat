@@ -17,7 +17,7 @@ import MarkdownIt from 'markdown-it';
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 interface StartupInfoFormData {
-    pitch?: string;
+    mission?: string;
     stats_url?: string;
     link?: string,
     dashlord_url?: string,
@@ -60,7 +60,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [text, setText] = React.useState('')
     const [link, setLink] = React.useState(props.formData.link)
     const [repository, setRepository] = React.useState(props.formData.repository)
-    const [pitch, setPitch] = React.useState(props.formData.pitch)
+    const [mission, setMission] = React.useState(props.formData.mission)
     const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
      const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
 
@@ -83,7 +83,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             text,
             link,
             dashlord_url,
-            pitch,
+            mission,
             stats_url,
             repository
         }).then(() => {
@@ -115,7 +115,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             link === props.formData.link &&
             dashlord_url === props.formData.dashlord_url &&
             stats_url === props.formData.stats_url &&
-            pitch === props.formData.pitch &&
+            mission === props.formData.mission &&
             repository === props.formData.repository
         ))
     }
@@ -215,11 +215,11 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                     onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
                                     value={stats_url}/>
                                 </div>
-                                <h5>Pitch : </h5>
+                                <h5>Mission : </h5>
                                 <div className="form__group">
-                                    <textarea name="pitch"
-                                    onChange={(e) => { setPitch(e.currentTarget.value)}}
-                                    value={pitch}/>
+                                    <textarea name="Mission"
+                                    onChange={(e) => { setMission(e.currentTarget.value)}}
+                                    value={mission}/>
                                 </div>                                
                                 <h5>Description du produit : </h5>
                                 <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>

@@ -35,7 +35,7 @@ export async function postStartupInfoUpdate(req, res) {
 
         const link = req.body.link
         const dashlord_url = req.body.dashlord_url
-        const pitch = req.body.pitch
+        const mission = req.body.mission
         const stats_url = req.body.stats_url
         const repository = req.body.repository
 
@@ -58,7 +58,7 @@ export async function postStartupInfoUpdate(req, res) {
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
-            pitch,
+            mission,
             stats_url,
             repository
         };
