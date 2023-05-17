@@ -35,7 +35,7 @@ import { getStartupInfoUpdate, postStartupInfoUpdate } from './controllers/start
 import { getBadgePage } from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
-import sessionStore from './infra/sessionStore/sessionStore';
+import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 
 export const app = express();
@@ -84,7 +84,7 @@ app.use(
 
 // app.use(cookieParser(config.secret));
 app.use(session({ 
-  store: process.env.NODE_ENV !== 'test' ? sessionStore : null,
+  store: process.env.NODE_ENV !== 'test' ? makeSessionStore() : null,
   secret: config.secret,
   resave: false, // required: force lightweight session keep alive (touch)
   saveUninitialized: false, // recommended: only save session when data exists

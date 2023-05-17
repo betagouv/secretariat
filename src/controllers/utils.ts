@@ -56,6 +56,14 @@ export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
 }
 
+export function buildBetaRedirectionEmail(id: string, postfix: string = 'attr') {
+  return `${id}-attr@${config.domain}`;
+}
+
+export const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
+
+export const getBetaEmailId = (email) => email && email.split('@')[0];
+
 export function objectArrayToCSV<T>(arr: Array<T>) {
   const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
   const header = Object.keys(arr[0])

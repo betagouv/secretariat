@@ -7,10 +7,7 @@ import betagouv from "../../betagouv";
 import { Domaine, Member } from "@models/member";
 import db from "../../db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
-
-const isBetaEmail = (email) => email && email.endsWith(`${config.domain}`);
-
-const getBetaEmailId = (email) => email && email.split('@')[0];
+import { getBetaEmailId, isBetaEmail } from "../utils";
 
 const emailWithMetadataMemoized = PromiseMemoize(
   async () => {

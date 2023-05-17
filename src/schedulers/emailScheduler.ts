@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import _ from 'lodash/array';
 
-import BetaGouv from '../betagouv';
+import BetaGouv, { OvhRedirection } from '../betagouv';
 import config from '@config';
 import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
@@ -11,10 +11,18 @@ import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
 import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
 import { addContactsToMailingLists, smtpBlockedContactsEmailDelete } from '@/config/email.config';
+import betagouv from '../betagouv';
+import { isBetaEmail } from '@controllers/utils';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
 };
+
+const differenceGithubRedirectionOVH = function differenceGithubOVH(user, ovhAccountName) {
+  console.log(utils.buildBetaRedirectionEmail(user.id), ovhAccountName)
+  return utils.buildBetaRedirectionEmail(user.id) === ovhAccountName;
+};
+
 
 const getValidUsers = async () => {
   const githubUsers = await BetaGouv.usersInfos();
@@ -53,10 +61,70 @@ export async function setEmailAddressesActive() {
   );
 }
 
+export async function createRedirectionEmailAdresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNull('primary_email')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
+    .where('email_is_redirection', true)
+    .whereNotNull('secondary_email')
+  const githubUsers: Member[] = await getValidUsers();
+  const concernedUsers : Member[] = githubUsers.filter((user) => {
+    return dbUsers.find((x) => x.username === user.id);
+  })
+
+  const redirections : OvhRedirection[] = await BetaGouv.redirections()
+
+  const allOvhRedirectionEmails = Array.from(
+    new Set([
+      ...redirections.reduce(
+        (acc, r) => !isBetaEmail(r.to) ? [...acc, r.from] : acc,
+        [],
+      ),
+    ]),
+  ).sort();
+  let unregisteredMembers : Member[] = _.differenceWith(
+    concernedUsers,
+    allOvhRedirectionEmails,
+    differenceGithubRedirectionOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
+  unregisteredMembers = unregisteredMembers.map(member => {
+    const dbUser = dbUsers.find(dbUser => dbUser.username === member.id)
+
+    if (dbUser) {
+      member.email = dbUser.secondary_email
+    }
+    return member
+  })
+  console.log('User that should have redirection', unregisteredMembers.map(u => u.id))
+  // create email and marrainage
+  return Promise.all(
+    unregisteredMembers.map(async (member) => {
+      if (process.env.FEATURE_APPLY_CREATE_REDIRECTION_EMAIL || process.env.NODE_ENV === 'test') {
+        const email = utils.buildBetaRedirectionEmail(member.id, 'attr')
+        await betagouv.createRedirection(email, member.email, false)
+        const [user]: DBUser[] = await knex('users').where({
+            username: member.id,
+        }).update({
+            primary_email: email,
+            primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
+            primary_email_status_updated_at: new Date()
+        }).returning('*')
+        console.log(
+            `Email redirection créée pour ${user.username}`,
+        );
+      }
+    })
+  );
+}
+
 export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
     .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
+    .where('email_is_redirection', false)
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
 

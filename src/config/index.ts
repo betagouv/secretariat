@@ -1,3 +1,4 @@
+import { MemberType } from '@/models/dbUser';
 import { config } from 'dotenv';
 
 config();
@@ -15,10 +16,10 @@ const userStatusOptions = [
 ];
 
 const memberTypeOptions = [
-  { name: `Membre d'une startup ou d'un incubateur`, key: 'beta'},
-  { name: 'Attributaire', key: 'attributaire'},
-  { name: `Membre d'un autre service DINUM (etalab, ...)`, key: 'dinum'},
-  { name: `Autre`, key: 'autre'}
+  { name: `Membre d'une startup ou d'un incubateur`, key: MemberType.BETA},
+  { name: 'Attributaire', key: MemberType.ATTRIBUTAIRE},
+  { name: `Membre d'un autre service DINUM (etalab, ...)`, key: MemberType.DINUM},
+  { name: `Autre`, key: MemberType.OTHER}
 ]
 
 const userBadgeOptions = [{ name: 'Ségur (Paris)', key: 'segur' }];

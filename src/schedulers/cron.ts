@@ -8,6 +8,7 @@ import {
   subscribeEmailAddresses,
   unsubscribeEmailAddresses,
   setEmailAddressesActive,
+  createRedirectionEmailAdresses,
 } from './emailScheduler';
 import {
   addGithubUserToOrganization,
@@ -371,6 +372,12 @@ const jobs: Job[] = [
     onTick: createEmailAddresses,
     isActive: true,
     name: 'emailCreationJob',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: createRedirectionEmailAdresses,
+    isActive: true,
+    name: 'cron de creation de redirection',
   },
   {
     cronTime: '0 */4 * * * *',
