@@ -89,11 +89,14 @@ app.use(session({
   resave: false, // required: force lightweight session keep alive (touch)
   saveUninitialized: false, // recommended: only save session when data exists
   unset: 'destroy',
+  proxy: true, // Required for Heroku & Digital Ocean (regarding X-Forwarded-For)
+  name: 'espaceMembreCookieName',
   cookie: {
     maxAge: 300000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    sameSite: 'lax' 
+    // sameSite: 'lax',
+    sameSite: 'none'
   }}
 )); // Only used for Flash not safe for others purposes
 app.use(flash());
