@@ -31,6 +31,27 @@ const shouldSendEmailCreatedEmail = user.primary_email_status === EmailStatusCod
     EventBus.produce(USER_EVENT.USER_EMAIL_ACTIVATED, { user_id: user.username })
 }
 
+export async function setEmailRedirectionActive(username) {
+    const [user]: DBUser[] = await knex('users').where({
+        username,
+    })
+    await knex('users').where({
+        username,
+    }).update({
+        primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
+        primary_email_status_updated_at: new Date()
+    })
+    await knex('user_details').where({
+        hash: utils.computeHash(username)
+    }).update({
+        active: true
+    })
+    console.log(
+        `Email actif pour ${user.username}`,
+    );
+    EventBus.produce(USER_EVENT.USER_EMAIL_REDIRECTION_ACTIVATED, { user_id: user.username })
+}
+
 export async function setEmailSuspended(username) {
     const [user]: DBUser[] = await knex('users').where({
         username,

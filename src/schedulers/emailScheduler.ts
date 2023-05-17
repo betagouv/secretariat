@@ -3,7 +3,7 @@ import _ from 'lodash/array';
 
 import BetaGouv from '../betagouv';
 import config from '@config';
-import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
+import { createEmail, setEmailActive, setEmailRedirectionPending, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
 import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
@@ -11,6 +11,7 @@ import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
 import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
 import { addContactsToMailingLists, smtpBlockedContactsEmailDelete } from '@/config/email.config';
+import betagouv from '../betagouv';
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
   return user.id === ovhAccountName;
@@ -53,10 +54,53 @@ export async function setEmailAddressesActive() {
   );
 }
 
+export async function createRedirectionEmailAdresses() {
+  const dbUsers : DBUser[] = await knex('users')
+    .whereNull('primary_email')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
+    .where('email_is_redirection', true)
+    .whereNotNull('secondary_email')
+  const githubUsers: Member[] = await getValidUsers();
+
+  const concernedUsers : Member[] = githubUsers.filter((user) => {
+    return dbUsers.find((x) => x.username === user.id);
+  })
+
+  const allOvhEmails : string[] = await BetaGouv.getAllEmailInfos();
+  const unregisteredMembers : Member[] = _.differenceWith(
+    concernedUsers,
+    allOvhEmails,
+    differenceGithubOVH
+  );
+  console.log(
+    `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+  );
+
+  // create email and marrainage
+  return Promise.all(
+    unregisteredMembers.map(async (member) => {
+      const email = utils.buildBetaRedirectionEmail(member.id, 'attr')
+      await betagouv.createRedirection(email, member.email, false)
+      const [user]: DBUser[] = await knex('users').where({
+          username: member.id,
+      }).update({
+          primary_email: email,
+          primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
+          primary_email_status_updated_at: new Date()
+      }).returning('*')
+      console.log(
+          `Email suspendu pour ${user.username}`,
+      );
+      // once email created we create marrainage
+    })
+  );
+}
+
 export async function createEmailAddresses() {
   const dbUsers : DBUser[] = await knex('users')
     .whereNull('primary_email')
     .whereIn('primary_email_status', [EmailStatusCode.EMAIL_UNSET])
+    .where('email_is_redirection', false)
     .whereNotNull('secondary_email')
   const githubUsers: Member[] = await getValidUsers();
 

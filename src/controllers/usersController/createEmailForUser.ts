@@ -20,6 +20,12 @@ export async function createEmailAndUpdateSecondaryEmail({username, email} : {us
         );
     }
 
+    if (dbUser.email_is_redirection) {
+        throw new Error(
+            `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`,
+        );
+    }
+
     if (user.isExpired) {
         throw new Error(
             `Le compte du membre ${username} est expiré.`,

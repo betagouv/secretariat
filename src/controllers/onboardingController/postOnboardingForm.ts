@@ -7,7 +7,7 @@ import * as utils from "@controllers/utils";
 import BetaGouv from "@/betagouv";
 import knex from "@/db";
 import { requiredError, isValidDomain, isValidDate, isValidUrl, shouldBeOnlyUsername, isValidEmail } from "@controllers/validator"
-import { CommunicationEmailCode, EmailStatusCode, genderOptions, statusOptions } from '@/models/dbUser/dbUser';
+import { CommunicationEmailCode, EmailStatusCode, MemberType, genderOptions, statusOptions } from '@/models/dbUser/dbUser';
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS } from "@/models/member";
@@ -213,12 +213,14 @@ export async function postForm(req, res) {
           workplace_insee_code,
           legal_status,
           secondary_email,
+          member_type: memberType,
           communication_email,
           primary_email_status: isEmailBetaAsked ? EmailStatusCode.EMAIL_UNSET : EmailStatusCode.EMAIL_ACTIVE,
           primary_email_status_updated_at: new Date(),
           should_create_marrainage,
           osm_city,
-          average_nb_of_days
+          average_nb_of_days,
+          email_is_redirection: memberType === MemberType.ATTRIBUTAIRE,
         })
         .onConflict('username')
         .merge();

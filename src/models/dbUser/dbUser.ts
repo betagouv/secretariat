@@ -38,6 +38,13 @@ export enum CommunicationEmailCode {
   SECONDARY="secondary"
 }
 
+export enum MemberType {
+  BETA='beta',
+  ATTRIBUTAIRE='attributaire',
+  DINUM='dinum',
+  OTHER='autre'
+}
+
 export interface DBUser {
     secondary_email: string;
     primary_email?: string;
@@ -53,6 +60,7 @@ export interface DBUser {
     osm_city: string;
     average_nb_of_days: number;
     startups: string[];
+    email_is_redirection: boolean;
 }
 
 export interface DBUserDetail {
