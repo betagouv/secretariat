@@ -30,7 +30,7 @@ export async function getStartupInfoUpdate(req, res) {
             link: startup.attributes.link,
             dashlord_url: startup.attributes.dashlord_url,
             repository: startup.attributes.repository,
-            pitch: startup.attributes.pitch,
+            mission: startup.attributes.pitch,
             stats_url: startup.attributes.stats_url
           },
           updatePullRequest,
