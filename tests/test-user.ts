@@ -1224,86 +1224,86 @@ describe('User', () => {
       unsubscribeSpy.restore()
     });
 
-  });
-
-  it('should create redirection missing email accounts', async () => {
-    utils.cleanMocks();
-    let createRedirection = sinon.spy(betagouv, 'createRedirection')
-    const url = process.env.USERS_API || 'https://beta.gouv.fr';
-    nock(url)
-      .get((uri) => uri.includes('authors.json'))
-      .reply(200, [
-        {
-          id: 'membre.actif',
-          fullname: 'membre Actif',
-          missions: [
-            {
-              start: '2016-11-03',
-              status: 'independent',
-              employer: 'octo',
-            },
-          ],
-        },
-        {
-          id: 'membre.nouveau',
-          fullname: 'membre Nouveau',
-          missions: [
-            {
-              start: new Date().toISOString().split('T')[0],
-            },
-          ],
-        },
-      ])
-      .persist();
-    utils.mockSlackGeneral();
-    utils.mockSlackSecretariat();
-    utils.mockOvhTime();
-    utils.mockOvhRedirections();
-    utils.mockOvhUserResponder();
-    utils.mockOvhUserEmailInfos();
-
-    const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
-    const allAccountsExceptANewMember = testUsers.filter(
-      (user) => user.id !== newMember.id
-    );
-
-    nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/redirection/)
-      .reply(
-        200,
-        allAccountsExceptANewMember.map((user) => user.id)
+    it('should create redirection missing email accounts', async () => {
+      utils.cleanMocks();
+      let createRedirection = sinon.spy(betagouv, 'createRedirection')
+      const url = process.env.USERS_API || 'https://beta.gouv.fr';
+      nock(url)
+        .get((uri) => uri.includes('authors.json'))
+        .reply(200, [
+          {
+            id: 'membre.actif',
+            fullname: 'membre Actif',
+            missions: [
+              {
+                start: '2016-11-03',
+                status: 'independent',
+                employer: 'octo',
+              },
+            ],
+          },
+          {
+            id: 'membre.nouveau',
+            fullname: 'membre Nouveau',
+            missions: [
+              {
+                start: new Date().toISOString().split('T')[0],
+              },
+            ],
+          },
+        ])
+        .persist();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
+      utils.mockOvhUserEmailInfos();
+  
+      const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
+      const allAccountsExceptANewMember = testUsers.filter(
+        (user) => user.id !== newMember.id
       );
-    nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(
-        200,
-        allAccountsExceptANewMember.map((user) => user.id)
-      );
-    const ovhRedirectionCreation = nock(/.*ovh.com/)
-      .post(/^.*email\/domain\/.*\/redirection/)
-      .reply(200);
+  
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/redirection/)
+        .reply(
+          200,
+          allAccountsExceptANewMember.map((user) => user.id)
+        );
+      nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/account/)
+        .reply(
+          200,
+          allAccountsExceptANewMember.map((user) => user.id)
+        );
+      const ovhRedirectionCreation = nock(/.*ovh.com/)
+        .post(/^.*email\/domain\/.*\/redirection/)
+        .reply(200);
+  
+      await knex('login_tokens').truncate()
+      await knex('users').where({
+        username: newMember.id,
+      }).update({
+        primary_email: null,
+        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+        secondary_email: 'membre.nouveau.perso@example.com',
+        email_is_redirection: true
+      });
+      const val = await knex('users').where({
+        username: newMember.id,
+      })
+      await createEmailAddresses();
+      ovhRedirectionCreation.isDone().should.be.false;
+      await createRedirectionEmailAdresses();
+      ovhRedirectionCreation.isDone().should.be.true;
+      createRedirection.firstCall.args[0].should.equal(`${newMember.id}-attr@${config.domain}`);
+      createRedirection.calledOnce.should.be.true
+      await knex('users').where({ username: newMember.id }).update({
+        secondary_email: null,
+        primary_email: `${newMember.id}@${config.domain}`,
+      });
+    });
 
-    await knex('login_tokens').truncate()
-    await knex('users').where({
-      username: newMember.id,
-    }).update({
-      primary_email: null,
-      primary_email_status: EmailStatusCode.EMAIL_UNSET,
-      secondary_email: 'membre.nouveau.perso@example.com',
-      email_is_redirection: true
-    });
-    const val = await knex('users').where({
-      username: newMember.id,
-    })
-    await createEmailAddresses();
-    ovhRedirectionCreation.isDone().should.be.false;
-    await createRedirectionEmailAdresses();
-    ovhRedirectionCreation.isDone().should.be.true;
-    createRedirection.firstCall.args[0].should.equal(`${newMember.id}-attr@${config.domain}`);
-    createRedirection.calledOnce.should.be.true
-    await knex('users').where({ username: newMember.id }).update({
-      secondary_email: null,
-      primary_email: `${newMember.id}@${config.domain}`,
-    });
   });
 });
