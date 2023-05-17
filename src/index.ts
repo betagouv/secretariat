@@ -95,8 +95,7 @@ app.use(session({
     maxAge: 300000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
-    // sameSite: 'lax',
-    sameSite: 'none'
+    sameSite: 'lax',
   }}
 )); // Only used for Flash not safe for others purposes
 app.use(flash());
