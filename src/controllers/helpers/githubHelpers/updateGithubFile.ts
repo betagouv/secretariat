@@ -14,7 +14,7 @@ export interface GithubStartupChange {
     phases?: Phase[],
     link: string,
     dashlord_url: string,
-    pitch: string,
+    mission: string,
     stats_url: string,
     repository: string
 }
