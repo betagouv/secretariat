@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import config from "@/config";
 
 export const getToken = (req) => {
+    console.log('Session :', req.session)
     return req.session && req.session.token || null
 }
 
