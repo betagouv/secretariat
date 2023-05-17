@@ -83,7 +83,7 @@ export async function createRedirectionEmailAdresses() {
       ),
     ]),
   ).sort();
-  const unregisteredMembers : Member[] = _.differenceWith(
+  let unregisteredMembers : Member[] = _.differenceWith(
     concernedUsers,
     allOvhRedirectionEmails,
     differenceGithubRedirectionOVH
@@ -91,6 +91,14 @@ export async function createRedirectionEmailAdresses() {
   console.log(
     `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
   );
+  unregisteredMembers = unregisteredMembers.map(member => {
+    const dbUser = dbUsers.find(dbUser => dbUser.username === member.id)
+
+    if (dbUser) {
+      member.email = dbUser.secondary_email
+    }
+    return member
+  })
   console.log('User that should have redirection', unregisteredMembers.map(u => u.id))
   // create email and marrainage
   return Promise.all(
