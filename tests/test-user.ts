@@ -840,6 +840,9 @@ describe('User', () => {
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
       getToken.returns(utils.getJWT('membre.nouveau'))
+      await knex('users').where({ username: 'membre.nouveau' }).update({
+        primary_email: `membre.nouveau@otherdomaine.gouv.fr`
+      })
 
       await chai.request(app)
         .post(`/users/${username}/primary_email/`)
@@ -851,12 +854,22 @@ describe('User', () => {
       const dbNewRes = await knex('users').select().where({ username: 'membre.nouveau' })
       dbNewRes.length.should.equal(1);
       dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+
       mattermostGetUserByEmailStub.called.should.be.true;
+      await knex('users').where({ username: 'membre.nouveau' }).update({
+        primary_email: `membre.nouveau@${config.domain}`
+      })
     });
 
     it('should update primary email', async() => {
       isPublicServiceEmailStub.returns(Promise.resolve(true));
       mattermostGetUserByEmailStub.returns(Promise.resolve(true));
+      const createRedirectionStub = sinon
+      .stub(betagouv, 'createRedirection')
+      .returns(Promise.resolve(true));
+    const deleteEmailStub = sinon
+      .stub(betagouv, 'deleteEmail')
+      .returns(Promise.resolve(true));
       const username = 'membre.nouveau';
       const primaryEmail = 'membre.nouveau.new@example.com';
       getToken.returns(utils.getJWT('membre.nouveau'))
@@ -874,8 +887,12 @@ describe('User', () => {
       await knex('users').where({ username: 'membre.nouveau' }).update({
         primary_email: `${username}@${config.domain}`
       })
+      createRedirectionStub.called.should.be.true
+      deleteEmailStub.called.should.be.true
       isPublicServiceEmailStub.called.should.be.true;
-      mattermostGetUserByEmailStub.called.should.be.true;
+      mattermostGetUserByEmailStub.called.should.be.false;
+      createRedirectionStub.restore()
+      deleteEmailStub.restore()
     });
   });
 
