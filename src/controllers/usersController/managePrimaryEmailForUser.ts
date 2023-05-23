@@ -23,7 +23,7 @@ export async function managePrimaryEmailForUser(req, res) {
         }).then(db => db[0])
         if (dbUser.primary_email.includes('@beta.gouv.fr')) {
             await betagouv.createRedirection(dbUser.primary_email, primaryEmail, false)
-            await betagouv.deleteEmail(dbUser.primary_email)
+            await betagouv.deleteEmail(dbUser.primary_email.split('@')[0])
         }
         await knex('users')
             .insert({
