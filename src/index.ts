@@ -92,7 +92,7 @@ app.use(session({
   proxy: true, // Required for Heroku & Digital Ocean (regarding X-Forwarded-For)
   name: 'espaceMembreCookieName',
   cookie: {
-    maxAge: 300000,
+    maxAge: 24 * 60 * 60 * 1000 * 7,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,
     sameSite: 'lax',
