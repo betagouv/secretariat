@@ -115,9 +115,11 @@ export default {
       .then(() => client.end())
       .then(() => knex.migrate.latest())
       .then(() => {
+        const sixMinutesInMs : number = 6 * 1000 * 60
         const dbUsers = testUsers.map(user => ({
           username: user.id,
-          primary_email: `${user.id}@${config.domain}`
+          primary_email: `${user.id}@${config.domain}`,
+          primary_email_status_updated_at: new Date(Date.now() - sixMinutesInMs)
         }))
         return knex('users').insert(dbUsers)
       })
