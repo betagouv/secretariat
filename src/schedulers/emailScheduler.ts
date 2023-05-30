@@ -3,10 +3,10 @@ import _ from 'lodash/array';
 
 import BetaGouv, { OvhRedirection } from '../betagouv';
 import config from '@config';
-import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
+import { createEmail, setEmailActive, setEmailRedirectionActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
-import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
+import { CommunicationEmailCode, DBUser, EmailStatusCode, MemberType, USER_EVENT } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
 import { IEventBus } from '@/infra/eventBus';
 import { Contact, IMailingService, MAILING_LIST_TYPE } from '@/modules/email';
@@ -55,6 +55,42 @@ export async function setEmailAddressesActive() {
       })
       await smtpBlockedContactsEmailDelete({ email: user.primary_email })
       await setEmailActive(user.username)
+      // once email created we create marrainage
+    })
+  );
+}
+
+export async function setCreatedEmailRedirectionsActive() {
+  const fiveMinutesInMs : number = 5 * 1000 * 60
+  const nowLessFiveMinutes : Date = new Date(Date.now() - fiveMinutesInMs)
+  const dbUsers : DBUser[] = await knex('users')
+    .whereIn('primary_email_status', [EmailStatusCode.EMAIL_REDIRECTION_PENDING])
+    .where('primary_email_status_updated_at', '<', nowLessFiveMinutes)
+    .where('email_is_redirection', true)
+
+    const githubUsers: Member[] = await getValidUsers();
+  const concernedUsers : DBUser[] = dbUsers.filter((user) => {
+    return githubUsers.find((x) => user.username === x.id);
+  })
+  return Promise.all(
+    concernedUsers.map(async (user) => {
+      if (user.member_type === MemberType.ATTRIBUTAIRE) {
+        const listTypes = [MAILING_LIST_TYPE.NEWSLETTER]
+        if (user.primary_email_status === EmailStatusCode.EMAIL_REDIRECTION_PENDING) {
+          listTypes.push(MAILING_LIST_TYPE.ONBOARDING)
+        }
+        await addContactsToMailingLists({
+          listTypes: listTypes,
+          contacts: [{
+            email: user.communication_email === CommunicationEmailCode.SECONDARY && user.secondary_email ?  user.secondary_email : user.primary_email,
+            firstname: utils.capitalizeWords(user.username.split('.')[0]),
+            lastname: utils.capitalizeWords(user.username.split('.')[1]),
+            domaine: githubUsers.find((x) => user.username === x.id).domaine
+          }]
+        })
+      }
+      await smtpBlockedContactsEmailDelete({ email: user.primary_email })
+      await setEmailRedirectionActive(user.username)
       // once email created we create marrainage
     })
   );

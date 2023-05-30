@@ -8,6 +8,7 @@ import {
   subscribeEmailAddresses,
   unsubscribeEmailAddresses,
   setEmailAddressesActive,
+  setCreatedEmailRedirectionsActive,
   createRedirectionEmailAdresses,
 } from './emailScheduler';
 import {
@@ -378,6 +379,12 @@ const jobs: Job[] = [
     onTick: createRedirectionEmailAdresses,
     isActive: true,
     name: 'cron de creation de redirection',
+  },
+  {
+    cronTime: '0 */4 * * * *',
+    onTick: setCreatedEmailRedirectionsActive,
+    isActive: true,
+    name: 'setEmailRedirectionActive',
   },
   {
     cronTime: '0 */4 * * * *',
