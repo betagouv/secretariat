@@ -32,17 +32,14 @@ const mattermostUsers = [
 const mattermostScheduler = rewire('../src/schedulers/mattermostScheduler');
 
 describe('invite users to mattermost', () => {
-  let clock;
 
   beforeEach(async () => {
-    const date = new Date('2021-01-20T07:59:59+01:00');
-    clock = sinon.useFakeTimers(date);
     utils.cleanMocks();
     utils.mockOvhTime();
   });
 
   afterEach(async () => {
-    clock.restore();
+    // clock.restore();
   });
 
   it('invite users to team by emails', async () => {
@@ -162,11 +159,13 @@ describe('invite users to mattermost', () => {
   });
 
   it('create users to team by emails', async () => {
+    const tenMinutesInMs : number = 10 * 1000 * 60
+    const nowLessTenMinutes : Date = new Date(Date.now() - tenMinutesInMs)
     await knex('users').where({
       username: 'mattermost.newuser'
     }).update({
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-      primary_email_status_updated_at: new Date()
+      primary_email_status_updated_at: nowLessTenMinutes
     })
     nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/account/)

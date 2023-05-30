@@ -3,7 +3,7 @@
 import betagouv from '@/betagouv';
 import { MattermostUser } from '@/lib/mattermost';
 import { DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
-import { MemberWithPrimaryEmail, Member } from '@/models/member';
+import { MemberWithPrimaryEmailInfo, Member } from '@/models/member';
 import knex from '@/db';
 import * as utils from '@controllers/utils';
 import * as mattermost from '@/lib/mattermost';
@@ -14,7 +14,8 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return {
       ...user,
       primary_email_status: dbUser ? dbUser.primary_email_status : undefined,
-      primary_email: dbUser ? dbUser.primary_email : undefined
+      primary_email: dbUser ? dbUser.primary_email : undefined,
+      primary_email_status_updated_at: dbUser ? dbUser.primary_email_status_updated_at : undefined,
     }
   }
   
@@ -58,12 +59,12 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     }
   }
 
-  export const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
+  export const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmailInfo[]> => {
     const allMattermostUsers : MattermostUser[] = await mattermost.getUserWithParams();
     const dbUsers : DBUser[] = await knex('users').select();
     const githubUsers : Member[] = await betagouv.usersInfos();
     const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
-    const concernedUsers: MemberWithPrimaryEmail[] = activeGithubUsers.map((user: Member) => {
+    const concernedUsers: MemberWithPrimaryEmailInfo[] = activeGithubUsers.map((user: Member) => {
       const dbUser = findDBUser(dbUsers, user)
       return mergedMemberAndDBUser(user, dbUser);
     }).filter(filterActiveUser)
@@ -81,7 +82,7 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (teamId: strin
     const dbUsers : DBUser[] = await knex('users').select();
     const githubUsers : Member[] = await betagouv.usersInfos();
     const activeGithubUsers : Member[] = githubUsers.filter((x) => !utils.checkUserIsExpired(x));
-    const concernedUsers: MemberWithPrimaryEmail[] = activeGithubUsers.map((user: Member) => {
+    const concernedUsers: MemberWithPrimaryEmailInfo[] = activeGithubUsers.map((user: Member) => {
       const dbUser = findDBUser(dbUsers, user)
       return mergedMemberAndDBUser(user, dbUser);
     }).filter(filterActiveUser)
