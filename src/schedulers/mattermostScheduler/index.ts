@@ -21,7 +21,7 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
   }
   
   const filterActiveUser = (user) => {
-    return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
+    return user.primary_email && [EmailStatusCode.EMAIL_ACTIVE, EmailStatusCode.EMAIL_REDIRECTION_ACTIVE].includes(user.primary_email_status)
   }
 
   export const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmail[]> => {
