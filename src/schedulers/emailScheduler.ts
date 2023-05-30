@@ -19,7 +19,6 @@ const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
 };
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(user, ovhAccountName) {
-  console.log(utils.buildBetaRedirectionEmail(user.id), ovhAccountName)
   return utils.buildBetaRedirectionEmail(user.id) === ovhAccountName;
 };
 
