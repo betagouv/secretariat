@@ -1,4 +1,5 @@
 import { OvhRedirection, OvhResponder } from '../betagouv';
+import { EmailStatusCode } from './dbUser';
 import { Mission } from './mission';
 
 
@@ -56,8 +57,10 @@ export interface Member {
   role: string;
 }
 
-export interface MemberWithPrimaryEmail extends Member {
+export interface MemberWithPrimaryEmailInfo extends Member {
   primary_email: string;
+  primary_email_status: EmailStatusCode;
+  primary_email_status_updated_at: Date;
 }
 
 export interface MemberWithEmail extends Member {

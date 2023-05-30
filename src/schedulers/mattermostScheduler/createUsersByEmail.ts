@@ -1,5 +1,5 @@
 import crypto from 'crypto'
-import { MemberWithPrimaryEmail } from "@/models/member";
+import { MemberWithPrimaryEmailInfo } from "@/models/member";
 import { EMAIL_TYPES } from "@/modules/email";
 import * as mattermost from '@/lib/mattermost';
 import { sendEmail } from '@/config/email.config';
@@ -7,7 +7,7 @@ import { getActiveGithubUsersUnregisteredOnMattermost } from '.';
 import config from '@/config';
 
 export async function createUsersByEmail() {
-    let activeGithubUsersUnregisteredOnMattermost : MemberWithPrimaryEmail[] =
+    let activeGithubUsersUnregisteredOnMattermost : MemberWithPrimaryEmailInfo[] =
       await getActiveGithubUsersUnregisteredOnMattermost();
     activeGithubUsersUnregisteredOnMattermost =
       activeGithubUsersUnregisteredOnMattermost.filter((user) => {
