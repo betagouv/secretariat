@@ -3,7 +3,7 @@ import _ from 'lodash/array';
 
 import BetaGouv, { OvhRedirection } from '../betagouv';
 import config from '@config';
-import { createEmail, setEmailActive, setEmailSuspended, setEmailRedirectionActive } from '@controllers/usersController';
+import { createEmail, setEmailActive, setEmailSuspended } from '@controllers/usersController';
 import * as utils from '@controllers/utils';
 import knex from '@/db';
 import { CommunicationEmailCode, DBUser, EmailStatusCode, USER_EVENT } from '@/models/dbUser/dbUser';
