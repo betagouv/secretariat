@@ -13,7 +13,6 @@ export async function createEmailAndUpdateSecondaryEmail({username, email} : {us
         utils.userInfos(username, isCurrentUser),
         knex('users').where({ username }).first()
     ]);
-    console.log(currentUser, username, user)
     if (!user.userInfos) {
         throw new Error(
             `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`,

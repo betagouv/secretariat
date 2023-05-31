@@ -1319,6 +1319,7 @@ describe('User', () => {
       await knex('users').where({ username: newMember.id }).update({
         secondary_email: null,
         primary_email: `${newMember.id}@${config.domain}`,
+        email_is_redirection: false,
       });
     });
 

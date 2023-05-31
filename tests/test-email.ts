@@ -273,6 +273,7 @@ describe('Set email redirection active', () => {
     await knex('users').where({
       username: 'membre.nouveau'
     }).update({
+      email_is_redirection: false,
       primary_email_status: EmailStatusCode.EMAIL_UNSET,
       primary_email_status_updated_at: new Date(now)
     })
