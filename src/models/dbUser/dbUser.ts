@@ -52,6 +52,7 @@ export interface DBUser {
     secondary_email: string;
     primary_email?: string;
     username: string;
+    member_type: MemberType;
     created_at: Date;
     primary_email_status: EmailStatusCode;
     primary_email_status_updated_at: Date;

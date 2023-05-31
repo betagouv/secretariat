@@ -21,10 +21,10 @@ const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return dbUsers.find((x) => x.username === user.id);
   }
   
-  const filterActiveUser = (user: MemberWithPrimaryEmailInfo) => {
+  const filterActiveUser = (user) => {
     const fiveMinutesInMs : number = 5 * 1000 * 60
     const nowLessFiveMinutes : Date = new Date(Date.now() - fiveMinutesInMs)
-    return user.primary_email && user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE && user.primary_email_status_updated_at < nowLessFiveMinutes
+    return user.primary_email && [EmailStatusCode.EMAIL_ACTIVE, EmailStatusCode.EMAIL_REDIRECTION_ACTIVE].includes(user.primary_email_status) && user.primary_email_status_updated_at < nowLessFiveMinutes
   }
 
   export const getActiveGithubUsersUnregisteredOnMattermost = async () : Promise<MemberWithPrimaryEmailInfo[]> => {
