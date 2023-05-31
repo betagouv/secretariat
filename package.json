@@ -77,7 +77,7 @@
     "markdown-it": "^13.0.1",
     "marked": "^4.3.0",
     "moment": "^2.29.4",
-    "moment-timezone": "^0.5.38",
+    "moment-timezone": "^0.5.43",
     "nodemailer": "^6.9.1",
     "ovh": "^2.0.1",
     "path-browserify": "^1.0.1",
