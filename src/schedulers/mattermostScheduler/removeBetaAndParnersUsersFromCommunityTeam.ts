@@ -282,11 +282,14 @@ export async function sendReminderToUserAtDays({
 
     for (const user of usersToSendAMessageTo) {
         try {
-            await sendInfoToChat({
-                username: user.username,
-                text: MESSAGE_FOR_TYPE[user.status](user)
-            })
-            console.log(`Message envoyé à ${user.username}`)
+            // if user has redirection email do not send message
+            if (user.status !== MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO) {
+                await sendInfoToChat({
+                    username: user.username,
+                    text: MESSAGE_FOR_TYPE[user.status](user)
+                })
+                console.log(`Message envoyé à ${user.username}`)
+            }
         } catch(e) {
             console.log(`Erreur d'envoi à ${user.username}`)
             console.error(e)
