@@ -121,6 +121,9 @@ export const sendMessageToUsersOnChat = async(req, res) => {
             text: text,
             username: req.auth.id,
             channel: 'secretariat',
+            extra: {
+                  username: 'Equipe Communauté beta.gouv'
+            },
         })
         res.json({
             'message': `Envoyé un message en ${prod ? 'prod' : 'test'} à ${nbUsers !== undefined ? nbUsers : channel}`
