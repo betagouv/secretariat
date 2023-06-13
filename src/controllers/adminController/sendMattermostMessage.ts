@@ -77,6 +77,9 @@ const sendDirectMessageToUsers = async ({
                 text: text,
                 username: user.username,
                 channel: 'secretariat',
+                extra: {
+                  username: 'Equipe Communauté beta.gouv'
+                }
             })
             nbUsers++
         } catch(e) {
