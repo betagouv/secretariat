@@ -1,4 +1,4 @@
-import Airtable from airtable
+import Airtable from "airtable";
 
 export const syncFormationFromAirtable = () => {
     var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_FORMATION_BASE_ID);
