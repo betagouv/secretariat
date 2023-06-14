@@ -8,7 +8,7 @@ export const syncFormationFromAirtable = () => {
         maxRecords: 3,
         fields: ["Formation", "Record ID", "Début"],
         view: "Formations passées",
-        filterByFormula: "DATESTR({Début})>'2023-05-14'"
+        filterByFormula: "DATETIME_DIFF(DATETIME_PARSE('2023-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
 
