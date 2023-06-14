@@ -5,7 +5,6 @@ export const syncFormationFromAirtable = () => {
 
     base('Formations').select({
         // Selecting the first 3 records in Formations accessibles à l'inscription:
-        maxRecords: 3,
         fields: ["Formation", "Record ID", "Début"],
         view: "Formations passées",
         filterByFormula: "DATETIME_DIFF(DATETIME_PARSE('2023-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
