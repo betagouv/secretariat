@@ -55,6 +55,7 @@ import { unblockEmailsThatAreActive } from './unblockEmailsThatAreActive';
 import { recreateEmailIfUserActive } from './recreateEmailIfUserActive';
 import { sendEmailToStartupToUpdatePhase } from './startups/sendEmailToStartupToUpdatePhase';
 import db from '@/db';
+import { syncFormationFromAirtable } from './formationScheduler/syncFormationFromAirtable';
 
 interface Job {
   cronTime: string;
@@ -256,6 +257,15 @@ const startupJobs: Job[] = [
   }
 ]
 
+const formationJobs: Job[] = [
+  {
+    cronTime: "0 0 * * *",
+    onTick: () => syncFormationFromAirtable(true),
+    isActive: true,
+    name: 'SyncFormationFromAirtable'
+  }
+]
+
 const metricJobs: Job[] = [
   {
     cronTime: "0 10 1 * *", // every 1srt of each month,
@@ -349,6 +359,7 @@ const jobs: Job[] = [
   ...metricJobs,
   ...pullRequestJobs,
   ...synchronizationJobs,
+  ...formationJobs,
   {
     cronTime: '0 0 0 * * 1', // every week a 0:00 on monday
     onTick: unblockEmailsThatAreActive,

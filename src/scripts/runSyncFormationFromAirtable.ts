@@ -1,3 +1,3 @@
 import { syncFormationFromAirtable } from "@/schedulers/formationScheduler/syncFormationFromAirtable";
 
-syncFormationFromAirtable(true)
+syncFormationFromAirtable(false)
