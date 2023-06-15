@@ -1,3 +1,4 @@
+import { createFormation } from "@/db/dbFormations";
 import Airtable from "airtable";
 
 export const syncFormationFromAirtable = () => {
@@ -12,7 +13,11 @@ export const syncFormationFromAirtable = () => {
         // This function (`page`) will get called for each page of records.
 
         records.forEach(function(record) {
-            console.log('Retrieved', record.get('Formation'), record.get('Record ID'), record.get('Début'));
+            createFormation({
+                formation_date: new Date(record.get('Début') as string),
+                airtable_id: record.get('Record ID') as string,
+                name: record.get('Formation') as string
+            })
         });
 
         // To fetch the next page of records, call `fetchNextPage`.
