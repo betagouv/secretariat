@@ -9,7 +9,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
         var date = new Date();
         date.setDate(date.getDate() - 1);
         const dateStr = date.toISOString().split('T')[0]
-        filterByFormula = `AND(DATETIME_DIFF(DATETIME_PARSE('2023-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0, DATETIME_DIFF(DATETIME_PARSE(`+ dateStr +`, 'YYYY-MM-DD'),{Created}, 'days')<0)`
+        filterByFormula = `AND(DATETIME_DIFF(DATETIME_PARSE('2023-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0, DATETIME_DIFF(DATETIME_PARSE('`+ dateStr +`', 'YYYY-MM-DD'),{Created}, 'days')<0)`
     }
     base('Formations').select({
         // Selecting the first 3 records in Formations accessibles à l'inscription:
