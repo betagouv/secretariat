@@ -4,9 +4,10 @@ import betagouv from "@/betagouv";
 import config from "@/config";
 import { sendEmail } from "@/config/email.config";
 import db from "@/db";
-import { DBStartup, StartupInfo, StartupPhase } from "@/models/startup";
+import { DBStartup, Startup, StartupInfo, StartupPhase } from "@/models/startup";
 import { EMAIL_TYPES } from "@/modules/email";
 import { nbOfDaysBetweenDate } from '@/controllers/utils';
+import { Domaine, Member } from '@/models/member';
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
@@ -67,8 +68,23 @@ async function compareAndTriggerChange(newStartupInfo : DBStartup, previousStart
 
 export async function syncBetagouvStartupAPI() {
     const startups : StartupInfo[] = await betagouv.startupsInfos();
+    const startupDetailsInfo : Startup[] = await betagouv.startupInfos();
+    const members: Member[] = await betagouv.usersInfos();
+
     for (const startup of startups) {
       const previousStartupInfo : DBStartup = await db('startups').where({ id: startup.id }).first()
+      const startupDetailInfo = startupDetailsInfo.find(s => s.id === startup.id)
+      let has_intra = false
+      let has_coach = false
+      for (const member of startupDetailInfo.active_members) {
+        if (members.find(m => m.id === member && m.domaine === Domaine.INTRAPRENARIAT)) {
+          has_intra = true
+        }
+        if (members.find(m => m.id === member && m.domaine === Domaine.COACHING)) {
+          has_coach = true
+        }
+      }
+
       const newStartupInfo = {
         id: startup.id,
         name: startup.attributes.name,
@@ -82,6 +98,8 @@ export async function syncBetagouvStartupAPI() {
         current_phase_date: getCurrentPhaseDate(startup),
         mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+        has_intra,
+        has_coach
       }
       if (previousStartupInfo) {
         await db('startups').update(newStartupInfo)
