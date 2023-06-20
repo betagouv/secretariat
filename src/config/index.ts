@@ -24,7 +24,13 @@ const memberTypeOptions = [
 
 const userBadgeOptions = [{ name: 'Ségur (Paris)', key: 'segur' }];
 
+const CRON_TASK_ENV_VAR = {
+  AIRTABLE_API_KEY: process.env.AIRTABLE_API_KEY,
+  AIRTABLE_FORMATION_BASE_ID: process.env.AIRTABLE_FORMATION_BASE_ID
+}
+
 export default {
+  ...CRON_TASK_ENV_VAR,
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',

@@ -20,7 +20,7 @@ export const updateFormation = async(props: UpdateFormationProps, id: string) : 
     return
 }
 
-export const getFormation = (username: string) : Promise<Formation | undefined> => {
-    return db('formations').where({ username}).first()
+export const getFormation = (props: { airtable_id: string } | { id: string }) : Promise<Formation | undefined> => {
+    return db('formations').where({ ...props }).first()
 }
 
