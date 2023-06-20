@@ -2,6 +2,8 @@ import { createUserFormation } from "@/db/dbUsersFormations"
 import Airtable from "airtable"
 import * as Sentry from '@sentry/node'
 import config from '@config'
+import { getFormation } from "@/db/dbFormations"
+import { Formation } from "@/models/formation"
 
 export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({apiKey: config.AIRTABLE_API_KEY}).base(config.AIRTABLE_FORMATION_BASE_ID);
@@ -17,10 +19,13 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         // This function (`page`) will get called for each page of records.
         for (const record of records) {
             const username = ((record.get('Email') || '') as string).split('@')[0]
+            const formation_record_id = (record.get('Record ID (from Formation)') as [string])[0]
+            console.log('LCS FORMATIONS', formation_record_id);
+            const formation : Formation = await getFormation({ airtable_id: formation_record_id })
             if (username) {
                 try {
                     await createUserFormation({
-                        formation_id: (record.get('Record ID (from Formation)') as [string])[0],
+                        formation_id: formation.id,
                         username
                     })
                 } catch(e) {
