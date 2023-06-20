@@ -20,7 +20,7 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
             if (username) {
                 try {
                     await createUserFormation({
-                        formation_id: record.get('Record ID (from Formation)') as string,
+                        formation_id: (record.get('Record ID (from Formation)') as [string])[0],
                         username
                     })
                 } catch(e) {
