@@ -12,13 +12,13 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     base.table('Inscriptions').select({
         filterByFormula,
         view: 'Inscrits',
-        fields: ['email', 'Record ID (from Formation)']
+        fields: ['Email', 'Record ID (from Formation)']
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
    
 
         records.forEach(function(record) {
-            const username = (record.get('email') as string).split('@')[0]
+            const username = (record.get('Email') as string).split('@')[0]
             try {
                 createUserFormation({
                     formation_id: record.get('Record ID (from Formation)') as string,
