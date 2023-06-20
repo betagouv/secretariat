@@ -15,26 +15,24 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         fields: ['Email', 'Record ID (from Formation)']
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
-   
-
-        records.forEach(function(record) {
-            const username = (record.get('Email') as string).split('@')[0]
-            try {
-                createUserFormation({
-                    formation_id: record.get('Record ID (from Formation)') as string,
-                    username
-                })
-            } catch(e) {
-                Sentry.captureException(e);
-                console.error(e)
+        try {
+            console.log(records)
+            records.forEach(function(record) {
+                const username = (record.get('Email') as string).split('@')[0]
+                try {
+                    createUserFormation({
+                        formation_id: record.get('Record ID (from Formation)') as string,
+                        username
+                    })
+                } catch(e) {
+                    Sentry.captureException(e);
+                    console.error(e)
+                }
+            }); 
+            } catch(e){ 
+                console.log('error inside eachPage => ',e)
             }
-        });
-
-        // To fetch the next page of records, call `fetchNextPage`.
-        // If there are more records, `page` will get called again.
-        // If there are no more records, `done` will get called.
-        fetchNextPage();
-
+            fetchNextPage();
     }, function done(err) {
         if (err) { console.error(err); return; }
     });
