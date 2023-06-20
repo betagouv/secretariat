@@ -19,15 +19,16 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         // This function (`page`) will get called for each page of records.
         for (const record of records) {
             try {
-                const username = ((record.get('Email') || '') as string).split('@')[0]
+                const username = ((record.get('Email') || '') as string)
                 const formation_record_id = (record.get('Record ID (from Formation)') as [string])
+                console.log(username, formation_record_id)
                 if (formation_record_id) {
                     const formation : Formation = await getFormation({ airtable_id: formation_record_id[0] })
                     console.log(formation)
                     if (formation && username) {
                             await createUserFormation({
                                 formation_id: formation.id,
-                                username
+                                username: username.split('@')[0]
                             })
                     }
                 }
