@@ -9,8 +9,10 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     date.setDate(date.getDate() - 19);
     const dateStr = date.toISOString().split('T')[0]
     let filterByFormula = `DATETIME_DIFF(DATETIME_PARSE(`+ dateStr +`, 'YYYY-MM-DD'),{Created}, 'days')<0`
-    base('Inscriptions').select({
-        filterByFormula
+    base.table('Inscriptions').select({
+        filterByFormula,
+        view: 'Inscrits',
+        fields: ['email', 'Record ID (from Formation)']
     }).eachPage(function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
    
