@@ -18,22 +18,22 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     }).eachPage(async function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
         for (const record of records) {
-            const username = ((record.get('Email') || '') as string).split('@')[0]
-            const formation_record_id = (record.get('Record ID (from Formation)') as [string])
-            console.log('LCS FORMATIONS', formation_record_id);
-            if (formation_record_id) {
-                const formation : Formation = await getFormation({ airtable_id: formation_record_id[0] })
-                if (username) {
-                    try {
-                        await createUserFormation({
-                            formation_id: formation.id,
-                            username
-                        })
-                    } catch(e) {
-                        Sentry.captureException(e);
-                        console.error(e)
+            try {
+                const username = ((record.get('Email') || '') as string).split('@')[0]
+                const formation_record_id = (record.get('Record ID (from Formation)') as [string])
+                if (formation_record_id) {
+                    const formation : Formation = await getFormation({ airtable_id: formation_record_id[0] })
+                    console.log(formation)
+                    if (formation && username) {
+                            await createUserFormation({
+                                formation_id: formation.id,
+                                username
+                            })
                     }
                 }
+            } catch(e) {
+                Sentry.captureException(e);
+                console.error(e)
             }
         } 
         try {
