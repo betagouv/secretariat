@@ -13,12 +13,13 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         filterByFormula,
         view: 'Inscrits',
         fields: ['Email', 'Record ID (from Formation)']
-    }).eachPage(function page(records, fetchNextPage) {
+    }).eachPage(async function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
+        console.log()
         for (const record of records) {
             const username = (record.get('Email') as string).split('@')[0]
             try {
-                createUserFormation({
+                await createUserFormation({
                     formation_id: record.get('Record ID (from Formation)') as string,
                     username
                 })
@@ -27,7 +28,11 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
                 console.error(e)
             }
         } 
-       fetchNextPage();
+        try {
+            fetchNextPage();
+        } catch (e) {
+            console.log('no next page')
+        }
     }, function done(err) {
         if (err) { console.error(err); return; }
     });
