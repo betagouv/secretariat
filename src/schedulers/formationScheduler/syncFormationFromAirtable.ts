@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/node';
 
 export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_FORMATION_BASE_ID);
-    let filterByFormula = "DATETIME_DIFF(DATETIME_PARSE('2023-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
+    let filterByFormula = "DATETIME_DIFF(DATETIME_PARSE('2022-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
     if (syncOnlyNewRecord) {
         var date = new Date();
         date.setDate(date.getDate() - 1);

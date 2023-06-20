@@ -56,6 +56,7 @@ import { recreateEmailIfUserActive } from './recreateEmailIfUserActive';
 import { sendEmailToStartupToUpdatePhase } from './startups/sendEmailToStartupToUpdatePhase';
 import db from '@/db';
 import { syncFormationFromAirtable } from './formationScheduler/syncFormationFromAirtable';
+import { syncFormationInscriptionFromAirtable } from './formationScheduler/syncFormationInscriptionFromAirtable';
 
 interface Job {
   cronTime: string;
@@ -263,6 +264,12 @@ const formationJobs: Job[] = [
     onTick: () => syncFormationFromAirtable(true),
     isActive: true,
     name: 'SyncFormationFromAirtable'
+  },
+  {
+    cronTime: "0 0 * * *",
+    onTick: () => syncFormationInscriptionFromAirtable(true),
+    isActive: true,
+    name: 'SyncFormationInscriptionFromAirtable'
   }
 ]
 
