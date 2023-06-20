@@ -15,17 +15,18 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         fields: ['Email', 'Record ID (from Formation)']
     }).eachPage(async function page(records, fetchNextPage) {
         // This function (`page`) will get called for each page of records.
-        console.log()
         for (const record of records) {
-            const username = (record.get('Email') as string).split('@')[0]
-            try {
-                await createUserFormation({
-                    formation_id: record.get('Record ID (from Formation)') as string,
-                    username
-                })
-            } catch(e) {
-                Sentry.captureException(e);
-                console.error(e)
+            const username = ((record.get('Email') || '') as string).split('@')[0]
+            if (username) {
+                try {
+                    await createUserFormation({
+                        formation_id: record.get('Record ID (from Formation)') as string,
+                        username
+                    })
+                } catch(e) {
+                    Sentry.captureException(e);
+                    console.error(e)
+                }
             }
         } 
         try {
