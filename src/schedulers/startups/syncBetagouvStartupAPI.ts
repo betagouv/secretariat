@@ -8,6 +8,7 @@ import { DBStartup, Startup, StartupInfo, StartupPhase } from "@/models/startup"
 import { EMAIL_TYPES } from "@/modules/email";
 import { nbOfDaysBetweenDate } from '@/controllers/utils';
 import { Domaine, Member } from '@/models/member';
+import { getGithubFile } from '@/lib/github';
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
@@ -86,7 +87,8 @@ export async function syncBetagouvStartupAPI() {
       }
 
       const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
-
+      const res = await getGithubFile(`content/_authors/${startup.id}.md`,'master');
+      console.log('Github data', res.data)
       const newStartupInfo = {
         id: startup.id,
         name: startup.attributes.name,
