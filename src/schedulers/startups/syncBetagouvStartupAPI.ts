@@ -8,7 +8,7 @@ import { DBStartup, Startup, StartupInfo, StartupPhase } from "@/models/startup"
 import { EMAIL_TYPES } from "@/modules/email";
 import { nbOfDaysBetweenDate } from '@/controllers/utils';
 import { Domaine, Member } from '@/models/member';
-import { getGithubFile } from '@/lib/github';
+import { getLastCommitFromFile } from '@/lib/github';
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
@@ -87,8 +87,8 @@ export async function syncBetagouvStartupAPI() {
       }
 
       const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
-      const res = await getGithubFile(`content/_startups/${startup.id}.md`,'master');
-      console.log('Github data', res.data)
+      const res = await getLastCommitFromFile(`content/_startups/${startup.id}.md`,'master');
+      console.log('Github data', new Date(res.data[0].committer.date))
       const newStartupInfo = {
         id: startup.id,
         name: startup.attributes.name,
@@ -104,6 +104,7 @@ export async function syncBetagouvStartupAPI() {
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
         nb_active_members: startupDetailInfo.active_members.length,
         nb_total_members: Array.from(nb_total_members).length,
+        last_github_update: new Date(res.data[0].committer.date),
         has_intra,
         has_coach
       }

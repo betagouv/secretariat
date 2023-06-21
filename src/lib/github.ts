@@ -221,6 +221,11 @@ export function deleteGithubBranch(branch) {
   return requestWithAuth(`DELETE ${url}`);
 }
 
+export function getLastCommitFromFile(path, branch) {
+  const url = `https://api.github.com/repos/${config.githubFork}/commits?path=${path}&page=1&per_page=1&branch=${branch}`
+  return requestWithAuth(`GET ${url}`, { branch });
+}
+
 export function getGithubFile(path, branch) {
   const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
 
