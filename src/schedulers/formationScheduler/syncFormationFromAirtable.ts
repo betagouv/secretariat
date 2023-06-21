@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/node';
 
 export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_FORMATION_BASE_ID);
-    let filterByFormula = "DATETIME_DIFF(DATETIME_PARSE('2022-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
+    let filterByFormula = "DATETIME_DIFF(DATETIME_PARSE('2021-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0"
     if (syncOnlyNewRecord) {
         var date = new Date();
         date.setDate(date.getDate() - 1);
@@ -13,7 +13,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     }
     base('Formations').select({
         // Selecting the first 3 records in Formations accessibles à l'inscription:
-        fields: ["Formation", "Record ID", "Début"],
+        fields: ["Formation", "Record ID", "Début", "formationTypeName", 'formationType'],
         view: "Formations passées",
         filterByFormula
     }).eachPage(async function page(records, fetchNextPage) {
@@ -23,6 +23,8 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
                 try {
                     await createFormation({
                         formation_date: new Date(record.get('Début') as string),
+                        formation_type: (record.get('formationTypeName') as [string])[0],
+                        formation_type_airtable_id: (record.get('formationType') as [string])[0],
                         airtable_id: record.get('Record ID') as string,
                         name: record.get('Formation') as string
                     })

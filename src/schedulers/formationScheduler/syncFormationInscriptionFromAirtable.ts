@@ -21,10 +21,8 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
             try {
                 const username = ((record.get('Email') || '') as string)
                 const formation_record_id = (record.get('Record ID (from Formation)') as [string])
-                console.log(username, formation_record_id)
                 if (formation_record_id) {
                     const formation : Formation = await getFormation({ airtable_id: formation_record_id[0] })
-                    console.log(formation)
                     if (formation && username) {
                             await createUserFormation({
                                 formation_id: formation.id,

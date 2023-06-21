@@ -9,7 +9,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return knex.schema
-    .alterTable('badge_requests', async (table) => {
+    .alterTable('startups', async (table) => {
         table.dropColumn('has_coach');
         table.dropColumn('has_intra');
     });   
