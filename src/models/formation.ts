@@ -5,4 +5,5 @@ export interface Formation {
     name: string,
     created_at: Date,
     formation_date: Date,
+    formation_type: string,
 }
