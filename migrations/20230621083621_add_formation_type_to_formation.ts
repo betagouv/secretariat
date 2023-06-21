@@ -12,6 +12,7 @@ exports.down = function(knex) {
     return knex.schema
     .alterTable('formations', async (table) => {
         table.dropColumn('formation_type');
+        table.dropColumn('formation_type_airtable_id');
     });   
 }
 
