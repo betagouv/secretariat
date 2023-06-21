@@ -88,6 +88,7 @@ export async function syncBetagouvStartupAPI() {
 
       const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
       const res = await getLastCommitFromFile(`content/_startups/${startup.id}.md`,'master');
+      console.log(res)
       console.log('Github data', res.data, typeof res.data)
       const newStartupInfo = {
         id: startup.id,
@@ -103,10 +104,13 @@ export async function syncBetagouvStartupAPI() {
         mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
         nb_active_members: startupDetailInfo.active_members.length,
+        last_github_update: undefined,
         nb_total_members: Array.from(nb_total_members).length,
-        last_github_update: new Date(res.data[0].committer.date),
         has_intra,
         has_coach
+      }
+      if (res.data)  {
+        newStartupInfo.last_github_update = new Date(res.data[0].committer.date)
       }
       if (previousStartupInfo) {
         await db('startups').update(newStartupInfo)
