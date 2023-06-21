@@ -87,7 +87,7 @@ export async function syncBetagouvStartupAPI() {
       }
 
       const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
-      const res = await getGithubFile(`content/_authors/${startup.id}.md`,'master');
+      const res = await getGithubFile(`content/_startups/${startup.id}.md`,'master');
       console.log('Github data', res.data)
       const newStartupInfo = {
         id: startup.id,
