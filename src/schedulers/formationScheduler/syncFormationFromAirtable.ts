@@ -23,7 +23,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
                 try {
                     await createFormation({
                         formation_date: new Date(record.get('Début') as string),
-                        formation_type: new Date(record.get('formationType') as string),
+                        formation_type: record.get('formationType') as string,
                         airtable_id: record.get('Record ID') as string,
                         name: record.get('Formation') as string
                     })
