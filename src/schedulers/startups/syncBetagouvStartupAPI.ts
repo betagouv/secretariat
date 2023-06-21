@@ -8,6 +8,7 @@ import { DBStartup, Startup, StartupInfo, StartupPhase } from "@/models/startup"
 import { EMAIL_TYPES } from "@/modules/email";
 import { nbOfDaysBetweenDate } from '@/controllers/utils';
 import { Domaine, Member } from '@/models/member';
+import { getLastCommitFromFile } from '@/lib/github';
 
 function getCurrentPhase(startup : StartupInfo) {
   return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
@@ -73,7 +74,7 @@ export async function syncBetagouvStartupAPI() {
 
     for (const startup of startups) {
       const previousStartupInfo : DBStartup = await db('startups').where({ id: startup.id }).first()
-      const startupDetailInfo = startupDetailsInfo.find(s => s.id === startup.id)
+      const startupDetailInfo : Startup = startupDetailsInfo.find(s => s.id === startup.id)
       let has_intra = false
       let has_coach = false
       for (const member of startupDetailInfo.active_members) {
@@ -85,6 +86,8 @@ export async function syncBetagouvStartupAPI() {
         }
       }
 
+      const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
+      const res = await getLastCommitFromFile(`content/_startups/${startup.id}.md`,'master');
       const newStartupInfo = {
         id: startup.id,
         name: startup.attributes.name,
@@ -98,8 +101,14 @@ export async function syncBetagouvStartupAPI() {
         current_phase_date: getCurrentPhaseDate(startup),
         mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+        nb_active_members: startupDetailInfo.active_members.length,
+        last_github_update: undefined,
+        nb_total_members: Array.from(nb_total_members).length,
         has_intra,
         has_coach
+      }
+      if (res.data)  {
+        newStartupInfo.last_github_update = new Date(res.data[0].committer.date)
       }
       if (previousStartupInfo) {
         await db('startups').update(newStartupInfo)
