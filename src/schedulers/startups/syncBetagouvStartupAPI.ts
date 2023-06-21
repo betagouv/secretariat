@@ -73,7 +73,7 @@ export async function syncBetagouvStartupAPI() {
 
     for (const startup of startups) {
       const previousStartupInfo : DBStartup = await db('startups').where({ id: startup.id }).first()
-      const startupDetailInfo = startupDetailsInfo.find(s => s.id === startup.id)
+      const startupDetailInfo : Startup = startupDetailsInfo.find(s => s.id === startup.id)
       let has_intra = false
       let has_coach = false
       for (const member of startupDetailInfo.active_members) {
@@ -84,6 +84,8 @@ export async function syncBetagouvStartupAPI() {
           has_coach = true
         }
       }
+
+      const nb_total_members = new Set([...startupDetailInfo.active_members, ...startupDetailInfo.expired_members, ...startupDetailInfo.previous_members])
 
       const newStartupInfo = {
         id: startup.id,
@@ -98,6 +100,8 @@ export async function syncBetagouvStartupAPI() {
         current_phase_date: getCurrentPhaseDate(startup),
         mailing_list: previousStartupInfo ? previousStartupInfo.mailing_list : undefined,
         incubator: startup.relationships ? startup.relationships.incubator.data.id : undefined,
+        nb_active_members: startupDetailInfo.active_members.length,
+        nb_total_members: Array.from(nb_total_members).length,
         has_intra,
         has_coach
       }
