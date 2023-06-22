@@ -1,7 +1,7 @@
 import _ from 'lodash'
 
 import betagouv from "@/betagouv"
-import { computeHash } from "@/controllers/utils"
+import { computeHash, nbOfDaysBetweenDate } from "@/controllers/utils"
 import db from "@/db"
 import { DBUser } from "@/models/dbUser/dbUser"
 import { Member } from "@/models/member"
@@ -21,10 +21,13 @@ export async function syncBetagouvUserAPI() {
       const previousUserInfo : DBUser = await db('users').where({
         username: member.id
       }).first()
+     
+      let nb_days_at_beta = member.missions.reduce((acc, mission) => acc + nbOfDaysBetweenDate(new Date(mission.start), new Date(mission.end)), 0)
       const [user] : DBUser[] = await db('users').update({
         domaine: member.domaine,
         missions: JSON.stringify(member.missions),
-        startups: member.startups
+        startups: member.startups,
+        nb_days_at_beta
       }).where({
         username: member.id
       }).returning('*')
