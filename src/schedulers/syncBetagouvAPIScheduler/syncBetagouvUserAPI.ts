@@ -67,7 +67,8 @@ export async function syncBetagouvUserAPI() {
         await db('user_details').insert({
           hash: computeHash(member.id),
           domaine: member.domaine,
-          active: user.primary_email_status === 'EMAIL_ACTIVE'
+          active: user.primary_email_status === 'EMAIL_ACTIVE',
+          nb_days_at_beta
         })
         .onConflict('hash')
         .merge();
