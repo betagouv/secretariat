@@ -108,7 +108,7 @@ export async function syncBetagouvStartupAPI() {
         has_coach
       }
       if (res.data)  {
-        newStartupInfo.last_github_update = new Date(res.data[0].committer.date)
+        newStartupInfo.last_github_update = new Date(res.data[0].commit.committer.date)
       }
       if (previousStartupInfo) {
         await db('startups').update(newStartupInfo)
