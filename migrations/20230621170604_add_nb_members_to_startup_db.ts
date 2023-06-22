@@ -1,23 +1,15 @@
 exports.up = function(knex) {
-    knex.schema
-        .alterTable('formations', (table) => {
-            table.dropColumn('nb_active_members');
-            table.dropColumn('nb_total_members')
-        })
-    knex.schema
-        .alterTable('startups', (table) => {
-            table.integer('nb_active_members')
-            table.integer('nb_total_members')
-            table.datetime('last_github_update')
-        })
+    return knex.schema
+    .alterTable('formations', async (table) => {
+        table.dropColumn('nb_active_members');
+        table.dropColumn('nb_total_members');
+    });  
 }
 
 exports.down = function(knex) {
     return knex.schema
-    .alterTable('startups', async (table) => {
-        table.dropColumn('nb_active_members');
-        table.dropColumn('last_github_update');
-        table.dropColumn('nb_total_members')
-
-    });   
+    .alterTable('formations', async (table) => {
+        table.integer('nb_active_members');
+        table.integer('nb_total_members');
+    });  
 }
