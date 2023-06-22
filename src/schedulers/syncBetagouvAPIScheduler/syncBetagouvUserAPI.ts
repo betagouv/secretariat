@@ -22,7 +22,14 @@ export async function syncBetagouvUserAPI() {
         username: member.id
       }).first()
      
-      let nb_days_at_beta = member.missions.reduce((acc, mission) => acc + nbOfDaysBetweenDate(new Date(mission.start), new Date(mission.end)), 0)
+      let nb_days_at_beta = member.missions.reduce((acc, mission) => {
+        let end = new Date(mission.end)
+        if (end > new Date()) {
+          // if date is in the future
+          end = new Date()
+        }
+        return acc + nbOfDaysBetweenDate(new Date(mission.start), end)
+      }, 0)
       const [user] : DBUser[] = await db('users').update({
         domaine: member.domaine,
         missions: JSON.stringify(member.missions),
