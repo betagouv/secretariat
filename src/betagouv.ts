@@ -37,6 +37,16 @@ export interface OvhResponder {
   to: Date;
 }
 
+export interface OvhExchangeCreationData {
+  login: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  initial: string;
+  domain: string;
+  company: string;
+}
+
 const betaGouv = {
   sendInfoToChat: async (
     text: string,
@@ -493,6 +503,48 @@ const betaOVH = {
       await ovh.requestPromised('POST', url, { password });
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+    }
+  },
+
+  createEmailForExchange: async (creationData: OvhExchangeCreationData) => {
+    const primaryEmailAddress = `${creationData.login}@${config.domain}`;
+
+    const getLicencesUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`;
+    const filters = {
+      primaryEmailAddress: '%@configureme.me',
+    };
+    let availableLicences;
+    try {
+      availableLicences = await ovh.requestPromised(
+        'GET',
+        getLicencesUrl,
+        filters
+      );
+    } catch (err) {
+      throw new Error(
+        `OVH Error on ${getLicencesUrl} : ${JSON.stringify(err)}`
+      );
+    }
+    if (availableLicences.length === 0) {
+      throw new Error('Aucune licence disponible');
+    }
+
+    const licenseToBeAffected = availableLicences[0];
+
+    const affectLicenceUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${licenseToBeAffected}`;
+
+    try {
+      const result = await ovh.requestPromised(
+        'PUT',
+        affectLicenceUrl,
+        creationData
+      );
+      console.log(`Account ${primaryEmailAddress} created`);
+      return result;
+    } catch (err) {
+      throw new Error(
+        `OVH Error on ${getLicencesUrl} : ${JSON.stringify(err)}`
+      );
     }
   },
 };
