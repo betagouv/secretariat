@@ -44,7 +44,9 @@ class routes {
   static ME: string = '/api/me'
 
   static LOGIN_API: string = '/api/login'
-    static API_UPDATE_BADGE_STATUS: string
+  static API_UPDATE_BADGE_STATUS: string
+  static API_PUBLIC_INCUBATORS_GET_ALL: string = '/api/incubators'
+  static API_PUBLIC_SPONSORS_GET_ALL: string = '/api/sponsors'
 }
 
 export default routes

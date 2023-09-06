@@ -101,6 +101,14 @@ const betaGouv = {
         throw new Error(`Error to get incubators infos : ${err}`);
       })
   },
+  sponsors: async (): Promise<Incubator[]> => {
+    return axios
+      .get<any[]>(config.SPONSOR_API)
+      .then((response) => response.data)
+      .catch((err) => {
+        throw new Error(`Error to get incubators infos : ${err}`);
+      })
+  },
   getJobs: async(): Promise<Job[]> => {
     return await axios.get<any[]>(config.JOBS_API)
     .then(res => res.data)

@@ -38,6 +38,8 @@ export async function postStartupInfoUpdate(req, res) {
         const mission = req.body.mission
         const stats_url = req.body.stats_url
         const repository = req.body.repository
+        const incubator = req.body.incubator
+        const sponsors = req.body.sponsors || []
 
         const content = req.body.text
 
@@ -60,7 +62,9 @@ export async function postStartupInfoUpdate(req, res) {
             dashlord_url,
             mission,
             stats_url,
-            repository
+            repository,
+            incubator,
+            sponsors: sponsors.map(sponsor => `/organisations/${sponsor}`)
         };
         if (phase) {
             const phases = info.attributes.phases.map(phase => ({

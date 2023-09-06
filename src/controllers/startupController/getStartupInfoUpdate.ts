@@ -31,7 +31,9 @@ export async function getStartupInfoUpdate(req, res) {
             dashlord_url: startup.attributes.dashlord_url,
             repository: startup.attributes.repository,
             mission: startup.attributes.pitch,
-            stats_url: startup.attributes.stats_url
+            stats_url: startup.attributes.stats_url,
+            incubator: startup.relationships.incubator.data.id,
+            sponsors: startup.attributes.sponsors
           },
           updatePullRequest,
           startup,

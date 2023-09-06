@@ -12,11 +12,18 @@ import DatepickerSelect from '../components/DatepickerSelect';
 import { ClientOnly } from '../components/ClientOnly';
 import MdEditor from 'react-markdown-editor-lite';
 import MarkdownIt from 'markdown-it';
+import SEAsyncIncubateurSelect from '../components/SEAsyncIncubateurSelect';
+import SESponsorSelect from '../components/SESponsorSelect';
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 interface StartupInfoFormData {
+    sponsors?: {
+        value: string,
+        label: string
+    }[];
+    incubator?: string;
     mission?: string;
     stats_url?: string;
     link?: string,
@@ -61,8 +68,10 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
     const [link, setLink] = React.useState(props.formData.link)
     const [repository, setRepository] = React.useState(props.formData.repository)
     const [mission, setMission] = React.useState(props.formData.mission)
+    const [sponsors, setSponsors] = React.useState(props.formData.sponsors || [])
+    const [incubator, setIncubator] = React.useState(props.formData.incubator)
     const [stats_url, setStatsUrl] = React.useState(props.formData.stats_url)
-     const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
+    const [dashlord_url, setDashlord] = React.useState(props.formData.dashlord_url)
 
     const [showAddPhase, setShowAddPhase] = React.useState(false)
 
@@ -84,6 +93,8 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             link,
             dashlord_url,
             mission,
+            incubator,
+            sponsors: sponsors.map(sponsor => sponsor.value),
             stats_url,
             repository
         }).then(() => {
@@ -116,7 +127,9 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             dashlord_url === props.formData.dashlord_url &&
             stats_url === props.formData.stats_url &&
             mission === props.formData.mission &&
-            repository === props.formData.repository
+            repository === props.formData.repository &&
+            incubator === props.formData.incubator &&
+            sponsors === props.formData.sponsors
         ))
     }
     let disabled = false
@@ -215,6 +228,22 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                                     onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
                                     value={stats_url}/>
                                 </div>
+                                <h5>Incubateurs : </h5>
+                                <div className="form__group">
+                                    <SEAsyncIncubateurSelect
+                                        value={incubator}
+                                        onChange={e => {
+                                            setIncubator(e.value)
+                                        }} />
+                                </div>
+                                <h5>Sponsors : </h5>
+                                <div className="form__group">
+                                    <SESponsorSelect
+                                        value={sponsors}
+                                        onChange={sponsors => {
+                                            setSponsors(sponsors)}
+                                        } />
+                                </div> 
                                 <h5>Mission : </h5>
                                 <div className="form__group">
                                     <textarea name="Mission"

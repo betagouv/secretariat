@@ -48,6 +48,7 @@ export interface Startup {
 export interface StartupInfo {
     id: string;
     attributes: {
+        sponsors: string[]
         github: string
         dashlord_url: string
         website: any

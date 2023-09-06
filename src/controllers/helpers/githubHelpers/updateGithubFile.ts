@@ -16,7 +16,9 @@ export interface GithubStartupChange {
     dashlord_url: string,
     mission: string,
     stats_url: string,
-    repository: string
+    repository: string,
+    sponsors: [string],
+    incubator: string
 }
 
 async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
