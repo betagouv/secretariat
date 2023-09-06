@@ -6,6 +6,7 @@ import { Incubator } from '@models/incubator';
 import { Job, JobWTTJ } from '@models/job';
 import { Member } from '@models/member';
 import { Startup } from '@models/startup';
+import _ from 'lodash';
 
 const ovh = ovh0({
   appKey: process.env.OVH_APP_KEY,
@@ -38,12 +39,10 @@ export interface OvhResponder {
 }
 
 export interface OvhExchangeCreationData {
-  login: string;
   firstName: string;
   lastName: string;
   displayName: string;
   initial: string;
-  domain: string;
   company: string;
 }
 
@@ -494,7 +493,7 @@ const betaOVH = {
   },
   changePassword: async (id, password, plan) => {
     let url = `/email/domain/${config.domain}/account/${id}/changePassword`;
-    if (plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) { 
+    if (plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
       url = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${id}@${config.domain}/changePassword`
     } else if (plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE) {
       url = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}/changePassword`
@@ -506,44 +505,58 @@ const betaOVH = {
     }
   },
 
-  createEmailForExchange: async (creationData: OvhExchangeCreationData) => {
-    const primaryEmailAddress = `${creationData.login}@${config.domain}`;
-
-    const getLicencesUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`;
-    const filters = {
-      primaryEmailAddress: '%@configureme.me',
-    };
-    let availableLicences;
+  createEmailForExchange: async (id: string, creationData: OvhExchangeCreationData) => {
+    const primaryEmailAddress = `${id}@${config.domain}`;
+    const getAccountsUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`;
+    let availableAccounts;
     try {
-      availableLicences = await ovh.requestPromised(
+      availableAccounts = await ovh.requestPromised(
         'GET',
-        getLicencesUrl,
-        filters
+        getAccountsUrl,
+        {
+          primaryEmailAddress: '%@configureme.me',
+        }
       );
     } catch (err) {
       throw new Error(
-        `OVH Error on ${getLicencesUrl} : ${JSON.stringify(err)}`
+        `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`
       );
     }
-    if (availableLicences.length === 0) {
-      throw new Error('Aucune licence disponible');
+    if (availableAccounts.length === 0) {
+      throw new Error('No Exchange account available');
     }
 
-    const licenseToBeAffected = availableLicences[0];
+    const accountToBeAssigned = _.sample(availableAccounts);
 
-    const affectLicenceUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${licenseToBeAffected}`;
+    console.log(`Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`);
+
+    const assignAccountUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${accountToBeAssigned}`;
 
     try {
       const result = await ovh.requestPromised(
         'PUT',
-        affectLicenceUrl,
-        creationData
+        assignAccountUrl,
+        { ...creationData, login: id, domain: config.domain }
       );
-      console.log(`Account ${primaryEmailAddress} created`);
+      console.log(`Account ${primaryEmailAddress} assigned`);
       return result;
     } catch (err) {
       throw new Error(
-        `OVH Error on ${getLicencesUrl} : ${JSON.stringify(err)}`
+        `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
+      );
+    }
+  },
+
+  deleteEmailForExchange: async (id) => {
+    try {
+      const result = await ovh.requestPromised(
+        'DELETE',
+        `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
+      );
+      return result;
+    } catch (err) {
+      throw new Error(
+        `OVH Error: ${JSON.stringify(err)}`
       );
     }
   },
