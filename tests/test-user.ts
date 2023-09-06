@@ -9,6 +9,7 @@ import * as mattermost from '@/lib/mattermost';
 import knex from '@/db';
 import app from '@/index';
 import { createEmailAddresses, createRedirectionEmailAdresses, subscribeEmailAddresses, unsubscribeEmailAddresses } from '@/schedulers/emailScheduler';
+import { createEmail } from '@controllers/usersController';
 import testUsers from './users.json';
 import utils from './utils';
 import { EmailStatusCode } from '@/models/dbUser/dbUser'
@@ -1321,6 +1322,35 @@ describe('User', () => {
         primary_email: `${newMember.id}@${config.domain}`,
         email_is_redirection: false,
       });
+    });
+
+  });
+
+  describe('createEmail', () => {
+    const sandbox = sinon.createSandbox();
+
+    beforeEach(async () => {
+      sandbox.stub(Betagouv, 'createEmail');
+      sandbox.stub(Betagouv, 'sendInfoToChat');
+    });
+
+    afterEach(async () => {
+      sandbox.restore();
+
+      await knex('users').where({ username: 'membre.nouveau-email' }).delete();
+    });
+
+    it('should create an OVH email account', async () => {
+      await knex('users').insert({
+        username: 'membre.nouveau-email',
+        primary_email: null,
+        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+        secondary_email: 'membre.nouveau-email.perso@example.com',
+      });
+
+      await createEmail('membre.nouveau-email', 'Test');
+
+      Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
     });
 
   });
