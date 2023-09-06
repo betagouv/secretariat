@@ -45,4 +45,4 @@ export default ({ onChange, value }) => {
             blurInputOnSelect={false}
           />
       </ClientOnly>
-  }
+}
