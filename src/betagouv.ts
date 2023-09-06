@@ -221,7 +221,9 @@ const betaOVH = {
     if (config.OVH_EMAIL_EXCHANGE_NAME) {
       const urlExchange = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`
       promises.push(
-        ovh.requestPromised('GET', urlExchange, {}).then(data => data.map(d => d.split('@')[0])).catch(e => [])
+        ovh.requestPromised('GET', urlExchange, { primaryEmailAddress: `%@${config.domain}` })
+          .then(data => data.map(d => d.split('@')[0]))
+          .catch(e => [])
       )
     }
     try {
