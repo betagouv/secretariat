@@ -39,7 +39,6 @@ export default ({ onChange, value }) => {
             defaultValue={options.filter(opt => opt.value === value)}
             onChange={onChange}
             options={options}
-            defaultOptions={options}
             placeholder={'Sélectionne un ou plusieurs incubateurs'} 
             hideSelectedOptions={false}
             blurInputOnSelect={false}
