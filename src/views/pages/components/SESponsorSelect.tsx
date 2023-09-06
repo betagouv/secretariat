@@ -37,12 +37,10 @@ export default ({ onChange, value }) => {
     }
     return <ClientOnly>
         <Select
-            cacheOptions
             isMulti
             defaultValue={options.filter(opt => value.includes(opt.value))}
             onChange={onChange}
             options={options}
-            defaultOptions={options}
             placeholder={'Sélectionne un ou plusieurs incubateurs'} 
             hideSelectedOptions={false}
             blurInputOnSelect={false}
