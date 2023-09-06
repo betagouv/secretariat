@@ -1353,5 +1353,58 @@ describe('User', () => {
       Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
     });
 
+    context('when the user needs an Exchange account', ()=> {
+      beforeEach(async () => {
+        utils.cleanMocks();
+
+        sandbox.stub(Betagouv, 'createEmailForExchange');
+
+        sandbox.stub(Betagouv, 'startupsInfos').resolves(
+          [
+            {
+              "type": "startup",
+              "id": "itou",
+              "attributes": {
+                "name": "Itou",
+              },
+              "relationships": {
+                "incubator": {
+                  "data": {
+                    "type": "incubator",
+                    "id": "gip-inclusion"
+                  }
+                }
+              },
+            }
+          ]
+        );
+
+        sandbox.stub(Betagouv, 'usersInfos').resolves(
+          [
+            {
+              id: 'membre.nouveau-email',
+              fullname: 'membre Nouveau test email',
+              startups: [
+                "itou"
+              ],
+            },
+          ]
+        );
+      });
+
+      it('should create an Exchange email account', async () => {
+        await knex('users').insert({
+          username: 'membre.nouveau-email',
+          primary_email: null,
+          primary_email_status: EmailStatusCode.EMAIL_UNSET,
+          secondary_email: 'membre.nouveau-email.perso@example.com',
+        });
+
+        await createEmail('membre.nouveau-email', 'Test');
+
+        Betagouv.createEmailForExchange.calledWith('membre.nouveau-email').should.be.true;
+      });
+    });
+
   });
 });
