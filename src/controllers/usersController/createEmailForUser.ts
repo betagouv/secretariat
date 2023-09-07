@@ -1,6 +1,6 @@
 import crypto from "crypto"
 import config from "@config";
-import BetaGouv from "@/betagouv";
+import BetaGouv, { EMAIL_PLAN_TYPE, OvhExchangeCreationData } from "@/betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
 import { MemberWithPermission } from "@models/member";
@@ -73,7 +73,11 @@ export async function createEmailForUser(req, res) {
     }
 }
 
-async function doesUserNeedExchange(username: string): boolean {
+async function getEmailCreationParams(username: string):
+    Promise<
+        { planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, creationData: OvhExchangeCreationData }
+        | { planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, password: string }
+    > {
     const [ usersInfos, startupsInfos ] = await Promise.all([
         BetaGouv.usersInfos(),
         BetaGouv.startupsInfos()
@@ -81,20 +85,39 @@ async function doesUserNeedExchange(username: string): boolean {
 
     const userInfo = _.find(usersInfos, { id: username });
 
-    const userStartups = userInfo?.startups ?? [];
-
-    return _.some(userStartups, (id) => {
+    const needsExchange = _.some(userInfo?.startups, (id) => {
         const startup = _.find(startupsInfos, { id });
         const incubator = startup?.relationships?.incubator?.data?.id;
         return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
     });
+
+    if (needsExchange) {
+        const displayName = userInfo?.fullname ?? '';
+        const [ firstName, ...lastNames ] = displayName.split(' ');
+        const lastName = lastNames.join(' ');
+
+        return {
+            planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
+            creationData: {
+                displayName,
+                firstName,
+                lastName
+            }
+        }
+    } else {
+        const password = crypto.randomBytes(16)
+            .toString('base64')
+            .slice(0, -2);
+
+        return {
+            planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+            password
+        };
+    }
 }
 
 export async function createEmail(username: string, creator: string, emailIsRecreated: boolean=false) {
     const email = utils.buildBetaEmail(username);
-    const password = crypto.randomBytes(16)
-        .toString('base64')
-        .slice(0, -2);
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
 
@@ -102,12 +125,15 @@ export async function createEmail(username: string, creator: string, emailIsRecr
 
     await BetaGouv.sendInfoToChat(message);
 
-    const needsExchange = await doesUserNeedExchange(username);
+    const emailCreationParams = await getEmailCreationParams(username);
 
-    if (needsExchange) {
-        await BetaGouv.createEmailForExchange(username, {});
-    } else {
-        await BetaGouv.createEmail(username, password);
+    switch (emailCreationParams.planType) {
+        case EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE:
+            await BetaGouv.createEmailForExchange(username, emailCreationParams.creationData);
+            break;
+        case EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC:
+            await BetaGouv.createEmail(username, emailCreationParams.password);
+            break;
     }
 
     await knex('users').where({

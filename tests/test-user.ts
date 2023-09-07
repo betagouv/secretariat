@@ -1089,6 +1089,7 @@ describe('User', () => {
       utils.mockOvhRedirections();
       utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
+      utils.mockStartups();
 
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
       const allAccountsExceptANewMember = testUsers.filter(
@@ -1380,7 +1381,7 @@ describe('User', () => {
           [
             {
               id: 'membre.nouveau-email',
-              fullname: 'membre Nouveau test email',
+              fullname: 'Membre Nouveau test email',
               startups: [
                 "itou",
                 "missing-startup",
@@ -1400,7 +1401,15 @@ describe('User', () => {
 
         await createEmail('membre.nouveau-email', 'Test');
 
-        Betagouv.createEmailForExchange.calledWith('membre.nouveau-email').should.be.true;
+        Betagouv.createEmailForExchange.firstCall.args.should.deep.equal(
+          [
+            'membre.nouveau-email',
+            {
+              displayName: 'Membre Nouveau test email',
+              firstName: 'Membre',
+              lastName: 'Nouveau test email',
+            }
+          ]);
       });
     });
 

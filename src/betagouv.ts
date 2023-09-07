@@ -39,11 +39,11 @@ export interface OvhResponder {
 }
 
 export interface OvhExchangeCreationData {
-  firstName: string;
-  lastName: string;
-  displayName: string;
-  initial: string;
-  company: string;
+  firstName?: string;
+  lastName?: string;
+  displayName?: string;
+  initial?: string;
+  company?: string;
 }
 
 const betaGouv = {
