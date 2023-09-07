@@ -69,7 +69,7 @@ describe('User', () => {
             .send({
               to_email: 'test@example.com',
             })
-          
+
           const res = await knex('users').where({ username: 'membre.nouveau'}).first()
           res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
           ovhEmailCreation.isDone().should.be.true;
@@ -252,7 +252,7 @@ describe('User', () => {
             .send({
               to_email: 'test@example.com',
             })
-          
+
           const res = await knex('users').where({ username: 'membre.nouveau'}).first()
           res.primary_email.should.equal(`membre.nouveau@${config.domain}`)
           ovhEmailCreation.isDone().should.be.true;
@@ -312,7 +312,7 @@ describe('User', () => {
 
   describe('POST /users/:username/redirections authenticated', () => {
     let getToken
-    
+
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
@@ -391,7 +391,7 @@ describe('User', () => {
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     let getToken
-    
+
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
@@ -480,7 +480,7 @@ describe('User', () => {
 
   describe('POST /users/:username/password authenticated', () => {
     let getToken
-    
+
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
@@ -659,7 +659,7 @@ describe('User', () => {
 
   describe('POST /user/:username/email/delete', () => {
     let getToken
-    
+
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
@@ -687,7 +687,7 @@ describe('User', () => {
       const expectedRedirectionBody = (body) => {
         return body.from === `membre.actif@${config.domain}` && body.to === config.leavesEmail;
       }
-      
+
       const ovhRedirectionDepartureEmail = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/, expectedRedirectionBody)
         .reply(200);
@@ -704,7 +704,7 @@ describe('User', () => {
 
   describe('POST /users/:username/secondary_email', () => {
     let getToken
-    
+
     beforeEach((done) => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.nouveau'))
@@ -899,7 +899,7 @@ describe('User', () => {
 
   describe('POST /users/:username/redirections/:email/delete authenticated', () => {
     let getToken
-    
+
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
@@ -1039,7 +1039,7 @@ describe('User', () => {
           done();
         });
     });
-  }); 
+  });
 
   describe('cronjob', () => {
     before(async () => {
@@ -1277,12 +1277,12 @@ describe('User', () => {
       utils.mockOvhRedirections();
       utils.mockOvhUserResponder();
       utils.mockOvhUserEmailInfos();
-  
+
       const newMember = testUsers.find((user) => user.id === 'membre.nouveau');
       const allAccountsExceptANewMember = testUsers.filter(
         (user) => user.id !== newMember.id
       );
-  
+
       nock(/.*ovh.com/)
         .get(/^.*email\/domain\/.*\/redirection/)
         .reply(
@@ -1298,7 +1298,7 @@ describe('User', () => {
       const ovhRedirectionCreation = nock(/.*ovh.com/)
         .post(/^.*email\/domain\/.*\/redirection/)
         .reply(200);
-  
+
       await knex('login_tokens').truncate()
       await knex('users').where({
         username: newMember.id,
@@ -1331,6 +1331,7 @@ describe('User', () => {
 
     beforeEach(async () => {
       sandbox.stub(Betagouv, 'createEmail');
+      sandbox.stub(Betagouv, 'createEmailForExchange');
       sandbox.stub(Betagouv, 'sendInfoToChat');
     });
 
@@ -1355,10 +1356,6 @@ describe('User', () => {
 
     context('when the user needs an Exchange account', ()=> {
       beforeEach(async () => {
-        utils.cleanMocks();
-
-        sandbox.stub(Betagouv, 'createEmailForExchange');
-
         sandbox.stub(Betagouv, 'startupsInfos').resolves(
           [
             {
@@ -1385,7 +1382,8 @@ describe('User', () => {
               id: 'membre.nouveau-email',
               fullname: 'membre Nouveau test email',
               startups: [
-                "itou"
+                "itou",
+                "missing-startup",
               ],
             },
           ]

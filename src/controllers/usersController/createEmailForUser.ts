@@ -6,6 +6,9 @@ import knex from "@/db/index";
 import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
+import { _ } from "lodash";
+
+const INCUBATORS_USING_EXCHANGE = [ 'gip-inclusion' ];
 
 export async function createEmailAndUpdateSecondaryEmail({username, email} : {username:string, email:string}, currentUser: string) {
     const isCurrentUser = currentUser === username;
@@ -70,6 +73,23 @@ export async function createEmailForUser(req, res) {
     }
 }
 
+async function doesUserNeedExchange(username: string): boolean {
+    const [ usersInfos, startupsInfos ] = await Promise.all([
+        BetaGouv.usersInfos(),
+        BetaGouv.startupsInfos()
+    ]);
+
+    const userInfo = _.find(usersInfos, { id: username });
+
+    const userStartups = userInfo?.startups ?? [];
+
+    return _.some(userStartups, (id) => {
+        const startup = _.find(startupsInfos, { id });
+        const incubator = startup?.relationships?.incubator?.data?.id;
+        return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
+    });
+}
+
 export async function createEmail(username: string, creator: string, emailIsRecreated: boolean=false) {
     const email = utils.buildBetaEmail(username);
     const password = crypto.randomBytes(16)
@@ -81,7 +101,15 @@ export async function createEmail(username: string, creator: string, emailIsRecr
     const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
     await BetaGouv.sendInfoToChat(message);
-    await BetaGouv.createEmail(username, password);
+
+    const needsExchange = await doesUserNeedExchange(username);
+
+    if (needsExchange) {
+        await BetaGouv.createEmailForExchange(username, {});
+    } else {
+        await BetaGouv.createEmail(username, password);
+    }
+
     await knex('users').where({
         username,
     }).update({
