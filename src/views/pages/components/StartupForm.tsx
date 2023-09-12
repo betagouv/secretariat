@@ -1,5 +1,5 @@
 import React from 'react';
-import { PHASES_ORDERED_LIST, Phase, StartupInfo, StartupPhase } from '@/models/startup';
+import { PHASES_ORDERED_LIST, PHASE_READABLE_NAME, Phase, StartupInfo, StartupPhase } from '@/models/startup';
 import SEPhaseSelect from './SEPhaseSelect';
 import DatepickerSelect from './DatepickerSelect';
 import { ClientOnly } from './ClientOnly';
@@ -11,6 +11,24 @@ import SESponsorSelect from './SESponsorSelect';
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
+const DEFAULT_CONTENT = `Pour t'aider dans la rédaction de ta fiche produit, nous te recommandons de suivre ce plan: 
+
+## Contexte
+
+Quel est le contexte de ta Startup d'Etat ?
+
+## Problème
+
+Les problèmes que vous avez identifiés ou vos hypothèses de problèmes? Qui en souffre ? quels sont les conséquences de ces problèmes ?
+
+## Solution
+
+Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
+
+## Stratégie
+
+Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
+`
 
 interface StartupForm {
     sponsors?: {
@@ -45,7 +63,10 @@ export const StartupForm = (props: StartupForm) => {
     const [incubator, setIncubator] = React.useState(props.incubator)
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
-    const [phases, setPhases] = React.useState(props.phases || [])
+    const [phases, setPhases] = React.useState(props.phases || [{
+        name: StartupPhase.PHASE_INVESTIGATION,
+        start: new Date()
+    }])
     const [errorMessage, setErrorMessage] = React.useState('');
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
@@ -80,12 +101,17 @@ export const StartupForm = (props: StartupForm) => {
     }
 
     function addPhase() {
-        const previousPhase : StartupPhase = phases[phases.length - 1].name
-        const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex((value) => value === previousPhase)
-        const nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex+1]
+        let nextPhase = StartupPhase.PHASE_INVESTIGATION
+        let nextDate = new Date()
+        if (phases.length) {
+            const previousPhase : StartupPhase = phases[phases.length - 1].name
+            const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex((value) => value === previousPhase)
+            nextDate = phases[phases.length - 1].end || new Date()
+            nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex+1]
 
-        const previousPhaseDate = phases[phases.length - 1].end || new Date()
-        setPhases([...phases, { start: previousPhaseDate, name: nextPhase}])
+        }
+
+        setPhases([...phases, { start: nextDate, name: nextPhase}])
     }
 
     function deletePhase(index) {
@@ -131,8 +157,11 @@ export const StartupForm = (props: StartupForm) => {
 
                 <form className='no-margin' onSubmit={save}>
                     {!props.startup && <>
-                        <h5>Nom du produit : </h5>
                         <div className="form__group">
+                            <label htmlFor="startup">
+                                <strong>Nom du produit : </strong><br />
+                                Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
+                            </label>
                             <input name="startup"
                             onChange={(e) => { setStartupName(e.currentTarget.value)}}
                             value={startupName}/>
@@ -141,8 +170,11 @@ export const StartupForm = (props: StartupForm) => {
                             }
                         </div>
                     </>}
-                    <h5>Mission : </h5>
                     <div className="form__group">
+                        <label htmlFor="mission">
+                            <strong>Quel est son objectif principal ?</strong><br />
+                            Par exemple : "Faciliter la création d'une fiche produit". Pas besoin de faire plus long.
+                        </label>
                         <textarea name="Mission"
                         onChange={(e) => { setMission(e.currentTarget.value)}}
                         value={mission}/>
@@ -150,69 +182,91 @@ export const StartupForm = (props: StartupForm) => {
                             <p className="text-small text-color-red">{formErrors['mission']}</p>
                         }    
                     </div>                          
-                    <h5>Description du produit : </h5>
-                    <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>
+                    <div className="form__group">
+                        <label htmlFor="description">
+                            <strong>Description du produit :</strong><br />
+                        </label>
                         <ClientOnly>
                             <MdEditor
-                                defaultValue={decodeURIComponent(props.content)}
+                                defaultValue={decodeURIComponent(props.content || DEFAULT_CONTENT)}
                                 style={{ height: '500px' }}
                                 renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
                         </ClientOnly>
                     </div>
-                    <h5>Url du site : </h5>
                     <div className="form__group">
-                        <input name="link"
-                        onChange={(e) => { setLink(e.currentTarget.value)}}
-                        value={link}/>
-                    </div>
-                    <h5>Lien du repo github : </h5>
-                    <div className="form__group">
-                        <input name="github"
-                        onChange={(e) => { setRepository(e.currentTarget.value)}}
-                        value={repository}/>
-                    </div>
-                    <h5>Lien du dashlord : </h5>
-                    <div className="form__group">
-                        <input name="dashlord"
-                        onChange={(e) => { setDashlord(e.currentTarget.value)}}
-                        value={dashlord_url}/>
-                    </div>
-                    <h5>Lien de la page stats : </h5>
-                    <div className="form__group">
-                        <input name="stats_url"
-                        onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
-                        value={stats_url}/>
-                    </div>
-                    <h5>Incubateurs : </h5>
-                    <div className="form__group">
+                        <label htmlFor="startup">
+                            <strong>Incubateur : </strong><br />
+                        </label>
                         <SEAsyncIncubateurSelect
                             value={incubator}
                             onChange={e => {
                                 setIncubator(e.value)
                             }} />
                     </div>
-                    <h5>Sponsors : </h5>
                     <div className="form__group">
+                        <label htmlFor="startup">
+                            <strong>Sponsors : </strong><br />
+                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
+                        </label>
                         <SESponsorSelect
                             value={sponsors}
                             onChange={sponsors => {
                                 setSponsors(sponsors)}
                             } />
-                    </div> 
+                    </div>
                     <h5>Phases : </h5>
                     <div style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10}}>
                         <p>
                             Voici l'historique des phases dans lesquelles a été ce produit.
                         </p>
-                    {phases.map((phase, index) => <PhaseItem
-                        end={phase.end}
-                        start={phase.start}
-                        name={phase.name}
-                        onChange={(phase) => changePhase(index, phase)}
-                        deletePhase={() => deletePhase(index)}
-                        key={index}/>
-                    )}
-                    {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
+                        <table style={{  padding: 10, position: 'relative',border: 'none' }}>
+                            <tr>
+                                <th>Phase</th>
+                                <th>Date de début</th>
+                                <th>Action</th>
+                            </tr>
+                            {phases.map((phase, index) => <PhaseItem
+                                end={phase.end}
+                                start={phase.start}
+                                name={phase.name}
+                                onChange={(phase) => changePhase(index, phase)}
+                                deletePhase={() => deletePhase(index)}
+                                key={index}/>
+                            )}
+                        </table>
+                        {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="description">
+                            <strong>URL du site :</strong><br />
+                        </label>
+                        <input name="link"
+                        onChange={(e) => { setLink(e.currentTarget.value)}}
+                        value={link}/>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="description">
+                            <strong>Lien du repository github :</strong><br />
+                        </label>
+                        <input name="github"
+                        onChange={(e) => { setRepository(e.currentTarget.value)}}
+                        value={repository}/>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="description">
+                            <strong>Lien du dashlord :</strong><br />
+                        </label>
+                        <input name="dashlord"
+                        onChange={(e) => { setDashlord(e.currentTarget.value)}}
+                        value={dashlord_url}/>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="description">
+                            <strong>Lien de la page stats :</strong><br />
+                        </label>
+                        <input name="stats_url"
+                        onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
+                        value={stats_url}/>
                     </div>
                     <input
                         type="submit"
@@ -242,38 +296,38 @@ const PhaseItem = ({ name, start, deletePhase, onChange } : PhaseItemProps) => {
         })
     }, [phase, startDate])
     return <>
-        <div style={{ border: '1px solid #ccc', padding: 10, position: 'relative', marginBottom: 10 }}><div className="form__group">
-            <div style={{ position: 'absolute', top: -10, right: -5 }}>
-                <a style={{ textDecoration: 'none' }}
-                onClick={() => deletePhase()}
-                >❌</a>
-            </div>
-            <label htmlFor="startup">
-                <strong>Phase</strong><br />
-            </label>
-            <SEPhaseSelect
-                onChange={(phase) => {
-                    setPhase(phase.value)
-                }}
-                defaultValue={name}
-                isMulti={false}
-                placeholder={"Selectionne la phase"}
-            />
-        </div>
-        <div className="form__group">
-            <label htmlFor="end">
-                <strong>Date de début de la phase</strong>
-            </label>
-            {start && <DatepickerSelect
-                name="startDate"
-                min={'2020-01-31'}
-                title="En format YYYY-MM-DD, par exemple : 2020-01-31"
-                required
-                dateFormat='dd/MM/yyyy'
-                selected={startDate}
-                onChange={(dateInput:Date) => setStartDate(dateInput)} />}
-        </div>
-        </div></>
+        <tr style={{ border: 'none'}}>
+            <td style={{ padding: 5 }}>                    {/* <label htmlFor="startup">
+                        <strong>Phase</strong><br />
+                    </label> */}
+                    <SEPhaseSelect
+                        onChange={(phase) => {
+                            setPhase(phase.value)
+                        }}
+                        defaultValue={name}
+                        isMulti={false}
+                        placeholder={"Selectionne la phase"}
+                    />
+                </td>
+                <td style={{ padding: 5 }}>
+                    {/* <label htmlFor="end">
+                        <strong>Date de début</strong>
+                    </label> */}
+                    {start && <DatepickerSelect
+                        name="startDate"
+                        min={'2020-01-31'}
+                        title="En format YYYY-MM-DD, par exemple : 2020-01-31"
+                        required
+                        dateFormat='dd/MM/yyyy'
+                        selected={startDate}
+                        onChange={(dateInput:Date) => setStartDate(dateInput)} />}
+                </td>
+                <td style={{ padding: 5 }}>
+                    <a style={{ textDecoration: 'none' }}
+                    onClick={() => deletePhase()}
+                    >🗑️</a>
+                </td>
+        </tr></>
 }
 
 

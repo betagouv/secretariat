@@ -41,7 +41,7 @@ export default ({ onChange, value }) => {
             defaultValue={options.filter(opt => value.includes(opt.value))}
             onChange={onChange}
             options={options}
-            placeholder={'Sélectionne un ou plusieurs incubateurs'} 
+            placeholder={'Sélectionne un ou plusieurs sponsors'} 
             hideSelectedOptions={false}
             blurInputOnSelect={false}
           />
