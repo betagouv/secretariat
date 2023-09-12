@@ -129,7 +129,7 @@ describe('Startup page', () => {
         res.should.have.status(400);
     });
 
-    it('should work if date and phase are valid', async () => {
+    it('should update product if date and phase are valid', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
@@ -143,7 +143,7 @@ describe('Startup page', () => {
         res.should.have.status(200);
     });
 
-    it('should be able to send text content to change', async () => {
+    it('should be able to update product text content', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
@@ -234,29 +234,18 @@ describe('Startup page', () => {
         res.should.have.status(400);
     });
 
-    it('should work if date and phase are valid', async () => {
+    it('should create product if date and phase are valid', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_CREATE_FORM)
         .send({
+          startup: 'nomdestartup',
+          mission: 'lamissiondelastartup',
+          text: 'la description de la startup',
           phases: [{
             name: 'alumni',
             start: (new Date()).toISOString()
           }]
         })
-        res.should.have.status(200);
-    });
-
-    it('should be able to send text content to change', async () => {
-      const res = await chai.request(app)
-        .post(routes.STARTUP_POST_INFO_CREATE_FORM)
-        .send({
-          phases: [{
-            name: 'alumni',
-            start: (new Date()).toISOString(),
-          }],
-          text: 'test'
-        })
-        createStartupGithubFileStub.args[0][2].should.equals('test')
         res.should.have.status(200);
     });
   });
