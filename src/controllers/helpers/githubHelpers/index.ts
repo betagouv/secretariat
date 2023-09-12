@@ -1,2 +1,3 @@
 export * from './createBranchName'
-export * from './updateGithubFile'
+export * from './updateGithubCollectionEntry'
+export * from './createGithubCollectionEntry'

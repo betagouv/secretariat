@@ -2,7 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '@/index';
 import utils from './utils';
-import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGithubFile'
+import * as UpdateGithubCollectionEntry from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import * as CreateGithubCollectionEntry from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry'
 import sinon from 'sinon';
 import * as betagouv from '@/betagouv';
 import routes from '@/routes/routes';
@@ -65,7 +66,7 @@ describe('Startup page', () => {
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
-      updateStartupGithubFileStub = sinon.stub(UpdateGithubFile, 'updateStartupGithubFile')
+      updateStartupGithubFileStub = sinon.stub(UpdateGithubCollectionEntry, 'updateStartupGithubFile')
       updateStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
         number: 12151
@@ -113,7 +114,7 @@ describe('Startup page', () => {
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           phase: 'jhdkljasdjajda',
-          date: (new Date()).toISOString()
+          start: (new Date()).toISOString()
         })
         res.should.have.status(400);
     });
@@ -123,30 +124,128 @@ describe('Startup page', () => {
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           phase: 'alumni',
-          date: '2020/10/254'
+          start: '2020/10/254'
         })
         res.should.have.status(400);
     });
 
-    it('should work if both are valid', async () => {
+    it('should update product if date and phase are valid', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
-          phase: 'alumni',
-          date: (new Date()).toISOString()
+          phases: [
+            {
+              name: 'alumni',
+              start: (new Date()).toISOString(),
+            }
+          ],
         })
         res.should.have.status(200);
     });
 
-    it('should be able to send text content to change', async () => {
+    it('should be able to update product text content', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
-          phase: 'alumni',
-          date: (new Date()).toISOString(),
+          phases: [
+            {
+              name: 'alumni',
+              start: (new Date()).toISOString(),
+            }
+          ],
           text: 'test'
         })
         updateStartupGithubFileStub.args[0][2].should.equals('test')
+        res.should.have.status(200);
+    });
+  });
+
+  describe('post /startups/:startup/create-form authenticated', () => {
+    let getToken
+    let createStartupGithubFileStub
+    let startupInfosStub
+    beforeEach(() => {
+      getToken = sinon.stub(session, 'getToken')
+      getToken.returns(utils.getJWT('membre.actif'))
+      createStartupGithubFileStub = sinon.stub(CreateGithubCollectionEntry, 'createStartupGithubFile')
+      createStartupGithubFileStub.returns(Promise.resolve({
+        html_url: 'https://djkajdlskjad.com',
+        number: 12151
+      }))
+      startupInfosStub = sinon.stub(betagouv.default, 'startupsInfos')
+      startupInfosStub.returns(Promise.resolve([
+        { "id"        : "a-dock"
+        , "type"      : "startup"
+        , "attributes":
+            { "name"  : "A Dock"
+            , "pitch" : "Simplifier l'accès aux données et démarches administratives du transport routier de marchandises"
+            , "stats_url": "https://adock.beta.gouv.fr/stats"
+            , "link": "https://adock.beta.gouv.fr"
+            , "repository": "https://github.com/MTES-MCT/adock-api"
+            , "events": [
+                
+                ]
+            , "phases": [
+                
+                    { "name": "investigation", "start": "2018-01-08", "end": "2018-07-01"},
+                
+                    { "name": "construction", "start": "2018-07-01", "end": "2019-01-23"},
+                
+                    { "name": "acceleration", "start": "2019-01-23", "end": ""}
+                
+                ]
+            }
+        , "relationships":
+            { "incubator":
+                { "data": { "type": "incubator", "id": "mtes" }
+                }
+            }
+        }])
+      )
+    })
+
+    afterEach(() => {
+      getToken.restore()
+      createStartupGithubFileStub.restore()
+      startupInfosStub.restore()
+    })
+
+    it('should not work if phase is not valid', async () => {
+      const res = await chai.request(app)
+        .post(routes.STARTUP_POST_INFO_CREATE_FORM)
+        .send({
+          phases: [{
+            name: 'jhdkljasdjajda',
+            start: (new Date()).toISOString()
+          }]
+        })
+        res.should.have.status(400);
+    });
+
+    it('should not work if date is not valid', async () => {
+      const res = await chai.request(app)
+        .post(routes.STARTUP_POST_INFO_CREATE_FORM)
+        .send({
+          phases: [{
+            name: 'alumni',
+            start: '2020/10/254'
+          }]          
+        })
+        res.should.have.status(400);
+    });
+
+    it('should create product if date and phase are valid', async () => {
+      const res = await chai.request(app)
+        .post(routes.STARTUP_POST_INFO_CREATE_FORM)
+        .send({
+          startup: 'nomdestartup',
+          mission: 'lamissiondelastartup',
+          text: 'la description de la startup',
+          phases: [{
+            name: 'alumni',
+            start: (new Date()).toISOString()
+          }]
+        })
         res.should.have.status(200);
     });
   });

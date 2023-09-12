@@ -3,7 +3,8 @@ import { addEvent, EventCode } from '@/lib/events'
 import { requiredError, isValidDate } from "@controllers/validator"
 
 import betagouv from "@/betagouv";
-import { GithubAuthorChange, updateAuthorGithubFile } from "../helpers/githubHelpers";
+import { updateAuthorGithubFile } from "../helpers/githubHelpers";
+import { GithubAuthorChange } from "../helpers/githubHelpers/githubEntryInterface";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;

@@ -5,6 +5,9 @@ class routes {
   static STARTUP_GET_DETAIL = '/startups/:startup'
   static STARTUP_GET_INFO_UPDATE_FORM = '/startups/:startup/info-form'
   static STARTUP_POST_INFO_UPDATE_FORM = '/startups/:startup/info-form'
+  static STARTUP_GET_INFO_CREATE_FORM = '/startups/create-form'
+  static STARTUP_POST_INFO_CREATE_FORM = '/startups'
+
   // page de diagnostic
   static WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO = '/que-ce-passe-t-il'
   static WHAT_IS_GOING_ON_WITH_MEMBER = '/que-se-passe-t-il'
@@ -44,7 +47,9 @@ class routes {
   static ME: string = '/api/me'
 
   static LOGIN_API: string = '/api/login'
-    static API_UPDATE_BADGE_STATUS: string
+  static API_UPDATE_BADGE_STATUS: string
+  static API_PUBLIC_INCUBATORS_GET_ALL: string = '/api/incubators'
+  static API_PUBLIC_SPONSORS_GET_ALL: string = '/api/sponsors'
 }
 
 export default routes

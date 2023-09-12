@@ -10,6 +10,7 @@ import { WhatIsGoingOnWithMember } from './pages/WhatIsGoingOnWithMemberPage'
 import { Badge } from './pages/BadgePage/Badge'
 import { StartupInfoUpdate } from './pages/StartupInfoUpdatePage'
 import { StartupList } from './pages/StartupListPage'
+import { StartupInfoCreate } from './pages/StartupInfoCreatePage'
 
 export const HomePage = (props: Parameters<typeof Home>[0]) =>
   makeHtml({
@@ -91,6 +92,14 @@ export const StartupInfoUpdatePage = (props: Parameters<typeof StartupInfoUpdate
   pageName: 'StartupInfoUpdate', // This must match the Component name
 })
 
+export const StartupInfoCreatePage = (props: Parameters<typeof StartupInfoUpdatePage>[0]) => makeHtml({
+  Component: StartupInfoCreate,
+  props,
+  hydrate: true,
+  title: 'Modifier les infos du produit',
+  pageName: 'StartupInfoCreate', // This must match the Component name
+})
+
 export const StartupListPage = (props: Parameters<typeof StartupListPage>[0]) => makeHtml({
   Component: StartupList,
   props,
@@ -106,3 +115,11 @@ export const BadgePage = (props: Parameters<typeof BadgePage>[0]) => makeHtml({
   title: 'Faire une demande de badge',
   pageName: 'Badge', // This must match the Component name
 })
+
+// export const VisitPage = (props: Parameters<typeof BadgePage>[0]) => makeHtml({
+//   Component: Visit,
+//   props,
+//   hydrate: true,
+//   title: 'Faire une demande de visite',
+//   pageName: 'Visit', // This must match the Component name
+// })

@@ -37,6 +37,10 @@ import { postBadgeRequest } from './controllers/badgeRequestsController/postBadg
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
+import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
+import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
+import { getStartupInfoCreate } from './controllers/startupController/getStartupInfoCreate';
+import { postStartupInfoCreate } from './controllers/startupController/postStartupInfoCreate';
 
 export const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -210,11 +214,21 @@ app.get('/community/:username', communityController.getUser);
 
 app.get(routes.ADMIN, adminController.getEmailLists);
 
+// INCUBTORS
+app.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
+
+//sponsors
+app.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors)
+
 // STARTUP
+app.get(routes.STARTUP_GET_INFO_CREATE_FORM, getStartupInfoCreate)
 app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
 app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
 app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate)
 app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
+app.post(routes.STARTUP_POST_INFO_CREATE_FORM, express.json({type: '*/*'}), postStartupInfoCreate)
+
+
 
 // ONLY FOR ADMIN
 app.get(routes.ADMIN_MATTERMOST, permit(MemberRole.MEMBER_ROLE_ADMIN), adminController.getMattermostAdmin);

@@ -4,7 +4,8 @@ import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from '@/controllers/validator';
-import { GithubAuthorChange, updateAuthorGithubFile } from '@/controllers/helpers/githubHelpers';
+import { updateAuthorGithubFile } from '@/controllers/helpers/githubHelpers';
+import { GithubAuthorChange } from '@/controllers/helpers/githubHelpers/githubEntryInterface';
 
 export async function postBaseInfoUpdate(req, res) {
     const { username } = req.params;

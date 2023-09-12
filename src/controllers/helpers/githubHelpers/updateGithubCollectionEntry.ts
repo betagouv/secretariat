@@ -1,25 +1,8 @@
 import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
-import { GithubMission } from "@/models/mission";
-import { Phase } from "@/models/startup";
 import { createBranchName } from "./createBranchName";
+import { GithubAuthorChange, GithubStartupChange } from "./githubEntryInterface";
 
-export interface GithubAuthorChange {
-    role?: string,
-    missions?: GithubMission[],
-    startups?: string[],
-    previously?: string[],
-}
-
-export interface GithubStartupChange {
-    phases?: Phase[],
-    link: string,
-    dashlord_url: string,
-    mission: string,
-    stats_url: string,
-    repository: string
-}
-
-async function updateGithubFile(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
+async function updateGithubCollectionEntry(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
     console.log(`Début de la mise à jour de la fiche pour ${name}...`);
 
@@ -79,10 +62,10 @@ async function updateGithubFile(name: string, path: string, changes: GithubAutho
 
 export async function updateAuthorGithubFile(username: string, changes: GithubAuthorChange) : Promise<PRInfo> {
     const path = `content/_authors/${username}.md`;
-    return updateGithubFile(username, path, changes)
+    return updateGithubCollectionEntry(username, path, changes)
 }
 
 export async function updateStartupGithubFile(startupname: string, changes: GithubStartupChange, content: string) : Promise<PRInfo> {
     const path = `content/_startups/${startupname}.md`;
-    return updateGithubFile(startupname, path, changes, content)
+    return updateGithubCollectionEntry(startupname, path, changes, content)
 }

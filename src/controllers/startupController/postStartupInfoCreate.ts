@@ -1,11 +1,10 @@
 import { addEvent, EventCode } from '@/lib/events'
-import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate } from '@/controllers/validator';
-import { StartupInfo, StartupPhase } from '@/models/startup';
-import { updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import { isValidDate, requiredError } from '@/controllers/validator';
+import { StartupPhase } from '@/models/startup';
+import { createStartupGithubFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
 import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
 
 const isValidPhase = (field, value, callback) => {
@@ -16,9 +15,7 @@ const isValidPhase = (field, value, callback) => {
     return
 }
 
-export async function postStartupInfoUpdate(req, res) {
-    const { startup } = req.params;
-    
+export async function postStartupInfoCreate(req, res) {
     try {
         const formValidationErrors = {};
         const errorHandler = (field, message) => {
@@ -28,6 +25,7 @@ export async function postStartupInfoUpdate(req, res) {
             // make it one message
             formValidationErrors[field] = errorMessagesForKey
         }
+        
         const phases = req.body.phases
         phases.forEach(phase => {
             isValidPhase('phase', phase.name, errorHandler)
@@ -36,26 +34,22 @@ export async function postStartupInfoUpdate(req, res) {
         })
         
         const link = req.body.link
+        const startup = req.body.startup || requiredError('nom du produit', errorHandler); 
         const dashlord_url = req.body.dashlord_url
-        const mission = req.body.mission
+        const mission = req.body.mission || requiredError('mission', errorHandler); 
         const stats_url = req.body.stats_url
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
 
-        const content = req.body.text
+        const content = req.body.text || requiredError('description du produit', errorHandler); 
+        phases[0] || requiredError('phases', errorHandler); 
+
         if (Object.keys(formValidationErrors).length) {
             console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
         }
  
-        const startupsInfos = await betagouv.startupsInfos()
-        const info : StartupInfo = startupsInfos.find(s => s.id === startup)
-        if (!info) {
-            res.status(404).json({
-                message: "La startup indiqué n'existe pas"
-            })
-        }
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
@@ -71,8 +65,8 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
-        addEvent(EventCode.STARTUP_INFO_UPDATED, {
+        const prInfo : PRInfo = await createStartupGithubFile(startup, changes, content);
+        addEvent(EventCode.STARTUP_INFO_CREATED, {
             created_by_username: req.auth.id,
             action_metadata: { 
                 value: {
@@ -87,10 +81,9 @@ export async function postStartupInfoUpdate(req, res) {
             status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
             info: JSON.stringify(changes)
         })
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startup} ouverte. 
+        const message = `⚠️ Pull request pour la création de la fiche de ${startup} ouverte. 
         \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
-        \nUne fois mergée, la fiche sera mis à jour dans les 10 minutes.`
-        req.flash('message', message);
+        \nUne fois mergée, la fiche sera en ligne dans les 10 minutes.`
         res.json({
             message,
             pr_url: prInfo.html_url

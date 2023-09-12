@@ -4,7 +4,7 @@ import Datepicker from "react-datepicker";
 import { ClientOnly } from "./ClientOnly"
 
 export default ({ name, onChange, title, required, dateFormat, selected, min, max } : {
-    name, onChange, title, required, dateFormat, selected: Date, min, max?
+    name, onChange, title, required, dateFormat, selected?: Date, min, max?
 }) => {
 
     return <ClientOnly>

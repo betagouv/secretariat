@@ -162,7 +162,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                     changeFormData('startups', startups)
                                 }}
                                 isMulti={true}
-                                placeholder={"Selectionne ta startup"}
+                                placeholder={"Sélectionne un produit"}
                                 defaultValue={props.formData.startups}
                             />
                             { !!formErrors['gender'] && 
@@ -180,7 +180,7 @@ export const BaseInfoUpdate = InnerPageLayout((props: BaseInfoUpdateProps) => {
                                     changeFormData('previously', startups)
                                 }}
                                 isMulti={true}
-                                placeholder={"Selectionne ta startup"}
+                                placeholder={"Sélectionne un produit"}
                                 defaultValue={props.formData.previously}
                             />
                             { !!formErrors['gender'] && 
