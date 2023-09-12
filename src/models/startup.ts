@@ -31,6 +31,15 @@ export const ACTIVE_PHASES = [
     StartupPhase.PHASE_INVESTIGATION
 ]
 
+export const PHASES_ORDERED_LIST = [
+    StartupPhase.PHASE_INVESTIGATION,
+    StartupPhase.PHASE_CONSTRUCTION,
+    StartupPhase.PHASE_ACCELERATION,
+    StartupPhase.PHASE_TRANSFER,
+    StartupPhase.PHASE_SUCCESS,
+    StartupPhase.PHASE_ALUMNI
+]
+
 export interface Startup {
     github?:string
     website?: string

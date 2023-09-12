@@ -35,13 +35,14 @@ export const StartupList = InnerPageLayout((props: StartupListProps) => {
             <div className="module">
                 <div>
                     <small>
-                        <a href="/startups">Produit</a>
+                    <a href="/startups">Produit</a> &gt; <a href="/startups">Rechercher un produit</a>
                     </small>
                 </div>
+                <div className="margin-top-m"></div>
                 <div className="row">
                     <div className="panel panel-full-width">
                         <h3>
-                            Startups
+                            Rechercher un produit
                         </h3>
                         <form className='no-margin' onSubmit={save}>
                             <p>De quel produit voulez-vous voir les infos ?</p>
@@ -51,7 +52,7 @@ export const StartupList = InnerPageLayout((props: StartupListProps) => {
                                     setStartup(e.value)
                                 }}
                                 isMulti={undefined}
-                                placeholder={"Selectionne ta startup"}/>
+                                placeholder={"Sélectionne un produit"}/>
                             <input
                                 type="submit"
                                 disabled={!startup}
@@ -59,6 +60,9 @@ export const StartupList = InnerPageLayout((props: StartupListProps) => {
                                 className="button"
                             />
                         </form>
+                        <br></br>
+                        <br></br>
+                        Pour créer une nouvelle fiche produit c'est ici : <a href="/startups/create-form">Créer un produit</a>
                     </div>
                 </div>
             </div>

@@ -17,12 +17,12 @@ export default ({ onChange, isMulti, placeholder, defaultValue }: {
   onChange?: any,
   isMulti?: any,
   placeholder?: any,
-  defaultValue?: any
+  defaultValue?: string
 }) => {
     return <ClientOnly><Select
       options={options}
       isMulti={isMulti}
-      defaultValue={defaultValue}
+      defaultValue={isMulti ? options.filter(opt => opt.value === defaultValue) : options.filter(opt => opt.value === defaultValue)[0]}
       onChange={onChange}
       placeholder={placeholder || 'Sélectionne une ou plusieurs phases'} /></ClientOnly>
 }

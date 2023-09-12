@@ -3,9 +3,10 @@ import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate, requiredError } from '@/controllers/validator';
+import { isValidDate } from '@/controllers/validator';
 import { StartupInfo, StartupPhase } from '@/models/startup';
-import { GithubStartupChange, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubFile';
+import { updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -27,12 +28,13 @@ export async function postStartupInfoUpdate(req, res) {
             // make it one message
             formValidationErrors[field] = errorMessagesForKey
         }
-        const phase = req.body.phase
-        isValidPhase('phase', phase, errorHandler) 
-
-        const date = req.body.date || requiredError('date', errorHandler)
-        isValidDate('date', new Date(date), errorHandler)
-
+        const phases = req.body.phases
+        phases.forEach(phase => {
+            isValidPhase('phase', phase.name, errorHandler)
+            isValidDate('date', new Date(phase.start), errorHandler)
+            !phase.end || isValidDate('date', new Date(phase.end), errorHandler)
+        })
+        
         const link = req.body.link
         const dashlord_url = req.body.dashlord_url
         const mission = req.body.mission
@@ -42,10 +44,8 @@ export async function postStartupInfoUpdate(req, res) {
         const sponsors = req.body.sponsors || []
 
         const content = req.body.text
-
-        const dateInDateFormat = new Date(date)
-
         if (Object.keys(formValidationErrors).length) {
+            console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
         }
  
@@ -56,7 +56,6 @@ export async function postStartupInfoUpdate(req, res) {
                 message: "La startup indiqué n'existe pas"
             })
         }
-
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
@@ -66,27 +65,18 @@ export async function postStartupInfoUpdate(req, res) {
             incubator,
             sponsors: sponsors.map(sponsor => `/organisations/${sponsor}`)
         };
-        if (phase) {
-            const phases = info.attributes.phases.map(phase => ({
-                ...phase,
-                end: phase.end ? new Date(phase.end) : undefined,
-                start: phase.start ? new Date(phase.start) : undefined,
-            }))
-            phases[phases.length-1].end = dateInDateFormat
-            phases.push({
-                name: phase,
-                start: dateInDateFormat,
-                end: undefined
-            })
-            changes['phases'] = phases
-        }
+        const newPhases = phases.map(phase => ({
+            ...phase,
+            end: phase.end ? new Date(phase.end) : undefined,
+            start: phase.start ? new Date(phase.start) : undefined,
+        }))
+        changes['phases'] = newPhases
         const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
-        addEvent(EventCode.STARTUP_PHASE_UPDATED, {
+        addEvent(EventCode.STARTUP_INFO_UPDATED, {
             created_by_username: req.auth.id,
             action_metadata: { 
                 value: {
-                    phase: phase,
-                    date,
+                    ...changes
                 }
             }
         })

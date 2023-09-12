@@ -87,7 +87,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                         <li className={`nav-sub-menu-container ${props.activeTab === 'startups' ? 'active' : ''}`}>
                             <a href="/startups" id="startups"
                                 className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
-                                🚀 Startups
+                                🚀 Produits
                                 { props.activeTab !== 'startups' && <><br/><small>Rechercher les startups, changer la phase d'une startup</small>
                                 </>}  
                             </a>
@@ -96,7 +96,13 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                     <li>
                                         <a href="/startups" id="account" 
                                             className={`nav-sub-item ${props.subActiveTab === 'list' ? 'active' : ''}`}>
-                                            🔎 Rechercher une startup
+                                            🔎 Rechercher un produit
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="/startups/create-form" id="account" 
+                                            className={`nav-sub-item ${props.subActiveTab === 'create' ? 'active' : ''}`}>
+                                            ➕ Créer un produit
                                         </a>
                                     </li>
                                 </ul>
@@ -105,7 +111,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                         {/* <li>
                             <a href="/startups" id="startups"
                                 className={`nav-item ${props.activeTab === 'startups' ? 'active' : ''}`}>
-                                🚀 Startups
+                                🚀 Produit
                             </a>
                         </li> */}
                         { props.isAdmin && <li>
@@ -121,6 +127,12 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 ✉️ Infolettres internes
                             </a>
                         </li> */}
+                        <li>
+                            <a href="/visits" id="visits" 
+                                className="nav-item <% if(activeTab === 'visits') { %> active <% } %>">
+                                ✉️ Visit
+                            </a>
+                        </li>
                         {/* <li>
                             <a href="/resources" id="resources"
                                 className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>

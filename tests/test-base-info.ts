@@ -4,7 +4,7 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '@/index';
 import routes from '@/routes/routes';
-import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGithubFile'
+import * as UpdateGithubFile from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
 
 chai.use(chaiHttp);
 

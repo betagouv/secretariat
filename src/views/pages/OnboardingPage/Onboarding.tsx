@@ -490,7 +490,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                             changeFormData('startup', e.value)
                         }}
                         isMulti={undefined}
-                        placeholder={"Selectionne ta startup"}
+                        placeholder={"Sélectionne un produit"}
                         defaultValue={props.startupOptions.find(d => d.value === state.formData.startup)}></SESelect>
                     <input type="hidden" name="startup" value={state.formData.startup} required/>
                 </div>
