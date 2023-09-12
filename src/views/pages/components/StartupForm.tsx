@@ -1,5 +1,5 @@
 import React from 'react';
-import { PHASES_ORDERED_LIST, PHASE_READABLE_NAME, Phase, StartupInfo, StartupPhase } from '@/models/startup';
+import { PHASES_ORDERED_LIST, Phase, StartupInfo, StartupPhase } from '@/models/startup';
 import SEPhaseSelect from './SEPhaseSelect';
 import DatepickerSelect from './DatepickerSelect';
 import { ClientOnly } from './ClientOnly';
@@ -34,17 +34,8 @@ interface FormErrorResponse {
     message: string
 }
 
-function getCurrentPhase(startup : StartupInfo) {
-    if (!startup) {
-        return
-    }
-    return startup.attributes.phases ? startup.attributes.phases[startup.attributes.phases.length - 1].name : undefined
-}
-
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
-    // const [phase, setPhase] = React.useState('')
-    const [date, setDate] = React.useState((new Date()))
     const [text, setText] = React.useState('')
     const [startupName, setStartupName] = React.useState('')
     const [link, setLink] = React.useState(props.link)
@@ -55,8 +46,6 @@ export const StartupForm = (props: StartupForm) => {
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
     const [phases, setPhases] = React.useState(props.phases || [])
-
-    const [showAddPhase, setShowAddPhase] = React.useState(false)
     const [errorMessage, setErrorMessage] = React.useState('');
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
@@ -70,7 +59,6 @@ export const StartupForm = (props: StartupForm) => {
         setIsSaving(true)
         const data = {
             phases,
-            date,
             text,
             link,
             dashlord_url,
@@ -81,14 +69,13 @@ export const StartupForm = (props: StartupForm) => {
             stats_url,
             repository
         }
-        props.save(data).catch((error) => {
-            console.log(error)
-            // const ErrorResponse : FormErrorResponse = data
-            // setErrorMessage(ErrorResponse.message)
+        props.save(data).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
+            const ErrorResponse : FormErrorResponse = data
+            setErrorMessage(ErrorResponse.message)
             setIsSaving(false)
-            // if (ErrorResponse.errors) {
-            //     setFormErrors(ErrorResponse.errors)
-            // }
+            if (ErrorResponse.errors) {
+                setFormErrors(ErrorResponse.errors)
+            }
         })
     }
 
@@ -149,6 +136,9 @@ export const StartupForm = (props: StartupForm) => {
                             <input name="startup"
                             onChange={(e) => { setStartupName(e.currentTarget.value)}}
                             value={startupName}/>
+                           { !!formErrors['startup'] && 
+                                <p className="text-small text-color-red">{formErrors['startup']}</p>
+                            }
                         </div>
                     </>}
                     <h5>Mission : </h5>
@@ -156,7 +146,10 @@ export const StartupForm = (props: StartupForm) => {
                         <textarea name="Mission"
                         onChange={(e) => { setMission(e.currentTarget.value)}}
                         value={mission}/>
-                    </div>                                
+                        { !!formErrors['mission'] && 
+                            <p className="text-small text-color-red">{formErrors['mission']}</p>
+                        }    
+                    </div>                          
                     <h5>Description du produit : </h5>
                     <div className="form__group" style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10 }}>
                         <ClientOnly>
@@ -219,7 +212,7 @@ export const StartupForm = (props: StartupForm) => {
                         deletePhase={() => deletePhase(index)}
                         key={index}/>
                     )}
-                    {!showAddPhase  && <a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
+                    {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
                     </div>
                     <input
                         type="submit"
@@ -268,9 +261,6 @@ const PhaseItem = ({ name, start, end, deletePhase, onChange } : PhaseItemProps)
                 isMulti={false}
                 placeholder={"Selectionne la phase"}
             />
-            {/* { props.startup && phase && phase === getCurrentPhase(props.startup) && 
-                <p className="text-small text-color-red">{props.startup.attributes.name} est déjà en {PHASE_READABLE_NAME[phase]}</p>
-            } */}
         </div>
         <div className="form__group">
             <label htmlFor="end">
@@ -284,26 +274,7 @@ const PhaseItem = ({ name, start, end, deletePhase, onChange } : PhaseItemProps)
                 dateFormat='dd/MM/yyyy'
                 selected={startDate}
                 onChange={(dateInput:Date) => setStartDate(dateInput)} />}
-            {/* { !!formErrors['nouvelle date de début'] && 
-                <p className="text-small text-color-red">{formErrors['nouvelle date de début']}</p>
-            } */}
         </div>
-        {/* <div className="form__group">
-            <label htmlFor="end">
-                <strong>Date de fin </strong>
-            </label>
-            <DatepickerSelect
-                name="endDate"
-                min={'2020-01-31'}
-                title="En format YYYY-MM-DD, par exemple : 2020-01-31"
-                dateFormat='dd/MM/yyyy'
-                selected={endDate}
-                required={false}
-                onChange={(dateInput:Date) => setEndDate(dateInput)} />
-            { !!formErrors['nouvelle date de fin'] && 
-                <p className="text-small text-color-red">{formErrors['nouvelle date de fin']}</p>
-            }
-        </div> */}
         </div></>
 }
 
