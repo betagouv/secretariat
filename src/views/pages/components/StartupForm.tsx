@@ -1,5 +1,5 @@
 import React from 'react';
-import { PHASES_ORDERED_LIST, PHASE_READABLE_NAME, Phase, StartupInfo, StartupPhase } from '@/models/startup';
+import { PHASES_ORDERED_LIST, Phase, StartupInfo, StartupPhase } from '@/models/startup';
 import SEPhaseSelect from './SEPhaseSelect';
 import DatepickerSelect from './DatepickerSelect';
 import { ClientOnly } from './ClientOnly';
