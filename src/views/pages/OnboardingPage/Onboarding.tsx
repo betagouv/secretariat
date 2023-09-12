@@ -313,7 +313,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         <CitySelect
                             defaultValue={getDefaultValue()}
                             onChange={handleCitySelect}
-                            placeholder={'Commune ou code postale'}
+                            placeholder={'Commune ou code postal'}
                         ></CitySelect>
                         <input
                             name="workplace_insee_code"

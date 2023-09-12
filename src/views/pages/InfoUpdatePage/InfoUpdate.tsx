@@ -180,7 +180,7 @@ export const InfoUpdate = InnerPageLayout((props: InfoUpdateProps) => {
                                     <CitySelect
                                         defaultValue={getDefaultValue()}
                                         onChange={handleCitySelect}
-                                        placeholder={'Commune ou code postale'}
+                                        placeholder={'Commune ou code postal'}
                                     ></CitySelect>
                                     <input
                                         name="workplace_insee_code"
