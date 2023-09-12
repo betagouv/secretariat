@@ -232,17 +232,15 @@ interface PhaseItemProps extends Phase {
     onChange(phase: Phase): void
 }
 
-const PhaseItem = ({ name, start, end, deletePhase, onChange } : PhaseItemProps) => {
+const PhaseItem = ({ name, start, deletePhase, onChange } : PhaseItemProps) => {
     const [startDate, setStartDate] : [Date, (Date) => void] = React.useState(start ? new Date(start) : undefined)
-    const [endDate, setEndDate] : [Date, (Date) => void] = React.useState(end ? new Date(end) : undefined)
     const [phase, setPhase] = React.useState(name)
     React.useEffect(() => {
         onChange({
             name: phase,
             start: startDate,
-            end: endDate
         })
-    }, [phase, startDate, endDate])
+    }, [phase, startDate])
     return <>
         <div style={{ border: '1px solid #ccc', padding: 10, position: 'relative', marginBottom: 10 }}><div className="form__group">
             <div style={{ position: 'absolute', top: -10, right: -5 }}>
