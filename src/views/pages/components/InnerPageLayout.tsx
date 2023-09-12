@@ -127,12 +127,12 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                 ✉️ Infolettres internes
                             </a>
                         </li> */}
-                        <li>
+                        {/* <li>
                             <a href="/visits" id="visits" 
                                 className="nav-item <% if(activeTab === 'visits') { %> active <% } %>">
                                 ✉️ Visit
                             </a>
-                        </li>
+                        </li> */}
                         {/* <li>
                             <a href="/resources" id="resources"
                                 className={`nav-item ${props.activeTab === 'resources' ? 'active' : ''}`}>

@@ -115,3 +115,11 @@ export const BadgePage = (props: Parameters<typeof BadgePage>[0]) => makeHtml({
   title: 'Faire une demande de badge',
   pageName: 'Badge', // This must match the Component name
 })
+
+// export const VisitPage = (props: Parameters<typeof BadgePage>[0]) => makeHtml({
+//   Component: Visit,
+//   props,
+//   hydrate: true,
+//   title: 'Faire une demande de visite',
+//   pageName: 'Visit', // This must match the Component name
+// })
