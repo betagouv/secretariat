@@ -11,10 +11,7 @@ import { StartupInfo } from '@/models/startup';
 
 // import style manually
 interface StartupInfoFormData {
-    sponsors?: {
-        value: string,
-        label: string
-    }[];
+    sponsors?: string[];
     incubator?: string;
     mission?: string;
     stats_url?: string;

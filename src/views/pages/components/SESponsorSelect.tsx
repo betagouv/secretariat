@@ -2,7 +2,6 @@ import React from "react"
 import axios from "axios"
 import Select from 'react-select'
 import { ClientOnly } from "./ClientOnly"
-import { Sponsor } from "@/models/sponsor"
 
 export default ({ onChange, value, newSponsors }) => {
     const [options, setOptions] = React.useState([]);
