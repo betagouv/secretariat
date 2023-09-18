@@ -7,7 +7,7 @@ import axios from 'axios';
 import { DBPullRequest } from '@/models/pullRequests';
 import { StartupInfo } from '@/models/startup';
 import routes from '@/routes/routes';
-import { StartupForm } from '../components/StartupForm';
+import { StartupForm } from '../components/StartupForm/StartupForm';
 
 interface StartupInfoCreateProps {
     title: string,

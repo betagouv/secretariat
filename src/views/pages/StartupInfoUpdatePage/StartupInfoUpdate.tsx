@@ -6,7 +6,7 @@ import { InnerPageLayout } from '../components/InnerPageLayout';
 import axios from 'axios';
 import { DBPullRequest } from '@/models/pullRequests';
 import routes from '@/routes/routes';
-import { StartupForm } from '../components/StartupForm';
+import { StartupForm } from '../components/StartupForm/StartupForm';
 import { StartupInfo } from '@/models/startup';
 
 // import style manually

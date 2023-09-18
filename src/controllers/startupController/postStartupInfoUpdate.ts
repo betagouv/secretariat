@@ -3,10 +3,12 @@ import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate } from '@/controllers/validator';
+import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupInfo, StartupPhase } from '@/models/startup';
-import { updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import { updateMultipleFilesPR, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
 import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { createMultipleFilesPR, createStartupGithubFile, makeGithubSponsorFile, makeGithubStartupFile } from '../helpers/githubHelpers';
+import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -17,7 +19,6 @@ const isValidPhase = (field, value, callback) => {
 }
 
 export async function postStartupInfoUpdate(req, res) {
-    const { startup } = req.params;
     
     try {
         const formValidationErrors = {};
@@ -28,6 +29,7 @@ export async function postStartupInfoUpdate(req, res) {
             // make it one message
             formValidationErrors[field] = errorMessagesForKey
         }
+        
         const phases = req.body.phases
         phases.forEach(phase => {
             isValidPhase('phase', phase.name, errorHandler)
@@ -36,25 +38,31 @@ export async function postStartupInfoUpdate(req, res) {
         })
         
         const link = req.body.link
+        const startup = req.params.startup
         const dashlord_url = req.body.dashlord_url
-        const mission = req.body.mission
+        const mission = req.body.mission || requiredError('mission', errorHandler); 
         const stats_url = req.body.stats_url
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const newSponsors : Sponsor[] = req.body.newSponsors || []
 
-        const content = req.body.text
+        if (newSponsors) {
+            newSponsors.forEach((sponsor : Sponsor) => {
+                console.log(sponsor.domaine_ministeriel)
+                console.log(sponsor.type)
+                console.log(Object.values(SponsorDomaineMinisteriel))
+                Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
+                Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
+            })
+        }
+
+        const content = req.body.text || requiredError('description du produit', errorHandler); 
+        phases[0] || requiredError('phases', errorHandler); 
+
         if (Object.keys(formValidationErrors).length) {
             console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
-        }
- 
-        const startupsInfos = await betagouv.startupsInfos()
-        const info : StartupInfo = startupsInfos.find(s => s.id === startup)
-        if (!info) {
-            res.status(404).json({
-                message: "La startup indiqué n'existe pas"
-            })
         }
         let changes : GithubStartupChange = {
             link,
@@ -71,7 +79,11 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
+        const prInfo : PRInfo = await updateMultipleFilesPR(startup, [
+            makeGithubStartupFile(startup, changes, content),
+            ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
+        ])
+
         addEvent(EventCode.STARTUP_INFO_UPDATED, {
             created_by_username: req.auth.id,
             action_metadata: { 
