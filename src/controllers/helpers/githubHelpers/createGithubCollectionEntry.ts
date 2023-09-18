@@ -96,7 +96,7 @@ export async function createMultipleFilesPR(prName: string, files: GithubBetagou
     console.log('SHA du master obtenu', sha);
     try {
         const resp = await createGithubBranch(sha, branch);
-        console.log(`Branche ${branch} créée pour ${prName}`, resp.data.object.sha);
+        console.log(`Branche ${branch} créée pour ${prName}`);
         for(const file of files) {
             await createFileOnBranch(file, branch, resp.data.object.sha)
         }

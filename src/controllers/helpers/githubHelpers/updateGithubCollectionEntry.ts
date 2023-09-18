@@ -64,10 +64,10 @@ async function updateGithubCollectionEntry(name: string, path: string, changes: 
 export async function updateMultipleFilesPR(prName: string, files: GithubBetagouvFile[]) {
     const branch = createBranchName(prName);
     const { data: { object: { sha }}} = await getGithubMasterSha()
-    console.log('SHA du master obtenu', sha);
+    console.log('SHA du master obtenu');
     try {
         const resp = await createGithubBranch(sha, branch);
-        console.log(`Branche ${branch} créée pour ${prName}`, resp.data.object.sha);
+        console.log(`Branche ${branch} créée pour ${prName}`);
         for(const [index, file] of files.entries()) {
             if (index === 0) {
                 await updateFileOnBranch(file, branch, resp.data.object.sha)
