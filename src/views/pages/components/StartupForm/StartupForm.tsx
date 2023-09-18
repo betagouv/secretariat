@@ -30,7 +30,7 @@ Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré v
 `
 
 interface StartupForm {
-    sponsors?: string;
+    sponsors?: string[];
     incubator?: string;
     mission?: string;
     stats_url?: string;
