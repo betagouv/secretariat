@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
-export function createBranchName(username) {
+export function createBranchName(name) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
     const randomSuffix = crypto.randomBytes(3).toString('hex');
-    return `author${username.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
+    return `${name.replace(refRegex, '-')}-update-end-date-${randomSuffix}`;
 }

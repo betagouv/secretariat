@@ -4,8 +4,9 @@ import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupPhase } from '@/models/startup';
-import { createStartupGithubFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
+import { createMultipleFilesPR, makeGithubSponsorFile, makeGithubStartupFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
 import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -41,6 +42,17 @@ export async function postStartupInfoCreate(req, res) {
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const newSponsors : Sponsor[] = req.body.newSponsors || []
+
+        if (newSponsors) {
+            newSponsors.forEach((sponsor : Sponsor) => {
+                console.log(sponsor.domaine_ministeriel)
+                console.log(sponsor.type)
+                console.log(Object.values(SponsorDomaineMinisteriel))
+                Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
+                Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
+            })
+        }
 
         const content = req.body.text || requiredError('description du produit', errorHandler); 
         phases[0] || requiredError('phases', errorHandler); 
@@ -49,7 +61,6 @@ export async function postStartupInfoCreate(req, res) {
             console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
         }
- 
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
@@ -65,7 +76,13 @@ export async function postStartupInfoCreate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await createStartupGithubFile(startup, changes, content);
+        const prInfo : PRInfo = await createMultipleFilesPR(startup, [
+            ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
+            makeGithubStartupFile(startup, changes, content)
+        ])
+
+        
+
         addEvent(EventCode.STARTUP_INFO_CREATED, {
             created_by_username: req.auth.id,
             action_metadata: { 

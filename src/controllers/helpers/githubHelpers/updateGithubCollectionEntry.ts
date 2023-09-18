@@ -1,6 +1,7 @@
 import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
 import { createBranchName } from "./createBranchName";
-import { GithubAuthorChange, GithubStartupChange } from "./githubEntryInterface";
+import { GithubAuthorChange, GithubBetagouvFile, GithubStartupChange } from "./githubEntryInterface";
+import { createFileOnBranch, updateFileOnBranch } from "./createGithubCollectionEntry";
 
 async function updateGithubCollectionEntry(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
@@ -58,6 +59,32 @@ async function updateGithubCollectionEntry(name: string, path: string, changes: 
             console.log(err);
             throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${name}`);
         });
+}
+
+export async function updateMultipleFilesPR(prName: string, files: GithubBetagouvFile[]) {
+    const branch = createBranchName(prName);
+    const { data: { object: { sha }}} = await getGithubMasterSha()
+    console.log('SHA du master obtenu');
+    try {
+        const resp = await createGithubBranch(sha, branch);
+        console.log(`Branche ${branch} créée pour ${prName}`);
+        for(const [index, file] of files.entries()) {
+            if (index === 0) {
+                await updateFileOnBranch(file, branch, resp.data.object.sha)
+            } else {
+                await createFileOnBranch(file, branch, resp.data.object.sha)
+            }
+        }
+        const response = await makeGithubPullRequest(branch, `Création de ${prName}`);
+        console.log(`Pull request pour la création de la fiche ${prName} ouverte`);
+        if (response.status !== 201 && response.data.html_url) {
+            throw new Error('Il y a eu une erreur merci de recommencer plus tard')
+        }
+        return response.data
+    } catch(err) {
+        console.log(err);
+        throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${prName}`);
+    };
 }
 
 export async function updateAuthorGithubFile(username: string, changes: GithubAuthorChange) : Promise<PRInfo> {

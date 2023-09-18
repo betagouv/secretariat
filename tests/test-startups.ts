@@ -66,7 +66,7 @@ describe('Startup page', () => {
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
-      updateStartupGithubFileStub = sinon.stub(UpdateGithubCollectionEntry, 'updateStartupGithubFile')
+      updateStartupGithubFileStub = sinon.stub(UpdateGithubCollectionEntry, 'updateMultipleFilesPR')
       updateStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
         number: 12151
@@ -133,6 +133,8 @@ describe('Startup page', () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
+          mission: 'lamissiondelastartup',
+          text: 'la description de la startup',
           phases: [
             {
               name: 'alumni',
@@ -147,15 +149,22 @@ describe('Startup page', () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
+          mission: 'lamissiondelastartup',
           phases: [
             {
               name: 'alumni',
               start: (new Date()).toISOString(),
             }
           ],
+          newSponsors: [{
+            name: 'a sponsors',
+            acronym: 'AS',
+            type: 'operateur',
+            domaine_ministeriel: 'culture'
+          }],
           text: 'test'
         })
-        updateStartupGithubFileStub.args[0][2].should.equals('test')
+        updateStartupGithubFileStub.args[0][1][0].content.should.equals('test')
         res.should.have.status(200);
     });
   });
@@ -167,7 +176,7 @@ describe('Startup page', () => {
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
-      createStartupGithubFileStub = sinon.stub(CreateGithubCollectionEntry, 'createStartupGithubFile')
+      createStartupGithubFileStub = sinon.stub(CreateGithubCollectionEntry, 'createMultipleFilesPR')
       createStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
         number: 12151
@@ -226,6 +235,7 @@ describe('Startup page', () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_CREATE_FORM)
         .send({
+          startup: 'nomdestartup',
           phases: [{
             name: 'alumni',
             start: '2020/10/254'
@@ -244,7 +254,13 @@ describe('Startup page', () => {
           phases: [{
             name: 'alumni',
             start: (new Date()).toISOString()
-          }]
+          }],
+          newSponsors: [{
+            name: 'a sponsors',
+            acronym: 'AS',
+            type: 'operateur',
+            domaine_ministeriel: 'culture'
+          }],
         })
         res.should.have.status(200);
     });
