@@ -50,7 +50,7 @@ interface FormErrorResponse {
 
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState('')
+    const [text, setText] = React.useState(props.content || '')
     const [startupName, setStartupName] = React.useState('')
     const [link, setLink] = React.useState(props.link)
     const [repository, setRepository] = React.useState(props.repository)
