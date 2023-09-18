@@ -4,7 +4,7 @@ import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupPhase } from '@/models/startup';
-import { createMultipleFilesPR, createStartupGithubFile, makeGithubSponsorFile, makeGithubStartupFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
+import { createMultipleFilesPR, makeGithubSponsorFile, makeGithubStartupFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
 import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
 import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
 
@@ -76,7 +76,6 @@ export async function postStartupInfoCreate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        // const prInfo : PRInfo = await createStartupGithubFile(startup, changes, content);
         const prInfo : PRInfo = await createMultipleFilesPR(startup, [
             ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
             makeGithubStartupFile(startup, changes, content)

@@ -1,13 +1,12 @@
 import { addEvent, EventCode } from '@/lib/events'
-import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
-import { StartupInfo, StartupPhase } from '@/models/startup';
-import { updateMultipleFilesPR, updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import { StartupPhase } from '@/models/startup';
+import { updateMultipleFilesPR } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
 import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
-import { createMultipleFilesPR, createStartupGithubFile, makeGithubSponsorFile, makeGithubStartupFile } from '../helpers/githubHelpers';
+import { makeGithubSponsorFile, makeGithubStartupFile } from '../helpers/githubHelpers';
 import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
 
 const isValidPhase = (field, value, callback) => {
