@@ -1,7 +1,7 @@
 import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
 import { createBranchName } from "./createBranchName";
 import { GithubAuthorChange, GithubBetagouvFile, GithubStartupChange } from "./githubEntryInterface";
-import { createFileOnBranch, updateFileOnBranch } from "./createGithubCollectionEntry";
+import { updateFileOnBranch } from "./createGithubCollectionEntry";
 
 async function updateGithubCollectionEntry(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange, mainContent?: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
@@ -68,12 +68,8 @@ export async function updateMultipleFilesPR(prName: string, files: GithubBetagou
     try {
         const resp = await createGithubBranch(sha, branch);
         console.log(`Branche ${branch} créée pour ${prName}`);
-        for(const [index, file] of files.entries()) {
-            if (index === 0) {
-                await updateFileOnBranch(file, branch, resp.data.object.sha)
-            } else {
-                await createFileOnBranch(file, branch, resp.data.object.sha)
-            }
+        for(const file of files) {
+            await updateFileOnBranch(file, branch, resp.data.object.sha)
         }
         const response = await makeGithubPullRequest(branch, `Création de ${prName}`);
         console.log(`Pull request pour la création de la fiche ${prName} ouverte`);

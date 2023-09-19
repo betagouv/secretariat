@@ -5,9 +5,10 @@ import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupPhase } from '@/models/startup';
 import { updateMultipleFilesPR } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
-import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
-import { makeGithubSponsorFile, makeGithubStartupFile } from '../helpers/githubHelpers';
+import { GithubBetagouvFile, GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { makeGithubSponsorFile, makeGithubStartupFile, makeImageFile } from '../helpers/githubHelpers';
 import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
+import { createStartupId } from '../helpers/githubHelpers/createContentName';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -35,9 +36,12 @@ export async function postStartupInfoUpdate(req, res) {
             isValidDate('date', new Date(phase.start), errorHandler)
             !phase.end || isValidDate('date', new Date(phase.end), errorHandler)
         })
-        
+        let startupId = req.params.startup
+        let title = req.body.title || requiredError('nom du produit', errorHandler)
+        if (req.method == "POST") {
+            startupId = createStartupId(req.body.title)
+        }
         const link = req.body.link
-        const startup = req.params.startup
         const dashlord_url = req.body.dashlord_url
         const mission = req.body.mission || requiredError('mission', errorHandler); 
         const stats_url = req.body.stats_url
@@ -45,12 +49,10 @@ export async function postStartupInfoUpdate(req, res) {
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
         const newSponsors : Sponsor[] = req.body.newSponsors || []
+        const image: string = req.body.image
 
         if (newSponsors) {
             newSponsors.forEach((sponsor : Sponsor) => {
-                console.log(sponsor.domaine_ministeriel)
-                console.log(sponsor.type)
-                console.log(Object.values(SponsorDomaineMinisteriel))
                 Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
                 Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
             })
@@ -70,6 +72,7 @@ export async function postStartupInfoUpdate(req, res) {
             stats_url,
             repository,
             incubator,
+            title,
             sponsors: sponsors.map(sponsor => `/organisations/${sponsor}`)
         };
         const newPhases = phases.map(phase => ({
@@ -78,10 +81,16 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await updateMultipleFilesPR(startup, [
-            makeGithubStartupFile(startup, changes, content),
+        const files : GithubBetagouvFile[] = [
+            makeGithubStartupFile(startupId, changes, content),
             ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
-        ])
+        ]
+        if (image) {
+            console.log('Added image file')
+            const imageFile = makeImageFile(startupId, image)
+            files.push(imageFile)
+        }
+        const prInfo : PRInfo = await updateMultipleFilesPR(startupId, files)
 
         addEvent(EventCode.STARTUP_INFO_UPDATED, {
             created_by_username: req.auth.id,
@@ -93,12 +102,12 @@ export async function postStartupInfoUpdate(req, res) {
         })
         await db('pull_requests').insert({
             url: prInfo.html_url,
-            startup: startup,
+            startup: startupId,
             type: PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE,
             status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
             info: JSON.stringify(changes)
         })
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startup} ouverte. 
+        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startupId} ouverte. 
         \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, la fiche sera mis à jour dans les 10 minutes.`
         req.flash('message', message);

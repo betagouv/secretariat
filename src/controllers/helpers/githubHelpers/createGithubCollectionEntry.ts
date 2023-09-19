@@ -1,6 +1,9 @@
+import {
+    OctokitResponse
+  } from "@octokit/types";
 import { createGithubBranch, createGithubFile, getGithubFile, getGithubMasterSha, makeGithubPullRequest, PRInfo } from "@/lib/github";
 import { createBranchName } from "./createBranchName";
-import { GithubAuthorChange, GithubAuthorFile, GithubBetagouvFile, GithubSponsorChange, GithubSponsorFile, GithubStartupChange, GithubStartupFile } from "./githubEntryInterface";
+import { GithubAuthorChange, GithubAuthorFile, GithubImageFile, GithubBetagouvFile, GithubSponsorChange, GithubSponsorFile, GithubStartupChange, GithubStartupFile } from "./githubEntryInterface";
 
 async function createGithubCollectionEntry(name: string, path: string, changes: GithubAuthorChange | GithubStartupChange | GithubSponsorChange, mainContent?: string) : Promise<PRInfo> {
     const branch = createBranchName(name);
@@ -46,34 +49,9 @@ async function createGithubCollectionEntry(name: string, path: string, changes: 
 
 export async function createFileOnBranch(file: GithubBetagouvFile, branch, sha) {
     const yaml = require('js-yaml');
-    const doc = file.changes
-    const schema = yaml.DEFAULT_SCHEMA
-    schema.compiledTypeMap.scalar['tag:yaml.org,2002:timestamp'].represent = function(object) {
-        return object.toISOString().split('T')[0];
-    }
-    let content = '---\n' + yaml.dump(doc, {
-        schema: schema
-    }) + '---'
-    if (file.content) {
-        content = content + '\n' + file.content
-    }
-    return createGithubFile(file.path, branch, content, sha);
-}
-
-export async function updateFileOnBranch(file: GithubBetagouvFile, branch, sha) {
-    return getGithubFile(file.path, branch).then((res) => {
-        const yaml = require('js-yaml');
-        let content = Buffer.from(res.data.content, 'base64').toString('utf-8');
-        let splitDoc = content.split('---')
-        const doc = yaml.load(splitDoc[1])
-        for (const key of Object.keys(file.changes)) {
-            const value = file.changes[key]
-            if (!value || (Array.isArray(value) && !value.length)) {
-                delete doc[key]
-            } else {
-                doc[key] = file.changes[key]
-            }
-        }
+    let content = file['content'] || ''
+    if ('changes' in file) {
+        const doc = file.changes
         const schema = yaml.DEFAULT_SCHEMA
         schema.compiledTypeMap.scalar['tag:yaml.org,2002:timestamp'].represent = function(object) {
             return object.toISOString().split('T')[0];
@@ -81,12 +59,56 @@ export async function updateFileOnBranch(file: GithubBetagouvFile, branch, sha) 
         content = '---\n' + yaml.dump(doc, {
             schema: schema
         }) + '---'
-        if (file.content) {
+        if ('content' in file) {
             content = content + '\n' + file.content
-        } else if (splitDoc[2]) {
-            content = content + splitDoc[2]
         }
-        return createGithubFile(file.path, branch, content, res.data.sha);
+    }
+    return createGithubFile(file.path, branch, content, sha);
+}
+
+export async function updateFileOnBranch(file: GithubBetagouvFile, branch, sha) {
+    return getGithubFile(file.path, branch)
+    .catch((e) => {
+        console.log('File not found')
+        return
+    }).then((res: OctokitResponse<any> | undefined) => {
+        const yaml = require('js-yaml');
+        let fileContent = file['content'] || ''
+        const isTextFile = 'changes' in file
+        const fileAlreadyExists = res
+        const fileHasContent = 'content' in file && file.content
+        if (isTextFile) {
+            let keyValueInfos = ''
+            let mainContent = ''
+            if (fileAlreadyExists) {
+                const utf8Content = Buffer.from(res.data.content, 'base64').toString('utf-8');
+                const splitDoc = utf8Content.split('---')
+                keyValueInfos = splitDoc[1]
+                mainContent = splitDoc[2]
+            }
+            if (fileHasContent) {
+                mainContent = '\n' + file.content
+            }
+            const keyValueInfosDict = yaml.load(keyValueInfos) || {}
+            for (const key of Object.keys(file.changes)) {
+                const value = file.changes[key]
+                if (!value || (Array.isArray(value) && !value.length)) {
+                    delete keyValueInfosDict[key]
+                } else {
+                    keyValueInfosDict[key] = file.changes[key]
+                }
+            }
+        
+            const schema = yaml.DEFAULT_SCHEMA
+            schema.compiledTypeMap.scalar['tag:yaml.org,2002:timestamp'].represent = function(object) {
+                return object.toISOString().split('T')[0];
+            }
+            const formatedContent = '---\n' + yaml.dump(keyValueInfosDict, {
+                schema: schema
+            }) + '---'
+            fileContent = formatedContent + mainContent
+        }
+        return createGithubFile(file.path, branch, fileContent, res ? res.data.sha : sha);
     })
 }
 
@@ -126,6 +148,15 @@ export function makeGithubStartupFile(name: string, changes: GithubStartupChange
         name,
         changes,
         content
+    }
+}
+
+export function makeImageFile(name: string, content: string): GithubImageFile {
+    let mimeType = content.match(/[^:/]\w+(?=;|,)/)[0];
+    return {
+        name,
+        path: `img/startups/${name}.${mimeType}`,
+        content: content.split(',')[1]
     }
 }
 

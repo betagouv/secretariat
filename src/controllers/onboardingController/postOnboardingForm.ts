@@ -12,7 +12,7 @@ import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { getGithubMasterSha, createGithubBranch, createGithubFile, makeGithubPullRequest, deleteGithubBranch, PRInfo } from "@/lib/github";
-import { createUsername } from "../helpers/userHelpers";
+import { createUsername } from "../helpers/githubHelpers/createContentName";
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;

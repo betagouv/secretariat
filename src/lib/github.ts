@@ -237,7 +237,11 @@ export function createGithubFile(path, branch, content, sha = undefined) {
   const message = `${
     sha ? 'Mise à jour' : 'Création'
   } de fichier ${path} sur la branche ${branch}`;
-  const base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
+  let base64EncodedContent = content
+  let regex = new RegExp(/[^\s]+(.*?).(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/);
+  if (!regex.test(path)) {  
+    base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
+  }
 
   return requestWithAuth(`PUT ${url}`, {
     branch,

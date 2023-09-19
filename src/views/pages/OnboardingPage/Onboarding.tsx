@@ -12,7 +12,7 @@ import MemberSelect from '../components/MemberSelect';
 import SESelect from '../components/SESelect';
 import DatepickerSelect from '../components/DatepickerSelect';
 import CommunicationEmailSelect from '../components/CommunicationEmailSelect';
-import { createUsername } from '@/controllers/helpers/userHelpers';
+import { createUsername } from '@/controllers/helpers/githubHelpers/createContentName';
 
 function formatDateToReadableFormat(date) {
     let day = date.getDate().toString();

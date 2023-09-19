@@ -17,7 +17,8 @@ interface StartupInfoFormData {
     stats_url?: string;
     link?: string,
     dashlord_url?: string,
-    repository?: string
+    repository?: string,
+    image?: string
 }
 
 interface StartupInfoUpdateProps {
@@ -44,12 +45,16 @@ interface StartupInfoUpdateProps {
 export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
-    const save = async (data) => {
-        return axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
-            ...data
-        }).then(() => {
+    const save = async (data, image) => {
+        try {
+            await axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
+                ...data
+            })
             window.location.replace(`/startups/${props.startup.id}`);
-        })
+        } catch (e) {
+            console.log(e)
+            throw new Error(e)
+        }
     }
 
     return (

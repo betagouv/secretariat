@@ -4,9 +4,10 @@ import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupPhase } from '@/models/startup';
-import { createMultipleFilesPR, makeGithubSponsorFile, makeGithubStartupFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
-import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { makeGithubSponsorFile, makeGithubStartupFile, makeImageFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
+import { GithubBetagouvFile, GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
 import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
+import { updateMultipleFilesPR } from '../helpers/githubHelpers';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -43,12 +44,10 @@ export async function postStartupInfoCreate(req, res) {
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
         const newSponsors : Sponsor[] = req.body.newSponsors || []
+        const image: string = req.body.image
 
         if (newSponsors) {
             newSponsors.forEach((sponsor : Sponsor) => {
-                console.log(sponsor.domaine_ministeriel)
-                console.log(sponsor.type)
-                console.log(Object.values(SponsorDomaineMinisteriel))
                 Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
                 Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
             })
@@ -76,10 +75,16 @@ export async function postStartupInfoCreate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await createMultipleFilesPR(startup, [
+        const files : GithubBetagouvFile[]  = [
             ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
             makeGithubStartupFile(startup, changes, content)
-        ])
+        ]
+        if (image) {
+            console.log('Added image file')
+            const imageFile = makeImageFile(startup, image)
+            files.push(imageFile)
+        }
+        const prInfo : PRInfo = await updateMultipleFilesPR(startup, files)
 
         
 
@@ -101,6 +106,7 @@ export async function postStartupInfoCreate(req, res) {
         const message = `⚠️ Pull request pour la création de la fiche de ${startup} ouverte. 
         \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, la fiche sera en ligne dans les 10 minutes.`
+        req.flash('message', message);
         res.json({
             message,
             pr_url: prInfo.html_url
