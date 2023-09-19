@@ -6,6 +6,7 @@ import MarkdownIt from 'markdown-it';
 import SEAsyncIncubateurSelect from '../SEAsyncIncubateurSelect';
 import SponsorBlock from './SponsorBlock';
 import PhaseItem from './PhaseItem';
+import FileUpload from '../FileUpload';
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -78,38 +79,6 @@ export const StartupForm = (props: StartupForm) => {
     const [errorMessage, setErrorMessage] = React.useState('');
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
-
-    const onFileChange = event => {
-        // Update the state
-        setSelectedFile(event.target.files[0]);
- 
-    };
-
-    // File content to be displayed after
-    // file upload is complete
-    const fileData = () => {
-    
-        if (selectedFile) {
-    
-            return (
-                <div>
-                    <h2>File Details:</h2>
-                    <p>File Name: {selectedFile.name}</p>
-    
-                    <p>File Type: {selectedFile.type}</p>
-    
-                </div>
-            );
-        } else {
-            return (
-                <div>
-                    <br />
-                    <h4>Choose before Pressing the Upload button</h4>
-                </div>
-            );
-        }
-    };
-
 
     const save = async (event) => {
         if (isSaving) {
@@ -276,9 +245,7 @@ export const StartupForm = (props: StartupForm) => {
                         </table>
                         {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
                     </div>
-                    <input type="file" onChange={onFileChange} />
-                    {fileData()}
-
+                    <FileUpload selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
                     <div className="form__group">
                         <label htmlFor="description">
                             <strong>URL du site :</strong><br />
