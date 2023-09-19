@@ -47,12 +47,10 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
 
     const save = async (data, image) => {
         try {
-            console.log('LCS SAVE')
-            console.log(routes.STARTUP_POST_INFO_UPDATE_FORM)
             await axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
                 ...data
             })
-            //window.location.replace(`/startups/${props.startup.id}`);
+            window.location.replace(`/startups/${props.startup.id}`);
         } catch (e) {
             console.log(e)
             throw new Error(e)

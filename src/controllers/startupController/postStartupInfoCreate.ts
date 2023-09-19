@@ -48,9 +48,6 @@ export async function postStartupInfoCreate(req, res) {
 
         if (newSponsors) {
             newSponsors.forEach((sponsor : Sponsor) => {
-                console.log(sponsor.domaine_ministeriel)
-                console.log(sponsor.type)
-                console.log(Object.values(SponsorDomaineMinisteriel))
                 Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
                 Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
             })
@@ -85,7 +82,6 @@ export async function postStartupInfoCreate(req, res) {
         if (image) {
             console.log('Added image file')
             const imageFile = makeImageFile(startup, image)
-            console.log(imageFile.name, startup)
             files.push(imageFile)
         }
         const prInfo : PRInfo = await updateMultipleFilesPR(startup, files)
