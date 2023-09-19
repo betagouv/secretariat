@@ -41,7 +41,7 @@ export interface GithubSponsorChange {
 export interface GithubStartupChange {
     phases?: Phase[],
     link: string,
-    title: string,
+    title?: string,
     dashlord_url: string,
     mission: string,
     stats_url: string,

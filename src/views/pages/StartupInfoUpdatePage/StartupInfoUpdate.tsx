@@ -17,7 +17,8 @@ interface StartupInfoFormData {
     stats_url?: string;
     link?: string,
     dashlord_url?: string,
-    repository?: string
+    repository?: string,
+    image?: string
 }
 
 interface StartupInfoUpdateProps {

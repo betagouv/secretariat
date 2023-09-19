@@ -70,7 +70,7 @@ export const StartupForm = (props: StartupForm) => {
     const [incubator, setIncubator] = React.useState(props.incubator)
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
-    const [selectedFile, setSelectedFile] : [undefined | Blob, (Blob) => void] = React.useState()
+    const [selectedFile, setSelectedFile] : [undefined | Blob, (File) => void] = React.useState()
     const [phases, setPhases] = React.useState(props.phases || [{
         name: StartupPhase.PHASE_INVESTIGATION,
         start: new Date()
@@ -128,13 +128,14 @@ export const StartupForm = (props: StartupForm) => {
             newSponsors: newSponsors,
             sponsors: sponsors,
             stats_url,
-            repository
+            repository,
+            image: ''
         }
         if (selectedFile) {
             const imageAsBase64 = await blobToBase64(selectedFile)
             data = {
                 ...data,
-                image: imageAsBase64
+                image: imageAsBase64 as string
             }
         }
         props.save(data).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
