@@ -2,6 +2,7 @@ import { sendEmail } from "@/config/email.config"
 import db from "@/db"
 import { ACTIVE_PHASES, DBStartup, PHASE_READABLE_NAME } from "@/models/startup"
 import { EMAIL_TYPES } from "@/modules/email"
+import { STARTUP_GET_INFO_UPDATE_FORM } from '@/routes/routes';
 
 export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[]) => {
     const startups : DBStartup[] = startupsArg || await db('startups')
@@ -18,7 +19,7 @@ export const sendEmailToStartupToUpdatePhase = async (startupsArg?: DBStartup[])
                     phase,
                     readablePhase: PHASE_READABLE_NAME[phase],
                     startup: startup.name,
-                    link: `https://espace-membre.incubateur.net/startups/${startup.id}/info-form`
+                    link: `https://espace-membre.incubateur.net/${STARTUP_GET_INFO_UPDATE_FORM.replace(':startup',startup.id)}`
                 },
                 forceTemplate: true,
                 toEmail: [`${startup.mailing_list}@beta.gouv.fr`]

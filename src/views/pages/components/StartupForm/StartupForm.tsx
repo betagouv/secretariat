@@ -48,10 +48,20 @@ interface FormErrorResponse {
     message: string
 }
 
+const blobToBase64 = async blob => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise(resolve => {
+    reader.onloadend = () => {
+        resolve(reader.result);
+    };
+    });
+};
+
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
     const [text, setText] = React.useState(decodeURIComponent(props.content) || '')
-    const [startupName, setStartupName] = React.useState('')
+    const [title, setTitle] = React.useState('')
     const [link, setLink] = React.useState(props.link)
     const [repository, setRepository] = React.useState(props.repository)
     const [mission, setMission] = React.useState(props.mission)
@@ -60,6 +70,7 @@ export const StartupForm = (props: StartupForm) => {
     const [incubator, setIncubator] = React.useState(props.incubator)
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
+    const [selectedFile, setSelectedFile] : [undefined | Blob, (Blob) => void] = React.useState()
     const [phases, setPhases] = React.useState(props.phases || [{
         name: StartupPhase.PHASE_INVESTIGATION,
         start: new Date()
@@ -68,6 +79,37 @@ export const StartupForm = (props: StartupForm) => {
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
 
+    const onFileChange = event => {
+        // Update the state
+        setSelectedFile(event.target.files[0]);
+ 
+    };
+
+    // File content to be displayed after
+    // file upload is complete
+    const fileData = () => {
+    
+        if (selectedFile) {
+    
+            return (
+                <div>
+                    <h2>File Details:</h2>
+                    <p>File Name: {selectedFile.name}</p>
+    
+                    <p>File Type: {selectedFile.type}</p>
+    
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <br />
+                    <h4>Choose before Pressing the Upload button</h4>
+                </div>
+            );
+        }
+    };
+
 
     const save = async (event) => {
         if (isSaving) {
@@ -75,18 +117,25 @@ export const StartupForm = (props: StartupForm) => {
         }
         event.preventDefault();
         setIsSaving(true)
-        const data = {
+        let data = {
             phases,
             text,
             link,
             dashlord_url,
             mission,
-            startup: startupName,
+            title,
             incubator,
             newSponsors: newSponsors,
             sponsors: sponsors,
             stats_url,
             repository
+        }
+        if (selectedFile) {
+            const imageAsBase64 = await blobToBase64(selectedFile)
+            data = {
+                ...data,
+                image: imageAsBase64
+            }
         }
         props.save(data).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
@@ -97,7 +146,7 @@ export const StartupForm = (props: StartupForm) => {
             }
         })
     }
-
+ 
     function addPhase() {
         let nextPhase = StartupPhase.PHASE_INVESTIGATION
         let nextDate = new Date()
@@ -154,20 +203,18 @@ export const StartupForm = (props: StartupForm) => {
             {<>
 
                 <div className='no-margin'>
-                    {!props.startup && <>
-                        <div className="form__group">
-                            <label htmlFor="startup">
-                                <strong>Nom du produit : </strong><br />
-                                Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
-                            </label>
-                            <input name="startup"
-                            onChange={(e) => { setStartupName(e.currentTarget.value)}}
-                            value={startupName}/>
-                           { !!formErrors['startup'] && 
-                                <p className="text-small text-color-red">{formErrors['startup']}</p>
-                            }
-                        </div>
-                    </>}
+                    <div className="form__group">
+                        <label htmlFor="startup">
+                            <strong>Nom du produit : </strong><br />
+                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
+                        </label>
+                        <input name="title"
+                        onChange={(e) => { setTitle(e.currentTarget.value)}}
+                        value={title}/>
+                        { !!formErrors['startup'] && 
+                            <p className="text-small text-color-red">{formErrors['startup']}</p>
+                        }
+                    </div>
                     <div className="form__group">
                         <label htmlFor="mission">
                             <strong>Quel est son objectif principal ?</strong><br />
@@ -228,6 +275,9 @@ export const StartupForm = (props: StartupForm) => {
                         </table>
                         {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
                     </div>
+                    <input type="file" onChange={onFileChange} />
+                    {fileData()}
+
                     <div className="form__group">
                         <label htmlFor="description">
                             <strong>URL du site :</strong><br />

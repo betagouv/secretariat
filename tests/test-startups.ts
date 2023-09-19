@@ -3,7 +3,6 @@ import chaiHttp from 'chai-http';
 import app from '@/index';
 import utils from './utils';
 import * as UpdateGithubCollectionEntry from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
-import * as CreateGithubCollectionEntry from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry'
 import sinon from 'sinon';
 import * as betagouv from '@/betagouv';
 import routes from '@/routes/routes';
@@ -11,7 +10,7 @@ import * as session from '@/helpers/session';
 
 chai.use(chaiHttp);
 
-
+const base64Image = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII`
 describe('Startup page', () => {
   describe('GET /startups unauthenticated', () => {
     it('should redirect to login', (done) => {
@@ -50,7 +49,7 @@ describe('Startup page', () => {
   });
 
 
-  describe('post /startups/:startup/info-form unauthenticated', () => {
+  describe('post /startups/:startup unauthenticated', () => {
     it('should redirect to login', async () => {
       const res = await chai.request(app)
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
@@ -59,7 +58,7 @@ describe('Startup page', () => {
     });
   });
 
-  describe('post /startups/:startup/info-form authenticated', () => {
+  describe('post /startups/:startup authenticated', () => {
     let getToken
     let updateStartupGithubFileStub
     let startupInfosStub
@@ -135,6 +134,7 @@ describe('Startup page', () => {
         .send({
           mission: 'lamissiondelastartup',
           text: 'la description de la startup',
+          title: 'title de la se',
           phases: [
             {
               name: 'alumni',
@@ -150,6 +150,7 @@ describe('Startup page', () => {
         .post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup','a-dock'))
         .send({
           mission: 'lamissiondelastartup',
+          title: 'title de la se',
           phases: [
             {
               name: 'alumni',
@@ -162,6 +163,7 @@ describe('Startup page', () => {
             type: 'operateur',
             domaine_ministeriel: 'culture'
           }],
+          image: base64Image,
           text: 'test'
         })
         updateStartupGithubFileStub.args[0][1][0].content.should.equals('test')
@@ -171,13 +173,13 @@ describe('Startup page', () => {
 
   describe('post /startups/:startup/create-form authenticated', () => {
     let getToken
-    let createStartupGithubFileStub
+    let updateStartupGithubFileStub
     let startupInfosStub
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken')
       getToken.returns(utils.getJWT('membre.actif'))
-      createStartupGithubFileStub = sinon.stub(CreateGithubCollectionEntry, 'createMultipleFilesPR')
-      createStartupGithubFileStub.returns(Promise.resolve({
+      updateStartupGithubFileStub = sinon.stub(UpdateGithubCollectionEntry, 'updateMultipleFilesPR')
+      updateStartupGithubFileStub.returns(Promise.resolve({
         html_url: 'https://djkajdlskjad.com',
         number: 12151
       }))
@@ -215,7 +217,7 @@ describe('Startup page', () => {
 
     afterEach(() => {
       getToken.restore()
-      createStartupGithubFileStub.restore()
+      updateStartupGithubFileStub.restore()
       startupInfosStub.restore()
     })
 
@@ -251,10 +253,12 @@ describe('Startup page', () => {
           startup: 'nomdestartup',
           mission: 'lamissiondelastartup',
           text: 'la description de la startup',
+          title: 'title de la se',
           phases: [{
             name: 'alumni',
             start: (new Date()).toISOString()
           }],
+          image: base64Image,
           newSponsors: [{
             name: 'a sponsors',
             acronym: 'AS',

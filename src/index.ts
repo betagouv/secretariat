@@ -40,7 +40,6 @@ import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
 import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
 import { getStartupInfoCreate } from './controllers/startupController/getStartupInfoCreate';
-import { postStartupInfoCreate } from './controllers/startupController/postStartupInfoCreate';
 
 export const app = express();
 EventBus.init([...MARRAINAGE_EVENTS_VALUES])
@@ -226,7 +225,7 @@ app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
 app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
 app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate)
 app.post(routes.STARTUP_POST_INFO_UPDATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
-app.post(routes.STARTUP_POST_INFO_CREATE_FORM, express.json({type: '*/*'}), postStartupInfoCreate)
+app.post(routes.STARTUP_POST_INFO_CREATE_FORM, express.json({type: '*/*'}), postStartupInfoUpdate)
 
 
 
