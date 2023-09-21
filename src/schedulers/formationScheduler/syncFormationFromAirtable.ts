@@ -13,7 +13,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     }
     base('Formations').select({
         // Selecting the first 3 records in Formations accessibles à l'inscription:
-        fields: ["Formation", "Record ID", "Début", "formationTypeName", 'formationType'],
+        fields: ["Formation", "Record ID", "Début", "formationTypeName", 'formationType', 'embarquement'],
         view: "Formations passées",
         filterByFormula
     }).eachPage(async function page(records, fetchNextPage) {
@@ -22,6 +22,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
         for (const record of records) {
                 try {
                     await createFormation({
+                        is_embarquement: record.get('embarquement') === true || record.get('embarquement') === 'true',
                         formation_date: new Date(record.get('Début') as string),
                         formation_type: (record.get('formationTypeName') as [string])[0],
                         formation_type_airtable_id: (record.get('formationType') as [string])[0],
