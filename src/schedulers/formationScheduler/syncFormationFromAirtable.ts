@@ -22,7 +22,7 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
         for (const record of records) {
                 try {
                     await createFormation({
-                        is_embarquement: record.get('embarquement') === true || record.get('embarquement') === 'true',
+                        is_embarquement: Boolean(record.get('embarquement') === true || record.get('embarquement') === 'true'),
                         formation_date: new Date(record.get('Début') as string),
                         formation_type: (record.get('formationTypeName') as [string])[0],
                         formation_type_airtable_id: (record.get('formationType') as [string])[0],
