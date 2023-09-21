@@ -1,11 +1,14 @@
 import crypto from "crypto"
 import config from "@config";
-import BetaGouv from "@/betagouv";
+import BetaGouv, { EMAIL_PLAN_TYPE, OvhExchangeCreationData } from "@/betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@/db/index";
 import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
+import { _ } from "lodash";
+
+const INCUBATORS_USING_EXCHANGE = [ 'gip-inclusion' ];
 
 export async function createEmailAndUpdateSecondaryEmail({username, email} : {username:string, email:string}, currentUser: string) {
     const isCurrentUser = currentUser === username;
@@ -70,18 +73,69 @@ export async function createEmailForUser(req, res) {
     }
 }
 
+async function getEmailCreationParams(username: string):
+    Promise<
+        { planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, creationData: OvhExchangeCreationData }
+        | { planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, password: string }
+    > {
+    const [ usersInfos, startupsInfos ] = await Promise.all([
+        BetaGouv.usersInfos(),
+        BetaGouv.startupsInfos()
+    ]);
+
+    const userInfo = _.find(usersInfos, { id: username });
+
+    const needsExchange = _.some(userInfo?.startups, (id) => {
+        const startup = _.find(startupsInfos, { id });
+        const incubator = startup?.relationships?.incubator?.data?.id;
+        return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
+    });
+
+    if (needsExchange) {
+        const displayName = userInfo?.fullname ?? '';
+        const [ firstName, ...lastNames ] = displayName.split(' ');
+        const lastName = lastNames.join(' ');
+
+        return {
+            planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
+            creationData: {
+                displayName,
+                firstName,
+                lastName
+            }
+        }
+    } else {
+        const password = crypto.randomBytes(16)
+            .toString('base64')
+            .slice(0, -2);
+
+        return {
+            planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+            password
+        };
+    }
+}
+
 export async function createEmail(username: string, creator: string, emailIsRecreated: boolean=false) {
     const email = utils.buildBetaEmail(username);
-    const password = crypto.randomBytes(16)
-        .toString('base64')
-        .slice(0, -2);
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
 
     const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
     await BetaGouv.sendInfoToChat(message);
-    await BetaGouv.createEmail(username, password);
+
+    const emailCreationParams = await getEmailCreationParams(username);
+
+    switch (emailCreationParams.planType) {
+        case EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE:
+            await BetaGouv.createEmailForExchange(username, emailCreationParams.creationData);
+            break;
+        case EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC:
+            await BetaGouv.createEmail(username, emailCreationParams.password);
+            break;
+    }
+
     await knex('users').where({
         username,
     }).update({
