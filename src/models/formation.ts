@@ -6,5 +6,6 @@ export interface Formation {
     created_at: Date,
     formation_date: Date,
     formation_type: string,
-    formation_type_airtable_id: string
+    formation_type_airtable_id: string,
+    is_embarquement: boolean
 }
