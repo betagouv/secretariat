@@ -3,7 +3,7 @@ import axios from "axios"
 import Select from 'react-select'
 import { ClientOnly } from "./ClientOnly"
 
-export default ({ onChange, value }) => {
+export default ({ onChange, value, newSponsors }) => {
     const [options, setOptions] = React.useState([]);
 
     React.useEffect(() => {
@@ -22,7 +22,6 @@ export default ({ onChange, value }) => {
                 }
             })
             setOptions(optionValues);
-
         }
     
         // You need to restrict it at some point
@@ -35,12 +34,21 @@ export default ({ onChange, value }) => {
     if (!options.length) {
       return null
     }
+
+    const newSponsorsOptions = newSponsors.map(newSponsor => ({
+      value: newSponsor.acronym,
+      label: newSponsor.name
+    }))
+
+    const allOptions = [...options, ...newSponsorsOptions]
     return <ClientOnly>
         <Select
             isMulti
-            defaultValue={options.filter(opt => value.includes(opt.value))}
-            onChange={onChange}
-            options={options}
+            defaultValue={allOptions.filter(opt => value.includes(opt.value))}
+            // value={options.filter(opt => value.includes(opt.value))}
+            value={allOptions.filter(opt => value.includes(opt.value))}
+            onChange={(opts) => onChange(opts.map(opt => opt.value))}
+            options={allOptions}
             placeholder={'Sélectionne un ou plusieurs sponsors'} 
             hideSelectedOptions={false}
             blurInputOnSelect={false}

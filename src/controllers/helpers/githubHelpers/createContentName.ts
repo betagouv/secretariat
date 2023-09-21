@@ -22,3 +22,15 @@ export function createUsername(firstName, lastName) {
     return `${prepareName(firstName)}.${prepareName(lastName)}`.toLowerCase();
 }
   
+export function createStartupId(name) {
+  const prepareName = function (str) {
+    let normalizedStr = replaceSpecialCharacters(str)
+      .split(' ').map(x => _.deburr(x.toLowerCase()).replace(/[^a-z\-]/g, '')).filter(x => x) // remove empty value
+    normalizedStr = normalizedStr.join('.')
+      .split(' ')
+      .join(' ')
+      .trim();
+    return hyphenateWhitespace(normalizedStr);
+  };
+  return `${prepareName(name)}`.toLowerCase();
+}

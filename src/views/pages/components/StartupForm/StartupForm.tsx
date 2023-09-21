@@ -1,12 +1,12 @@
 import React from 'react';
 import { PHASES_ORDERED_LIST, Phase, StartupInfo, StartupPhase } from '@/models/startup';
-import SEPhaseSelect from './SEPhaseSelect';
-import DatepickerSelect from './DatepickerSelect';
-import { ClientOnly } from './ClientOnly';
+import { ClientOnly } from '../ClientOnly';
 import MdEditor from 'react-markdown-editor-lite';
 import MarkdownIt from 'markdown-it';
-import SEAsyncIncubateurSelect from './SEAsyncIncubateurSelect';
-import SESponsorSelect from './SESponsorSelect';
+import SEAsyncIncubateurSelect from '../SEAsyncIncubateurSelect';
+import SponsorBlock from './SponsorBlock';
+import PhaseItem from './PhaseItem';
+import FileUpload from '../FileUpload';
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -31,10 +31,7 @@ Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré v
 `
 
 interface StartupForm {
-    sponsors?: {
-        value: string,
-        label: string
-    }[];
+    sponsors?: string[];
     incubator?: string;
     mission?: string;
     stats_url?: string;
@@ -52,17 +49,29 @@ interface FormErrorResponse {
     message: string
 }
 
+const blobToBase64 = async blob => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    return new Promise(resolve => {
+    reader.onloadend = () => {
+        resolve(reader.result);
+    };
+    });
+};
+
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState('')
-    const [startupName, setStartupName] = React.useState('')
+    const [text, setText] = React.useState(decodeURIComponent(props.content) || '')
+    const [title, setTitle] = React.useState('')
     const [link, setLink] = React.useState(props.link)
     const [repository, setRepository] = React.useState(props.repository)
     const [mission, setMission] = React.useState(props.mission)
     const [sponsors, setSponsors] = React.useState(props.sponsors || [])
+    const [newSponsors, setNewSponsors] = React.useState([])
     const [incubator, setIncubator] = React.useState(props.incubator)
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
+    const [selectedFile, setSelectedFile] : [undefined | File, (File) => void] = React.useState()
     const [phases, setPhases] = React.useState(props.phases || [{
         name: StartupPhase.PHASE_INVESTIGATION,
         start: new Date()
@@ -71,24 +80,32 @@ export const StartupForm = (props: StartupForm) => {
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
 
-
     const save = async (event) => {
         if (isSaving) {
             return
         }
         event.preventDefault();
         setIsSaving(true)
-        const data = {
+        let data = {
             phases,
             text,
             link,
             dashlord_url,
             mission,
-            startup: startupName,
+            title,
             incubator,
-            sponsors: sponsors.map(sponsor => sponsor.value),
+            newSponsors: newSponsors,
+            sponsors: sponsors,
             stats_url,
-            repository
+            repository,
+            image: ''
+        }
+        if (selectedFile) {
+            const imageAsBase64 = await blobToBase64(selectedFile)
+            data = {
+                ...data,
+                image: imageAsBase64 as string
+            }
         }
         props.save(data).catch(({ response: { data }} : { response: { data: FormErrorResponse }}) => {
             const ErrorResponse : FormErrorResponse = data
@@ -99,7 +116,7 @@ export const StartupForm = (props: StartupForm) => {
             }
         })
     }
-
+ 
     function addPhase() {
         let nextPhase = StartupPhase.PHASE_INVESTIGATION
         let nextDate = new Date()
@@ -155,21 +172,19 @@ export const StartupForm = (props: StartupForm) => {
             }
             {<>
 
-                <form className='no-margin' onSubmit={save}>
-                    {!props.startup && <>
-                        <div className="form__group">
-                            <label htmlFor="startup">
-                                <strong>Nom du produit : </strong><br />
-                                Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
-                            </label>
-                            <input name="startup"
-                            onChange={(e) => { setStartupName(e.currentTarget.value)}}
-                            value={startupName}/>
-                           { !!formErrors['startup'] && 
-                                <p className="text-small text-color-red">{formErrors['startup']}</p>
-                            }
-                        </div>
-                    </>}
+                <div className='no-margin'>
+                    <div className="form__group">
+                        <label htmlFor="startup">
+                            <strong>Nom du produit : </strong><br />
+                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
+                        </label>
+                        <input name="title"
+                        onChange={(e) => { setTitle(e.currentTarget.value)}}
+                        value={title}/>
+                        { !!formErrors['startup'] && 
+                            <p className="text-small text-color-red">{formErrors['startup']}</p>
+                        }
+                    </div>
                     <div className="form__group">
                         <label htmlFor="mission">
                             <strong>Quel est son objectif principal ?</strong><br />
@@ -203,17 +218,11 @@ export const StartupForm = (props: StartupForm) => {
                                 setIncubator(e.value)
                             }} />
                     </div>
-                    <div className="form__group">
-                        <label htmlFor="startup">
-                            <strong>Sponsors : </strong><br />
-                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
-                        </label>
-                        <SESponsorSelect
-                            value={sponsors}
-                            onChange={sponsors => {
-                                setSponsors(sponsors)}
-                            } />
-                    </div>
+                    <SponsorBlock
+                        newSponsors={newSponsors}
+                        setNewSponsors={setNewSponsors}
+                        sponsors={sponsors}
+                        setSponsors={(sponsors) => setSponsors(sponsors)} />
                     <h5>Phases : </h5>
                     <div style={{ borderTop: '1px solid #ccc', paddingBottom: 10, paddingTop: 10}}>
                         <p>
@@ -236,6 +245,7 @@ export const StartupForm = (props: StartupForm) => {
                         </table>
                         {<a onClick={() => addPhase()}>{`Ajouter une phase`}</a>}
                     </div>
+                    <FileUpload selectedFile={selectedFile} setSelectedFile={setSelectedFile}/>
                     <div className="form__group">
                         <label htmlFor="description">
                             <strong>URL du site :</strong><br />
@@ -271,63 +281,13 @@ export const StartupForm = (props: StartupForm) => {
                     <input
                         type="submit"
                         disabled={isSaving || disabled}
+                        onClick={save}
                         value={isSaving ? `Enregistrement en cours...` : `Enregistrer`}
                         className="button"
                     />
-                </form>
+                </div>
             </>}
         </div>
     </>
     )
 }
-
-interface PhaseItemProps extends Phase {
-    deletePhase(): void,
-    onChange(phase: Phase): void
-}
-
-const PhaseItem = ({ name, start, deletePhase, onChange } : PhaseItemProps) => {
-    const [startDate, setStartDate] : [Date, (Date) => void] = React.useState(start ? new Date(start) : undefined)
-    const [phase, setPhase] = React.useState(name)
-    React.useEffect(() => {
-        onChange({
-            name: phase,
-            start: startDate,
-        })
-    }, [phase, startDate])
-    return <>
-        <tr style={{ border: 'none'}}>
-            <td style={{ padding: 5 }}>                    {/* <label htmlFor="startup">
-                        <strong>Phase</strong><br />
-                    </label> */}
-                    <SEPhaseSelect
-                        onChange={(phase) => {
-                            setPhase(phase.value)
-                        }}
-                        defaultValue={name}
-                        isMulti={false}
-                        placeholder={"Selectionne la phase"}
-                    />
-                </td>
-                <td style={{ padding: 5 }}>
-                    {/* <label htmlFor="end">
-                        <strong>Date de début</strong>
-                    </label> */}
-                    {start && <DatepickerSelect
-                        name="startDate"
-                        min={'2020-01-31'}
-                        title="En format YYYY-MM-DD, par exemple : 2020-01-31"
-                        required
-                        dateFormat='dd/MM/yyyy'
-                        selected={startDate}
-                        onChange={(dateInput:Date) => setStartDate(dateInput)} />}
-                </td>
-                <td style={{ padding: 5 }}>
-                    <a style={{ textDecoration: 'none' }}
-                    onClick={() => deletePhase()}
-                    >🗑️</a>
-                </td>
-        </tr></>
-}
-
-

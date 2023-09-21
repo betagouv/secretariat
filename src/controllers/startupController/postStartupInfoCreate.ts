@@ -4,8 +4,10 @@ import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from '@/controllers/validator';
 import { StartupPhase } from '@/models/startup';
-import { createStartupGithubFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
-import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { makeGithubSponsorFile, makeGithubStartupFile, makeImageFile } from '@/controllers/helpers/githubHelpers/createGithubCollectionEntry';
+import { GithubBetagouvFile, GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
+import { updateMultipleFilesPR } from '../helpers/githubHelpers';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -41,6 +43,15 @@ export async function postStartupInfoCreate(req, res) {
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const newSponsors : Sponsor[] = req.body.newSponsors || []
+        const image: string = req.body.image
+
+        if (newSponsors) {
+            newSponsors.forEach((sponsor : Sponsor) => {
+                Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
+                Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
+            })
+        }
 
         const content = req.body.text || requiredError('description du produit', errorHandler); 
         phases[0] || requiredError('phases', errorHandler); 
@@ -49,7 +60,6 @@ export async function postStartupInfoCreate(req, res) {
             console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
         }
- 
         let changes : GithubStartupChange = {
             link,
             dashlord_url,
@@ -65,7 +75,19 @@ export async function postStartupInfoCreate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await createStartupGithubFile(startup, changes, content);
+        const files : GithubBetagouvFile[]  = [
+            ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
+            makeGithubStartupFile(startup, changes, content)
+        ]
+        if (image) {
+            console.log('Added image file')
+            const imageFile = makeImageFile(startup, image)
+            files.push(imageFile)
+        }
+        const prInfo : PRInfo = await updateMultipleFilesPR(startup, files)
+
+        
+
         addEvent(EventCode.STARTUP_INFO_CREATED, {
             created_by_username: req.auth.id,
             action_metadata: { 
@@ -84,6 +106,7 @@ export async function postStartupInfoCreate(req, res) {
         const message = `⚠️ Pull request pour la création de la fiche de ${startup} ouverte. 
         \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, la fiche sera en ligne dans les 10 minutes.`
+        req.flash('message', message);
         res.json({
             message,
             pr_url: prInfo.html_url

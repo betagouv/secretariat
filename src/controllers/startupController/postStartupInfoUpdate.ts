@@ -1,12 +1,14 @@
 import { addEvent, EventCode } from '@/lib/events'
-import betagouv from "@/betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@/db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate } from '@/controllers/validator';
-import { StartupInfo, StartupPhase } from '@/models/startup';
-import { updateStartupGithubFile } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
-import { GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { isValidDate, requiredError } from '@/controllers/validator';
+import { StartupPhase } from '@/models/startup';
+import { updateMultipleFilesPR } from '@/controllers/helpers/githubHelpers/updateGithubCollectionEntry'
+import { GithubBetagouvFile, GithubStartupChange } from '../helpers/githubHelpers/githubEntryInterface';
+import { makeGithubSponsorFile, makeGithubStartupFile, makeImageFile } from '../helpers/githubHelpers';
+import { Sponsor, SponsorDomaineMinisteriel, SponsorType } from '@/models/sponsor';
+import { createStartupId } from '../helpers/githubHelpers/createContentName';
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -17,7 +19,6 @@ const isValidPhase = (field, value, callback) => {
 }
 
 export async function postStartupInfoUpdate(req, res) {
-    const { startup } = req.params;
     
     try {
         const formValidationErrors = {};
@@ -28,33 +29,41 @@ export async function postStartupInfoUpdate(req, res) {
             // make it one message
             formValidationErrors[field] = errorMessagesForKey
         }
+        
         const phases = req.body.phases
         phases.forEach(phase => {
             isValidPhase('phase', phase.name, errorHandler)
             isValidDate('date', new Date(phase.start), errorHandler)
             !phase.end || isValidDate('date', new Date(phase.end), errorHandler)
         })
-        
+        let startupId = req.params.startup
+        let title = req.body.title || requiredError('nom du produit', errorHandler)
+        if (req.method == "POST") {
+            startupId = createStartupId(req.body.title)
+        }
         const link = req.body.link
         const dashlord_url = req.body.dashlord_url
-        const mission = req.body.mission
+        const mission = req.body.mission || requiredError('mission', errorHandler); 
         const stats_url = req.body.stats_url
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const newSponsors : Sponsor[] = req.body.newSponsors || []
+        const image: string = req.body.image
 
-        const content = req.body.text
+        if (newSponsors) {
+            newSponsors.forEach((sponsor : Sponsor) => {
+                Object.values(SponsorDomaineMinisteriel).includes(sponsor.domaine_ministeriel) || errorHandler('domaine', "le domaine n'est pas valide")
+                Object.values(SponsorType).includes(sponsor.type) || errorHandler('type', "le type n'est pas valide")
+            })
+        }
+
+        const content = req.body.text || requiredError('description du produit', errorHandler); 
+        phases[0] || requiredError('phases', errorHandler); 
+
         if (Object.keys(formValidationErrors).length) {
             console.error(formValidationErrors)
             throw new Error('Erreur dans le formulaire', { cause: formValidationErrors });
-        }
- 
-        const startupsInfos = await betagouv.startupsInfos()
-        const info : StartupInfo = startupsInfos.find(s => s.id === startup)
-        if (!info) {
-            res.status(404).json({
-                message: "La startup indiqué n'existe pas"
-            })
         }
         let changes : GithubStartupChange = {
             link,
@@ -63,6 +72,7 @@ export async function postStartupInfoUpdate(req, res) {
             stats_url,
             repository,
             incubator,
+            title,
             sponsors: sponsors.map(sponsor => `/organisations/${sponsor}`)
         };
         const newPhases = phases.map(phase => ({
@@ -71,7 +81,17 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }))
         changes['phases'] = newPhases
-        const prInfo : PRInfo = await updateStartupGithubFile(startup, changes, content);
+        const files : GithubBetagouvFile[] = [
+            makeGithubStartupFile(startupId, changes, content),
+            ...newSponsors.map(sponsor => makeGithubSponsorFile(sponsor.acronym, sponsor)),
+        ]
+        if (image) {
+            console.log('Added image file')
+            const imageFile = makeImageFile(startupId, image)
+            files.push(imageFile)
+        }
+        const prInfo : PRInfo = await updateMultipleFilesPR(startupId, files)
+
         addEvent(EventCode.STARTUP_INFO_UPDATED, {
             created_by_username: req.auth.id,
             action_metadata: { 
@@ -82,12 +102,12 @@ export async function postStartupInfoUpdate(req, res) {
         })
         await db('pull_requests').insert({
             url: prInfo.html_url,
-            startup: startup,
+            startup: startupId,
             type: PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE,
             status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
             info: JSON.stringify(changes)
         })
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startup} ouverte. 
+        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startupId} ouverte. 
         \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, la fiche sera mis à jour dans les 10 minutes.`
         req.flash('message', message);

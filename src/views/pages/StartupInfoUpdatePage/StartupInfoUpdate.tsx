@@ -6,21 +6,19 @@ import { InnerPageLayout } from '../components/InnerPageLayout';
 import axios from 'axios';
 import { DBPullRequest } from '@/models/pullRequests';
 import routes from '@/routes/routes';
-import { StartupForm } from '../components/StartupForm';
+import { StartupForm } from '../components/StartupForm/StartupForm';
 import { StartupInfo } from '@/models/startup';
 
 // import style manually
 interface StartupInfoFormData {
-    sponsors?: {
-        value: string,
-        label: string
-    }[];
+    sponsors?: string[];
     incubator?: string;
     mission?: string;
     stats_url?: string;
     link?: string,
     dashlord_url?: string,
-    repository?: string
+    repository?: string,
+    image?: string
 }
 
 interface StartupInfoUpdateProps {
@@ -47,12 +45,16 @@ interface StartupInfoUpdateProps {
 export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }"
 
-    const save = async (data) => {
-        return axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
-            ...data
-        }).then(() => {
+    const save = async (data, image) => {
+        try {
+            await axios.post(routes.STARTUP_POST_INFO_UPDATE_FORM.replace(':startup', props.startup.id), {
+                ...data
+            })
             window.location.replace(`/startups/${props.startup.id}`);
-        })
+        } catch (e) {
+            console.log(e)
+            throw new Error(e)
+        }
     }
 
     return (
