@@ -176,7 +176,7 @@ export const StartupForm = (props: StartupForm) => {
                     <div className="form__group">
                         <label htmlFor="startup">
                             <strong>Nom du produit : </strong><br />
-                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères
+                            Ce nom sert d'identifiant pour la startup et ne doit pas dépasser 30 caractères.
                         </label>
                         <input name="title"
                         onChange={(e) => { setTitle(e.currentTarget.value)}}
