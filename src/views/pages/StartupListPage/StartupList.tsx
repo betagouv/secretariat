@@ -62,7 +62,7 @@ export const StartupList = InnerPageLayout((props: StartupListProps) => {
                         </form>
                         <br></br>
                         <br></br>
-                        Pour créer une nouvelle fiche produit c'est ici : <a href="/startups/create-form">Créer un produit</a>
+                        Pour créer une nouvelle fiche produit c'est ici : <a href="/startups/create-form">Créer une fiche produit</a>
                     </div>
                 </div>
             </div>

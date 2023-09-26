@@ -62,7 +62,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
             <div className="module">
             <div>
                 <small>
-                    <a href="/startups">Produit</a> &gt; <a href={`/startups/${props.startup.id}`}>{props.startup.id}</a> &gt; <a href="">Mise à jour de la phase</a>
+                    <a href="/startups">Produit</a> &gt; <a href={`/startups/${props.startup.id}`}>{props.startup.id}</a> &gt; <a href="">Mise à jour des informations de {props.startup.id}</a>
                 </small>
             </div>
             <div className="margin-top-m"></div>

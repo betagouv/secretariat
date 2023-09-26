@@ -55,9 +55,9 @@ const SponsorBlock = ({ setSponsors, sponsors, setNewSponsors, newSponsors }) =>
             onChange={sponsors => {
                 setSponsors(sponsors)}
             } />
-        <p>Le sponsor n'est pas encore dans la base de donnée ?<a style={{ textDecoration: 'none' }}
+        <p>Le sponsor n'est pas encore dans la base de donnée ? <a style={{ textDecoration: 'none' }}
             onClick={openModal}
-        >ajouter un sponsor</a></p>
+        >Ajouter un sponsor</a></p>
         <Modal
             isOpen={modalIsOpen}
             onAfterOpen={afterOpenModal}

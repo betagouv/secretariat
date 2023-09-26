@@ -45,12 +45,12 @@ export const StartupInfoCreate = InnerPageLayout((props: StartupInfoCreateProps)
             <div className="module">
                 <div>
                     <small>
-                        <a href="/startups">Produit</a> &gt; <a href="/startups/create-form">Créer un produit</a>
+                        <a href="/startups">Produit</a> &gt; <a href="/startups/create-form">Créer une fiche produit</a>
                     </small>
                 </div>
             <div className="margin-top-m"></div>
             <div className="panel">
-                    <h3>Créer un produit</h3>
+                    <h3>Créer une fiche produit</h3>
                     { !!props.updatePullRequest && <div className="notification">
                             ⚠️ Une pull request existe déjà sur cette startup. Quelqu'un doit la merger pour que le changement soit pris en compte.
                             <a href={props.updatePullRequest.url} target="_blank">{props.updatePullRequest.url}</a>
