@@ -12,7 +12,7 @@ export async function getStartupInfoCreate(req, res) {
           currentUserId: req.auth.id,
           isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
           activeTab: 'startups',
-          subActiveTab: 'udpate-phase',
+          subActiveTab: 'create',
           username: req.auth.id,
           formData: {
             // link: '',
