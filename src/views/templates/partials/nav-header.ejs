@@ -81,9 +81,15 @@
                     <% if(activeTab === 'startups') { %>
                         <ul>
                             <li>
-                                <a href="/startups" id="account" 
+                                <a href="/startups"
                                     class="nav-sub-item <% if(subActiveTab === 'list') { %> active <% } %>">
                                     🔎 Rechercher un produit
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/startups/create-form"
+                                    class="nav-sub-item <% if(subActiveTab === 'create') { %> active <% } %>">
+                                    ➕ Créer une fiche produit
                                 </a>
                             </li>
                         </ul>

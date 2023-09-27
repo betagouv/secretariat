@@ -102,7 +102,7 @@ export const InnerPageLayout = <T extends InnerPageLayout>(Component: (props: T)
                                     <li>
                                         <a href="/startups/create-form" id="account" 
                                             className={`nav-sub-item ${props.subActiveTab === 'create' ? 'active' : ''}`}>
-                                            ➕ Créer un produit
+                                            ➕ Créer une fiche produit
                                         </a>
                                     </li>
                                 </ul>

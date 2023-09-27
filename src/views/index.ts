@@ -88,7 +88,7 @@ export const StartupInfoUpdatePage = (props: Parameters<typeof StartupInfoUpdate
   Component: StartupInfoUpdate,
   props,
   hydrate: true,
-  title: 'Modifier les infos du produit',
+  title: 'Mise à jour des informations du produit',
   pageName: 'StartupInfoUpdate', // This must match the Component name
 })
 
@@ -96,7 +96,7 @@ export const StartupInfoCreatePage = (props: Parameters<typeof StartupInfoUpdate
   Component: StartupInfoCreate,
   props,
   hydrate: true,
-  title: 'Modifier les infos du produit',
+  title: 'Créer une fiche produit',
   pageName: 'StartupInfoCreate', // This must match the Component name
 })
 
