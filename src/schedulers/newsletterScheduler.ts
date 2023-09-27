@@ -8,7 +8,7 @@ import { getTitle, renderHtmlFromMd } from '@/lib/mdtohtml';
 import { JobWTTJ } from '@models/job';
 import { sendInfoToChat } from '@/infra/chat';
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from '@/modules/email';
-import { sendEmail, sendCampaignEmail } from '@/config/email.config';
+import { sendEmail, sendCampaignEmail, createCampaignEmail } from '@/config/email.config';
 
 const {
   NUMBER_OF_DAY_IN_A_WEEK,
@@ -176,7 +176,19 @@ export async function getJobOfferContent() {
   return content
 }
 
-export { createNewsletter };
+
+export async function createNewsletterDraft() {
+    const newsletterContent = ''
+    const html = ''
+    await createCampaignEmail({
+        mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+        variables: undefined,
+        campaignName: `${getTitle(newsletterContent)}`,
+        subject: `${getTitle(newsletterContent)}`,
+        htmlContent: html
+    })
+}
 
 export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
   const date = new Date();

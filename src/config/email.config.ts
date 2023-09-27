@@ -1,6 +1,7 @@
 
 import {
   AddContactsToMailingLists,
+  CreateCampaignEmail,
   GetAllContacts,
   GetAllContactsFromList,
   GetAllTransacBlockedContacts,
@@ -14,6 +15,7 @@ import {
 } from '@modules/email'
 import {
   fakeAddContactsToMailingLists,
+  fakeCreateCampaignEmail,
   fakeGetAllTransacBlockedContacts,
   fakeRemoveContactsFromMailingList,
   fakeSendCampaignEmail,
@@ -38,6 +40,8 @@ let getAllTransacBlockedContacts: GetAllTransacBlockedContacts = fakeGetAllTrans
 let getAllContacts: GetAllContacts = fakeGetAllContacts
 let getAllContactsFromList: GetAllContactsFromList = fakeGetAllContactsFromList
 let unblacklistContactEmail: UnblacklistContactEmail = fakeUnblacklistContactEmail
+let createCampaignEmail: CreateCampaignEmail = fakeCreateCampaignEmail
+
 
 enum MAIL_SERVICES {
   mailjet='mailjet',
@@ -124,6 +128,7 @@ if (process.env.NODE_ENV !== 'test') {
       console.log('Emails will be sent using Nodemailer')
     }
     sendEmail = emailer.sendEmail
+    createCampaignEmail = sendInBlue.createCampaignEmail
     sendCampaignEmail = sendInBlue.sendCampaignEmail
     addContactsToMailingLists = sendInBlue.addContactsToMailingLists
     removeContactsFromMailingList = sendInBlue.removeContactsFromMailingList
@@ -143,6 +148,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 export {
     sendEmail,
+    createCampaignEmail,
     addContactsToMailingLists,
     sendCampaignEmail,
     removeContactsFromMailingList,

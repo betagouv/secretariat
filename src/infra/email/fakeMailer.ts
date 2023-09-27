@@ -50,6 +50,24 @@ function fakeSendCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
   return null
 }
 
+function fakeCreateCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
+  if (process.env.NODE_ENV === 'test') {
+    // Register the sent email but don't send it for real
+    sentCampaignEmails.push(props)
+    return null
+  }
+
+  const { subject, type, variables } = props
+
+  console.info(
+    `EMAIL CREATED: ${type} with subject "${subject}" and type ${type}`,
+    variables
+  )
+
+  return null
+}
+
+
 function fakeAddContactsToMailingLists(props: AddContactsToMailingListsProps): Promise<null> {
   return
 }
@@ -94,6 +112,7 @@ export {
   fakeSendEmail,
   resetSentEmails,
   fakeSendCampaignEmail,
+  fakeCreateCampaignEmail,
   fakeAddContactsToMailingLists,
   fakeRemoveContactsFromMailingList,
   fakeUpdateContactEmail,

@@ -296,6 +296,20 @@ export type SendCampaignEmailProps = {
     campaignName: string,
 }
 
+export type CreateCampaignEmailProps = {
+    subject?: string,
+    variables: EmailProps['variables'],
+    type: EmailProps['type'],
+    forceTemplate?: boolean,
+    extraParams?: Record<string, string>, 
+    attachments?: any[],
+    replyTo?: string,
+    headers?: Record<string, string|number>,
+    htmlContent?: string,
+    mailingListType: MAILING_LIST_TYPE,
+    campaignName: string,   
+}
+
 export interface Contact {
     domaine?: string,
     emailBlacklisted?: boolean,
@@ -339,11 +353,14 @@ export type GetAllContactsFromList = (props: { listId: number }) => Promise<Cont
 
 export type UnblacklistContactEmail = (props: { email: string }) => Promise<void>
 
+export type CreateCampaignEmail = (props: CreateCampaignEmailProps) => Promise<null>
+
 export interface IMailingService {
     removeContactsFromMailingList?: RemoveContactsFromMailingList
     sendEmail: SendEmail,
     addContactsToMailingLists?: AddContactsToMailingLists
     sendCampaignEmail?: SendCampaignEmail,
+    createCampaignEmail?: CreateCampaignEmail,
     updateContactEmail?: UpdateContactEmail,
     unblacklistContactEmail?: UnblacklistContactEmail,
     smtpBlockedContactsEmailDelete?: SmtpBlockedContactsEmailDelete,
