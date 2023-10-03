@@ -513,7 +513,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                         })}
                     </label>
                 </div>
-                { state.formData.memberType === 'beta' && <div className="form__group">
+                {/* state.formData.memberType === 'beta' && <div className="form__group">
                     <label htmlFor="employer">
                         <strong>Souhaites-tu avoir un parrain ou une marraine ?</strong><br />
                         Un parrain ou une marraine te contactera pour te présenter les outils, le fonctionnement de @beta.gouv.fr
@@ -525,7 +525,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                             value={state.formData.should_create_marrainage}
                             checked={!!state.formData.should_create_marrainage} /><strong>Je souhaite avoir un parrain ou une marraine</strong>
                     </label>
-                </div> }
+                    </div> */}
                 <h4>Ton email</h4>
                 <div className="form__group">
                     <label htmlFor="email">
@@ -539,7 +539,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                     { !!props.formValidationErrors['email'] &&
                         <p className="text-small text-color-red">{props.formValidationErrors['mail']}</p>
                     }
-                <label htmlFor="isEmailBetaAsked" className="padding-10-0">
+                {/*<label htmlFor="isEmailBetaAsked" className="padding-10-0">
                 <input type="checkbox" name="isEmailBetaAsked"
                     onChange={(e) => changeFormData('isEmailBetaAsked', !state.formData.isEmailBetaAsked)}
                     value={state.formData.isEmailBetaAsked}
@@ -550,7 +550,7 @@ export const Onboarding = PageLayout(function (props: Props) {
                 <span>
                     L'adresse @beta.gouv.fr est obligatoire si tu ne possédes pas déjà une adresse d'une structure publique (@pole-emploi.fr, @culture.gouv.fr...)
                 </span>
-                </label>
+                </label>*/}
                 { props.formValidationErrors['email public'] &&
                     <p className="text-small text-color-red">{ props.formValidationErrors['email public']}</p>
                 }
