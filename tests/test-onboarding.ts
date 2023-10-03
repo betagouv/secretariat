@@ -391,11 +391,13 @@ describe('Onboarding', () => {
           memberType: 'beta',
           isEmailBetaAsked: false
         })
-        .end((err, res) => {
-          getGithubMasterSha.called.should.be.false;
-          createGithubBranch.called.should.be.false;
-          createGithubFile.called.should.be.false;
-          makeGithubPullRequest.called.should.be.false;
+        .end(async (err, res) => {
+          getGithubMasterSha.called.should.be.true;
+          createGithubBranch.called.should.be.true;
+          createGithubFile.called.should.be.true;
+          makeGithubPullRequest.called.should.be.true;
+          const users = await knex('users').where({ secondary_email: 'test@example.com' })
+          users.length.should.equals(1)
           done();
         });
     });
