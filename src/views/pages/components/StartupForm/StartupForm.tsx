@@ -41,12 +41,12 @@ interface StartupForm {
     repository?: string,
     content: string,
     save: any,
-    title: string,
+    title?: string,
     phases?: Phase[], 
     startup: StartupInfo,
-    analyse_risques: boolean,
-    analyse_risques_url: string,
-    accessibility_status: 'non conforme' | "partiellement conforme" | "totalement conforme"
+    analyse_risques?: boolean,
+    analyse_risques_url?: string,
+    accessibility_status?: 'non conforme' | "partiellement conforme" | "totalement conforme"
 }
 
 interface FormErrorResponse {
