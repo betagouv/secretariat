@@ -25,6 +25,12 @@ export enum StartupPhase {
     PHASE_ALUMNI="alumni",
 }
 
+export enum AccessibilityStatus {
+    NON_CONFORME='non conforme',
+    PARTIELLEMENT_CONFORME="partiellement conforme",
+    TOTALEMENT_CONFORME="totalement conforme"
+}
+
 export const ACTIVE_PHASES = [
     StartupPhase.PHASE_ACCELERATION,
     StartupPhase.PHASE_CONSTRUCTION,
@@ -72,6 +78,9 @@ export interface StartupInfo {
         link: string;
         incubator: string;
         phases: Phase[];
+        accessibility_status: AccessibilityStatus,
+        analyse_risques_url: string;
+        analyse_risques: boolean;
         content_url_encoded_markdown: string;
     };
     relationships: Relationship;
