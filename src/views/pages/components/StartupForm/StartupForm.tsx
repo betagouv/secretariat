@@ -7,6 +7,7 @@ import SEAsyncIncubateurSelect from '../SEAsyncIncubateurSelect';
 import SponsorBlock from './SponsorBlock';
 import PhaseItem from './PhaseItem';
 import FileUpload from '../FileUpload';
+import SelectAccessibilityStatus from '../SelectAccessibilityStatus';
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -40,8 +41,12 @@ interface StartupForm {
     repository?: string,
     content: string,
     save: any,
+    title: string,
     phases?: Phase[], 
-    startup: StartupInfo
+    startup: StartupInfo,
+    analyse_risques: boolean,
+    analyse_risques_url: string,
+    accessibility_status: 'non conforme' | "partiellement conforme" | "totalement conforme"
 }
 
 interface FormErrorResponse {
@@ -62,7 +67,7 @@ const blobToBase64 = async blob => {
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
     const [text, setText] = React.useState(decodeURIComponent(props.content) || '')
-    const [title, setTitle] = React.useState('')
+    const [title, setTitle] = React.useState(props.title || '')
     const [link, setLink] = React.useState(props.link)
     const [repository, setRepository] = React.useState(props.repository)
     const [mission, setMission] = React.useState(props.mission)
@@ -72,6 +77,9 @@ export const StartupForm = (props: StartupForm) => {
     const [stats_url, setStatsUrl] = React.useState(props.stats_url)
     const [dashlord_url, setDashlord] = React.useState(props.dashlord_url)
     const [selectedFile, setSelectedFile] : [undefined | File, (File) => void] = React.useState()
+    const [analyse_risques, setAnalyseRisques] = React.useState(props.analyse_risques)
+    const [analyse_risques_url, setAnalyseRisquesUrl] = React.useState(props.analyse_risques_url)
+    const [accessibility_status, setAccessibilityStatus] = React.useState(props.accessibility_status)
     const [phases, setPhases] = React.useState(props.phases || [{
         name: StartupPhase.PHASE_INVESTIGATION,
         start: new Date()
@@ -98,8 +106,12 @@ export const StartupForm = (props: StartupForm) => {
             sponsors: sponsors,
             stats_url,
             repository,
+            analyse_risques,
+            analyse_risques_url,
+            accessibility_status,
             image: ''
         }
+
         if (selectedFile) {
             const imageAsBase64 = await blobToBase64(selectedFile)
             data = {
@@ -277,6 +289,52 @@ export const StartupForm = (props: StartupForm) => {
                         <input name="stats_url"
                         onChange={(e) => { setStatsUrl(e.currentTarget.value)}}
                         value={stats_url}/>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="accessibility_status">
+                            <strong>Statut d'accessibilité :</strong><br />
+                        </label>
+                        <p>Le statut d'accessibilité de ton produit. Une valeur parmi "totalement conforme", "partiellement conforme", et "non conforme". Si tu ne sais pas remplir ce champ, indique "non conforme".</p>
+                        <SelectAccessibilityStatus 
+                            value={accessibility_status}
+                            onChange={(option) => { setAccessibilityStatus(option.value)}}/>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="analyse_risques">
+                            <strong>Analyse de risque :</strong><br />
+                        </label>
+                        <p>Indique si ta startup à déjà réalisé un atelier d'analyse de risque agile.</p>
+                        <div className="radio">
+                            <label>
+                                <input
+                                type="radio"
+                                value={true}
+                                checked={analyse_risques}
+                                onChange={() => setAnalyseRisques(true)}
+                                />
+                                Oui
+                            </label>
+                            </div>
+                            <div className="radio">
+                            <label>
+                                <input
+                                type="radio"
+                                value={false}
+                                checked={!analyse_risques}
+                                onChange={() => setAnalyseRisques(false)}
+                                />
+                                Non
+                            </label>
+                        </div>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="analyse_risques_url">
+                            <strong>Url de l'analyse de risque :</strong><br />
+                        </label>
+                        <p>Si ta SE a rendu son analyse de risques publique, tu peux indiquer le lien vers ce document ici.</p>
+                        <input name="analyse_risques_url"
+                        onChange={(e) => { setAnalyseRisquesUrl(e.currentTarget.value)}}
+                        value={analyse_risques_url}/>
                     </div>
                     <input
                         type="submit"
