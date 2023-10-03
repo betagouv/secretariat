@@ -117,9 +117,9 @@ export async function postForm(req, res) {
       const referent = req.body.referent || requiredError('référent', errorHandler);
       const domaine = isValidDomain('domaine', req.body.domaine, errorHandler) ? req.body.domaine : null;
       const inputEmail = isValidEmail('email pro/perso', req.body.email, errorHandler) ? req.body.email : null;
-      const isEmailBetaAsked = req.body.isEmailBetaAsked === 'true' || false;
       const should_create_marrainage = req.body.should_create_marrainage === 'true' || false;
       const hasPublicServiceEmail = await utils.isPublicServiceEmail(inputEmail);
+      const isEmailBetaAsked = !hasPublicServiceEmail //req.body.isEmailBetaAsked === 'true' || false;
       const gender = req.body.gender
       const osm_city = req.body.osm_city
       const workplace_insee_code = req.body.workplace_insee_code
@@ -137,12 +137,13 @@ export async function postForm(req, res) {
       if (workplace_insee_code && ! await fetchCommuneDetails(req.body.workplace_insee_code)) {
         errorHandler('workplace_insee_code', `Le lieu de travail principal n'as pas été trouvé`)
       }
-      if (!hasPublicServiceEmail && !isEmailBetaAsked) {
-        errorHandler(
-          'email public',
-          '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
-        );
-      }
+
+      // if (!hasPublicServiceEmail && !isEmailBetaAsked) {
+      //   errorHandler(
+      //     'email public',
+      //     '⚠ L‘email beta gouv est obligatoire si vous n‘avez pas déjà de compte email appartenant à une structure publique'
+      //   );
+      // }
 
       if (memberType && !config.user.memberOptions.map(opt => opt.key).includes(memberType)) {
         errorHandler('memberType', `Le type de membre n'est pas une valeur autorisée.`)
