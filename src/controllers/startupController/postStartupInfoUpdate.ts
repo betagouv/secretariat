@@ -48,6 +48,10 @@ export async function postStartupInfoUpdate(req, res) {
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const accessibility_status = req.body.accessibility_status
+        const analyse_risques_url = req.body.analyse_risques_url
+        const analyse_risques = (req.body.analyse_risques === 'true' || req.body.analyse_risques === true) ? true : false
+
         const newSponsors : Sponsor[] = req.body.newSponsors || []
         const image: string = req.body.image
 
@@ -73,6 +77,9 @@ export async function postStartupInfoUpdate(req, res) {
             repository,
             incubator,
             title,
+            accessibility_status,
+            analyse_risques_url,
+            analyse_risques,
             sponsors: sponsors.map(sponsor => `/organisations/${sponsor}`)
         };
         const newPhases = phases.map(phase => ({

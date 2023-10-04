@@ -78,6 +78,10 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                     <StartupForm
                         content={props.startup.attributes.content_url_encoded_markdown}
                         save={save}
+                        title={props.startup.attributes.name}
+                        accessibility_status={props.startup.attributes.accessibility_status}
+                        analyse_risques_url={props.startup.attributes.analyse_risques_url}
+                        analyse_risques={props.startup.attributes.analyse_risques}
                         startup={props.startup}
                         phases={props.startup.attributes.phases}
                         link={props.formData.link}

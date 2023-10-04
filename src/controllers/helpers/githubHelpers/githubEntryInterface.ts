@@ -1,6 +1,6 @@
 import { GithubMission } from "@/models/mission";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
-import { Phase } from "@/models/startup";
+import { AccessibilityStatus, Phase } from "@/models/startup";
 export interface GithubAuthorChange {
     role?: string,
     missions?: GithubMission[],
@@ -47,7 +47,10 @@ export interface GithubStartupChange {
     stats_url: string,
     repository: string,
     sponsors: [string],
-    incubator: string
+    incubator: string,
+    accessibility_status: AccessibilityStatus,
+    analyse_risques_url: string,
+    analyse_risques: boolean,
 }
 
 export type GithubBetagouvFile = GithubAuthorFile | GithubSponsorFile | GithubImageFile | GithubStartupFile
