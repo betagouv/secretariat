@@ -50,7 +50,7 @@ export async function postStartupInfoUpdate(req, res) {
         const sponsors = req.body.sponsors || []
         const accessibility_status = req.body.accessibility_status
         const analyse_risques_url = req.body.analyse_risques_url
-        const analyse_risques = req.body.analyse_risques
+        const analyse_risques = (req.body.analyse_risques === 'true' || req.body.analyse_risques === true) ? true : false
 
         const newSponsors : Sponsor[] = req.body.newSponsors || []
         const image: string = req.body.image
