@@ -308,7 +308,7 @@ export const StartupForm = (props: StartupForm) => {
                             <label>
                                 <input
                                 type="radio"
-                                value={true}
+                                value="true"
                                 checked={analyse_risques}
                                 onChange={() => setAnalyseRisques(true)}
                                 />
@@ -319,7 +319,7 @@ export const StartupForm = (props: StartupForm) => {
                             <label>
                                 <input
                                 type="radio"
-                                value={false}
+                                value="false"
                                 checked={!analyse_risques}
                                 onChange={() => setAnalyseRisques(false)}
                                 />
