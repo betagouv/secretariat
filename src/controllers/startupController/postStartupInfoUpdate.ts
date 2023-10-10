@@ -48,6 +48,7 @@ export async function postStartupInfoUpdate(req, res) {
         const repository = req.body.repository
         const incubator = req.body.incubator
         const sponsors = req.body.sponsors || []
+        const contact = req.body.contact
         const accessibility_status = req.body.accessibility_status
         const analyse_risques_url = req.body.analyse_risques_url
         const analyse_risques = (req.body.analyse_risques === 'true' || req.body.analyse_risques === true) ? true : false
@@ -77,6 +78,7 @@ export async function postStartupInfoUpdate(req, res) {
             repository,
             incubator,
             title,
+            contact,
             accessibility_status,
             analyse_risques_url,
             analyse_risques,
@@ -97,7 +99,7 @@ export async function postStartupInfoUpdate(req, res) {
             const imageFile = makeImageFile(startupId, image)
             files.push(imageFile)
         }
-        const prInfo : PRInfo = await updateMultipleFilesPR(startupId, files)
+        const prInfo : PRInfo = await updateMultipleFilesPR(`Maj de la fiche ${startupId}`, files)
 
         addEvent(EventCode.STARTUP_INFO_UPDATED, {
             created_by_username: req.auth.id,

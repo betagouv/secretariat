@@ -254,6 +254,7 @@ describe('Startup page', () => {
           mission: 'lamissiondelastartup',
           text: 'la description de la startup',
           title: 'title de la se',
+          contact: 'lamissiondelastartup@beta.gouv.fr',
           phases: [{
             name: 'alumni',
             start: (new Date()).toISOString()

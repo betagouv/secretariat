@@ -71,15 +71,15 @@ export async function updateMultipleFilesPR(prName: string, files: GithubBetagou
         for(const file of files) {
             await updateFileOnBranch(file, branch, resp.data.object.sha)
         }
-        const response = await makeGithubPullRequest(branch, `Création de ${prName}`);
-        console.log(`Pull request pour la création de la fiche ${prName} ouverte`);
+        const response = await makeGithubPullRequest(branch, `${prName}`);
+        console.log(`Pull request pour "${prName}" ouverte`);
         if (response.status !== 201 && response.data.html_url) {
             throw new Error('Il y a eu une erreur merci de recommencer plus tard')
         }
         return response.data
     } catch(err) {
         console.log(err);
-        throw new Error(`Erreur Github lors de la mise à jour de la fiche de ${prName}`);
+        throw new Error(`Erreur Github lors de la pull request : ${prName}`);
     };
 }
 
