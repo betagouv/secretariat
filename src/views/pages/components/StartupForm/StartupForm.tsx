@@ -46,6 +46,7 @@ interface StartupForm {
     startup: StartupInfo,
     analyse_risques?: boolean,
     analyse_risques_url?: string,
+    contact?: string,
     accessibility_status?: 'non conforme' | "partiellement conforme" | "totalement conforme"
 }
 
@@ -87,6 +88,7 @@ export const StartupForm = (props: StartupForm) => {
     const [errorMessage, setErrorMessage] = React.useState('');
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false)
+    const [contact, setContact] = React.useState(props.contact)
 
     const save = async (event) => {
         if (isSaving) {
@@ -95,6 +97,7 @@ export const StartupForm = (props: StartupForm) => {
         event.preventDefault();
         setIsSaving(true)
         let data = {
+            contact,
             phases,
             text,
             link,
@@ -168,7 +171,8 @@ export const StartupForm = (props: StartupForm) => {
             mission === props.mission &&
             repository === props.repository &&
             incubator === props.incubator &&
-            sponsors === props.sponsors
+            sponsors === props.sponsors &&
+            contact === props.contact
         ))
     }
     let disabled = false
@@ -219,6 +223,17 @@ export const StartupForm = (props: StartupForm) => {
                                 style={{ height: '500px' }}
                                 renderHTML={text => mdParser.render(text)} onChange={handleEditorChange} />
                         </ClientOnly>
+                    </div>
+                    <div className="form__group">
+                        <label htmlFor="startup">
+                            <strong>Email de contact : </strong><br />
+                        </label>
+                        <input name="contact"
+                        onChange={(e) => { setContact(e.currentTarget.value)}}
+                        value={contact}/>
+                        { !!formErrors['startup'] && 
+                            <p className="text-small text-color-red">{formErrors['contact']}</p>
+                        }
                     </div>
                     <div className="form__group">
                         <label htmlFor="startup">

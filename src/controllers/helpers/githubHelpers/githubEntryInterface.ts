@@ -46,6 +46,7 @@ export interface GithubStartupChange {
     mission: string,
     stats_url: string,
     repository: string,
+    contact: string,
     sponsors: [string],
     incubator: string,
     accessibility_status: AccessibilityStatus,

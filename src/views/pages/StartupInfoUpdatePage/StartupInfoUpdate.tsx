@@ -18,7 +18,8 @@ interface StartupInfoFormData {
     link?: string,
     dashlord_url?: string,
     repository?: string,
-    image?: string
+    image?: string,
+    contact?: string
 }
 
 interface StartupInfoUpdateProps {
@@ -83,6 +84,7 @@ export const StartupInfoUpdate = InnerPageLayout((props: StartupInfoUpdateProps)
                         analyse_risques_url={props.startup.attributes.analyse_risques_url}
                         analyse_risques={props.startup.attributes.analyse_risques}
                         startup={props.startup}
+                        contact={props.formData.contact}
                         phases={props.startup.attributes.phases}
                         link={props.formData.link}
                         dashlord_url={props.formData.dashlord_url}

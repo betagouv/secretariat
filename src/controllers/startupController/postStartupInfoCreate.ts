@@ -42,6 +42,7 @@ export async function postStartupInfoCreate(req, res) {
         const stats_url = req.body.stats_url
         const repository = req.body.repository
         const incubator = req.body.incubator
+        const contact = req.body.contact
         const sponsors = req.body.sponsors || []
         const accessibility_status = req.body.accessibility_status
         const analyse_risques_url = req.body.analyse_risques_url
@@ -70,6 +71,7 @@ export async function postStartupInfoCreate(req, res) {
             analyse_risques_url,
             analyse_risques,
             mission,
+            contact,
             stats_url,
             repository,
             incubator,
@@ -90,7 +92,7 @@ export async function postStartupInfoCreate(req, res) {
             const imageFile = makeImageFile(startup, image)
             files.push(imageFile)
         }
-        const prInfo : PRInfo = await updateMultipleFilesPR(startup, files)
+        const prInfo : PRInfo = await updateMultipleFilesPR(`Création de la fiche ${startup}`, files)
 
         
 
