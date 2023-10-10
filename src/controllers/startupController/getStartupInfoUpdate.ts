@@ -33,7 +33,8 @@ export async function getStartupInfoUpdate(req, res) {
             mission: startup.attributes.pitch,
             stats_url: startup.attributes.stats_url,
             incubator: startup.relationships.incubator.data.id,
-            sponsors: startup.attributes.sponsors
+            sponsors: startup.attributes.sponsors,
+            contact: startup.attributes.contact
           },
           updatePullRequest,
           startup,
