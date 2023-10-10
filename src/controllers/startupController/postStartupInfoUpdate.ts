@@ -38,7 +38,7 @@ export async function postStartupInfoUpdate(req, res) {
         })
         let startupId = req.params.startup
         let title = req.body.title || requiredError('nom du produit', errorHandler)
-        if (req.method == "POST") {
+        if (!startupId) {
             startupId = createStartupId(req.body.title)
         }
         const link = req.body.link
