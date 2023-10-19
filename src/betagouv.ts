@@ -51,7 +51,6 @@ export interface OvhProCreationData {
   lastName?: string;
   displayName?: string;
   initial?: string;
-  company?: string;
 }
 
 const betaGouv = {
@@ -591,6 +590,7 @@ const betaOVH = {
       console.log(`Account ${primaryEmailAddress} assigned`);
       return result;
     } catch (err) {
+      console.log(`OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`)
       throw new Error(
         `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
       );
