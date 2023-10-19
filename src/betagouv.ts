@@ -571,13 +571,13 @@ const betaOVH = {
       );
     }
     if (availableAccounts.length === 0) {
-      throw new Error('No Exchange account available');
+      throw new Error('No Ovh Pro account available');
     }
 
     const accountToBeAssigned = _.sample(availableAccounts);
 
     console.log(
-      `Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`
+      `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`
     );
 
     const assignAccountUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/service/${config.OVH_EMAIL_PRO_NAME}/account/${accountToBeAssigned}`;

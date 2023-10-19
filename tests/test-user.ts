@@ -1400,6 +1400,19 @@ describe('User', () => {
       await knex('users').where({ username: 'membre.nouveau-email' }).delete();
     });
 
+    context('when the user needs an MX PLAN account', () => {
+      it('should create an OVH MX Plam account', async () => {
+        await knex('users').insert({
+          username: 'membre.nouveau-email',
+          primary_email: null,
+          primary_email_status: EmailStatusCode.EMAIL_UNSET,
+          secondary_email: 'membre.nouveau-email.perso@example.com',
+        });
+        await createEmail('membre.nouveau-email', 'Test');
+        Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
+      });
+    });
+
     context('when the user needs an OVH Pro account', () => {
       beforeEach(async () => {
         sandbox.stub(Betagouv, 'usersInfos').resolves([
@@ -1430,18 +1443,6 @@ describe('User', () => {
             lastName: 'Nouveau test email',
           },
         ]);
-      });
-    });
-
-    context('when the user needs an MX PLAN account', () => {
-      it('should create an OVH MX Plam account', async () => {
-        await knex('users').insert({
-          username: 'membre.nouveau-email',
-          primary_email: null,
-          primary_email_status: EmailStatusCode.EMAIL_UNSET,
-          secondary_email: 'membre.nouveau-email.perso@example.com',
-        });
-        Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
       });
     });
 
