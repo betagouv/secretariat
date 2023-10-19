@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-import Betagouv from '@/betagouv';
+import Betagouv, { EMAIL_PLAN_TYPE } from '@/betagouv';
 import config from '@config';
 import * as controllerUtils from '@controllers/utils';
 import * as mattermost from '@/lib/mattermost';
@@ -20,6 +20,7 @@ import utils from './utils';
 import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import * as session from '@/helpers/session';
 import betagouv from '@/betagouv';
+import { Member } from '@/models/member';
 
 chai.use(chaiHttp);
 
@@ -1396,28 +1397,54 @@ describe('User', () => {
 
     afterEach(async () => {
       sandbox.restore();
-
       await knex('users').where({ username: 'membre.nouveau-email' }).delete();
     });
 
-    it('should create an OVH Pro email account', async () => {
-      await knex('users').insert({
-        username: 'membre.nouveau-email',
-        primary_email: null,
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        secondary_email: 'membre.nouveau-email.perso@example.com',
+    context('when the user needs an OVH Pro account', () => {
+      beforeEach(async () => {
+        sandbox.stub(Betagouv, 'usersInfos').resolves([
+          {
+            id: 'membre.nouveau-email',
+            fullname: 'Membre Nouveau test email',
+            startups: ['itou', 'missing-startup'],
+          } as Member,
+        ]);
       });
+      it('should create an OVH Pro email account', async () => {
+        await knex('users').insert({
+          username: 'membre.nouveau-email',
+          primary_email: null,
+          primary_email_status: EmailStatusCode.EMAIL_UNSET,
+          secondary_email: 'membre.nouveau-email.perso@example.com',
+        });
 
-      await createEmail('membre.nouveau-email', 'Test');
-      Betagouv.createEmailPro.firstCall.args.should.deep.equal([
-        'membre.nouveau-email',
-        {
-          displayName: 'Membre Nouveau test email',
-          firstName: 'Membre',
-          lastName: 'Nouveau test email',
-        },
-      ]);
-      //Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
+        await createEmail('membre.nouveau-email', 'Test');
+        Betagouv.createEmailPro.firstCall.args.should.deep.equal([
+          'membre.nouveau-email',
+          {
+            displayName: 'Membre Nouveau test email',
+            firstName: 'Membre',
+            lastName: 'Nouveau test email',
+          },
+        ]);
+      });
+    });
+
+    context('when the user needs an MX PLAN account', () => {
+      beforeEach(async () => {
+        sandbox
+          .stub(config, 'EMAIL_DEFAULT_PLAN')
+          .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC);
+      });
+      it('should create an OVH MX Plam account', async () => {
+        await knex('users').insert({
+          username: 'membre.nouveau-email',
+          primary_email: null,
+          primary_email_status: EmailStatusCode.EMAIL_UNSET,
+          secondary_email: 'membre.nouveau-email.perso@example.com',
+        });
+        Betagouv.createEmail.calledWith('membre.nouveau-email').should.be.true;
+      });
     });
 
     context('when the user needs an Exchange account', () => {
@@ -1445,7 +1472,7 @@ describe('User', () => {
             id: 'membre.nouveau-email',
             fullname: 'Membre Nouveau test email',
             startups: ['itou', 'missing-startup'],
-          },
+          } as Member,
         ]);
       });
 
@@ -1469,6 +1496,5 @@ describe('User', () => {
         ]);
       });
     });
-
   });
 });
