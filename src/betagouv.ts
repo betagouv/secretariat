@@ -559,7 +559,7 @@ const betaOVH = {
   },
   createEmailPro: async (id: string, creationData: OvhProCreationData) => {
     const primaryEmailAddress = `${id}@${config.domain}`;
-    const getAccountsUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/service/${config.OVH_EMAIL_PRO_NAME}/account`;
+    const getAccountsUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
     let availableAccounts;
     try {
       availableAccounts = await ovh.requestPromised('GET', getAccountsUrl, {
@@ -580,7 +580,7 @@ const betaOVH = {
       `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`
     );
 
-    const assignAccountUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/service/${config.OVH_EMAIL_PRO_NAME}/account/${accountToBeAssigned}`;
+    const assignAccountUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${accountToBeAssigned}`;
 
     try {
       const result = await ovh.requestPromised('PUT', assignAccountUrl, {
