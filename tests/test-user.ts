@@ -1409,6 +1409,9 @@ describe('User', () => {
             startups: ['itou', 'missing-startup'],
           } as Member,
         ]);
+        sandbox
+          .stub(config, 'EMAIL_DEFAULT_PLAN')
+          .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
       });
       it('should create an OVH Pro email account', async () => {
         await knex('users').insert({
@@ -1431,11 +1434,6 @@ describe('User', () => {
     });
 
     context('when the user needs an MX PLAN account', () => {
-      beforeEach(async () => {
-        sandbox
-          .stub(config, 'EMAIL_DEFAULT_PLAN')
-          .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC);
-      });
       it('should create an OVH MX Plam account', async () => {
         await knex('users').insert({
           username: 'membre.nouveau-email',

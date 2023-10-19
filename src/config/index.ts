@@ -52,7 +52,7 @@ export default {
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)
     : null,
   DS_DEMARCHE_ID: process.env.DS_DEMARCHE_ID,
-  EMAIL_DEFAULT_PLAN: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+  EMAIL_DEFAULT_PLAN: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
   newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
   newsletterSentDay: process.env.NEWSLETTER_SENT_DAY || 'THURSDAY',
   padURL: process.env.PAD_URL || 'https://pad.incubateur.net',
