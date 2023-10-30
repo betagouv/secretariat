@@ -2,7 +2,15 @@
 
 <link rel="stylesheet" media="screen,print" href='/static/collapse/collapse.css'>
 <script src="/static/collapse/collapse.js"></script>
-
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<script>
+    $( function() {
+      $( document ).tooltip();
+    } );
+    </script>
 <div class="module">
     <div>
         <small>
@@ -157,6 +165,135 @@
                 </center>
                 <br/>
                 <br/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-full-width">
+            <div className="beta-banner"></div>
+            <h3>Mon aventures beta.gouv.fr</h3>
+            L'écosystème betagouv peut être un peu complexe, afin d'y être le mieux intégré possible, nous t'invitons à réaliser quelques un des achievements ci-dessus. 
+            Biensûr rien n'est obligatoire :) Les badges te servent uniquement a titre personnel pour avoir une vision résumé des différentes choses que tu peux faire.
+            <h6>
+                Mes badges 
+            </h6>
+            <div class="account-split-panel" style="justify-content: start;">
+                <div style="width: 100px; height: 100px; padding: 10px;">
+                    <img style="width: 100%" title="Tu as rejoins beta.gouv.fr ! Bienvenue ! " src="/static/images/logo-betagouv.jpg" />
+                </div>
+                <div style="width: 100px; height: 100px; padding: 10px; opacity: 0.2;">
+                    <img style="width: 100%" title="Tu n'as pas encore rejoins mattermost. Un compte t'as normalement été créé tu peux le rejoindre en reinitialisant le mot de passe." src="/static/images/mattermost.png" />
+                </div>
+                <div>
+                    <img
+                    id="badge-video"
+                    style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore visionné les videos de présentations de beta.gouv ? Elles sont au nombre de trois, et te permettrons de mieux appréhender les valeurs et la manière de travailler à beta. Si tu les a visionné tu peux cocher la case en dessous." src="/static/images/artica.png" />
+                </div>
+                <div>
+                    <img 
+                    id="badge-onboarding"
+                    style="width: 100px; height: 100px; opacity: 0.2;" title="Tu n'as pas encore suivi la session d'embarquement ? Tu peux retrouver les différentes sessions sur le canal mattermost. Si tu en as déjà suivi une n'hésite pas à l'actualiser en dessous pour éviter de recevoir les nouvelles sessions par email."
+                    src="/static/images/mars-2020-contributor-default.png" />
+                </div>
+                <div>
+                    <img
+                    id="badge-doc"
+                    src="/static/images/public-sponsor-default.png"
+                    style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore contribué à la doc ?
+                    La doc beta.gouv.fr est une partie important de l'écosystème beta.gouv, chacun est libre d'y contribuer, voici le lien pour y accéder à l'admin ainsi que la doc pour expliquer comment faire des changements."/>
+                </div>
+                <div>
+                    <img
+                        id="badge-formation"
+                        src="/static/images/pull-shark-gold.png"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                    title="Tu n'as pas encore participer à une formation ? Nous t'invitons à suivre une des formations proposer par beta.gouiv tout le monde à le droit d'y participer et de prendre sur le temps facturé à la SE (dans le respect des 10% a accordé en transverse) pour le faire"/>
+                </div>
+                <div>
+                    <img
+                        id="badge-transverse"
+                        src="/static/images/starstruck-default.png" style="width: 100px; height: 100px; opacity: 0.2;" title="Tu n'as pas encore participer à une mission transverse ? Tu as le droit de consacré 10% du temps facturé à ta startup à réaliser une action transverse, soit en proposant quelque chose de ta propre initiative, soit en participant aux taskforce existente, l'equipe Communauté Expérience vous propose sur le channel ~general et sur ~incubateur-communauteXP de participer a des missions. Si tu as déjà fait une mission transverse tu peux cocher a case correspondante en dessous." />
+                </div>
+                <div>
+                    <img
+                        id="badge-parrainage"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                        title="Tu n'as encore marrainé personne ? Au delà d'un temps de 6 mois au sein de beta.gouv tu peux parrainé quelqu'un, voici en quoi consiste le marrainage. Tu peux t'inscrire en tant que parrain sur le formulaire suivant. Si tu as déjà fait un marrainage tu peux cocher la case en dessous." src="/static/images/pair.png" />
+                </div>
+                <div>
+                    <img
+                        id="badge-forum"
+                        style="width: 100px; height: 100px; opacity: 0.2;"
+                        title="Tu n'as pas encore assisté a un forum ouvert ? Le forum ouvert est un événement beta qui a lieu tous les mois. Tu as le droit d'y participer sur le temps que tu factures a ta SE. Il y a des ateliers mais aussi des espaces pour travailler. Tu peux donc participer a un atelier et travailler le reste du temps. L'idée a d'avoir un moment d'échange en présentiel. Le forum ouvert se fini souvent par un apéro. Si tu as déjà participer a un forum ouvert, tu peux le mentionner en dessous." src="/static/images/brain.png" />
+                </div>
+                <!-- <div>
+                    <img style="width: 100px; height: 100px; opacity: 0.2;" title="j'ai rejoins mattermost" src="/static/images/artica.png" />
+                </div>
+                <div>
+                    <img style="width: 100px; height: 100px; opacity: 0.2;" title="j'ai rejoins mattermost" src="/static/images/brain.png" />
+                </div> -->
+            </div>
+            <h6>
+                Les etapes du parcours
+            </h6>
+            <p><input type="checkbox" id="onboarding" /> As-tu participé à une session d'embarquement ?</p>
+            <p><input type="checkbox" id="video"/> As-tu visionné les vidéos de présentation de beta.gouv ?</p>
+            <p><input type="checkbox" id="formation"/> As-tu participé à une autre formation ?</p>
+            <p><input type="checkbox" id="forum"/> As-tu participé à un des forums ouverts ?</p>
+            <p><input type="checkbox" id="transverse"/> As-tu participé à une missions transverse ?</p>
+            <p><input type="checkbox" id="doc"/> As-tu contribué à la doc ?</p>
+            <p><input type="checkbox" id="parrainage"/> As-tu parrainé/marrainé quelqu'un ?</p>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-full-width">
+            <div className="beta-banner"></div>
+            <h3>Mes formations</h3>
+            <h4>Mes formations à venir :</h4>  
+            <ul>
+                <li>Sensibilisation accessibilité et RGAA</li>
+                <li>Atelier accessibilité : 10 choses à vérifier pour un site plus accessible</li>
+            </ul>
+            <h4>Mes formations passées :</h4>  
+            <div>
+                <h6>Design/Produit</h6>   
+                <ul>
+                    <li>Sensibilisation accessibilité et RGAA</li>
+                    <li>Atelier accessibilité : 10 choses à vérifier pour un site plus accessible</li>
+                    <li>Initiation aux outils no-code</li>
+                    <li>No-code : Glide + Bubble + Adalo</li>
+                    <li>Comprendre l’utilisateur, psychologie cognitive et ergonomie - Formation UX S1E1</li>
+                </ul>
+            </div>
+            <div>
+                <h6>Divers</h6>
+                <ul>
+                    <li>NUMA#1 : Exécution : Gagner une demie journée par semaine</li>
+                    <li>NUMA #2 : Conversations difficiles, être à l'aise avec le feedback</li>
+                    <li>Automatisez vos tâches avec Zapier</li>
+                    <li>NUMA#3 : La méthode OKRs</li>
+                    <li>Formation NUMA #4 : Coaching</li>
+                </ul>
+            </div>
+            <div>
+                <h6>Marketing/Communication</h6>
+                <ul>
+                    <li>Design inclusif</li>
+                    <li>Formation NUMA #8 : Influence </li>
+                    <li>Utiliser une méthode qui déchire pour faire semblant être la reine du growth hacking</li>
+                    <li>Formation NUMA - Conversations difficiles</li>
+                    <li>Avoir un profil Linkedin au top</li>
+                </ul>
+            </div>
+            <div>
+                <h6>Tech</h6>
+                <ul>
+                    <li>🧑‍💻Formation Dev pour les non-Devs 👩‍💻</li>
+                    <li>Formation Git et GitHub</li>
+                </ul>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -543,4 +680,25 @@
     formCancelButton.addEventListener("click", function() {
         form.style.display = "none";
     }, false);
+</script>
+<script>
+    $(':checkbox').change(function() {
+        console.log('LCS CLICK ON CHECKBOX')
+        // use evil jquery for quick testing
+        var id = $(this).attr('id')
+        var checked = $(this).is(':checked');
+        if (checked) {
+            console.log('LCS DO', id)
+            $(`#badge-${id}`).css({
+                opacity: 1
+            })
+        } else {
+            console.log('LCS DOn', id)
+            $(`#badge-${id}`).css({
+                opacity: 0.2
+            })
+        }
+    // do stuff here. It will fire on any checkbox change
+
+    }); 
 </script>
