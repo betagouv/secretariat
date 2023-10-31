@@ -5,7 +5,6 @@ import { isValidEmail } from '../validator';
 import { generateToken, saveToken, sendLoginEmail } from './loginUtils';
 
 export async function postLoginApi(req, res) {
-  console.log('LCS POST LOGIN API');
   const formValidationErrors = {};
   const errorHandler = (field, message) => {
     formValidationErrors[field] = message;
