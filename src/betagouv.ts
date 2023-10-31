@@ -1,57 +1,26 @@
 import axios from 'axios';
 import ovh0 from 'ovh';
-import config from '@config';
+import config from '@/config';
 import { checkUserIsExpired } from '@controllers/utils';
 import { Incubator } from '@models/incubator';
 import { Job, JobWTTJ } from '@models/job';
 import { Member } from '@models/member';
 import { Startup } from '@models/startup';
 import _ from 'lodash';
+import {
+  EMAIL_PLAN_TYPE,
+  OvhExchangeCreationData,
+  OvhMailingList,
+  OvhProCreationData,
+  OvhResponder,
+  OvhRedirection,
+} from './models/ovh';
 
 const ovh = ovh0({
-  appKey: process.env.OVH_APP_KEY,
-  appSecret: process.env.OVH_APP_SECRET,
-  consumerKey: process.env.OVH_CONSUMER_KEY,
+  appKey: config.OVH_APP_KEY,
+  appSecret: config.OVH_APP_SECRET,
+  consumerKey: config.OVH_CONSUMER_KEY,
 });
-
-export interface OvhRedirection {
-  from: string;
-  to: string;
-  id: string;
-}
-
-export enum EMAIL_PLAN_TYPE {
-  EMAIL_PLAN_PRO = 'EMAIL_PLAN_PRO',
-  EMAIL_PLAN_EXCHANGE = 'EMAIL_PLAN_EXCHANGE',
-  EMAIL_PLAN_BASIC = 'EMAIL_PLAN_BASIC',
-}
-
-export interface OvhMailingList {
-  id: string;
-}
-
-export interface OvhResponder {
-  account: string;
-  content: string;
-  copy: boolean;
-  from: Date;
-  to: Date;
-}
-
-export interface OvhExchangeCreationData {
-  firstName?: string;
-  lastName?: string;
-  displayName?: string;
-  initial?: string;
-  company?: string;
-}
-
-export interface OvhProCreationData {
-  firstName?: string;
-  lastName?: string;
-  displayName?: string;
-  initial?: string;
-}
 
 const betaGouv = {
   sendInfoToChat: async (
@@ -590,7 +559,7 @@ const betaOVH = {
       console.log(`Account ${primaryEmailAddress} assigned`);
       return result;
     } catch (err) {
-      console.log(`OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`)
+      console.log(`OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`);
       throw new Error(
         `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
       );

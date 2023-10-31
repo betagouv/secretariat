@@ -1,14 +1,10 @@
-import crypto from 'crypto';
-import BetaGouv from '../betagouv';
 import config from '@config';
-import knex from '../db';
-import * as utils from './utils';
+import knex from '../../db';
 import { DBUser, EmailStatusCode } from '@/models/dbUser/dbUser';
-import { HomePage } from '../views';
-import { sendEmail } from '@/config/email.config';
-import { EMAIL_TYPES } from '@/modules/email';
-import { isValidEmail } from './validator';
+import { HomePage } from '../../views';
+import { isValidEmail } from '../validator';
 import { getJwtTokenForUser } from '@/helpers/session';
+import { generateToken, saveToken, sendLoginEmail } from './loginUtils';
 
 function renderLogin(req, res, params) {
   res.send(
@@ -26,143 +22,8 @@ function renderLogin(req, res, params) {
   );
 }
 
-export function generateToken() {
-  return crypto.randomBytes(256).toString('base64');
-}
-
-async function sendLoginEmail(
-  email: string,
-  username: string,
-  loginUrlWithToken: string
-) {
-  const user = await BetaGouv.userInfosById(username);
-  if (!user) {
-    throw new Error(
-      `Membre ${username} inconnu·e sur ${config.domain}. Avez-vous une fiche sur Github ?`
-    );
-  }
-
-  if (utils.checkUserIsExpired(user, 5)) {
-    throw new Error(`Membre ${username} a une date de fin expiré sur Github.`);
-  }
-
-  try {
-    await sendEmail({
-      toEmail: [email],
-      type: EMAIL_TYPES.LOGIN_EMAIL,
-      variables: {
-        loginUrlWithToken,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    throw new Error("Erreur d'envoi de mail à ton adresse.");
-  }
-}
-
-export async function saveToken(
-  username: string,
-  token: string,
-  email: string
-) {
-  try {
-    const expirationDate = new Date();
-    expirationDate.setMinutes(expirationDate.getMinutes() + 90); // set duration to 1h30, some users receives emails one hours after
-
-    await knex('login_tokens').insert({
-      token,
-      username,
-      email,
-      expires_at: expirationDate,
-    });
-    console.log(`Login token créé pour ${email}`);
-  } catch (err) {
-    console.error(`Erreur de sauvegarde du token : ${err}`);
-    throw new Error('Erreur de sauvegarde du token');
-  }
-}
-
 export async function getLogin(req, res) {
   renderLogin(req, res, {});
-}
-
-export async function postLoginApi(req, res) {
-  const formValidationErrors = {};
-  const errorHandler = (field, message) => {
-    formValidationErrors[field] = message;
-  };
-  const emailInput =
-    req.body.emailInput.toLowerCase() ||
-    isValidEmail('email', req.body.emailInput.toLowerCase(), errorHandler);
-  if (Object.keys(formValidationErrors).length) {
-    return res
-      .json({
-        errors: formValidationErrors,
-      })
-      .status(500);
-  }
-  let username;
-
-  const emailSplit = emailInput.split('@');
-  if (emailSplit[1] === config.domain) {
-    username = emailSplit[0];
-    if (
-      username === undefined ||
-      !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)
-    ) {
-      return res
-        .json({
-          errors: `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`,
-        })
-        .status(500);
-    }
-  }
-
-  const dbResponse: DBUser = await knex('users')
-    .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
-    .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
-    .first();
-
-  if (!dbResponse) {
-    return res.status(404).json({
-      errors: `L'adresse email ${emailInput} n'est pas connue.`,
-    });
-  }
-
-  if (
-    dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE &&
-    dbResponse.primary_email === emailInput
-  ) {
-    return res.status(403).json({
-      errors: `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`,
-    });
-  }
-
-  username = dbResponse.username;
-
-  try {
-    const secretariatUrl = `${config.protocol}://${req.get('host')}`;
-    const token = generateToken();
-    const loginUrl: URL = new URL(secretariatUrl + '/signin' + `#${token}`);
-    if (req.query.anchor) {
-      loginUrl.searchParams.append('anchor', req.query.anchor);
-    }
-    loginUrl.searchParams.append(
-      'next',
-      req.query.next || config.defaultLoggedInRedirectUrl
-    );
-    await sendLoginEmail(emailInput, username, loginUrl.toString());
-    await saveToken(username, token, emailInput);
-
-    return res.json({
-      success: true,
-    });
-  } catch (err) {
-    console.error(err);
-    return res.json({
-      errors: err.message,
-    });
-  }
 }
 
 export async function postLogin(req, res) {
@@ -195,7 +56,7 @@ export async function postLogin(req, res) {
       return res.redirect(`/login${next}`);
     }
   }
-
+  console.log('LCS USER', emailInput);
   const dbResponse: DBUser = await knex('users')
     .whereRaw(`LOWER(secondary_email) = ?`, emailInput)
     .orWhereRaw(`LOWER(primary_email) = ?`, emailInput)
@@ -288,9 +149,12 @@ export async function postSignIn(req, res) {
     await knex('login_tokens').where({ email: dbToken.email }).del();
 
     req.session.token = getJwtTokenForUser(dbToken.username);
-    return res.redirect(`${decodeURIComponent(req.body.next) || '/account'}` + `${req.query.anchor ? `#` + req.query.anchor : ''}`);
+    return res.redirect(
+      `${decodeURIComponent(req.body.next) || '/account'}` +
+        `${req.query.anchor ? `#` + req.query.anchor : ''}`
+    );
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     return res.redirect('/');
   }
-};
+}

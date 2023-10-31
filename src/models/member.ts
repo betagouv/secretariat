@@ -1,10 +1,9 @@
-import { OvhRedirection, OvhResponder } from '../betagouv';
 import { EmailStatusCode } from './dbUser';
 import { Mission } from './mission';
-
+import { OvhRedirection, OvhResponder } from './ovh';
 
 export enum Domaine {
-  ANIMATION='Animation',
+  ANIMATION = 'Animation',
   COACHING = 'Coaching',
   DEPLOIEMENT = 'Déploiement',
   DESIGN = 'Design',
@@ -14,33 +13,40 @@ export enum Domaine {
   AUTRE = 'Autre',
 }
 
-export const DOMAINE_OPTIONS = [{
-  key: "ANIMATION",
-  name: "Animation"
-}, {
-  key: "COACHING",
-  name: "Coaching"
-}, {
-  key: "DEPLOIEMENT",
-  name: "Déploiement"
-}, {
-  key: "DESIGN",
-  name: "Design"
-}, {
-  key: "DEVELOPPEMENT",
-  name: "Développement"
-}, {
-  key: "INTRAPRENARIAT",
-  name: "Intraprenariat"
-}, {
-  key: "PRODUIT",
-  name: "Produit"
-}, {
-  key: "AUTRE",
-  name: "Autre"
-}
-]
-
+export const DOMAINE_OPTIONS = [
+  {
+    key: 'ANIMATION',
+    name: 'Animation',
+  },
+  {
+    key: 'COACHING',
+    name: 'Coaching',
+  },
+  {
+    key: 'DEPLOIEMENT',
+    name: 'Déploiement',
+  },
+  {
+    key: 'DESIGN',
+    name: 'Design',
+  },
+  {
+    key: 'DEVELOPPEMENT',
+    name: 'Développement',
+  },
+  {
+    key: 'INTRAPRENARIAT',
+    name: 'Intraprenariat',
+  },
+  {
+    key: 'PRODUIT',
+    name: 'Produit',
+  },
+  {
+    key: 'AUTRE',
+    name: 'Autre',
+  },
+];
 
 export interface Member {
   id: string;
@@ -75,13 +81,13 @@ export interface MemberWithEmailsAndMattermostUsername extends Member {
 }
 
 export interface MemberWithPermission {
-  userInfos: Member,
-  emailInfos: any,
-  redirections: OvhRedirection[],
-  canChangeEmails: boolean,
-  isExpired: boolean,
-  responder: OvhResponder,
-  canCreateEmail,
-  canCreateRedirection,
-  canChangePassword
+  userInfos: Member;
+  emailInfos: any;
+  redirections: OvhRedirection[];
+  canChangeEmails: boolean;
+  isExpired: boolean;
+  responder: OvhResponder;
+  canCreateEmail;
+  canCreateRedirection;
+  canChangePassword;
 }
