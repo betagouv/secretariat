@@ -54,7 +54,7 @@ import {
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
 const corsOptions = {
-  origin: ['http://localhost:8100', 'http://localhost:3001'],
+  origin: config.CORS_ORIGIN,
   credentials: true,
   methods: 'POST, PUT, OPTIONS, DELETE, GET',
   allowedHeaders: 'X-Requested-With, Content-Type',
