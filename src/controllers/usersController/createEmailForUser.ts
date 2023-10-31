@@ -1,10 +1,11 @@
 import crypto from 'crypto';
 import config from '@config';
-import BetaGouv, {
+import {
   EMAIL_PLAN_TYPE,
   OvhExchangeCreationData,
   OvhProCreationData,
-} from '@/betagouv';
+} from '@/models/ovh';
+import BetaGouv from '@/betagouv';
 import * as utils from '@controllers/utils';
 import knex from '@/db/index';
 import { MemberWithPermission } from '@models/member';

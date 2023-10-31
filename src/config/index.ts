@@ -1,5 +1,5 @@
-import { EMAIL_PLAN_TYPE } from '@/betagouv';
 import { MemberType } from '@/models/dbUser';
+import { EMAIL_PLAN_TYPE } from '@/models/ovh';
 import { config } from 'dotenv';
 
 config();
@@ -34,6 +34,9 @@ const CRON_TASK_ENV_VAR = {
 
 export default {
   ...CRON_TASK_ENV_VAR,
+  OVH_APP_KEY: process.env.OVH_APP_KEY,
+  OVH_APP_SECRET: process.env.OVH_APP_SECRET,
+  OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,
   secret: process.env.SESSION_SECRET,
   secure: isSecure,
   protocol: isSecure ? 'https' : 'http',
@@ -52,7 +55,8 @@ export default {
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)
     : null,
   DS_DEMARCHE_ID: process.env.DS_DEMARCHE_ID,
-  EMAIL_DEFAULT_PLAN: process.env.EMAIL_DEFAULT_PLAN || EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+  EMAIL_DEFAULT_PLAN:
+    process.env.EMAIL_DEFAULT_PLAN || EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
   newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
   newsletterSentDay: process.env.NEWSLETTER_SENT_DAY || 'THURSDAY',
   padURL: process.env.PAD_URL || 'https://pad.incubateur.net',

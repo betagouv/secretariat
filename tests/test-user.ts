@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import nock from 'nock';
 import sinon from 'sinon';
-import Betagouv, { EMAIL_PLAN_TYPE } from '@/betagouv';
+import Betagouv from '@/betagouv';
 import config from '@config';
 import * as controllerUtils from '@controllers/utils';
 import * as mattermost from '@/lib/mattermost';
@@ -21,6 +21,7 @@ import { EmailStatusCode } from '@/models/dbUser/dbUser';
 import * as session from '@/helpers/session';
 import betagouv from '@/betagouv';
 import { Member } from '@/models/member';
+import { EMAIL_PLAN_TYPE } from '@/models/ovh';
 
 chai.use(chaiHttp);
 
