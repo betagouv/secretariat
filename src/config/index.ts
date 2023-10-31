@@ -49,6 +49,9 @@ export default {
   CHATWOOT_ID: process.env.CHATWOOT_ID,
   CHATWOOT_IGNORE_EMAILS: process.env.CHATWOOT_IGNORE_EMAILS || [],
   CHATWOOT_BADGE_ID: process.env.CHATWOOT_BADGE_ID,
+  CORS_ORIGIN: process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(',')
+    : ['https://espace-membre.incubateur.net'],
   domain: process.env.SECRETARIAT_DOMAIN || 'beta.gouv.fr',
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
