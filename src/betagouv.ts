@@ -13,6 +13,7 @@ import {
   OvhMailingList,
   OvhProCreationData,
   OvhResponder,
+  OvhRedirection,
 } from './models/ovh';
 
 const ovh = ovh0({
