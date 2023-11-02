@@ -175,6 +175,7 @@ app.use(
       routes.WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO,
       routes.PULL_REQUEST_GET_PRS,
       routes.ONBOARDING,
+      routes.ONBOARDING_API,
       routes.ONBOARDING_ACTION,
       /api\/public\/users\/*/,
       /hook\/*/,
@@ -323,7 +324,8 @@ app.put(
   updateBadgeRequestStatus
 );
 
-app.get('/community', communityController.getCommunity);
+app.get(routes.GET_COMMUNITY, communityController.getCommunity);
+app.get(routes.GET_COMMUNITY_API, communityController.getCommunityApi);
 app.get(routes.GET_USER, communityController.getUser);
 app.get(routes.GET_USER_API, communityController.getUserApi);
 
@@ -343,6 +345,7 @@ app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
 app.get(routes.STARTUP_GET_ALL_API, startupController.getStartupListApi);
 
 app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
+app.get(routes.STARTUP_GET_DETAIL_API, startupController.getStartupApi);
 app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate);
 app.get(routes.STARTUP_GET_INFO_UPDATE_FORM_API, getStartupInfoUpdateApi);
 
@@ -382,6 +385,8 @@ app.post(
 );
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
+app.get(routes.ONBOARDING_API, onboardingController.getFormApi);
+
 app.post(
   routes.ONBOARDING_ACTION,
   checkSchema(onboardingController.postFormSchema),

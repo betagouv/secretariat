@@ -8,6 +8,47 @@ import betagouv from '../betagouv';
 import { EMAIL_STATUS_READABLE_FORMAT } from '@/models/misc';
 
 export async function getCommunity(req, res) {
+  getCommunityPageData(
+    req,
+    res,
+    (data) => {
+      res.send(
+        CommunityPage({
+          ...data,
+          errors: req.flash('error'),
+          messages: req.flash('message'),
+          request: req,
+        })
+      );
+    },
+    (err) => {
+      console.error(err);
+      return res.send(
+        'Erreur interne : impossible de récupérer les informations de la communauté'
+      );
+    }
+  );
+}
+
+export async function getCommunityApi(req, res) {
+  getCommunityPageData(
+    req,
+    res,
+    (data) => {
+      res.json({
+        ...data,
+      });
+    },
+    (err) => {
+      res.status(500).json({
+        error:
+          'Erreur interne : impossible de récupérer les informations de la communauté',
+      });
+    }
+  );
+}
+
+export async function getCommunityPageData(req, res, onSuccess, onError) {
   if (req.query.username) {
     return res.redirect(`/community/${req.query.username}`);
   }
@@ -17,69 +58,61 @@ export async function getCommunity(req, res) {
     const incubators = await BetaGouv.incubators();
     const startups = await BetaGouv.startupsInfos();
     const title = 'Communauté';
-    return res.send(
-      CommunityPage({
-        title,
-        currentUserId: req.auth.id,
-        incubatorOptions: Object.keys(incubators).map((incubator) => {
-          return {
-            value: incubator,
-            label: incubators[incubator].title,
-          };
-        }),
-        startupOptions: startups.map((startup) => {
-          return {
-            value: startup.id,
-            label: startup.attributes.name,
-          };
-        }),
-        isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
-        domaineOptions: [
-          {
-            value: 'ANIMATION',
-            label: 'Animation',
-          },
-          {
-            value: 'COACHING',
-            label: 'Coaching',
-          },
-          {
-            value: 'DEPLOIEMENT',
-            label: 'Déploiement',
-          },
-          {
-            value: 'DESIGN',
-            label: 'Design',
-          },
-          {
-            value: 'DEVELOPPEMENT',
-            label: 'Développement',
-          },
-          {
-            value: 'INTRAPRENARIAT',
-            label: 'Intraprenariat',
-          },
-          {
-            value: 'PRODUIT',
-            label: 'Produit',
-          },
-          {
-            value: 'AUTRE',
-            label: 'Autre',
-          },
-        ],
-        users,
-        activeTab: 'community',
-        errors: req.flash('error'),
-        messages: req.flash('message'),
-        request: req,
-      })
-    );
+    return {
+      title,
+      currentUserId: req.auth.id,
+      incubatorOptions: Object.keys(incubators).map((incubator) => {
+        return {
+          value: incubator,
+          label: incubators[incubator].title,
+        };
+      }),
+      startupOptions: startups.map((startup) => {
+        return {
+          value: startup.id,
+          label: startup.attributes.name,
+        };
+      }),
+      isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
+      domaineOptions: [
+        {
+          value: 'ANIMATION',
+          label: 'Animation',
+        },
+        {
+          value: 'COACHING',
+          label: 'Coaching',
+        },
+        {
+          value: 'DEPLOIEMENT',
+          label: 'Déploiement',
+        },
+        {
+          value: 'DESIGN',
+          label: 'Design',
+        },
+        {
+          value: 'DEVELOPPEMENT',
+          label: 'Développement',
+        },
+        {
+          value: 'INTRAPRENARIAT',
+          label: 'Intraprenariat',
+        },
+        {
+          value: 'PRODUIT',
+          label: 'Produit',
+        },
+        {
+          value: 'AUTRE',
+          label: 'Autre',
+        },
+      ],
+      users,
+      activeTab: 'community',
+    };
   } catch (err) {
-    console.error(err);
-    return res.send(
-      'Erreur interne : impossible de récupérer les informations de la communauté'
-    );
+    onError(err);
   }
 }
 
