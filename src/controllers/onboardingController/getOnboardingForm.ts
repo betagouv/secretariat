@@ -4,7 +4,7 @@ import { OnboardingPage } from '@/views';
 import { DOMAINE_OPTIONS, Member } from '@models/member';
 import config from '@/config';
 
-export async function getFormApi(req, res) {
+export async function getForm(req, res) {
   getOnboardingPageData(
     req,
     res,
@@ -26,7 +26,7 @@ export async function getFormApi(req, res) {
   );
 }
 
-export async function getForm(req, res) {
+export async function getFormApi(req, res) {
   getOnboardingPageData(
     req,
     res,
