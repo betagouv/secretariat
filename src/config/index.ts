@@ -84,6 +84,7 @@ export default {
   CHAT_WEBHOOK_URL_GENERAL: process.env.CHAT_WEBHOOK_URL_GENERAL,
   CHAT_WEBHOOK_URL_DINUM: process.env.CHAT_WEBHOOK_URL_DINUM,
   CHAT_WEBHOOK_URL_GIP: process.env.CHAT_WEBHOOK_URL_GIP,
+  FRONT_URL: process.env.FRONT_URL,
   SPONSOR_API:
     process.env.SPONSOR_API || 'https://beta.gouv.fr/api/v2.5/sponsors.json',
   usersAPI:
