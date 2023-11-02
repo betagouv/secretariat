@@ -217,8 +217,10 @@ app.post(
   loginController.postLoginApi
 );
 app.get('/signin', loginController.getSignIn);
-app.post('/signin', loginController.postSignIn);
-app.get('/logout', logoutController.getLogout);
+app.post(routes.SIGNIN, loginController.postSignIn);
+app.get(routes.LOGOUT, logoutController.getLogout);
+app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
+
 // que ce passe-t-il
 app.get(
   routes.WHAT_IS_GOING_ON_WITH_MEMBER,
