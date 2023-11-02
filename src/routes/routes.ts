@@ -66,6 +66,12 @@ class routes {
   static GET_USER_API: string = '/api/community/:username';
   static GET_COMMUNITY: string = '/community';
   static GET_COMMUNITY_API: string = '/api/community';
+
+  static SIGNIN: string = '/signin';
+  static SIGNIN_API: string = '/api/signin';
+
+  static LOGOUT: string = '/logout';
+  static LOGOUT_API: string = '/api/logout';
 }
 
 export default routes;

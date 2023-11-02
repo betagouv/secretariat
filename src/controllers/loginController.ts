@@ -288,9 +288,21 @@ export async function postSignIn(req, res) {
     await knex('login_tokens').where({ email: dbToken.email }).del();
 
     req.session.token = getJwtTokenForUser(dbToken.username);
-    return res.redirect(`${decodeURIComponent(req.body.next) || '/account'}` + `${req.query.anchor ? `#` + req.query.anchor : ''}`);
+
+    if (config.FRONT_APP_URL) {
+      return res.redirect(
+        config.FRONT_APP_URL +
+          (req.body.next || '/account') +
+          `${req.query.anchor ? `#` + req.query.anchor : ''}`
+      );
+    } else {
+      return res.redirect(
+        `${decodeURIComponent(req.body.next) || '/account'}` +
+          `${req.query.anchor ? `#` + req.query.anchor : ''}`
+      );
+    }
   } catch (err) {
     console.log(`Erreur dans l'utilisation du login token : ${err}`);
     return res.redirect('/');
   }
-};
+}
