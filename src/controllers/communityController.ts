@@ -58,7 +58,7 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
     const incubators = await BetaGouv.incubators();
     const startups = await BetaGouv.startupsInfos();
     const title = 'Communauté';
-    return {
+    return onSuccess({
       title,
       currentUserId: req.auth.id,
       incubatorOptions: Object.keys(incubators).map((incubator) => {
@@ -110,7 +110,7 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
       ],
       users,
       activeTab: 'community',
-    };
+    });
   } catch (err) {
     onError(err);
   }
