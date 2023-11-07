@@ -324,7 +324,13 @@
                         confortable mais ça peut être une bonne solution pour dépanner, ou quand tu n'a pas
                         accès à ton client web habituel.
                     </p>
-                    <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
+                    <% if (emailInfos && emailInfos.isPro) { %> 
+                        <a href="https://pro1.mail.ovh.net/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
+                    <% } else if (emailInfos && emailInfos.isExchange) { %>
+                    <a href="https://ex.mail.ovh.net/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
+                    <% } else { %>
+                        <a href="https://mail.ovh.net/roundcube/?_user=<%= userInfos.id %>@<%= domain %>" target="_blank" class="button no-margin">Webmail</a>
+                    <% } %>
                     <hr />
                 </div>
             </div>
