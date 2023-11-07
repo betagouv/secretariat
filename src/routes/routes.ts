@@ -58,8 +58,6 @@ class routes {
   static USER_SET_EMAIL_RESPONDER_API = '/api/account/set_email_responder';
   static USER_DELETE_EMAIL_RESPONDER_API =
     '/api/account/delete_email_responder';
-  static USER_UPDATE_COMMUNICATION_EMAIL_API =
-    '/api/account/update_communication_email';
   // account
   static ACCOUNT_GET = '/account';
   static ACCOUNT_GET_API = '/api/account';

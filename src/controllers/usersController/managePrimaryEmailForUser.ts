@@ -8,7 +8,6 @@ import betagouv from '@/betagouv';
 import config from '@/config';
 
 export async function managePrimaryEmailForUserApi(req, res) {
-  const { username } = req.params;
   managePrimaryEmailForUserHandler(
     req,
     res,
