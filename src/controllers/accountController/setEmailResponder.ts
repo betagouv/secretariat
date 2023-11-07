@@ -78,7 +78,6 @@ export async function setEmailResponderHandler(req, res, onSuccess, onError) {
         },
       });
     } else {
-      const responder = await betagouv.getResponder(req.auth.id);
       await betagouv.updateResponder(req.auth.id, {
         from: startDate,
         to: endDate,
