@@ -29,8 +29,16 @@ class routes {
   static USER_CREATE_EMAIL = '/users/:username/email';
   static USER_DELETE_EMAIL = '/users/:username/email/delete';
   static USER_CREATE_REDIRECTION = '/users/:username/redirections';
+  static USER_CREATE_REDIRECTION_API = '/api/users/:username/redirections';
+  static USER_UPDATE_COMMUNICATION_EMAIL =
+    '/account/update_communication_email';
+  static USER_UPDATE_COMMUNICATION_EMAIL_API =
+    '/api/account/update_communication_email';
+
   static USER_DELETE_REDIRECTION =
     '/users/:username/redirections/:email/delete';
+  static USER_DELETE_REDIRECTION_API =
+    '/api/users/:username/redirections/:email/delete';
   static USER_UPDATE_PASSWORD = '/users/:username/password';
   static USER_UPDATE_SECONDARY_EMAIL = '/users/:username/secondary_email';
   static USER_UPDATE_PRIMARY_EMAIL = '/users/:username/primary_email';
@@ -38,6 +46,20 @@ class routes {
   static USER_UPGRADE_EMAIL = '/users/:username/email-upgrade';
   static USER_CREATE_EMAIL_API = '/api/users/:username/create-email';
   static API_GET_PUBLIC_USER_INFO = '/api/public/users/:username';
+
+  static USER_DELETE_EMAIL_API = '/api/users/:username/email/delete';
+
+  static USER_UPDATE_PASSWORD_API = '/api/users/:username/password';
+  static USER_UPDATE_SECONDARY_EMAIL_API =
+    '/api/users/:username/secondary_email';
+  static USER_UPDATE_PRIMARY_EMAIL_API = '/api/users/:username/primary_email';
+  static USER_UPDATE_END_DATE_API = '/api/users/:username/end-date';
+  static USER_UPGRADE_EMAIL_API = '/api/users/:username/email-upgrade';
+  static USER_SET_EMAIL_RESPONDER_API = '/api/account/set_email_responder';
+  static USER_DELETE_EMAIL_RESPONDER_API =
+    '/api/account/delete_email_responder';
+  static USER_UPDATE_COMMUNICATION_EMAIL_API =
+    '/api/account/update_communication_email';
   // account
   static ACCOUNT_GET = '/account';
   static ACCOUNT_GET_API = '/api/account';
@@ -48,6 +70,7 @@ class routes {
   static ACCOUNT_GET_DETAIL_INFO_FORM = '/account/info';
   static ACCOUNT_GET_DETAIL_INFO_FORM_API = '/api/account/info';
   static ACCOUNT_POST_DETAIL_INFO_FORM = '/account/info';
+  static ACCOUNT_POST_DETAIL_INFO_FORM_API = '/api/account/info';
   static API_PUBLIC_POST_BASE_INFO_FORM =
     '/api/public/account/base-info/:username';
   static ACCOUNT_GET_BADGE_REQUEST_PAGE = '/account/badge-demande';
