@@ -204,18 +204,29 @@ describe('Account', () => {
       const updateEmailResponder = nock(/.*ovh.com/)
         .put(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
         .reply(200);
+      const getEmailResponder = nock(/.*ovh.com/)
+        .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+        .reply(200, {});
+      utils.cleanMocks();
+      utils.mockSlackGeneral();
+      utils.mockSlackSecretariat();
+      utils.mockOvhTime();
+      utils.mockOvhRedirections();
+      utils.mockOvhUserResponder();
+      utils.mockOvhUserEmailInfos();
+      utils.mockOvhAllEmailInfos();
       chai
         .request(app)
         .post('/account/set_email_responder')
         .type('form')
         .send({
-          method: 'update',
           from: '2020-01-01',
           to: '2021-01-01',
           content: 'Je ne serai pas la cette semaine',
         })
         .end((err, res) => {
           updateEmailResponder.isDone().should.be.true;
+          getEmailResponder.isDone().should.be.true;
           done();
         });
     });
