@@ -241,25 +241,62 @@ app.post(
   usersController.createEmailApi
 );
 app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
+app.post(
+  routes.USER_DELETE_EMAIL_API,
+  express.json({ type: '*/*' }),
+  usersController.deleteEmailForUserApi
+);
 app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
+app.post(
+  routes.USER_UPGRADE_EMAIL_API,
+  express.json({ type: '*/*' }),
+  usersController.upgradeEmailForUserApi
+);
 app.post(
   routes.USER_CREATE_REDIRECTION,
   usersController.createRedirectionForUser
 );
 app.post(
+  routes.USER_CREATE_REDIRECTION_API,
+  express.json({ type: '*/*' }),
+  usersController.createRedirectionForUserApi
+);
+app.post(
   routes.USER_DELETE_REDIRECTION,
   usersController.deleteRedirectionForUser
 );
+app.delete(
+  routes.USER_DELETE_REDIRECTION_API,
+  express.json({ type: '*/*' }),
+  usersController.deleteRedirectionForUserApi
+);
 app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
+app.post(
+  routes.USER_UPDATE_PASSWORD_API,
+  express.json({ type: '*/*' }),
+  usersController.updatePasswordForUserApi
+);
+
 app.post(
   routes.USER_UPDATE_SECONDARY_EMAIL,
   usersController.manageSecondaryEmailForUser
 );
 app.post(
+  routes.USER_UPDATE_SECONDARY_EMAIL_API,
+  express.json({ type: '*/*' }),
+  usersController.manageSecondaryEmailForUserApi
+);
+app.post(
   routes.USER_UPDATE_PRIMARY_EMAIL,
   usersController.managePrimaryEmailForUser
 );
+app.put(
+  routes.USER_UPDATE_PRIMARY_EMAIL_API,
+  express.json({ type: '*/*' }),
+  usersController.managePrimaryEmailForUserApi
+);
 app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
+
 app.get(
   routes.API_GET_PUBLIC_USER_INFO,
   publicGetRouteRateLimiter,
@@ -295,6 +332,11 @@ app.get(
 );
 app.post(
   routes.ACCOUNT_POST_DETAIL_INFO_FORM,
+  accountController.postCurrentInfo
+);
+app.post(
+  routes.ACCOUNT_POST_DETAIL_INFO_FORM_API,
+  express.json({ type: '*/*' }),
   accountController.postCurrentInfo
 );
 app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
@@ -395,15 +437,30 @@ app.post(
   onboardingController.postForm
 );
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
-app.post('/account/set_email_responder', accountController.setEmailResponder);
 app.post(
   '/account/delete_email_responder',
   accountController.deleteEmailResponder
 );
+app.post(
+  '/api/account/delete_email_responder',
+  express.json({ type: '*/*' }),
+  accountController.deleteEmailResponderApi
+);
 app.post('/account/set_email_responder', accountController.setEmailResponder);
 app.post(
-  '/account/update_communication_email',
+  '/api/account/set_email_responder',
+  express.json({ type: '*/*' }),
+  accountController.setEmailResponderApi
+);
+
+app.post(
+  routes.USER_UPDATE_COMMUNICATION_EMAIL,
   accountController.updateCommunicationEmail
+);
+app.put(
+  routes.USER_UPDATE_COMMUNICATION_EMAIL_API,
+  express.json({ type: '*/*' }),
+  accountController.updateCommunicationEmailApi
 );
 
 app.get('/newsletters', newsletterController.getNewsletter);
