@@ -63,8 +63,8 @@ export async function setEmailResponderHandler(req, res, onSuccess, onError) {
       req.flash('error', formValidationErrors);
       throw new Error();
     }
-
-    if (req.body.method !== 'update') {
+    const responder = await betagouv.getResponder(req.auth.id);
+    if (!responder) {
       await betagouv.setResponder(req.auth.id, {
         from: startDate,
         to: endDate,
