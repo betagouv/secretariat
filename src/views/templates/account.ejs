@@ -228,7 +228,8 @@
                     <hr />
                 </div>
             </div>
-            <div class="collapse" id="responder">
+            <% if (!emailInfos.isPro && !emailInfos.isExchange) { %>
+                <div class="collapse" id="responder">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="automatic-response">
                         Configurer une réponse automatique
@@ -283,6 +284,7 @@
                     <hr />
                 </div>
             </div>
+            <% } %> 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="password">
@@ -334,7 +336,7 @@
                     <hr />
                 </div>
             </div>
-
+            <% if (!emailInfos.isPro && !emailInfos.isExchange) { %>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="redirect-email">
@@ -380,6 +382,7 @@
                     <hr />
                 </div>
             </div>
+            <% } %>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="change-primary-email">
