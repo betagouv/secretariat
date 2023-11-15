@@ -228,62 +228,62 @@
                     <hr />
                 </div>
             </div>
-            <% if (!emailInfos.isPro && !emailInfos.isExchange) { %>
+            <% if (emailInfos && !emailInfos.isPro && !emailInfos.isExchange) { %>
                 <div class="collapse" id="responder">
-                <h6 class="margin-10-0 collapse-header">
-                    <button aria-expanded="false" id="automatic-response">
-                        Configurer une réponse automatique
-                        <div class="icon fa fa-chevron-down"></div>
-                    </button>
-                </h6>
-                <div hidden class="collapse-content">
-                    <p>
-                        Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez. (la mise en place effective de la réponse automatique peut prendre quelques minutes)
-                    </p>
-                    <form class="no-margin"
-                        onsubmit="const proceed = event.submitter.id === 'delete-button' ? confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?') : true; event.submitter && (event.submitter.disabled = proceed); return proceed;"
-                        action="/account/set_email_responder" method="POST" >
-                    <% if (hasResponder) { %>
-                        <input type="hidden" name="method" value="update">
-                    <% } %>       
-                            <div class="form__group">
-                                <label for="start">
-                                    <strong>Message d'absence</strong><br />
-                                </label>
-                                <textarea placeholder="Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
-                            </div>
-                            <div class="form__group">
-                                <label for="start">
-                                    <strong>Début</strong><br />
-                                    <i>Au format JJ/MM/YYYY</i>
-                                </label>
-                                <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                            </div>
-                
-                            <div class="form__group">
-                                <label for="end">
-                                    <strong>Fin</strong><br />
-                                    <i>Au format JJ/MM/YYYY</i>
-                                </label>
-                                <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
-                            </div>
-                    <% if (!hasResponder) { %>
-                            <button class="button margin-10-0" type="submit">Sauvegarder</button>
-                        </form>
-                    <% } else { %>
-                            <div class="row">
-                                <button class="button margin-10-0" type="submit">Changer</button>
-                                <% if (hasResponder) { %>
-                                        <button
-                                            id='delete-button'
-                                            class="button margin-10-0 button-underline" formaction="/account/delete_email_responder" type="submit">Supprimer</button>
-                                <% } %> 
-                            </div>
-                        </form>
-                    <% } %> 
-                    <hr />
+                    <h6 class="margin-10-0 collapse-header">
+                        <button aria-expanded="false" id="automatic-response">
+                            Configurer une réponse automatique
+                            <div class="icon fa fa-chevron-down"></div>
+                        </button>
+                    </h6>
+                    <div hidden class="collapse-content">
+                        <p>
+                            Informez vos correspondants de votre absence. Cette réponse automatique sera envoyée à tous les messages que vous recevez. (la mise en place effective de la réponse automatique peut prendre quelques minutes)
+                        </p>
+                        <form class="no-margin"
+                            onsubmit="const proceed = event.submitter.id === 'delete-button' ? confirm('Es-tu sûr de vouloir supprimer ton compte email et ses redirections ?') : true; event.submitter && (event.submitter.disabled = proceed); return proceed;"
+                            action="/account/set_email_responder" method="POST" >
+                        <% if (hasResponder) { %>
+                            <input type="hidden" name="method" value="update">
+                        <% } %>       
+                                <div class="form__group">
+                                    <label for="start">
+                                        <strong>Message d'absence</strong><br />
+                                    </label>
+                                    <textarea placeholder="Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ..." id="emailResponder" name="content" value="<%= responderFormData.content %>"><%= responderFormData.content %></textarea>
+                                </div>
+                                <div class="form__group">
+                                    <label for="start">
+                                        <strong>Début</strong><br />
+                                        <i>Au format JJ/MM/YYYY</i>
+                                    </label>
+                                    <input type="date" name="from" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.from %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                </div>
+                    
+                                <div class="form__group">
+                                    <label for="end">
+                                        <strong>Fin</strong><br />
+                                        <i>Au format JJ/MM/YYYY</i>
+                                    </label>
+                                    <input type="date" name="to" pattern="^\d{4}-\d{2}-\d{2}$" value="<%= responderFormData.to %>" title="En format YYYY-MM-DD, par exemple : 2020-01-31" required>
+                                </div>
+                        <% if (!hasResponder) { %>
+                                <button class="button margin-10-0" type="submit">Sauvegarder</button>
+                            </form>
+                        <% } else { %>
+                                <div class="row">
+                                    <button class="button margin-10-0" type="submit">Changer</button>
+                                    <% if (hasResponder) { %>
+                                            <button
+                                                id='delete-button'
+                                                class="button margin-10-0 button-underline" formaction="/account/delete_email_responder" type="submit">Supprimer</button>
+                                    <% } %> 
+                                </div>
+                            </form>
+                        <% } %> 
+                        <hr />
+                    </div>
                 </div>
-            </div>
             <% } %> 
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
@@ -336,7 +336,7 @@
                     <hr />
                 </div>
             </div>
-            <% if (!emailInfos.isPro && !emailInfos.isExchange) { %>
+            <% if (emailInfos && !emailInfos.isPro && !emailInfos.isExchange) { %>
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="redirect-email">
