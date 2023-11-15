@@ -6,7 +6,6 @@ import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from '@/models/pullRequests';
 import { requiredError, isValidDate } from '@/controllers/validator';
 import {
   makeGithubAuthorFile,
-  updateAuthorGithubFile,
   updateMultipleFilesPR,
 } from '@/controllers/helpers/githubHelpers';
 import {
