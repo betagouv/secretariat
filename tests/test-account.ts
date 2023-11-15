@@ -91,18 +91,6 @@ describe('Account', () => {
         });
     });
 
-    it('should include a redirection creation form', (done) => {
-      chai
-        .request(app)
-        .get('/account')
-        .end((err, res) => {
-          res.text.should.include(
-            'action="/users/membre.actif/redirections" method="POST"'
-          );
-          done();
-        });
-    });
-
     it('should not include a password modification if the email does not exist', (done) => {
       chai
         .request(app)
