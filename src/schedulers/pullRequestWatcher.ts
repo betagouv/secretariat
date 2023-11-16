@@ -108,7 +108,7 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
   for (const author of authors) {
     console.log('Should send message to author team', author);
     const userInfo: Member = await betagouv.userInfosById(author);
-    if (userInfo.startups.length !== 1) {
+    if (!userInfo.startups || userInfo.startups.length !== 1) {
       continue;
       // if member doesn't have startup
       // if member has more than 1 startup we don't want to notifiy both startup
