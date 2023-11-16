@@ -10,9 +10,12 @@ import {
   EmailStatusCode,
 } from '@/models/dbUser/dbUser';
 import { Member } from '@models/member';
-import { sleep } from '@controllers/utils';
+import { buildBetaEmail, sleep } from '@controllers/utils';
 import { EMAIL_TYPES } from '@/modules/email';
 import { sendEmail } from '@/config/email.config';
+import betagouv from '../betagouv';
+import db from '@/db';
+import { DBStartup } from '@/models/startup';
 
 const findAuthorsInFiles = async (files) => {
   const authors = [];
@@ -95,6 +98,54 @@ const sendMattermostMessageToAuthorsIfExists = async (
   return false;
 };
 
+const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
+  const { data: files } = await github.getPullRequestFiles(
+    config.githubOrganizationName,
+    'beta.gouv.fr',
+    pullRequestNumber
+  );
+  const authors = await findAuthorsInFiles(files);
+  for (const author of authors) {
+    console.log('Should send message to author team', author);
+    const userInfo: Member = await betagouv.userInfosById(author);
+    if (userInfo.startups.length !== 1) {
+      continue;
+      // if member doesn't have startup
+      // if member has more than 1 startup we don't want to notifiy both startup
+    }
+    const startup: DBStartup | undefined = (await db('startups')
+      .select({
+        id: userInfo.startups[0],
+      })
+      .first()) as DBStartup;
+    if (startup && startup.mailing_list) {
+      try {
+        let mailingList = buildBetaEmail(startup.mailing_list);
+        await sendEmail({
+          toEmail: [config.senderEmail || mailingList],
+          bcc: [config.senderEmail],
+          type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM,
+          variables: {
+            startup,
+            pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`,
+            username: author,
+          },
+        });
+      } catch (e) {
+        console.error(
+          `Erreur lors de l'envoie d'un message via mattermost à ${author}`,
+          e
+        );
+      }
+      try {
+        await sendEmailToAuthorsIfExists(author, pullRequestNumber);
+      } catch (e) {
+        console.error(`Erreur lors de l'envoie d'un email à ${author}`, e);
+      }
+    }
+  }
+};
+
 const sendMessageToAuthorsIfAuthorFilesInPullRequest = async (
   pullRequestNumber: number
 ) => {
@@ -155,4 +206,22 @@ const pullRequestWatcher = async () => {
   return Promise.all(pullRequestCheckPromises);
 };
 
-export { pullRequestWatcher };
+const pullRequestWatcherSendEmailToTeam = async () => {
+  console.log('Run pull request watcher, send message to team');
+  const { data: pullRequests } = await github.getPullRequests(
+    config.githubOrganizationName,
+    'beta.gouv.fr',
+    'open'
+  );
+  const filteredPullRequests = pullRequests.filter((pr) => {
+    const createdDate = new Date(pr.created_at);
+    return filterUpdateDateXdaysAgo(createdDate, 1);
+  });
+  console.log(`Number of PR to check ${filteredPullRequests.length}`);
+  const pullRequestCheckPromises = filteredPullRequests.map((pr) =>
+    sendEmailToAuthorTeamIfExists(pr.number)
+  );
+  return Promise.all(pullRequestCheckPromises);
+};
+
+export { pullRequestWatcher, pullRequestWatcherSendEmailToTeam };
