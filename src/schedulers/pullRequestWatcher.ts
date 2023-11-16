@@ -13,9 +13,6 @@ import { Member } from '@models/member';
 import { sleep } from '@controllers/utils';
 import { EMAIL_TYPES } from '@/modules/email';
 import { sendEmail } from '@/config/email.config';
-import betagouv from '../betagouv';
-import { UserInfo } from 'os';
-import db from '@/db';
 
 const findAuthorsInFiles = async (files) => {
   const authors = [];
