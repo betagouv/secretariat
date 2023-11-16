@@ -45,8 +45,8 @@ import {
   removeEmailsFromMailingList,
 } from './userContractEndingScheduler';
 import {
-  pullRequestSendEmailToTeam,
   pullRequestWatcher,
+  pullRequestWatcherSendEmailToTeam,
 } from './pullRequestWatcher';
 import { setEmailExpired } from '@schedulers/setEmailExpired';
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from './updateProfileScheduler';
@@ -535,7 +535,7 @@ const jobs: Job[] = [
   {
     cronTime: '0 10 * * *', // every day at 10,
     onTick: pullRequestWatcherSendEmailToTeam,
-    isActive: !!config.featureRemindTeamWithPendingPullRequestOnAuthorFile,
+    isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
     name: 'pullRequestWatcherSendEmailToTeam',
     description:
       'Cron job to remind user with pending pull request on author file',
