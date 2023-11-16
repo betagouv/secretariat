@@ -2,9 +2,10 @@ name: Bug Report
 description: File a bug report
 title: '[Bug]: '
 labels: ['bug', 'triage']
-projects: ['octo-org/1', 'octo-org/44']
+projects: ['betagouv/4', 'betagouv/70']
 assignees:
   - octocat
+  - LucasCharrier
 body:
   - type: markdown
     attributes:
