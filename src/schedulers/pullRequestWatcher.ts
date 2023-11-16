@@ -120,14 +120,15 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
       .first()) as DBStartup;
     if (startup && startup.mailing_list) {
       try {
+        let mailingList = buildBetaEmail(startup.mailing_list);
         await sendEmail({
-          toEmail: [config.senderEmail],
+          toEmail: [config.senderEmail || mailingList],
           bcc: [config.senderEmail],
           type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM,
           variables: {
             startup,
-            pr_link,
-            username,
+            pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`,
+            username: author,
           },
         });
       } catch (e) {
