@@ -54,7 +54,7 @@ export interface Member {
   github?: string;
   email?: string;
   missions: Mission[];
-  startups: string[];
+  startups?: string[];
   previously?: string[];
   start: string;
   end: string;
