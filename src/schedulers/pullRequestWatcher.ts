@@ -114,9 +114,10 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
       // if member has more than 1 startup we don't want to notifiy both startup
     }
     const startup: DBStartup | undefined = (await db('startups')
-      .select({
+      .where({
         id: userInfo.startups[0],
       })
+      .select()
       .first()) as DBStartup;
     if (startup && startup.mailing_list) {
       try {
