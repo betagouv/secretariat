@@ -533,7 +533,7 @@ const jobs: Job[] = [
       'Cron job to remind user with pending pull request on author file',
   },
   {
-    cronTime: '10 19 * * *', // every day at 10,
+    cronTime: '0 14 * * *', // every day at 10,
     onTick: pullRequestWatcherSendEmailToTeam,
     isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
     name: 'pullRequestWatcherSendEmailToTeam',
