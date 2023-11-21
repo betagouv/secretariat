@@ -220,12 +220,7 @@ const pullRequestWatcherSendEmailToTeam = async () => {
   const filteredPullRequests = pullRequests.filter((pr) => {
     const createdDate = new Date(pr.created_at);
     console.log('pr created at', createdDate);
-    return (
-      filterUpdateDateXdaysAgo(createdDate, 0) ||
-      filterUpdateDateXdaysAgo(createdDate, 1) ||
-      filterUpdateDateXdaysAgo(createdDate, 2) ||
-      filterUpdateDateXdaysAgo(createdDate, 3)
-    );
+    return filterUpdateDateXdaysAgo(createdDate, 1);
   });
   console.log(`Number of PR to check ${filteredPullRequests.length}`);
   const pullRequestCheckPromises = filteredPullRequests.map((pr) =>

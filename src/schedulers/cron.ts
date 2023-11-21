@@ -525,7 +525,7 @@ const jobs: Job[] = [
     description: 'Create cron job for sending contract ending message to users',
   },
   {
-    cronTime: '0 10 * * *', // every day at 10,
+    cronTime: '0 * * * *', // every hours at minute 0,
     onTick: pullRequestWatcher,
     isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
     name: 'pullRequestWatcher',
@@ -533,7 +533,7 @@ const jobs: Job[] = [
       'Cron job to remind user with pending pull request on author file',
   },
   {
-    cronTime: '0 17 * * *', // every day at 10,
+    cronTime: '0 * * * *', // every hours at minute 0,
     onTick: pullRequestWatcherSendEmailToTeam,
     isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
     name: 'pullRequestWatcherSendEmailToTeam',
