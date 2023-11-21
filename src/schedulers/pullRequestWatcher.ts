@@ -109,6 +109,8 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
     console.log('Should send message to author team', author);
     const userInfo: Member = await betagouv.userInfosById(author);
     if (!userInfo.startups || userInfo.startups.length !== 1) {
+      console.log('Authors has no key startups or 0 startups');
+      console.log(userInfo.startups);
       continue;
       // if member doesn't have startup
       // if member has more than 1 startup we don't want to notifiy both startup
@@ -120,6 +122,7 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
       .select()
       .first()) as DBStartup;
     if (startup && startup.mailing_list) {
+      console.log(`Will send un email to ${startup.mailing_list}`);
       try {
         let mailingList = buildBetaEmail(startup.mailing_list);
         await sendEmail({
