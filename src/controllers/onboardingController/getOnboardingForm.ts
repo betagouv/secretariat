@@ -33,9 +33,6 @@ export async function getFormApi(req, res) {
     (data) => {
       res.json({
         ...data,
-        errors: req.flash('error'),
-        messages: req.flash('message'),
-        request: req,
       });
     },
     (err) => {
@@ -51,7 +48,6 @@ export async function getOnboardingPageData(req, res, onSuccess, onError) {
     const title = 'Mon compte';
     const formValidationErrors = {};
     const startups = await BetaGouv.startupsInfos();
-    console.log('LCS STARTUPS API', startups);
     const users: Member[] = await BetaGouv.getActiveUsers();
     const allUsers: Member[] = await BetaGouv.usersInfos();
     const startupOptions = startups.map((startup) => {
