@@ -126,13 +126,13 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
       try {
         let mailingList = buildBetaEmail(startup.mailing_list);
         await sendEmail({
-          toEmail: [config.senderEmail || mailingList],
+          toEmail: [mailingList],
           bcc: [config.senderEmail],
           type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM,
           variables: {
-            startup,
+            startup: startup.name,
             pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`,
-            username: author,
+            username: (await betagouv.userInfosById(author)).fullname,
           },
         });
       } catch (e) {
