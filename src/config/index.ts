@@ -61,6 +61,9 @@ export default {
   EMAIL_DEFAULT_PLAN:
     process.env.EMAIL_DEFAULT_PLAN || EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
   FRONT_APP_URL: process.env.FRONT_APP_URL,
+  FRONT_APP_EMAIL_TEST: process.env.FRONT_APP_EMAIL_TEST
+    ? process.env.FRONT_APP_EMAIL_TEST.split(',')
+    : [],
   newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
   newsletterSentDay: process.env.NEWSLETTER_SENT_DAY || 'THURSDAY',
   padURL: process.env.PAD_URL || 'https://pad.incubateur.net',
