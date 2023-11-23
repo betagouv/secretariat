@@ -289,7 +289,10 @@ export async function postSignIn(req, res) {
 
     req.session.token = getJwtTokenForUser(dbToken.username);
 
-    if (config.FRONT_APP_URL) {
+    if (
+      config.FRONT_APP_URL &&
+      config.FRONT_APP_EMAIL_TEST.includes(dbToken.username)
+    ) {
       return res.redirect(
         config.FRONT_APP_URL +
           (req.body.next || '/account') +
