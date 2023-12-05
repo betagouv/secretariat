@@ -72,6 +72,7 @@ class routes {
   static API_PUBLIC_POST_BASE_INFO_FORM =
     '/api/public/account/base-info/:username';
   static ACCOUNT_GET_BADGE_REQUEST_PAGE = '/account/badge-demande';
+  static ACCOUNT_GET_BADGE_REQUEST_PAGE_API = '/api/account/badge-demande';
   static API_POST_BADGE_REQUEST = '/api/badge';
   static API_UPDATE_BADGE_REQUEST_STATUS = '/api/badge/status';
 
