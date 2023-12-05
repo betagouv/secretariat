@@ -312,3 +312,48 @@ export async function postSignIn(req, res) {
     return res.redirect('/');
   }
 }
+
+export async function postSignInApi(req, res) {
+  if (!req.body.token) {
+    req.flash('error', `Ce lien de connexion n'est pas valide.`);
+    return res.status(401).json({
+      error: req.flash('error'),
+    });
+  }
+  const token = decodeURIComponent(req.body.token);
+  try {
+    const tokenDbResponse = await knex('login_tokens')
+      .select()
+      .where({ token })
+      .andWhere('expires_at', '>', new Date());
+
+    if (tokenDbResponse.length !== 1) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.status(401).json({
+        error: req.flash('error'),
+      });
+    }
+
+    const dbToken = tokenDbResponse[0];
+    if (dbToken.token !== token) {
+      req.flash('error', 'Ce lien de connexion a expiré.');
+      return res.status(401).json({
+        error: req.flash('error'),
+      });
+    }
+
+    await knex('login_tokens').where({ email: dbToken.email }).del();
+
+    req.session.token = getJwtTokenForUser(dbToken.username);
+    return res.json({
+      url:
+        `${decodeURIComponent(req.body.next) || '/account'}` +
+        `${req.query.anchor ? `#` + req.query.anchor : ''}`,
+    });
+  } catch (err) {
+    console.log(`Erreur dans l'utilisation du login token : ${err}`);
+    return res.status(500).json({
+      error: err,
+    });
+  }
+}
