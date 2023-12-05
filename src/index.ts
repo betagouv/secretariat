@@ -170,6 +170,7 @@ app.use(
       '/login',
       routes.LOGIN_API,
       '/signin',
+      routes.SIGNIN_API,
       '/marrainage/accept',
       '/marrainage/decline',
       '/notifications/github',
@@ -220,6 +221,12 @@ app.post(
   loginController.postLoginApi
 );
 app.get('/signin', loginController.getSignIn);
+app.post(
+  routes.SIGNIN_API,
+  express.json({ type: '*/*' }),
+  loginController.postSignInApi
+);
+
 app.post(routes.SIGNIN, loginController.postSignIn);
 app.get(routes.LOGOUT, logoutController.getLogout);
 app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
