@@ -41,7 +41,10 @@ import {
   getStartupInfoUpdateApi,
   postStartupInfoUpdate,
 } from './controllers/startupController';
-import { getBadgePage } from './controllers/accountController/getBadgePage';
+import {
+  getBadgePage,
+  getBadgePageApi,
+} from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import makeSessionStore from './infra/sessionStore/sessionStore';
@@ -357,6 +360,7 @@ app.post(
   usersController.publicPostBaseInfoUpdate
 );
 app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE, getBadgePage);
+app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API, getBadgePageApi);
 app.post(
   routes.API_POST_BADGE_REQUEST,
   express.json({ type: '*/*' }),
