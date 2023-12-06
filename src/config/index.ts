@@ -34,6 +34,7 @@ const CRON_TASK_ENV_VAR = {
 
 export default {
   ...CRON_TASK_ENV_VAR,
+  AUTH_URL: process.env.AUTH_URL,
   OVH_APP_KEY: process.env.OVH_APP_KEY,
   OVH_APP_SECRET: process.env.OVH_APP_SECRET,
   OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,

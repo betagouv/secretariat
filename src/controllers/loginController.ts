@@ -297,7 +297,7 @@ export async function postSignIn(req, res) {
       config.FRONT_APP_EMAIL_TEST.includes(dbToken.username)
     ) {
       return res.redirect(
-        config.FRONT_APP_URL +
+        (config.AUTH_URL || config.FRONT_APP_URL) +
           (req.body.next || '/account') +
           `${req.query.anchor ? `#` + req.query.anchor : ''}`
       );
