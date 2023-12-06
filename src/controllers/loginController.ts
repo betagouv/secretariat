@@ -265,6 +265,20 @@ export function getSignIn(req, res) {
   });
 }
 
+export function getSignInApi(req, res) {
+  // if (!req.query.token) {
+  //   req.flash('error', `Ce lien de connexion n'est pas valide.`);
+  //   res.redirect('/')
+  // }
+  return res.render('signinapi', {
+    // init params
+    next: req.query.next,
+    // enrich params
+    errors: req.flash('error'),
+    messages: req.flash('message'),
+  });
+}
+
 export async function postSignIn(req, res) {
   if (!req.body.token) {
     req.flash('error', `Ce lien de connexion n'est pas valide.`);
