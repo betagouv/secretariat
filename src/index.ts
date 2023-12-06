@@ -57,8 +57,6 @@ import {
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
 
-app.set('trust proxy', 1);
-
 var whitelist = config.CORS_ORIGIN;
 
 const corsOptions = {
