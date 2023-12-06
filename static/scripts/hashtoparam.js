@@ -11,23 +11,6 @@
         const $elm = document.getElementById('signin_form')
         $elm.action = window.location.pathname + '?' + search.toString();
     }
-    if (hash && window.location.pathname === '/api/signin') {
-        console.log('LCS IN SIGNIN API 1')
-        var tokenInput = document.getElementById('inputToken')
-        tokenInput.setAttribute('value', hash)
-        const $elm = document.getElementById('signin_form')
-        $elm.action = window.location.pathname + '?' + search.toString();
-        fetch('/signin', {
-            redirect: 'follow',
-            method: "POST", // *GET, POST, PUT, DELETE, etc.
-            mode: "cors", // no-cors, *cors, same-origin
-            cache: "no-cache",
-            body: JSON.stringify({
-                token: hash,
-                next: document.getElementById('next').getAttribute('value')
-            })
-        });
-    }
     if (hash && window.location.pathname === '/login' && search.get('next') && !search.get('anchor')) {
         search.set('anchor', hash)
         if (history.pushState) {
@@ -40,6 +23,4 @@
             window.location.search = '?' + search.toString();
         }
     }
-
-
 }());
