@@ -74,7 +74,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: 'POST, PUT, OPTIONS, DELETE, GET',
-  allowedHeaders: 'X-Requested-With, Content-Type',
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override, Set-Cookie, Cookie',
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
