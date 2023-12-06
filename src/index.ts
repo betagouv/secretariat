@@ -57,11 +57,17 @@ import {
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
 
+app.set('trust proxy', 1);
+
 var whitelist = config.CORS_ORIGIN;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || process.env.NODE_ENV === 'test' || !origin) {
+    if (
+      whitelist.indexOf(origin) !== -1 ||
+      process.env.NODE_ENV === 'test' ||
+      !origin
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -155,6 +161,7 @@ app.use(
     cookie: {
       maxAge: 24 * 60 * 60 * 1000 * 7,
       httpOnly: true,
+      domain: config.host,
       secure: process.env.NODE_ENV === 'production' ? true : false,
       sameSite: 'lax',
     },
