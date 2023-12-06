@@ -36,6 +36,7 @@ export async function getFormApi(req, res) {
       });
     },
     (err) => {
+      console.log(err);
       res.status(500).json({
         error: 'Impossible de récupérer vos informations.',
       });
