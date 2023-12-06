@@ -56,12 +56,17 @@ import {
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
+app.set("trust proxy", 1); 
 
 var whitelist = config.CORS_ORIGIN;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || process.env.NODE_ENV === 'test' || !origin) {
+    if (
+      whitelist.indexOf(origin) !== -1 ||
+      process.env.NODE_ENV === 'test' ||
+      !origin
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -69,7 +74,7 @@ const corsOptions = {
   },
   credentials: true,
   methods: 'POST, PUT, OPTIONS, DELETE, GET',
-  allowedHeaders: 'X-Requested-With, Content-Type',
+  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override, Set-Cookie, Cookie',
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
