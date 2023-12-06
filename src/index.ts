@@ -56,17 +56,8 @@ import {
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
-
-var whitelist = config.CORS_ORIGIN;
-
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || process.env.NODE_ENV === 'test') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: config.CORS_ORIGIN,
   credentials: true,
   methods: 'POST, PUT, OPTIONS, DELETE, GET',
   allowedHeaders: 'X-Requested-With, Content-Type',
