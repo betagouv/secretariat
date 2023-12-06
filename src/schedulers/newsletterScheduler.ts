@@ -36,7 +36,7 @@ const computeId = (dateAsString) => {
 
 const createNewsletter = async () => {
   let date = getMonday(new Date()); // get first day of the current week
-  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK * 2); // get next monday (date + 14 days)
+  date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK*2); // get next monday (date + 14 days)
   const pad = new HedgedocApi(
     config.padEmail,
     config.padPassword,
@@ -52,7 +52,7 @@ const createNewsletter = async () => {
       addDays(
         date,
         NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-      )
+      ),
     ),
     __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
     __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(
@@ -79,8 +79,8 @@ const createNewsletter = async () => {
     url: padUrl,
   });
   await sendInfoToChat({
-    text: message,
-  });
+    text: message
+  })
   return padUrl;
 };
 
@@ -131,25 +131,20 @@ export async function newsletterReminder(reminder) {
       sent_at: null,
     })
     .first();
-
+  
   const lastSentNewsletter = await knex('newsletters')
-    .orderBy('sent_at', 'desc')
-    .whereNotNull('sent_at')
-    .first();
+  .orderBy('sent_at', 'desc')
+  .whereNotNull('sent_at')
+  .first();
 
   if (lastSentNewsletter) {
-    const nbOfDays = utils.nbOfDaysBetweenDate(
-      new Date(),
-      lastSentNewsletter.sent_at
-    );
+    const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
     if (nbOfDays < 10) {
-      console.log(
-        `Will not sent newsletter : number of days between last newsletter ${nbOfDays}`
-      );
-      return;
+      console.log(`Will not sent newsletter : number of days between last newsletter ${nbOfDays}`) 
+      return
     }
   }
-
+  
   if (currentNewsletter) {
     await sendInfoToChat({
       text: computeMessageReminder(reminder, currentNewsletter),
@@ -173,25 +168,17 @@ export async function newsletterReminder(reminder) {
 
 export async function getJobOfferContent() {
   const monday = getMonday(new Date()); // get first day of the current week
-  const jobs: JobWTTJ[] = await BetaGouv.getJobsWTTJ();
-  const filteredJobs = jobs.filter(
-    (job) => new Date(job.published_at) > monday
-  );
-  const content = filteredJobs
-    .map((job) => {
-      return `[${job.name.trim()}](https://www.welcometothejungle.com/companies/communaute-beta-gouv/jobs/${
-        job.slug
-      })`;
-    })
-    .join('\n');
-  return content;
+  const jobs : JobWTTJ[] = await BetaGouv.getJobsWTTJ();
+  const filteredJobs = jobs.filter(job => new Date(job.published_at) > monday)
+  const content = filteredJobs.map(job => {
+    return `[${job.name.trim()}](https://www.welcometothejungle.com/companies/communaute-beta-gouv/jobs/${job.slug})`
+  }).join('\n')
+  return content
 }
 
 export { createNewsletter };
 
-export async function sendNewsletterAndCreateNewOne(
-  shouldCreatedNewone = true
-) {
+export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
   const date = new Date();
   const currentNewsletter = await knex('newsletters')
     .where({
@@ -200,17 +187,14 @@ export async function sendNewsletterAndCreateNewOne(
     .first();
 
   const lastSentNewsletter = await knex('newsletters')
-    .orderBy('sent_at', 'desc')
-    .whereNotNull('sent_at')
-    .first();
+  .orderBy('sent_at', 'desc')
+  .whereNotNull('sent_at')
+  .first();
 
   if (lastSentNewsletter) {
-    const nbOfDays = utils.nbOfDaysBetweenDate(
-      new Date(),
-      lastSentNewsletter.sent_at
-    );
+    const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
     if (nbOfDays < 10) {
-      return;
+      return
     }
   }
 
@@ -228,13 +212,13 @@ export async function sendNewsletterAndCreateNewOne(
     const html = renderHtmlFromMd(newsletterContent);
 
     await sendCampaignEmail({
-      mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
-      type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-      variables: undefined,
-      campaignName: `${getTitle(newsletterContent)}`,
-      subject: `${getTitle(newsletterContent)}`,
-      htmlContent: html,
-    });
+        mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+        variables: undefined,
+        campaignName: `${getTitle(newsletterContent)}`,
+        subject: `${getTitle(newsletterContent)}`,
+        htmlContent: html
+    })
 
     await sendEmail({
       toEmail: [...config.newsletterBroadcastList.split(',')],
@@ -242,9 +226,9 @@ export async function sendNewsletterAndCreateNewOne(
       variables: {
         body: html,
         subject: `${getTitle(newsletterContent)}`,
-      },
-    });
-
+      }
+    })
+    
     await knex('newsletters')
       .where({
         id: currentNewsletter.id,
