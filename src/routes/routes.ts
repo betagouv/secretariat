@@ -25,6 +25,8 @@ class routes {
   static ONBOARDING = '/onboarding';
   static ONBOARDING_API = '/api/onboarding';
   static ONBOARDING_ACTION = '/onboarding';
+  static ONBOARDING_ACTION_API: string = `/api/onboarding`;
+
   // users
   static USER_CREATE_EMAIL = '/users/:username/email';
   static USER_DELETE_EMAIL = '/users/:username/email/delete';

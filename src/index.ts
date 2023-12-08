@@ -56,7 +56,7 @@ import {
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
 export const app = express();
-app.set("trust proxy", 1); 
+app.set('trust proxy', 1);
 
 var whitelist = config.CORS_ORIGIN;
 
@@ -74,7 +74,8 @@ const corsOptions = {
   },
   credentials: true,
   methods: 'POST, PUT, OPTIONS, DELETE, GET',
-  allowedHeaders: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override, Set-Cookie, Cookie',
+  allowedHeaders:
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override, Set-Cookie, Cookie',
 };
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
@@ -459,7 +460,13 @@ app.get(routes.ONBOARDING_API, onboardingController.getFormApi);
 app.post(
   routes.ONBOARDING_ACTION,
   checkSchema(onboardingController.postFormSchema),
-  onboardingController.postForm
+  onboardingController.postOnboardingForm
+);
+app.post(
+  routes.ONBOARDING_ACTION_API,
+  checkSchema(onboardingController.postFormSchema),
+  express.json({ type: '*/*' }),
+  onboardingController.postOnboardingFormApi
 );
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post(
