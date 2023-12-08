@@ -495,7 +495,9 @@ app.put(
   accountController.updateCommunicationEmailApi
 );
 
-app.get('/newsletters', newsletterController.getNewsletter);
+app.get(routes.NEWSLETTERS, newsletterController.getNewsletterPage);
+app.get(routes.NEWSLETTERS_API, newsletterController.getNewsletterApi);
+
 app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
