@@ -459,7 +459,13 @@ app.get(routes.ONBOARDING_API, onboardingController.getFormApi);
 app.post(
   routes.ONBOARDING_ACTION,
   checkSchema(onboardingController.postFormSchema),
-  onboardingController.postForm
+  onboardingController.postOnboardingForm
+);
+app.post(
+  routes.ONBOARDING_ACTION_API,
+  checkSchema(onboardingController.postFormSchema),
+  express.json({ type: '*/*' }),
+  onboardingController.postOnboardingFormApi
 );
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
 app.post(
