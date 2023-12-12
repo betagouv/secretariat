@@ -151,11 +151,6 @@ async function getUserPageData(req, res, onSuccess, onError) {
   const isCurrentUser = req.auth.id === username;
 
   try {
-    if (isCurrentUser) {
-      res.redirect('/account');
-      return;
-    }
-
     const [user]: [MemberWithPermission] = await Promise.all([
       utils.userInfos(username, isCurrentUser),
     ]);
