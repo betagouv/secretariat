@@ -45,8 +45,14 @@ import {
   getBadgePage,
   getBadgePageApi,
 } from './controllers/accountController/getBadgePage';
-import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
-import { updateBadgeRequestStatus } from './controllers/badgeRequestsController/updateBadgeRequestStatus';
+import {
+  postBadgeRenewalRequest,
+  postBadgeRequest,
+} from './controllers/badgeRequestsController/postBadgeRequest';
+import {
+  updateBadgeRenewalRequestStatus,
+  updateBadgeRequestStatus,
+} from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
@@ -55,6 +61,7 @@ import {
   getStartupInfoCreate,
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
+import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
 export const app = express();
 app.set('trust proxy', 1);
 
@@ -383,15 +390,28 @@ app.post(
 );
 app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE, getBadgePage);
 app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API, getBadgePageApi);
+app.get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API, getBadgeRenewalPage);
+
 app.post(
   routes.API_POST_BADGE_REQUEST,
   express.json({ type: '*/*' }),
   postBadgeRequest
 );
+app.post(
+  routes.API_POST_BADGE_RENEWAL_REQUEST,
+  express.json({ type: '*/*' }),
+  postBadgeRenewalRequest
+);
 app.put(
   routes.API_UPDATE_BADGE_REQUEST_STATUS,
   express.json({ type: '*/*' }),
   updateBadgeRequestStatus
+);
+
+app.put(
+  routes.API_UPDATE_BADGE_RENEWAL_REQUEST_STATUS,
+  express.json({ type: '*/*' }),
+  updateBadgeRenewalRequestStatus
 );
 
 app.get(routes.GET_COMMUNITY, communityController.getCommunity);
