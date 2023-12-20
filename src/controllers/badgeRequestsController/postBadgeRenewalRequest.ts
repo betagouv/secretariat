@@ -32,12 +32,9 @@ export async function postBadgeRenewalRequest(req, res) {
     BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
   );
   if (!!badgeRequest) {
-    try {
-      await DS.getDossierForDemarche(badgeRequest.dossier_number);
-    } catch (e) {
-      console.log(e);
+    const dossier = await DS.getDossierForDemarche(badgeRequest.dossier_number);
+    if (!dossier) {
       isRequestPendingToBeFilled = true;
-      // dossier is no filled yet
     }
   }
   if (!isRequestPendingToBeFilled) {

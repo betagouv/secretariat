@@ -33,10 +33,8 @@ export async function postBadgeRequest(req, res) {
   );
   let isRequestPendingToBeFilled = false;
   if (badgeRequest) {
-    try {
-      await DS.getDossierForDemarche(badgeRequest.dossier_number);
-    } catch (e) {
-      // dossier is no filled yet
+    const dossier = await DS.getDossierForDemarche(badgeRequest.dossier_number);
+    if (!dossier) {
       isRequestPendingToBeFilled = true;
     }
   }

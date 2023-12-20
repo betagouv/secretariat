@@ -425,7 +425,7 @@ const makeDS = ({ DS_TOKEN }) => {
         if (resp.data.data) {
           return resp.data.data.dossier;
         } else {
-          throw new Error('Dossier not found');
+          return null;
         }
       });
   }

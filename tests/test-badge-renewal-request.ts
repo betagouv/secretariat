@@ -31,7 +31,7 @@ describe('POST /api/badge/renewal authenticated', () => {
     getToken.restore();
   });
 
-  it('should be able to post badge request', async () => {
+  it('should be able to post badge renewal request', async () => {
     const res = await chai
       .request(app)
       .post(routes.API_POST_BADGE_RENEWAL_REQUEST)
