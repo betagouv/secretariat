@@ -20,6 +20,12 @@ const makeFakeMathods = () => {
         dossier_id: `${dossierInt}==`,
         dossier_number: dossierInt,
         dossier_prefill_token: 'untoken',
+        annotations: [
+          {
+            label: 'Status',
+            stringValue: '',
+          },
+        ],
       };
       dossiers.push(dossier);
       return dossier;
