@@ -439,6 +439,7 @@ const makeDS = ({ DS_TOKEN }) => {
     dossier_id: string;
     dossier_number: number;
     dossier_prefill_token: string;
+    annotations: { label: string; stringValue: string }[];
   }> {
     return axios
       .post(
