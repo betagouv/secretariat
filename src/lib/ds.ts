@@ -421,7 +421,13 @@ const makeDS = ({ DS_TOKEN }) => {
         }),
         getDSConfig()
       )
-      .then((resp) => resp.data.data.dossier);
+      .then((resp) => {
+        if (resp.data) {
+          return resp.data.data.dossier;
+        } else {
+          throw new Error('Dossier not found');
+        }
+      });
   }
 
   function createPrefillDossier(
