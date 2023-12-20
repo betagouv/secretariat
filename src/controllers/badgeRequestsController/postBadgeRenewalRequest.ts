@@ -7,7 +7,6 @@ import DS from '@/config/ds/ds.config';
 import config from '@/config';
 import { MemberWithPermission } from '@/models/member';
 import { capitalizeWords, userInfos } from '../utils';
-import { BadgeDossier } from '@/models/badgeDemande';
 
 const buildRequestId = () => {
   return '';

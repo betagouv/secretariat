@@ -5,10 +5,7 @@ import { BadgePage } from '@/views';
 import DS from '@/config/ds/ds.config';
 import { BadgeDossier } from '@/models/badgeDemande';
 import { BADGE_REQUEST, BadgeRequest } from '@/models/badgeRequests';
-import {
-  getBadgeRequest,
-  getBadgeRequestWithStatus,
-} from '@/db/dbBadgeRequests';
+import { getBadgeRequestWithStatus } from '@/db/dbBadgeRequests';
 import db from '@/db';
 import { DBUser } from '@/models/dbUser';
 
