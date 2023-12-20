@@ -1,6 +1,5 @@
 import {
   createBadgeRequest,
-  getBadgeRequest,
   getBadgeRequestWithStatus,
 } from '@/db/dbBadgeRequests';
 import { BadgeRequest, BADGE_REQUEST } from '@/models/badgeRequests';
