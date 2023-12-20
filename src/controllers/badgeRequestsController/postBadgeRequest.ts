@@ -39,7 +39,12 @@ export async function postBadgeRequest(req, res) {
       let dossier: BadgeDossier = (await DS.getDossierForDemarche(
         badgeRequest.dossier_number
       )) as unknown as BadgeDossier;
-      if (['en_construction', 'en_instruction'].includes(dossier.state)) {
+
+      if (
+        ['en_construction', 'en_instruction', 'prefilled'].includes(
+          dossier.state
+        )
+      ) {
         isRequestPending = true;
       }
     } catch (e) {

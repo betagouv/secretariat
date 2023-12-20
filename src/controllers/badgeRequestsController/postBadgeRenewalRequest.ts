@@ -32,12 +32,17 @@ export async function postBadgeRenewalRequest(req, res) {
     req.auth.id,
     BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
   );
-  if (badgeRequest) {
+  if (!!badgeRequest) {
     try {
       let dossier: BadgeDossier = (await DS.getDossierForDemarche(
         badgeRequest.dossier_number
       )) as unknown as BadgeDossier;
-      if (['en_construction', 'en_instruction'].includes(dossier.state)) {
+
+      if (
+        ['en_construction', 'en_instruction', 'prefilled'].includes(
+          dossier.state
+        )
+      ) {
         isRequestPending = true;
       }
     } catch (e) {
