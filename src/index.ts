@@ -45,10 +45,7 @@ import {
   getBadgePage,
   getBadgePageApi,
 } from './controllers/accountController/getBadgePage';
-import {
-  postBadgeRenewalRequest,
-  postBadgeRequest,
-} from './controllers/badgeRequestsController/postBadgeRequest';
+import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import {
   updateBadgeRenewalRequestStatus,
   updateBadgeRequestStatus,
@@ -62,6 +59,7 @@ import {
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
 import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
+import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
 export const app = express();
 app.set('trust proxy', 1);
 
@@ -388,9 +386,9 @@ app.post(
   express.json({ type: '*/*' }),
   usersController.publicPostBaseInfoUpdate
 );
+app.get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API, getBadgeRenewalPage);
 app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE, getBadgePage);
 app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API, getBadgePageApi);
-app.get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API, getBadgeRenewalPage);
 
 app.post(
   routes.API_POST_BADGE_REQUEST,

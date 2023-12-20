@@ -44,5 +44,8 @@ export const getBadgeRequestWithStatus = (
   username: string,
   status: BadgeRequest['status']
 ): Promise<BadgeRequest | undefined> => {
-  return db(BADGE_REQUEST_TABLE).where({ username, status }).first();
+  return db(BADGE_REQUEST_TABLE)
+    .where({ username, status })
+    .orderBy('created_at', 'desc')
+    .first();
 };

@@ -73,7 +73,7 @@ describe('GET /api/account/badge-demande/renewal page authenticated', () => {
     getToken.restore();
   });
 
-  it('should be able to get badge request page', (done) => {
+  it('should be able to get badge renewal request page', (done) => {
     chai
       .request(app)
       .get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API)

@@ -1,9 +1,13 @@
-import { createBadgeRequest, getBadgeRequest } from '@/db/dbBadgeRequests';
+import {
+  createBadgeRequest,
+  getBadgeRequestWithStatus,
+} from '@/db/dbBadgeRequests';
 import { BadgeRequest, BADGE_REQUEST } from '@/models/badgeRequests';
 import DS from '@/config/ds/ds.config';
 import config from '@/config';
 import { MemberWithPermission } from '@/models/member';
 import { capitalizeWords, userInfos } from '../utils';
+import { BadgeDossier } from '@/models/badgeDemande';
 
 const buildRequestId = () => {
   return '';
@@ -23,20 +27,34 @@ export async function postBadgeRenewalRequest(req, res) {
   ]);
   const endDate = currentUser.userInfos.end;
   const startDate = computeStartDate();
-
-  let badgeRequest: BadgeRequest = await getBadgeRequest(req.auth.id);
-
-  if (!badgeRequest) {
+  let isRequestPending = false;
+  let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
+    req.auth.id,
+    BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
+  );
+  if (badgeRequest) {
+    try {
+      let dossier: BadgeDossier = (await DS.getDossierForDemarche(
+        badgeRequest.dossier_number
+      )) as unknown as BadgeDossier;
+      if (['en_construction', 'en_instruction'].includes(dossier.state)) {
+        isRequestPending = true;
+      }
+    } catch (e) {
+      // dossier is no filled yet
+    }
+  }
+  if (!isRequestPending) {
     try {
       const names = req.auth.id.split('.');
       const firstname = capitalizeWords(names.shift());
       const lastname = names.map((name) => capitalizeWords(name)).join(' ');
       let dossier = (await DS.createPrefillDossier(
-        config.DS_DEMARCHE_RENOUVELLEMENT_BADGE_NUMBER,
+        config.DS_DEMARCHE_RENEWAL_BADGE_NUMBER,
         {
-          firstname,
-          lastname,
-          date: endDate,
+          identite_prenom: firstname,
+          identite_nom: lastname,
+          champ_Q2hhbXAtMzcwOTI5Mw: endDate,
         }
       )) as unknown as {
         dossier_number: number;
@@ -56,7 +74,7 @@ export async function postBadgeRenewalRequest(req, res) {
         });
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
   return res.status(200).json({

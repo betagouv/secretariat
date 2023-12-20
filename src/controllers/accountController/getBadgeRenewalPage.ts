@@ -8,8 +8,7 @@ import { getBadgeRequestWithStatus } from '@/db/dbBadgeRequests';
 import db from '@/db';
 import { DBUser } from '@/models/dbUser';
 
-export async function getBadgeRenewalPage(req, res, onSuccess, onError) {
-  console.log('LCS GET BADGE RENEWAL REQUEST');
+export async function getBadgeRenewalPage(req, res) {
   try {
     const [currentUser, dbUser]: [MemberWithPermission, DBUser] =
       await Promise.all([

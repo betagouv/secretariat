@@ -1,28 +1,27 @@
-import axios from "axios";
-
-
+import axios from 'axios';
 
 const makeDS = ({ DS_TOKEN }) => {
-    const getDSConfig = () => {
-        if (!DS_TOKEN) {
-          const errorMessage =
-            'Unable to launch ds api calls without env var DS_TOKEN';
-          console.error(errorMessage);
-          throw new Error(errorMessage);
-        }
-        return {
-          headers: {
-            Authorization: `Bearer ${DS_TOKEN}`,
-            'Content-Type': 'application/json'
-          },
-        };
+  const getDSConfig = () => {
+    if (!DS_TOKEN) {
+      const errorMessage =
+        'Unable to launch ds api calls without env var DS_TOKEN';
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${DS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
     };
-    
-    function getAllDossiersForDemarche(demarcheId) {
-        return axios.post(
-            `https://www.demarches-simplifiees.fr/api/v2/graphql`,
-            JSON.stringify({ 
-                query: `
+  };
+
+  function getAllDossiersForDemarche(demarcheId) {
+    return axios
+      .post(
+        `https://www.demarches-simplifiees.fr/api/v2/graphql`,
+        JSON.stringify({
+          query: `
                     query getDemarche($demarcheNumber: Int!) {
                         demarche(number: $demarcheNumber) {
                             id
@@ -43,18 +42,21 @@ const makeDS = ({ DS_TOKEN }) => {
                             }
                         }
                     }`,
-                variables: {
-                    "demarcheNumber": demarcheId,
-                }
-            }), getDSConfig()).then(resp => resp.data.data.demarche.dossiers);
-    }
-    
-    
-    function getDossierForDemarche(dossierNumber){
-        return axios.post(
-            `https://www.demarches-simplifiees.fr/api/v2/graphql`,
-            JSON.stringify({ 
-                query: `
+          variables: {
+            demarcheNumber: demarcheId,
+          },
+        }),
+        getDSConfig()
+      )
+      .then((resp) => resp.data.data.demarche.dossiers);
+  }
+
+  function getDossierForDemarche(dossierNumber) {
+    return axios
+      .post(
+        `https://www.demarches-simplifiees.fr/api/v2/graphql`,
+        JSON.stringify({
+          query: `
                     query getDossier(
                         $dossierNumber: Int!
                         $includeRevision: Boolean = false
@@ -413,50 +415,50 @@ const makeDS = ({ DS_TOKEN }) => {
                       }
                     
                 `,
-                variables: {
-                    "dossierNumber": dossierNumber
-                }})
-        , getDSConfig()).then(resp => resp.data.data.dossier);
-    }
+          variables: {
+            dossierNumber: dossierNumber,
+          },
+        }),
+        getDSConfig()
+      )
+      .then((resp) => resp.data.data.dossier);
+  }
 
-    function createPrefillDossier(demarcheId, {
-        firstname,
-        lastname,
-        date,
-        attributaire
-    }) : Promise<{  
-          dossier_url: string,
-          state: string,
-          dossier_id: string,
-          dossier_number: number,
-          dossier_prefill_token: string
-    }> {
-        return axios.post(`https://www.demarches-simplifiees.fr/api/public/v1/demarches/${demarcheId}/dossiers`, {
-          "champ_Q2hhbXAtNjYxNzM5": firstname,
-          "champ_Q2hhbXAtNjYxNzM3": lastname,
-          "champ_Q2hhbXAtNjYxNzM4": attributaire.split('/')[1],
-          "champ_Q2hhbXAtNjcxODAy": date,
-          "champ_Q2hhbXAtMzE0MzkxNA":["Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine"],
-          // "champ_Q2hhbXAtMzE0MzkxNA":["Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine","Parking"],
-          // "champ_Q2hhbXAtMzE4MjQ0Ng":"Texte court",
-          // "champ_Q2hhbXAtMzE4MjQ0Nw":"true",
-          // "champ_Q2hhbXAtMzE4MjQ0Mw":"Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine"
-        }, {
+  function createPrefillDossier(
+    demarcheId,
+    params
+  ): Promise<{
+    dossier_url: string;
+    state: string;
+    dossier_id: string;
+    dossier_number: number;
+    dossier_prefill_token: string;
+  }> {
+    return axios
+      .post(
+        `https://www.demarches-simplifiees.fr/api/public/v1/demarches/${demarcheId}/dossiers`,
+        {
+          ...params,
+        },
+        {
           headers: {
-            'Content-Type': 'application/json'
-          }
-        }).then(resp => {
-          return resp.data
-        }).catch(e => {
-          console.log(e)
-        })
-    }
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .then((resp) => {
+        return resp.data;
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }
 
-    return {
-        getDossierForDemarche,
-        getAllDossiersForDemarche,
-        createPrefillDossier
-    }
-}
+  return {
+    getDossierForDemarche,
+    getAllDossiersForDemarche,
+    createPrefillDossier,
+  };
+};
 
-export default makeDS
+export default makeDS;
