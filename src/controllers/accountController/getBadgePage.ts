@@ -4,8 +4,8 @@ import { MemberWithPermission } from '@models/member';
 import { BadgePage } from '@/views';
 import DS from '@/config/ds/ds.config';
 import { BadgeDossier } from '@/models/badgeDemande';
-import { BadgeRequest } from '@/models/badgeRequests';
-import { getBadgeRequest } from '@/db/dbBadgeRequests';
+import { BADGE_REQUEST, BadgeRequest } from '@/models/badgeRequests';
+import { getBadgeRequestWithStatus } from '@/db/dbBadgeRequests';
 import db from '@/db';
 import { DBUser } from '@/models/dbUser';
 
@@ -54,7 +54,10 @@ export async function getBadge(req, res, onSuccess, onError) {
         db('users').where({ username: req.auth.id }).first(),
       ]);
     // const dossiers = await DS.getAllDossiersForDemarche(config.DS_DEMARCHE_NUMBER)
-    let badgeRequest: BadgeRequest = await getBadgeRequest(req.auth.id);
+    let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
+      req.auth.id,
+      BADGE_REQUEST.BADGE_REQUEST_PENDING
+    );
     let dossier;
     if (badgeRequest) {
       try {

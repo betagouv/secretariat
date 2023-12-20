@@ -7,7 +7,6 @@ import DS from '@/config/ds/ds.config';
 import config from '@/config';
 import { MemberWithPermission } from '@/models/member';
 import { capitalizeWords, userInfos } from '../utils';
-import { BadgeDossier } from '@/models/badgeDemande';
 
 const buildRequestId = () => {
   return '';
@@ -32,25 +31,14 @@ export async function postBadgeRequest(req, res) {
     req.auth.id,
     BADGE_REQUEST.BADGE_REQUEST_PENDING
   );
-  let isRequestPending = false;
+  let isRequestPendingToBeFilled = false;
   if (badgeRequest) {
-    try {
-      let dossier: BadgeDossier = (await DS.getDossierForDemarche(
-        badgeRequest.dossier_number
-      )) as unknown as BadgeDossier;
-
-      if (
-        ['en_construction', 'en_instruction', 'prefilled'].includes(
-          dossier.state
-        )
-      ) {
-        isRequestPending = true;
-      }
-    } catch (e) {
-      // dossier is no filled yet
+    const dossier = await DS.getDossierForDemarche(badgeRequest.dossier_number);
+    if (!dossier) {
+      isRequestPendingToBeFilled = true;
     }
   }
-  if (!isRequestPending) {
+  if (!isRequestPendingToBeFilled) {
     try {
       const names = req.auth.id.split('.');
       const firstname = capitalizeWords(names.shift());

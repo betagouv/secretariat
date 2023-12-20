@@ -9,7 +9,9 @@ const makeFakeMathods = () => {
       return dossiers;
     },
     getDossierForDemarche: async (dossierNumber) => {
-      return dossiers.find((d) => d.dossier_number === dossierNumber);
+      return dossiers.find(
+        (d) => d.dossier_number === dossierNumber && d.state !== 'prefilled'
+      );
     },
     createPrefillDossier: async (demarcheNumber, {}) => {
       dossierInt = dossierInt + 1;
