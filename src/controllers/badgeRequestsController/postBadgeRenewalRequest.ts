@@ -21,19 +21,18 @@ const computeStartDate = () => {
   return date;
 };
 
-export async function postBadgeRequest(req, res) {
+export async function postBadgeRenewalRequest(req, res) {
   const [currentUser]: [MemberWithPermission] = await Promise.all([
     (async () => userInfos(req.auth.id, true))(),
   ]);
   const endDate = currentUser.userInfos.end;
   const startDate = computeStartDate();
-
+  let isRequestPending = false;
   let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
     req.auth.id,
-    BADGE_REQUEST.BADGE_REQUEST_PENDING
+    BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
   );
-  let isRequestPending = false;
-  if (badgeRequest) {
+  if (!!badgeRequest) {
     try {
       let dossier: BadgeDossier = (await DS.getDossierForDemarche(
         badgeRequest.dossier_number
@@ -55,23 +54,14 @@ export async function postBadgeRequest(req, res) {
       const names = req.auth.id.split('.');
       const firstname = capitalizeWords(names.shift());
       const lastname = names.map((name) => capitalizeWords(name)).join(' ');
-      let dossier = (await DS.createPrefillDossier(config.DS_DEMARCHE_NUMBER, {
-        champ_Q2hhbXAtNjYxNzM5: firstname,
-        champ_Q2hhbXAtNjYxNzM3: lastname,
-        identite_prenom: firstname,
-        identite_nom: lastname,
-        champ_Q2hhbXAtNjYxNzM4: currentUser.userInfos.employer
-          ? currentUser.userInfos.employer.split('/')[1]
-          : '',
-        champ_Q2hhbXAtNjcxODAy: endDate,
-        champ_Q2hhbXAtMzE0MzkxNA: [
-          'Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine',
-        ],
-        // "champ_Q2hhbXAtMzE0MzkxNA":["Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine","Parking"],
-        // "champ_Q2hhbXAtMzE4MjQ0Ng":"Texte court",
-        // "champ_Q2hhbXAtMzE4MjQ0Nw":"true",
-        // "champ_Q2hhbXAtMzE4MjQ0Mw":"Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine"
-      })) as unknown as {
+      let dossier = (await DS.createPrefillDossier(
+        config.DS_DEMARCHE_RENEWAL_BADGE_NUMBER,
+        {
+          identite_prenom: firstname,
+          identite_nom: lastname,
+          champ_Q2hhbXAtMzcwOTI5Mw: endDate,
+        }
+      )) as unknown as {
         dossier_number: number;
         dossier_url: string;
         dossier_prefill_token: string;
@@ -80,7 +70,7 @@ export async function postBadgeRequest(req, res) {
         let dossier_number = dossier.dossier_number;
         badgeRequest = await createBadgeRequest({
           username: req.auth.id,
-          status: BADGE_REQUEST.BADGE_REQUEST_PENDING,
+          status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
           start_date: startDate,
           end_date: new Date(endDate),
           dossier_number,

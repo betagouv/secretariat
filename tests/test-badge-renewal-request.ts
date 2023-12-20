@@ -8,18 +8,18 @@ import * as session from '@/helpers/session';
 
 chai.use(chaiHttp);
 
-describe('POST /api/badge unauthenticated', () => {
+describe('POST /api/badge/renewal unauthenticated', () => {
   it('should not be able to post badge request if not connected', async () => {
     const res = await chai
       .request(app)
-      .post(routes.API_POST_BADGE_REQUEST)
+      .post(routes.API_POST_BADGE_RENEWAL_REQUEST)
       .send({});
 
     res.should.have.status(401);
   });
 });
 
-describe('POST /api/badge authenticated', () => {
+describe('POST /api/badge/renewal authenticated', () => {
   let getToken;
 
   beforeEach(() => {
@@ -34,13 +34,13 @@ describe('POST /api/badge authenticated', () => {
   it('should be able to post badge request', async () => {
     const res = await chai
       .request(app)
-      .post(routes.API_POST_BADGE_REQUEST)
+      .post(routes.API_POST_BADGE_RENEWAL_REQUEST)
       .set('content-type', 'application/json')
       .send();
     res.should.have.status(200);
     const res2 = await chai
       .request(app)
-      .post(routes.API_POST_BADGE_REQUEST)
+      .post(routes.API_POST_BADGE_RENEWAL_REQUEST)
       .set('content-type', 'application/json')
       .send();
     res2.should.have.status(200);
@@ -48,32 +48,11 @@ describe('POST /api/badge authenticated', () => {
   });
 });
 
-describe('POST /api/badge/status', () => {
-  let getToken;
-
-  beforeEach(() => {
-    getToken = sinon.stub(session, 'getToken');
-    getToken.returns(utils.getJWT('membre.actif'));
-  });
-
-  afterEach(() => {
-    getToken.restore();
-  });
-
-  it('should be able to update badge request', async () => {
-    const res = await chai
-      .request(app)
-      .put(routes.API_UPDATE_BADGE_REQUEST_STATUS)
-      .set('content-type', 'application/json');
-    res.should.have.status(200);
-  });
-});
-
-describe('GET /account/badge page unauthenticated', () => {
+describe('GET /api/account/badge-demande/renewal page unauthenticated', () => {
   it('should not be able to get badge request page', (done) => {
     chai
       .request(app)
-      .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE)
+      .get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API)
       .redirects(0)
       .end((err, res) => {
         res.should.have.status(302);
@@ -82,7 +61,7 @@ describe('GET /account/badge page unauthenticated', () => {
   });
 });
 
-describe('GET /account/badge page authenticated', () => {
+describe('GET /api/account/badge-demande/renewal page authenticated', () => {
   let getToken;
 
   beforeEach(() => {
@@ -94,21 +73,10 @@ describe('GET /account/badge page authenticated', () => {
     getToken.restore();
   });
 
-  it('should be able to get badge request page', (done) => {
+  it('should be able to get badge renewal request page', (done) => {
     chai
       .request(app)
-      .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE)
-      .redirects(0)
-      .end((err, res) => {
-        res.should.have.status(200);
-        done();
-      });
-  });
-
-  it('should be able to get badge request page api', (done) => {
-    chai
-      .request(app)
-      .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API)
+      .get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API)
       .redirects(0)
       .end((err, res) => {
         res.should.have.status(200);

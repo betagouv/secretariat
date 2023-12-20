@@ -42,21 +42,17 @@ export function getMattermostAdminApi(req, res) {
 
 async function getMattermostAdminPageData(req, res, onSuccess, onError) {
   let users = [];
-  console.log('LCS TEST 1');
 
   if (process.env.NODE_ENV === 'production') {
     users = await getMattermostUsersWithStatus({
       nbDays: 90,
     });
   }
-  console.log('LCS TEST 2');
-
 
   const channels: MattermostChannel[] = await getAllChannels(
     config.mattermostTeamId
   );
   try {
-    console.log('LCS TEST 3');
     const title = 'Admin Mattermost';
     return onSuccess({
       title,

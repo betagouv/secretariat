@@ -89,7 +89,6 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
       })
       .orderBy('created_at', 'desc')
       .first();
-    console.log('LCS TEST');
     onSuccess({
       title,
       formValidationErrors,
