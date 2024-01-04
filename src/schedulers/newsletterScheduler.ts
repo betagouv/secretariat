@@ -215,7 +215,7 @@ export async function sendNewsletterAndCreateNewOne(
   }
 
   if (currentNewsletter) {
-    if (config.FEATURE_SEND_NEWSLETTER) {
+    if (config.FEATURE_SEND_NEWSLETTER || process.env.NODE_ENV === 'test') {
       const pad = new HedgedocApi(
         config.padEmail,
         config.padPassword,
