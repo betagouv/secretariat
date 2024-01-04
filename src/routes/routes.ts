@@ -21,6 +21,7 @@ class routes {
   static ADMIN_MATTERMOST_API = '/api/admin/mattermost';
   static ADMIN_MATTERMOST_MESSAGE_API = '/api/admin/mattermost/message/users';
   static ADMIN_MATTERMOST_SEND_MESSAGE = '/admin/mattermost/send-message';
+  static ADMIN_SENDINBLUE = '/admin/sendinblue';
   // onboarding
   static ONBOARDING = '/onboarding';
   static ONBOARDING_API = '/api/onboarding';

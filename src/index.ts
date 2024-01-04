@@ -471,6 +471,12 @@ app.post(
   express.json({ type: '*/*' }),
   adminController.sendMessageToUsersOnChat
 );
+app.get(
+  routes.ADMIN_SENDINBLUE,
+  permit(MemberRole.MEMBER_ROLE_ADMIN),
+  express.json({ type: '*/*' }),
+  adminController.getSendinblueInfo
+);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.get(routes.ONBOARDING_API, onboardingController.getFormApi);

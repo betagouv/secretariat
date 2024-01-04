@@ -218,6 +218,10 @@ export default {
     ? process.env.MARRAINAGE_ONBOARDER_LIST.split(',')
     : undefined,
   SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
+  SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
+  SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,
+  SIB_APIKEY_TECH_PRIVATE: process.env.SIB_APIKEY_TECH_PRIVATE,
+  SIB_APIKEY_TECH_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,
   tchap_api: process.env.TCHAP_API,
   HASH_SALT: process.env.HASH_SALT,
   REDIS_URL: process.env.REDIS_URL,
