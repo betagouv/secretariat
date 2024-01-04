@@ -321,7 +321,7 @@ export async function getAllTransacBlockedContacts({
 }: {
   startDate: Date;
   endDate: Date;
-  senders: string[];
+  senders?: string[];
   offset: number;
 }): Promise<Contact[]> {
   const limit = 100;

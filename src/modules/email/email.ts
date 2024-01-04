@@ -364,7 +364,7 @@ export type GetAllTransacBlockedContacts = (props: {
   startDate: Date;
   endDate: Date;
   offset: number;
-  senders: string[];
+  senders?: string[];
 }) => Promise<Contact[]>;
 
 export type GetAllContacts = (props: { offset: number }) => Promise<Contact[]>;
