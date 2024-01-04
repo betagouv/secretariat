@@ -131,28 +131,33 @@ export async function newsletterReminder(reminder) {
       sent_at: null,
     })
     .first();
-  
+
   const lastSentNewsletter = await knex('newsletters')
-  .orderBy('sent_at', 'desc')
-  .whereNotNull('sent_at')
-  .first();
+    .orderBy('sent_at', 'desc')
+    .whereNotNull('sent_at')
+    .first();
 
   if (lastSentNewsletter) {
-    const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
+    const nbOfDays = utils.nbOfDaysBetweenDate(
+      new Date(),
+      lastSentNewsletter.sent_at
+    );
     if (nbOfDays < 10) {
-      console.log(`Will not sent newsletter : number of days between last newsletter ${nbOfDays}`) 
-      return
+      console.log(
+        `Will not sent newsletter : number of days between last newsletter ${nbOfDays}`
+      );
+      return;
     }
   }
-  
+
   if (currentNewsletter) {
     await sendInfoToChat({
       text: computeMessageReminder(reminder, currentNewsletter),
       channel: 'general',
       extra: {
         username: 'Pikachu (équipe Communauté beta.gouv.fr)',
-        icon_url: config.NEWSLETTER_BOT_ICON_URL
-      }
+        icon_url: config.NEWSLETTER_BOT_ICON_URL,
+      },
     });
     await sendInfoToChat({
       text: computeMessageReminder(reminder, currentNewsletter),
@@ -160,25 +165,33 @@ export async function newsletterReminder(reminder) {
       space: 'dinum',
       extra: {
         username: 'Pikachu (équipe Communauté beta.gouv.fr)',
-        icon_url: config.NEWSLETTER_BOT_ICON_URL
-      }
+        icon_url: config.NEWSLETTER_BOT_ICON_URL,
+      },
     });
   }
 }
 
 export async function getJobOfferContent() {
   const monday = getMonday(new Date()); // get first day of the current week
-  const jobs : JobWTTJ[] = await BetaGouv.getJobsWTTJ();
-  const filteredJobs = jobs.filter(job => new Date(job.published_at) > monday)
-  const content = filteredJobs.map(job => {
-    return `[${job.name.trim()}](https://www.welcometothejungle.com/companies/communaute-beta-gouv/jobs/${job.slug})`
-  }).join('\n')
-  return content
+  const jobs: JobWTTJ[] = await BetaGouv.getJobsWTTJ();
+  const filteredJobs = jobs.filter(
+    (job) => new Date(job.published_at) > monday
+  );
+  const content = filteredJobs
+    .map((job) => {
+      return `[${job.name.trim()}](https://www.welcometothejungle.com/companies/communaute-beta-gouv/jobs/${
+        job.slug
+      })`;
+    })
+    .join('\n');
+  return content;
 }
 
 export { createNewsletter };
 
-export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
+export async function sendNewsletterAndCreateNewOne(
+  shouldCreatedNewone = true
+) {
   const date = new Date();
   const currentNewsletter = await knex('newsletters')
     .where({
@@ -187,48 +200,53 @@ export async function sendNewsletterAndCreateNewOne(shouldCreatedNewone=true) {
     .first();
 
   const lastSentNewsletter = await knex('newsletters')
-  .orderBy('sent_at', 'desc')
-  .whereNotNull('sent_at')
-  .first();
+    .orderBy('sent_at', 'desc')
+    .whereNotNull('sent_at')
+    .first();
 
   if (lastSentNewsletter) {
-    const nbOfDays = utils.nbOfDaysBetweenDate(new Date(), lastSentNewsletter.sent_at)
+    const nbOfDays = utils.nbOfDaysBetweenDate(
+      new Date(),
+      lastSentNewsletter.sent_at
+    );
     if (nbOfDays < 10) {
-      return
+      return;
     }
   }
 
   if (currentNewsletter) {
-    const pad = new HedgedocApi(
-      config.padEmail,
-      config.padPassword,
-      config.padURL
-    );
-    const newsletterCurrentId = currentNewsletter.url.replace(
-      `${config.padURL}/`,
-      ''
-    );
-    const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
-    const html = renderHtmlFromMd(newsletterContent);
+    if (config.FEATURE_SEND_NEWSLETTER) {
+      const pad = new HedgedocApi(
+        config.padEmail,
+        config.padPassword,
+        config.padURL
+      );
+      const newsletterCurrentId = currentNewsletter.url.replace(
+        `${config.padURL}/`,
+        ''
+      );
+      const newsletterContent = await pad.getNoteWithId(newsletterCurrentId);
+      const html = renderHtmlFromMd(newsletterContent);
 
-    await sendCampaignEmail({
+      await sendCampaignEmail({
         mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
         type: EMAIL_TYPES.EMAIL_NEWSLETTER,
         variables: undefined,
         campaignName: `${getTitle(newsletterContent)}`,
         subject: `${getTitle(newsletterContent)}`,
-        htmlContent: html
-    })
+        htmlContent: html,
+      });
 
-    await sendEmail({
-      toEmail: [...config.newsletterBroadcastList.split(',')],
-      type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-      variables: {
-        body: html,
-        subject: `${getTitle(newsletterContent)}`,
-      }
-    })
-    
+      await sendEmail({
+        toEmail: [...config.newsletterBroadcastList.split(',')],
+        type: EMAIL_TYPES.EMAIL_NEWSLETTER,
+        variables: {
+          body: html,
+          subject: `${getTitle(newsletterContent)}`,
+        },
+      });
+    }
+
     await knex('newsletters')
       .where({
         id: currentNewsletter.id,
