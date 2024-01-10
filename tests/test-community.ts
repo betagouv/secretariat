@@ -7,8 +7,7 @@ import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
 import config from '@/config';
-import * as adminConfig from '@/config/admin.config';
-var should = chai.should();
+import * as mattermost from '@/lib/mattermost';
 
 chai.use(chaiHttp);
 describe('Community', () => {
@@ -29,14 +28,30 @@ describe('Community', () => {
 
   describe('GET /community authenticated', () => {
     let getToken;
+    let mattermostSearchUserStub;
+    let mattermostGetUserStub;
 
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken');
       getToken.returns(utils.getJWT('membre.actif'));
+      mattermostSearchUserStub = sinon.stub(mattermost, 'searchUsers').returns(
+        Promise.resolve([
+          {
+            email: 'adresse.email@beta.gouv.fr',
+          },
+        ])
+      );
+      mattermostGetUserStub = sinon.stub(mattermost, 'getUserByEmail').returns(
+        Promise.resolve({
+          email: 'adresse.email@beta.gouv.fr',
+        } as mattermost.MattermostUser)
+      );
     });
 
     afterEach(() => {
       getToken.restore();
+      mattermostSearchUserStub.restore();
+      mattermostGetUserStub.restore();
     });
 
     it('should return a valid page', (done) => {
