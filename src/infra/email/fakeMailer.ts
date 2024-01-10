@@ -4,90 +4,109 @@ import {
   SendEmailProps,
   RemoveContactsFromMailingListProps,
   UpdateContactEmailProps,
-  Contact
-} from "@modules/email"
+  Contact,
+} from '@modules/email';
 
-const sentEmails: Array<SendEmailProps> = [] // For testing purposes only
-const sentCampaignEmails: Array<SendCampaignEmailProps> = [] // For testing purposes only
+const sentEmails: Array<SendEmailProps> = []; // For testing purposes only
+const sentCampaignEmails: Array<SendCampaignEmailProps> = []; // For testing purposes only
 
-function fakeUnblacklistContactEmail(props: { email: string }) : Promise<null> {
-  return
+function fakeUnblacklistContactEmail(props: { email: string }): Promise<null> {
+  return;
 }
 
 function fakeSendEmail(props: SendEmailProps): Promise<null> {
   if (process.env.NODE_ENV === 'test') {
     // Register the sent email but don't send it for real
-    sentEmails.push(props)
-    return null
+    sentEmails.push(props);
+    return null;
   }
 
-  const { subject, toEmail, type, variables } = props
+  const { subject, toEmail, type, variables } = props;
 
   console.info(
     `EMAIL OUT: ${toEmail
       .map((item) => item)
       .join(', ')} with subject "${subject}" and type ${type}`,
     variables
-  )
+  );
 
-  return null
+  return null;
 }
 
 function fakeSendCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
   if (process.env.NODE_ENV === 'test') {
     // Register the sent email but don't send it for real
-    sentCampaignEmails.push(props)
-    return null
+    sentCampaignEmails.push(props);
+    return null;
   }
 
-  const { subject, type, variables } = props
+  const { subject, type, variables } = props;
 
   console.info(
     `EMAIL OUT: ${type} with subject "${subject}" and type ${type}`,
     variables
-  )
+  );
 
-  return null
+  return null;
 }
 
-function fakeAddContactsToMailingLists(props: AddContactsToMailingListsProps): Promise<null> {
-  return
+function fakeAddContactsToMailingLists(
+  props: AddContactsToMailingListsProps
+): Promise<null> {
+  return;
 }
 
-function fakeRemoveContactsFromMailingList(props: RemoveContactsFromMailingListProps): Promise<null> {
-  return
+function fakeRemoveContactsFromMailingList(
+  props: RemoveContactsFromMailingListProps
+): Promise<null> {
+  return;
 }
 
 function fakeUpdateContactEmail(props: UpdateContactEmailProps): Promise<null> {
-  return
+  return;
 }
 
-function fakeGetAllTransacBlockedContacts(props: { startDate: Date, endDate: Date, offset: number, senders: string[] }): Promise<Contact[]> {
-  return Promise.resolve([])
+function fakeGetAllTransacBlockedContacts(props: {
+  startDate: Date;
+  endDate: Date;
+  offset: number;
+  senders: string[];
+}): Promise<Contact[]> {
+  return Promise.resolve([]);
 }
 
-function fakeSmtpBlockedContactsEmailDelete(props: { email: string }): Promise<null> {
-  return
+function fakeSmtpBlockedContactsEmailDelete(props: {
+  email: string;
+}): Promise<null> {
+  return;
 }
 
-function fakeGetAllContacts(props: { }): Promise<Contact[]> {
-  return Promise.resolve([])
+function fakeGetAllContacts(props: {}): Promise<Contact[]> {
+  return Promise.resolve([]);
 }
 
-function fakeGetAllContactsFromList(props: { listId: number }): Promise<Contact[]> {
-  return Promise.resolve([])
+function fakeGetAllContactsFromList(props: {
+  listId: number;
+}): Promise<Contact[]> {
+  return Promise.resolve([]);
+}
+
+function fakeGetContactInfo(props: { email: string }): Promise<Contact> {
+  return Promise.resolve({
+    email: 'aneamil@gmail.com',
+  });
 }
 
 // For tests only
 const getSentEmails = () => {
-  return sentEmails
-}
+  return sentEmails;
+};
 
 const resetSentEmails = () => {
   while (sentEmails.length) {
-    sentEmails.pop()
+    sentEmails.pop();
   }
-}
+};
 
 export {
   getSentEmails,
@@ -101,5 +120,6 @@ export {
   fakeSmtpBlockedContactsEmailDelete,
   fakeGetAllContacts,
   fakeGetAllContactsFromList,
-  fakeUnblacklistContactEmail
-}
+  fakeUnblacklistContactEmail,
+  fakeGetContactInfo,
+};

@@ -842,7 +842,7 @@ describe('User', () => {
           primaryEmail: primaryEmail,
         });
       isPublicServiceEmailStub.called.should.be.false;
-      mattermostGetUserByEmailStub.called.should.be.false;
+      mattermostGetUserByEmailStub.calledTwice.should.be.false;
     });
 
     it('should not update primary email if email is not public service email', async () => {
@@ -865,7 +865,7 @@ describe('User', () => {
       dbNewRes.length.should.equal(1);
       dbNewRes[0].primary_email.should.not.equal(primaryEmail);
       isPublicServiceEmailStub.called.should.be.true;
-      mattermostGetUserByEmailStub.called.should.be.false;
+      mattermostGetUserByEmailStub.calledTwice.should.be.false;
     });
 
     it('should not update primary email if email does not exist on mattermost', async () => {
@@ -892,7 +892,7 @@ describe('User', () => {
       dbNewRes.length.should.equal(1);
       dbNewRes[0].primary_email.should.not.equal(primaryEmail);
 
-      mattermostGetUserByEmailStub.called.should.be.true;
+      mattermostGetUserByEmailStub.calledTwice.should.be.true;
       await knex('users')
         .where({ username: 'membre.nouveau' })
         .update({
@@ -934,7 +934,7 @@ describe('User', () => {
       createRedirectionStub.called.should.be.true;
       deleteEmailStub.called.should.be.true;
       isPublicServiceEmailStub.called.should.be.true;
-      mattermostGetUserByEmailStub.called.should.be.false;
+      mattermostGetUserByEmailStub.calledTwice.should.be.false;
       createRedirectionStub.restore();
       deleteEmailStub.restore();
     });

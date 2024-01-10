@@ -7,6 +7,7 @@ import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
 import config from '@/config';
+import * as mattermost from '@/lib/mattermost';
 
 chai.use(chaiHttp);
 describe('Community', () => {
@@ -27,14 +28,30 @@ describe('Community', () => {
 
   describe('GET /community authenticated', () => {
     let getToken;
+    let mattermostSearchUserStub;
+    let mattermostGetUserStub;
 
     beforeEach(() => {
       getToken = sinon.stub(session, 'getToken');
       getToken.returns(utils.getJWT('membre.actif'));
+      mattermostSearchUserStub = sinon.stub(mattermost, 'searchUsers').returns(
+        Promise.resolve([
+          {
+            email: 'adresse.email@beta.gouv.fr',
+          },
+        ])
+      );
+      mattermostGetUserStub = sinon.stub(mattermost, 'getUserByEmail').returns(
+        Promise.resolve({
+          email: 'adresse.email@beta.gouv.fr',
+        } as mattermost.MattermostUser)
+      );
     });
 
     afterEach(() => {
       getToken.restore();
+      mattermostSearchUserStub.restore();
+      mattermostGetUserStub.restore();
     });
 
     it('should return a valid page', (done) => {
@@ -206,6 +223,12 @@ describe('Community', () => {
           );
           done();
         });
+    });
+
+    it('should have information about user email in email service', async () => {
+      const res = await chai.request(app).get('/api/community/membre.expire');
+      console.log(res.body.emailServiceInfo);
+      res.body.emailServiceInfo['primary_email'].should.be.a('object');
     });
   });
 });
