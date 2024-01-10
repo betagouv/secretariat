@@ -27,7 +27,7 @@ import {
   fakeUnblacklistContactEmail,
   fakeGetContactInfo,
 } from '@infra/email';
-import { getContactInfo, makeSendinblue } from '@infra/email/sendInBlue';
+import { makeSendinblue } from '@infra/email/sendInBlue';
 import htmlBuilder from '@modules/htmlbuilder/htmlbuilder';
 
 let sendEmail: SendEmail = fakeSendEmail;
