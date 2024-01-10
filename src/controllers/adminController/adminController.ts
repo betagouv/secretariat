@@ -62,12 +62,7 @@ export async function getSendinblueInfo(req, res) {
     MAIL_SENDER: config.senderEmail,
     htmlBuilder,
   });
-  const sendInBlueTech = makeSendinblue({
-    SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
-    SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
-    MAIL_SENDER: config.senderEmail,
-    htmlBuilder,
-  });
+
   const startDate = new Date();
   const endDate = new Date();
   startDate.setMonth(startDate.getMonth() - 6);
@@ -79,17 +74,10 @@ export async function getSendinblueInfo(req, res) {
       endDate,
       offset: 0,
     });
-  const techTransacBlockedContact =
-    await sendInBlueTech.getAllTransacBlockedContacts({
-      startDate,
-      endDate,
-      offset: 0,
-    });
 
   return res.json({
     contacts,
     commuTransacBlockedContact,
-    techTransacBlockedContact,
   });
 }
 
