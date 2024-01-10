@@ -7,6 +7,8 @@ import knex from '@/db';
 import app from '@/index';
 import utils from './utils';
 import config from '@/config';
+import * as adminConfig from '@/config/admin.config';
+var should = chai.should();
 
 chai.use(chaiHttp);
 describe('Community', () => {
@@ -206,6 +208,12 @@ describe('Community', () => {
           );
           done();
         });
+    });
+
+    it('should have information about user email in email service', async () => {
+      const res = await chai.request(app).get('/api/community/membre.expire');
+      console.log(res.body.emailServiceInfo);
+      res.body.emailServiceInfo['primary_email'].should.be.a('object');
     });
   });
 });

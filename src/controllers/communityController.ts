@@ -6,6 +6,8 @@ import { MemberWithPermission } from '@models/member';
 import { CommunityPage } from '../views';
 import betagouv from '../betagouv';
 import { EMAIL_STATUS_READABLE_FORMAT } from '@/models/misc';
+import { MattermostUser, getUserByEmail, searchUsers } from '@/lib/mattermost';
+import { getContactInfo } from '@/config/email.config';
 
 export async function getCommunity(req, res) {
   getCommunityPageData(
@@ -175,6 +177,28 @@ async function getUserPageData(req, res, onSuccess, onError) {
     if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
       availableEmailPros = await betagouv.getAvailableProEmailInfos();
     }
+    let mattermostUser: MattermostUser = dbUser?.primary_email
+      ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+      : null;
+    let [mattermostUserInTeamAndActive]: MattermostUser[] =
+      dbUser?.primary_email
+        ? await searchUsers({
+            term: dbUser.primary_email,
+            team_id: config.mattermostTeamId,
+            allow_inactive: false,
+          }).catch((e) => [])
+        : [];
+    let emailServiceInfo = {};
+    if (dbUser.primary_email) {
+      emailServiceInfo['primary_email'] = await getContactInfo({
+        email: dbUser.primary_email,
+      });
+    }
+    if (dbUser.secondary_email) {
+      emailServiceInfo['secondary_email'] = await getContactInfo({
+        email: dbUser.secondary_email,
+      });
+    }
     const title = user.userInfos ? user.userInfos.fullname : null;
     onSuccess({
       title,
@@ -186,6 +210,11 @@ async function getUserPageData(req, res, onSuccess, onError) {
       isExpired: user.isExpired,
       isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
       availableEmailPros,
+      mattermostInfo: {
+        hasMattermostAccount: !!mattermostUser,
+        isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
+      },
+      emailServiceInfo,
       primaryEmail: dbUser ? dbUser.primary_email : '',
       primaryEmailStatus: dbUser
         ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status]

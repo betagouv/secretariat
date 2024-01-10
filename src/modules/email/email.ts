@@ -377,6 +377,8 @@ export type UnblacklistContactEmail = (props: {
   email: string;
 }) => Promise<void>;
 
+export type GetContactInfo = (props: { email: string }) => Promise<Contact>;
+
 export interface IMailingService {
   removeContactsFromMailingList?: RemoveContactsFromMailingList;
   sendEmail: SendEmail;
@@ -388,6 +390,7 @@ export interface IMailingService {
   getAllTransacBlockedContacts?: GetAllTransacBlockedContacts;
   getAllContacts?: GetAllContacts;
   getAllContactsFromList?: GetAllContactsFromList;
+  getContactInfo?: GetContactInfo;
 }
 
 export enum MAILING_LIST_TYPE {
