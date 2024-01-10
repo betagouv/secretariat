@@ -227,7 +227,9 @@ export async function getAllContactsFromList({
   };
   const data = await apiInstance
     .getContactsFromList(listId, opts)
-    .then((data) => data.contacts);
+    .then((data) => {
+      return data.contacts;
+    });
   if (data.length < 500) {
     return data;
   }
@@ -235,9 +237,10 @@ export async function getAllContactsFromList({
     listId,
     opts: {
       limit: 500,
-      offset: 500,
+      offset: opts.offset + 500,
     },
   });
+
   return [...data, ...nextData];
 }
 

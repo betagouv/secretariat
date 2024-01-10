@@ -9,7 +9,6 @@ import db from '../../db';
 import { CommunicationEmailCode, DBUser } from '@/models/dbUser/dbUser';
 import { getBetaEmailId, isBetaEmail } from '../utils';
 import { makeSendinblue } from '@/infra/email/sendInBlue';
-import htmlBuilder from '@modules/htmlbuilder/htmlbuilder';
 
 const emailWithMetadataMemoized = PromiseMemoize(
   async () => {
@@ -56,31 +55,39 @@ const emailWithMetadataMemoized = PromiseMemoize(
 );
 
 export async function getSendinblueInfo(req, res) {
-  const sendInBlueCommu = makeSendinblue({
-    SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE,
-    SIB_APIKEY_PUBLIC: config.SIB_APIKEY_PUBLIC,
-    MAIL_SENDER: config.senderEmail,
-    htmlBuilder,
-  });
   const sendInBlueTech = makeSendinblue({
-    SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
-    SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
     MAIL_SENDER: config.senderEmail,
-    htmlBuilder,
+    SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
+    SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
+    htmlBuilder: null,
   });
+
   const startDate = new Date();
   const endDate = new Date();
-  startDate.setMonth(startDate.getMonth() - 6);
-  let contacts = await sendInBlueCommu.getAllContactsFromList({ listId: 332 }); // SIB newsletter mailing list
-  contacts = contacts.filter((c) => c.emailBlacklisted);
-  const commuTransacBlockedContact =
-    await sendInBlueCommu.getAllTransacBlockedContacts({
+
+  // Set it to one month ago
+  startDate.setMonth(startDate.getMonth() - 1);
+
+  const techTransacBlockedContact =
+    await sendInBlueTech.getAllTransacBlockedContacts({
       startDate,
       endDate,
       offset: 0,
     });
-  const techTransacBlockedContact =
-    await sendInBlueTech.getAllTransacBlockedContacts({
+
+  const sendInBlueCommu = makeSendinblue({
+    MAIL_SENDER: config.senderEmail,
+    SIB_APIKEY_PUBLIC: config.SIB_APIKEY_PUBLIC,
+    SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE,
+    htmlBuilder: null,
+  });
+
+  let contacts = await sendInBlueCommu.getAllContactsFromList({
+    listId: config.MAILING_LIST_NEWSLETTER,
+  }); // SIB newsletter mailing list
+  contacts = contacts.filter((c) => c.emailBlacklisted);
+  const commuTransacBlockedContact =
+    await sendInBlueCommu.getAllTransacBlockedContacts({
       startDate,
       endDate,
       offset: 0,
