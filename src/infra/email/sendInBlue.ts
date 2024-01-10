@@ -429,7 +429,7 @@ export async function removeContactsFromMailingList({
 
 export async function getContactInfo({ email }: { email: string }) {
   let apiInstance = new SibApiV3Sdk.ContactsApi();
-  apiInstance.getContactInfo(email).then(
+  const data = apiInstance.getContactInfo(email).then(
     function (data) {
       return data;
     },
@@ -437,6 +437,7 @@ export async function getContactInfo({ email }: { email: string }) {
       console.error(error);
     }
   );
+  return data;
 }
 
 export async function addOrCreateContactsToMailingLists({
