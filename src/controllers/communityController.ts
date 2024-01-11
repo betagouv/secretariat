@@ -152,7 +152,7 @@ export async function getUser(req, res) {
 }
 
 const getMattermostUserInfo = async (dbUser) => {
-  let mattermostUser, mattermostUserInTeamAndActive;
+  let mattermostUser: MattermostUser, mattermostUserInTeamAndActive: boolean;
   try {
     mattermostUser = dbUser?.primary_email
       ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
