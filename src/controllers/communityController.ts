@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/node';
+
 import config from '../config';
 import BetaGouv from '../betagouv';
 import * as utils from './utils';
@@ -8,6 +10,7 @@ import betagouv from '../betagouv';
 import { EMAIL_STATUS_READABLE_FORMAT } from '@/models/misc';
 import { MattermostUser, getUserByEmail, searchUsers } from '@/lib/mattermost';
 import { getContactInfo } from '@/config/email.config';
+import { DBUser } from '@/models/dbUser';
 
 export async function getCommunity(req, res) {
   getCommunityPageData(
@@ -148,6 +151,29 @@ export async function getUser(req, res) {
   );
 }
 
+const getMattermostUserInfo = async (dbUser) => {
+  let mattermostUser, mattermostUserInTeamAndActive;
+  try {
+    mattermostUser = dbUser?.primary_email
+      ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+      : null;
+    [mattermostUserInTeamAndActive] = dbUser?.primary_email
+      ? await searchUsers({
+          term: dbUser.primary_email,
+          team_id: config.mattermostTeamId,
+          allow_inactive: false,
+        }).catch((e) => [])
+      : [];
+  } catch (e) {
+    Sentry.captureException(e);
+  }
+
+  return {
+    mattermostUser,
+    mattermostUserInTeamAndActive,
+  };
+};
+
 async function getUserPageData(req, res, onSuccess, onError) {
   const { username } = req.params;
   const isCurrentUser = req.auth.id === username;
@@ -171,31 +197,24 @@ async function getUserPageData(req, res, onSuccess, onError) {
       .where({ username });
     const marrainageState = marrainageStateResponse[0];
 
-    const dbUser = await knex('users').where({ username }).first();
+    const dbUser: DBUser | undefined = await knex('users')
+      .where({ username })
+      .first();
     const secondaryEmail = dbUser ? dbUser.secondary_email : '';
     let availableEmailPros = [];
     if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
       availableEmailPros = await betagouv.getAvailableProEmailInfos();
     }
-    let mattermostUser: MattermostUser = dbUser?.primary_email
-      ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
-      : null;
-    let [mattermostUserInTeamAndActive]: MattermostUser[] =
-      dbUser?.primary_email
-        ? await searchUsers({
-            term: dbUser.primary_email,
-            team_id: config.mattermostTeamId,
-            allow_inactive: false,
-          }).catch((e) => [])
-        : [];
+    let { mattermostUser, mattermostUserInTeamAndActive } =
+      await getMattermostUserInfo(dbUser);
     let emailServiceInfo = {};
-    if (dbUser.primary_email) {
-      emailServiceInfo['primary_email'] = await getContactInfo({
+    if (dbUser?.primary_email) {
+      emailServiceInfo['primaryEmail'] = await getContactInfo({
         email: dbUser.primary_email,
       });
     }
-    if (dbUser.secondary_email) {
-      emailServiceInfo['secondary_email'] = await getContactInfo({
+    if (dbUser?.secondary_email) {
+      emailServiceInfo['secondaryEmail'] = await getContactInfo({
         email: dbUser.secondary_email,
       });
     }
