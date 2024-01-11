@@ -55,7 +55,7 @@ export async function searchUsers(params = {}) {
     .then((response) => response.data);
 }
 
-export async function getUserByEmail(email: string) : Promise<MattermostUser> {
+export async function getUserByEmail(email: string): Promise<MattermostUser> {
   return await axios
     .get(`${config.mattermostURL}/api/v4/users/email/${email}`, {
       ...getMattermostConfig(),
@@ -167,13 +167,16 @@ export async function changeUserEmail(id: string, email: string) {
   } catch (err) {
     console.error(
       `Erreur de changement d'email de l'utilisateur mattermost : ${id}`,
-      err,
+      err
     );
     return false;
   }
 }
 
-export const createUser = async function createUser({ email, username, password }, inviteId) {
+export const createUser = async function createUser(
+  { email, username, password, position },
+  inviteId
+) {
   if (!inviteId) {
     const errorMessage =
       'Unable to launch createUser without env var MATTERMOST_INVITE_ID';
@@ -189,20 +192,23 @@ export const createUser = async function createUser({ email, username, password 
           email,
           username,
           password,
+          position,
         },
         getMattermostConfig()
       )
       .then((response) => response.data);
   } catch (err) {
-    throw new Error(`Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`)
+    throw new Error(
+      `Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`
+    );
   }
   console.log("Ajout de l'utilisateur", email, username);
   return res;
-}
+};
 
-export * from './getActiveMattermostUsers'
-export * from './getMattermostUsersStatus'
-export * from './getAllChannels'
-export * from './getTeam'
-export * from './deactiveUsers'
-export * from './activeUsers'
+export * from './getActiveMattermostUsers';
+export * from './getMattermostUsersStatus';
+export * from './getAllChannels';
+export * from './getTeam';
+export * from './deactiveUsers';
+export * from './activeUsers';
