@@ -10,7 +10,6 @@ import path from 'path';
 import cors from 'cors';
 import config from '@config';
 import * as adminController from '@/controllers/adminController';
-import * as communityController from '@controllers/communityController';
 import * as githubNotificationController from '@controllers/githubNotificationController';
 import * as indexController from '@controllers/indexController';
 import * as loginController from '@controllers/loginController';
@@ -42,6 +41,7 @@ import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
 import { marrainageRouter } from './routes/marrainage';
 import { accountRouter } from './routes/account';
 import { startupRouter } from './routes/startups';
+import { communityRouter } from './routes/community';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -236,6 +236,7 @@ app.use(userPublicApiRouter);
 app.use(marrainageRouter);
 app.use(accountRouter);
 app.use(startupRouter);
+app.use(communityRouter);
 
 // que ce passe-t-il
 app.get(
@@ -277,11 +278,6 @@ app.put(
   express.json({ type: '*/*' }),
   updateBadgeRenewalRequestStatus
 );
-
-app.get(routes.GET_COMMUNITY, communityController.getCommunity);
-app.get(routes.GET_COMMUNITY_API, communityController.getCommunityApi);
-app.get(routes.GET_USER, communityController.getUser);
-app.get(routes.GET_USER_API, communityController.getUserApi);
 
 app.get(routes.ADMIN, adminController.getEmailLists);
 
