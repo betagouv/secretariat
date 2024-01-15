@@ -226,9 +226,8 @@ describe('Community', () => {
     });
 
     it('should have information about user email in email service', async () => {
-      const res = await chai.request(app).get('/api/community/membre.expire');
-      console.log(res.body.emailServiceInfo);
-      res.body.emailServiceInfo['primary_email'].should.be.a('object');
+      const res = await chai.request(app).get('/api/community/membre.actif');
+      res.body.emailServiceInfo['primaryEmail'].should.be.a('object');
     });
   });
 });
