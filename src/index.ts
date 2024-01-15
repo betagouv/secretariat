@@ -9,11 +9,8 @@ import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
 import config from '@config';
-import * as adminController from '@/controllers/adminController';
 import * as githubNotificationController from '@controllers/githubNotificationController';
 import * as indexController from '@controllers/indexController';
-import * as loginController from '@controllers/loginController';
-import * as logoutController from '@controllers/logoutController';
 import * as newsletterController from '@controllers/newsletterController';
 import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
@@ -25,7 +22,6 @@ import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
-import permit, { MemberRole } from './middlewares/authorization';
 import { rateLimiter } from './middlewares/rateLimiter';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import {
@@ -42,6 +38,8 @@ import { marrainageRouter } from './routes/marrainage';
 import { accountRouter } from './routes/account';
 import { startupRouter } from './routes/startups';
 import { communityRouter } from './routes/community';
+import { adminRouter } from './routes/admin';
+import { authRouter } from './routes/auth';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -213,23 +211,6 @@ app.use((err, req, res, next) => {
 });
 
 app.get('/', indexController.getIndex);
-app.get('/login', loginController.getLogin);
-app.post('/login', loginController.postLogin);
-app.post(
-  routes.LOGIN_API,
-  express.json({ type: '*/*' }),
-  loginController.postLoginApi
-);
-app.get('/signin', loginController.getSignIn);
-app.post(
-  routes.SIGNIN_API,
-  express.json({ type: '*/*' }),
-  loginController.postSignInApi
-);
-
-app.post(routes.SIGNIN, loginController.postSignIn);
-app.get(routes.LOGOUT, logoutController.getLogout);
-app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
 app.use(userRouter);
 app.use(userApiRouter);
 app.use(userPublicApiRouter);
@@ -237,6 +218,8 @@ app.use(marrainageRouter);
 app.use(accountRouter);
 app.use(startupRouter);
 app.use(communityRouter);
+app.use(adminRouter);
+app.use(authRouter);
 
 // que ce passe-t-il
 app.get(
@@ -279,43 +262,11 @@ app.put(
   updateBadgeRenewalRequestStatus
 );
 
-app.get(routes.ADMIN, adminController.getEmailLists);
-
 // INCUBTORS
 app.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
 //sponsors
 app.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
-
-// ONLY FOR ADMIN
-app.get(
-  routes.ADMIN_MATTERMOST,
-  permit(MemberRole.MEMBER_ROLE_ADMIN),
-  adminController.getMattermostAdmin
-);
-app.get(
-  routes.ADMIN_MATTERMOST_API,
-  permit(MemberRole.MEMBER_ROLE_ADMIN),
-  adminController.getMattermostAdminApi
-);
-app.get(
-  routes.ADMIN_MATTERMOST_MESSAGE_API,
-  permit(MemberRole.MEMBER_ROLE_ADMIN),
-  express.json({ type: '*/*' }),
-  adminController.getMattermostUsersInfo
-);
-app.post(
-  routes.ADMIN_MATTERMOST_SEND_MESSAGE,
-  permit(MemberRole.MEMBER_ROLE_ADMIN),
-  express.json({ type: '*/*' }),
-  adminController.sendMessageToUsersOnChat
-);
-app.get(
-  routes.ADMIN_SENDINBLUE,
-  permit(MemberRole.MEMBER_ROLE_ADMIN),
-  express.json({ type: '*/*' }),
-  adminController.getSendinblueInfo
-);
 
 app.get(routes.ONBOARDING, onboardingController.getForm);
 app.get(routes.ONBOARDING_API, onboardingController.getFormApi);
@@ -340,7 +291,6 @@ app.get('/validateNewsletter', newsletterController.validateNewsletter);
 app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 app.get('/resources', resourceController.getResources);
-app.get('/api/get-users', adminController.getUsers);
 app.get('/api/get-users-location', mapController.getUsersLocation);
 app.get('/map', mapController.getMap);
 app.post(
