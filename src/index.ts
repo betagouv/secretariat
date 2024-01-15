@@ -59,12 +59,7 @@ import {
 } from './controllers/startupController/getStartupInfoCreate';
 import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
 import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
-import {
-  userRoutes,
-  userApiRoutes,
-  userApiRouter,
-  userPublicApiRouter,
-} from './routes/users';
+import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -256,9 +251,9 @@ app.post(
 app.post(routes.SIGNIN, loginController.postSignIn);
 app.get(routes.LOGOUT, logoutController.getLogout);
 app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
-app.use('/users', userRoutes);
-app.use('/api/users', userApiRouter);
-app.use('/api/public/users', userPublicApiRouter);
+app.use(userRouter);
+app.use(userApiRouter);
+app.use(userPublicApiRouter);
 
 // que ce passe-t-il
 app.get(
