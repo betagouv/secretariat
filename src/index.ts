@@ -35,6 +35,7 @@ import { authRouter } from './routes/auth';
 import { diagnosticRouter } from './routes/diagnostic';
 import { badgeRouter } from './routes/badge';
 import { newsletterRouter } from './routes/newsletter';
+import setupStaticFiles from './routes/staticFiles';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -66,68 +67,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
 app.use(compression());
-app.use('/public', express.static(path.join(__dirname, './public')));
-app.use('/static', express.static(path.join(__dirname, '../static')));
-app.use(
-  '/datagouvfr',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/template.data.gouv.fr/dist'
-    )
-  )
-); // hack to mimick the behavior of webpack css-loader (used to import template.data.gouv.fr)
-app.use(
-  '/react-datepicker/react-datepicker.css',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/react-datepicker/dist/react-datepicker.css'
-    )
-  )
-);
-app.use(
-  '/react-tabulator/styles.css',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/react-tabulator/lib/styles.css'
-    )
-  )
-);
-app.use(
-  '/react-tabulator/tabulator.min.css',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/react-tabulator/lib/css/tabulator.min.css'
-    )
-  )
-);
-app.use(
-  '/react-markdown-editor-lite/index.css',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/react-markdown-editor-lite/lib/index.css'
-    )
-  )
-);
-app.use(
-  '/topbar.js',
-  express.static(
-    path.join(
-      __dirname,
-      process.env.NODE_ENV === 'production' ? '../..' : '..',
-      'node_modules/topbar/topbar.min.js'
-    )
-  )
-);
+setupStaticFiles(app);
 
 app.use(
   session({
