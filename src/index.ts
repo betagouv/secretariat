@@ -9,7 +9,6 @@ import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
 import config from '@config';
-import * as accountController from '@controllers/accountController';
 import * as adminController from '@/controllers/adminController';
 import * as communityController from '@controllers/communityController';
 import * as githubNotificationController from '@controllers/githubNotificationController';
@@ -20,7 +19,6 @@ import * as newsletterController from '@controllers/newsletterController';
 import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
 import * as startupController from '@controllers/startupController';
-import * as usersController from '@controllers/usersController';
 import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
 import * as pullRequestsController from '@controllers/pullRequestsController';
@@ -30,19 +28,12 @@ import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import permit, { MemberRole } from './middlewares/authorization';
-import {
-  publicPostRouteRateLimiter,
-  rateLimiter,
-} from './middlewares/rateLimiter';
+import { rateLimiter } from './middlewares/rateLimiter';
 import {
   getStartupInfoUpdate,
   getStartupInfoUpdateApi,
   postStartupInfoUpdate,
 } from './controllers/startupController';
-import {
-  getBadgePage,
-  getBadgePageApi,
-} from './controllers/accountController/getBadgePage';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import {
   updateBadgeRenewalRequestStatus,
@@ -56,10 +47,10 @@ import {
   getStartupInfoCreate,
   getStartupInfoCreateApi,
 } from './controllers/startupController/getStartupInfoCreate';
-import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
 import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
 import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
 import { marrainageRouter } from './routes/marrainage';
+import { accountRouter } from './routes/account';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -154,7 +145,6 @@ app.use(
   )
 );
 
-// app.use(cookieParser(config.secret));
 app.use(
   session({
     store: process.env.NODE_ENV !== 'test' ? makeSessionStore() : null,
@@ -174,8 +164,6 @@ app.use(
 ); // Only used for Flash not safe for others purposes
 app.use(flash());
 app.use(expressSanitizer());
-// const router = express.Router()
-// router.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(rateLimiter);
 
@@ -255,6 +243,7 @@ app.use(userRouter);
 app.use(userApiRouter);
 app.use(userPublicApiRouter);
 app.use(marrainageRouter);
+app.use(accountRouter);
 
 // que ce passe-t-il
 app.get(
@@ -274,52 +263,6 @@ app.post(
   '/notifications/github',
   githubNotificationController.processNotification
 );
-
-app.get(
-  routes.ME,
-  express.json({ type: '*/*' }),
-  accountController.getCurrentUser
-);
-app.get(routes.ACCOUNT_GET, accountController.getCurrentAccount);
-app.get(routes.ACCOUNT_GET_API, accountController.getCurrentAccountApi);
-
-app.get(
-  routes.ACCOUNT_GET_DETAIL_INFO_FORM,
-  accountController.getDetailInfoUpdate
-);
-app.get(
-  routes.ACCOUNT_GET_DETAIL_INFO_FORM_API,
-  accountController.getDetailInfoUpdateApi
-);
-app.post(
-  routes.ACCOUNT_POST_DETAIL_INFO_FORM,
-  accountController.postCurrentInfo
-);
-app.post(
-  routes.ACCOUNT_POST_DETAIL_INFO_FORM_API,
-  express.json({ type: '*/*' }),
-  accountController.postCurrentInfo
-);
-app.get(routes.ACCOUNT_GET_BASE_INFO_FORM, usersController.getBaseInfoUpdate);
-app.get(
-  routes.ACCOUNT_GET_BASE_INFO_FORM_API,
-  usersController.getBaseInfoUpdateApi
-);
-
-app.post(
-  routes.ACCOUNT_POST_BASE_INFO_FORM,
-  express.json({ type: '*/*' }),
-  usersController.postBaseInfoUpdate
-);
-app.post(
-  routes.API_PUBLIC_POST_BASE_INFO_FORM,
-  publicPostRouteRateLimiter,
-  express.json({ type: '*/*' }),
-  usersController.publicPostBaseInfoUpdate
-);
-app.get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API, getBadgeRenewalPage);
-app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE, getBadgePage);
-app.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API, getBadgePageApi);
 
 app.post(
   routes.API_POST_BADGE_REQUEST,
@@ -424,31 +367,6 @@ app.post(
   onboardingController.postOnboardingFormApi
 );
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
-app.post(
-  '/account/delete_email_responder',
-  accountController.deleteEmailResponder
-);
-app.post(
-  '/api/account/delete_email_responder',
-  express.json({ type: '*/*' }),
-  accountController.deleteEmailResponderApi
-);
-app.post('/account/set_email_responder', accountController.setEmailResponder);
-app.post(
-  '/api/account/set_email_responder',
-  express.json({ type: '*/*' }),
-  accountController.setEmailResponderApi
-);
-
-app.post(
-  routes.USER_UPDATE_COMMUNICATION_EMAIL,
-  accountController.updateCommunicationEmail
-);
-app.put(
-  routes.USER_UPDATE_COMMUNICATION_EMAIL_API,
-  express.json({ type: '*/*' }),
-  accountController.updateCommunicationEmailApi
-);
 
 app.get(routes.NEWSLETTERS, newsletterController.getNewsletterPage);
 app.get(routes.NEWSLETTERS_API, newsletterController.getNewsletterApi);
