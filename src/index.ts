@@ -16,7 +16,6 @@ import * as githubNotificationController from '@controllers/githubNotificationCo
 import * as indexController from '@controllers/indexController';
 import * as loginController from '@controllers/loginController';
 import * as logoutController from '@controllers/logoutController';
-import * as marrainageController from '@controllers/marrainageController';
 import * as newsletterController from '@controllers/newsletterController';
 import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
@@ -60,6 +59,7 @@ import {
 import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
 import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
 import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
+import { marrainageRouter } from './routes/marrainage';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -254,6 +254,7 @@ app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
 app.use(userRouter);
 app.use(userApiRouter);
 app.use(userPublicApiRouter);
+app.use(marrainageRouter);
 
 // que ce passe-t-il
 app.get(
@@ -273,11 +274,6 @@ app.post(
   '/notifications/github',
   githubNotificationController.processNotification
 );
-app.post('/marrainage', marrainageController.createRequest);
-app.get('/marrainage/accept', marrainageController.acceptRequest);
-app.get('/marrainage/decline', marrainageController.declineRequest);
-app.post('/marrainage/cancel', marrainageController.cancelRequest);
-app.post('/marrainage/reload', marrainageController.reloadRequest);
 
 app.get(
   routes.ME,
