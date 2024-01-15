@@ -113,7 +113,7 @@ const {
   SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG;
 
-if (process.env.NODE_ENV === 'prod') {
+if (process.env.NODE_ENV === 'production') {
   try {
     const sendInBlue = makeSendinblue({
       MAIL_SENDER,
