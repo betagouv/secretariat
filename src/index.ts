@@ -11,7 +11,6 @@ import cors from 'cors';
 import config from '@config';
 import * as githubNotificationController from '@controllers/githubNotificationController';
 import * as indexController from '@controllers/indexController';
-import * as newsletterController from '@controllers/newsletterController';
 import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
 import * as mapController from '@controllers/mapController';
@@ -22,16 +21,10 @@ import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import { rateLimiter } from './middlewares/rateLimiter';
-import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
-import {
-  updateBadgeRenewalRequestStatus,
-  updateBadgeRequestStatus,
-} from './controllers/badgeRequestsController/updateBadgeRequestStatus';
 import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
 import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
-import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
 import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
 import { marrainageRouter } from './routes/marrainage';
 import { accountRouter } from './routes/account';
@@ -40,6 +33,8 @@ import { communityRouter } from './routes/community';
 import { adminRouter } from './routes/admin';
 import { authRouter } from './routes/auth';
 import { diagnosticRouter } from './routes/diagnostic';
+import { badgeRouter } from './routes/badge';
+import { newsletterRouter } from './routes/newsletter';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -221,34 +216,14 @@ app.use(communityRouter);
 app.use(adminRouter);
 app.use(authRouter);
 app.use(diagnosticRouter);
+app.use(badgeRouter);
+app.use(newsletterRouter);
 
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests);
 //
 app.post(
   '/notifications/github',
   githubNotificationController.processNotification
-);
-
-app.post(
-  routes.API_POST_BADGE_REQUEST,
-  express.json({ type: '*/*' }),
-  postBadgeRequest
-);
-app.post(
-  routes.API_POST_BADGE_RENEWAL_REQUEST,
-  express.json({ type: '*/*' }),
-  postBadgeRenewalRequest
-);
-app.put(
-  routes.API_UPDATE_BADGE_REQUEST_STATUS,
-  express.json({ type: '*/*' }),
-  updateBadgeRequestStatus
-);
-
-app.put(
-  routes.API_UPDATE_BADGE_RENEWAL_REQUEST_STATUS,
-  express.json({ type: '*/*' }),
-  updateBadgeRenewalRequestStatus
 );
 
 // INCUBTORS
@@ -272,12 +247,6 @@ app.post(
   onboardingController.postOnboardingFormApi
 );
 app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
-
-app.get(routes.NEWSLETTERS, newsletterController.getNewsletterPage);
-app.get(routes.NEWSLETTERS_API, newsletterController.getNewsletterApi);
-
-app.get('/validateNewsletter', newsletterController.validateNewsletter);
-app.get('/cancelNewsletter', newsletterController.cancelNewsletter);
 
 app.get('/resources', resourceController.getResources);
 app.get('/api/get-users-location', mapController.getUsersLocation);
