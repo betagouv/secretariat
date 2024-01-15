@@ -17,7 +17,6 @@ import * as resourceController from '@controllers/resourceController';
 import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
 import * as pullRequestsController from '@controllers/pullRequestsController';
-import { getWhatIsGoingOnWithMemberController } from '@/controllers/whatIsGoingOnWithMemberController/whatIsGoingOnWithMemberController';
 import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
@@ -40,6 +39,7 @@ import { startupRouter } from './routes/startups';
 import { communityRouter } from './routes/community';
 import { adminRouter } from './routes/admin';
 import { authRouter } from './routes/auth';
+import { diagnosticRouter } from './routes/diagnostic';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -220,18 +220,7 @@ app.use(startupRouter);
 app.use(communityRouter);
 app.use(adminRouter);
 app.use(authRouter);
-
-// que ce passe-t-il
-app.get(
-  routes.WHAT_IS_GOING_ON_WITH_MEMBER,
-  getWhatIsGoingOnWithMemberController
-);
-app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO, (req, res) =>
-  res.redirect(routes.WHAT_IS_GOING_ON_WITH_MEMBER)
-);
-app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE, (req, res) =>
-  res.redirect(routes.WHAT_IS_GOING_ON_WITH_MEMBER)
-);
+app.use(diagnosticRouter);
 
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests);
 //
