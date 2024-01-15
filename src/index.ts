@@ -18,7 +18,6 @@ import * as logoutController from '@controllers/logoutController';
 import * as newsletterController from '@controllers/newsletterController';
 import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
-import * as startupController from '@controllers/startupController';
 import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
 import * as pullRequestsController from '@controllers/pullRequestsController';
@@ -29,11 +28,6 @@ import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import permit, { MemberRole } from './middlewares/authorization';
 import { rateLimiter } from './middlewares/rateLimiter';
-import {
-  getStartupInfoUpdate,
-  getStartupInfoUpdateApi,
-  postStartupInfoUpdate,
-} from './controllers/startupController';
 import { postBadgeRequest } from './controllers/badgeRequestsController/postBadgeRequest';
 import {
   updateBadgeRenewalRequestStatus,
@@ -43,14 +37,11 @@ import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
 import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
-import {
-  getStartupInfoCreate,
-  getStartupInfoCreateApi,
-} from './controllers/startupController/getStartupInfoCreate';
 import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
 import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
 import { marrainageRouter } from './routes/marrainage';
 import { accountRouter } from './routes/account';
+import { startupRouter } from './routes/startups';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -244,6 +235,7 @@ app.use(userApiRouter);
 app.use(userPublicApiRouter);
 app.use(marrainageRouter);
 app.use(accountRouter);
+app.use(startupRouter);
 
 // que ce passe-t-il
 app.get(
@@ -298,29 +290,6 @@ app.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
 //sponsors
 app.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
-
-// STARTUP
-app.get(routes.STARTUP_GET_INFO_CREATE_FORM, getStartupInfoCreate);
-app.get(routes.STARTUP_GET_INFO_CREATE_FORM_API, getStartupInfoCreateApi);
-
-app.get(routes.STARTUP_GET_ALL, startupController.getStartupList);
-app.get(routes.STARTUP_GET_ALL_API, startupController.getStartupListApi);
-
-app.get(routes.STARTUP_GET_DETAIL, startupController.getStartup);
-app.get(routes.STARTUP_GET_DETAIL_API, startupController.getStartupApi);
-app.get(routes.STARTUP_GET_INFO_UPDATE_FORM, getStartupInfoUpdate);
-app.get(routes.STARTUP_GET_INFO_UPDATE_FORM_API, getStartupInfoUpdateApi);
-
-app.post(
-  routes.STARTUP_POST_INFO_UPDATE_FORM,
-  express.json({ type: '*/*' }),
-  postStartupInfoUpdate
-);
-app.post(
-  routes.STARTUP_POST_INFO_CREATE_FORM,
-  express.json({ type: '*/*' }),
-  postStartupInfoUpdate
-);
 
 // ONLY FOR ADMIN
 app.get(
