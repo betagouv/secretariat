@@ -32,7 +32,6 @@ import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import permit, { MemberRole } from './middlewares/authorization';
 import {
-  publicGetRouteRateLimiter,
   publicPostRouteRateLimiter,
   rateLimiter,
 } from './middlewares/rateLimiter';
@@ -60,6 +59,8 @@ import {
 } from './controllers/startupController/getStartupInfoCreate';
 import { getBadgeRenewalPage } from './controllers/accountController/getBadgeRenewalPage';
 import { postBadgeRenewalRequest } from './controllers/badgeRequestsController/postBadgeRenewalRequest';
+import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
+
 export const app = express();
 app.set('trust proxy', 1);
 
@@ -250,6 +251,9 @@ app.post(
 app.post(routes.SIGNIN, loginController.postSignIn);
 app.get(routes.LOGOUT, logoutController.getLogout);
 app.get(routes.LOGOUT_API, logoutController.getLogoutApi);
+app.use(userRouter);
+app.use(userApiRouter);
+app.use(userPublicApiRouter);
 
 // que ce passe-t-il
 app.get(
@@ -263,75 +267,6 @@ app.get(routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE, (req, res) =>
   res.redirect(routes.WHAT_IS_GOING_ON_WITH_MEMBER)
 );
 
-// users
-app.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
-app.post(
-  routes.USER_CREATE_EMAIL_API,
-  express.json({ type: '*/*' }),
-  usersController.createEmailApi
-);
-app.post(routes.USER_DELETE_EMAIL, usersController.deleteEmailForUser);
-app.post(
-  routes.USER_DELETE_EMAIL_API,
-  express.json({ type: '*/*' }),
-  usersController.deleteEmailForUserApi
-);
-app.post(routes.USER_UPGRADE_EMAIL, usersController.upgradeEmailForUser);
-app.post(
-  routes.USER_UPGRADE_EMAIL_API,
-  express.json({ type: '*/*' }),
-  usersController.upgradeEmailForUserApi
-);
-app.post(
-  routes.USER_CREATE_REDIRECTION,
-  usersController.createRedirectionForUser
-);
-app.post(
-  routes.USER_CREATE_REDIRECTION_API,
-  express.json({ type: '*/*' }),
-  usersController.createRedirectionForUserApi
-);
-app.post(
-  routes.USER_DELETE_REDIRECTION,
-  usersController.deleteRedirectionForUser
-);
-app.delete(
-  routes.USER_DELETE_REDIRECTION_API,
-  express.json({ type: '*/*' }),
-  usersController.deleteRedirectionForUserApi
-);
-app.post(routes.USER_UPDATE_PASSWORD, usersController.updatePasswordForUser);
-app.post(
-  routes.USER_UPDATE_PASSWORD_API,
-  express.json({ type: '*/*' }),
-  usersController.updatePasswordForUserApi
-);
-
-app.post(
-  routes.USER_UPDATE_SECONDARY_EMAIL,
-  usersController.manageSecondaryEmailForUser
-);
-app.post(
-  routes.USER_UPDATE_SECONDARY_EMAIL_API,
-  express.json({ type: '*/*' }),
-  usersController.manageSecondaryEmailForUserApi
-);
-app.post(
-  routes.USER_UPDATE_PRIMARY_EMAIL,
-  usersController.managePrimaryEmailForUser
-);
-app.put(
-  routes.USER_UPDATE_PRIMARY_EMAIL_API,
-  express.json({ type: '*/*' }),
-  usersController.managePrimaryEmailForUserApi
-);
-app.post(routes.USER_UPDATE_END_DATE, usersController.updateEndDateForUser);
-
-app.get(
-  routes.API_GET_PUBLIC_USER_INFO,
-  publicGetRouteRateLimiter,
-  usersController.getUserInfo
-);
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests);
 //
 app.post(
