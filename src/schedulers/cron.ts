@@ -318,7 +318,7 @@ const pullRequestJobs: Job[] = [
 
 const newsletterJobs = [
   {
-    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 8 * * 1', // every week a 8:00 on monday
+    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || '0 0 10 * * 1', // every week a 8:00 on monday
     onTick: () => newsletterReminder('FIRST_REMINDER'),
     isActive: config.FEATURE_NEWSLETTER,
     name: 'newsletterMondayReminderJob',
