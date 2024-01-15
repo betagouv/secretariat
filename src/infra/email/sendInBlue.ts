@@ -429,6 +429,7 @@ export async function removeContactsFromMailingList({
 
 export async function getContactInfo({ email }: { email: string }) {
   let apiInstance = new SibApiV3Sdk.ContactsApi();
+
   const data = apiInstance.getContactInfo(email).then(
     function (data) {
       return data;
