@@ -20,22 +20,27 @@ import { rateLimiter } from './middlewares/rateLimiter';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
 import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
-import { userRouter, userApiRouter, userPublicApiRouter } from './routes/users';
-import { marrainageRouter } from './routes/marrainage';
-import { accountRouter } from './routes/account';
-import { startupRouter } from './routes/startups';
-import { communityRouter } from './routes/community';
-import { adminRouter } from './routes/admin';
-import { authRouter } from './routes/auth';
-import { diagnosticRouter } from './routes/diagnostic';
-import { badgeRouter } from './routes/badge';
-import { newsletterRouter } from './routes/newsletter';
-import setupStaticFiles from './routes/staticFiles';
-import { onboardingRouter } from './routes/onboarding';
-import { mapRouter } from './routes/map';
+import {
+  accountRouter,
+  adminRouter,
+  authRouter,
+  badgeRouter,
+  communityRouter,
+  diagnosticRouter,
+  userRouter,
+  userApiRouter,
+  userPublicApiRouter,
+  mapRouter,
+  marrainageRouter,
+  newsletterRouter,
+  onboardingRouter,
+  setupStaticFiles,
+  startupRouter,
+} from './routes';
 import { corsOptions } from './utils/corsConfig';
 import { errorHandler } from './middlewares/errorHandler';
 import { setupSessionMiddleware } from './middlewares/sessionMiddleware';
+import { PUBLIC_ROUTES } from './config/jwt.config';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -47,6 +52,7 @@ EventBus.init([...MARRAINAGE_EVENTS_VALUES]);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
+// MIDDLEWARES
 app.use(compression());
 setupStaticFiles(app);
 setupSessionMiddleware(app);
@@ -54,7 +60,6 @@ app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(rateLimiter);
-
 app.use(
   expressjwt({
     secret: config.secret,
@@ -63,29 +68,9 @@ app.use(
       return getToken(req);
     },
   }).unless({
-    path: [
-      '/login',
-      routes.LOGIN_API,
-      '/signin',
-      routes.SIGNIN_API,
-      '/marrainage/accept',
-      '/marrainage/decline',
-      '/notifications/github',
-      routes.WHAT_IS_GOING_ON_WITH_MEMBER,
-      routes.WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE,
-      routes.WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO,
-      routes.PULL_REQUEST_GET_PRS,
-      routes.ONBOARDING,
-      routes.ONBOARDING_API,
-      routes.ONBOARDING_ACTION,
-      /api\/public\/users\/*/,
-      /hook\/*/,
-      /onboardingSuccess\/*/,
-      /api\/public\/account\/base-info\/*/,
-    ],
+    path: PUBLIC_ROUTES,
   })
 );
-
 // Save a token in cookie that expire after 7 days if user is logged
 app.use((req: Request, res, next) => {
   if (req.auth && req.auth.id) {
@@ -93,9 +78,9 @@ app.use((req: Request, res, next) => {
   }
   next();
 });
-
 app.use(errorHandler);
 
+//ROUTES
 app.get('/', indexController.getIndex);
 app.use(userRouter);
 app.use(userApiRouter);
@@ -119,7 +104,7 @@ app.post(
   githubNotificationController.processNotification
 );
 
-// INCUBTORS
+// INCUBATORS
 app.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
 //sponsors

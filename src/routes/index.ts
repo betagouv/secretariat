@@ -1,0 +1,13 @@
+export { authRouter } from './auth';
+export { userRouter, userApiRouter, userPublicApiRouter } from './users';
+export { accountRouter } from './account';
+export { adminRouter } from './admin';
+export { badgeRouter } from './badge';
+export { communityRouter } from './community';
+export { diagnosticRouter } from './diagnostic';
+export { mapRouter } from './map';
+export { marrainageRouter } from './marrainage';
+export { newsletterRouter } from './newsletter';
+export { onboardingRouter } from './onboarding';
+export { startupRouter } from './startups';
+export { setupStaticFiles } from './staticFiles';

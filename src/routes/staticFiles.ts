@@ -67,4 +67,4 @@ const setupStaticFiles = (app) => {
   // ... autres configurations de fichiers statiques
 };
 
-export default setupStaticFiles;
+export { setupStaticFiles };
