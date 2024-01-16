@@ -4,16 +4,13 @@ import flash from 'connect-flash';
 import express from 'express';
 import { expressjwt, Request } from 'express-jwt';
 import expressSanitizer from 'express-sanitizer';
-import { checkSchema } from 'express-validator';
 import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
 import config from '@config';
 import * as githubNotificationController from '@controllers/githubNotificationController';
 import * as indexController from '@controllers/indexController';
-import * as onboardingController from '@controllers/onboardingController';
 import * as resourceController from '@controllers/resourceController';
-import * as mapController from '@controllers/mapController';
 import * as hookController from '@controllers/hookController';
 import * as pullRequestsController from '@controllers/pullRequestsController';
 import * as sentry from './lib/sentry';
@@ -36,6 +33,8 @@ import { diagnosticRouter } from './routes/diagnostic';
 import { badgeRouter } from './routes/badge';
 import { newsletterRouter } from './routes/newsletter';
 import setupStaticFiles from './routes/staticFiles';
+import { onboardingRouter } from './routes/onboarding';
+import { mapRouter } from './routes/map';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -158,6 +157,8 @@ app.use(authRouter);
 app.use(diagnosticRouter);
 app.use(badgeRouter);
 app.use(newsletterRouter);
+app.use(onboardingRouter);
+app.use(mapRouter);
 
 app.get(routes.PULL_REQUEST_GET_PRS, pullRequestsController.getAllPullRequests);
 //
@@ -172,25 +173,7 @@ app.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 //sponsors
 app.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
 
-app.get(routes.ONBOARDING, onboardingController.getForm);
-app.get(routes.ONBOARDING_API, onboardingController.getFormApi);
-
-app.post(
-  routes.ONBOARDING_ACTION,
-  checkSchema(onboardingController.postFormSchema),
-  onboardingController.postOnboardingForm
-);
-app.post(
-  routes.ONBOARDING_ACTION_API,
-  checkSchema(onboardingController.postFormSchema),
-  express.json({ type: '*/*' }),
-  onboardingController.postOnboardingFormApi
-);
-app.get('/onboardingSuccess/:prNumber', onboardingController.getConfirmation);
-
 app.get('/resources', resourceController.getResources);
-app.get('/api/get-users-location', mapController.getUsersLocation);
-app.get('/map', mapController.getMap);
 app.post(
   '/hook/:hookId',
   express.json({ type: '*/*' }),
