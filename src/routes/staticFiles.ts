@@ -2,14 +2,14 @@ import express from 'express';
 import path from 'path';
 
 const setupStaticFiles = (app) => {
-  app.use('/public', express.static(path.join(__dirname, './public')));
-  app.use('/static', express.static(path.join(__dirname, '../static')));
+  app.use('/public', express.static(path.join(__dirname, '.../public')));
+  app.use('/static', express.static(path.join(__dirname, '../../static')));
   app.use(
     '/datagouvfr',
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/template.data.gouv.fr/dist'
       )
     )
@@ -19,7 +19,7 @@ const setupStaticFiles = (app) => {
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/react-datepicker/dist/react-datepicker.css'
       )
     )
@@ -29,7 +29,7 @@ const setupStaticFiles = (app) => {
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/react-tabulator/lib/styles.css'
       )
     )
@@ -39,7 +39,7 @@ const setupStaticFiles = (app) => {
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/react-tabulator/lib/css/tabulator.min.css'
       )
     )
@@ -49,7 +49,7 @@ const setupStaticFiles = (app) => {
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/react-markdown-editor-lite/lib/index.css'
       )
     )
@@ -59,7 +59,7 @@ const setupStaticFiles = (app) => {
     express.static(
       path.join(
         __dirname,
-        process.env.NODE_ENV === 'production' ? '../..' : '..',
+        process.env.NODE_ENV === 'production' ? '../../..' : '../..',
         'node_modules/topbar/topbar.min.js'
       )
     )
