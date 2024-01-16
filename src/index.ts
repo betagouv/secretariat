@@ -4,7 +4,6 @@ import flash from 'connect-flash';
 import express from 'express';
 import { expressjwt, Request } from 'express-jwt';
 import expressSanitizer from 'express-sanitizer';
-import session from 'express-session';
 import path from 'path';
 import cors from 'cors';
 import config from '@config';
@@ -18,7 +17,6 @@ import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
 import { rateLimiter } from './middlewares/rateLimiter';
-import makeSessionStore from './infra/sessionStore/sessionStore';
 import { getJwtTokenForUser, getToken } from '@/helpers/session';
 import getAllIncubators from './controllers/incubatorController/api/getAllIncubators';
 import getAllSponsors from './controllers/sponsorController/api/getAllSponsors';
@@ -35,29 +33,13 @@ import { newsletterRouter } from './routes/newsletter';
 import setupStaticFiles from './routes/staticFiles';
 import { onboardingRouter } from './routes/onboarding';
 import { mapRouter } from './routes/map';
+import { corsOptions } from './utils/corsConfig';
+import { errorHandler } from './middlewares/errorHandler';
+import { setupSessionMiddleware } from './middlewares/sessionMiddleware';
 
 export const app = express();
 app.set('trust proxy', 1);
 
-var whitelist = config.CORS_ORIGIN;
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (
-      whitelist.indexOf(origin) !== -1 ||
-      process.env.NODE_ENV === 'test' ||
-      !origin
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: 'POST, PUT, OPTIONS, DELETE, GET',
-  allowedHeaders:
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-HTTP-Method-Override, Set-Cookie, Cookie',
-};
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 EventBus.init([...MARRAINAGE_EVENTS_VALUES]);
@@ -67,24 +49,7 @@ app.set('views', path.join(__dirname, './views/templates')); // the code is runn
 
 app.use(compression());
 setupStaticFiles(app);
-
-app.use(
-  session({
-    store: process.env.NODE_ENV !== 'test' ? makeSessionStore() : null,
-    secret: config.secret,
-    resave: false, // required: force lightweight session keep alive (touch)
-    saveUninitialized: false, // recommended: only save session when data exists
-    unset: 'destroy',
-    proxy: true, // Required for Heroku & Digital Ocean (regarding X-Forwarded-For)
-    name: 'espaceMembreCookieName',
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000 * 7,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' ? true : false,
-      sameSite: 'lax',
-    },
-  })
-); // Only used for Flash not safe for others purposes
+setupSessionMiddleware(app);
 app.use(flash());
 app.use(expressSanitizer());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -129,20 +94,7 @@ app.use((req: Request, res, next) => {
   next();
 });
 
-app.use((err, req, res, next) => {
-  if (err.name === 'UnauthorizedError') {
-    // redirect to login and keep the requested url in the '?next=' query param
-    if (req.method === 'GET') {
-      req.flash(
-        'message',
-        'Pour accéder à cette page vous devez vous identifier, vous pouvez le faire en renseignant votre email juste en dessous.'
-      );
-      const nextParam = req.url ? `?next=${req.url}` : '';
-      return res.redirect(`/login${nextParam}`);
-    }
-  }
-  return next(err);
-});
+app.use(errorHandler);
 
 app.get('/', indexController.getIndex);
 app.use(userRouter);
