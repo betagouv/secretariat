@@ -112,7 +112,7 @@ const {
   SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG;
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV !== 'test') {
   try {
     const sendInBlue = makeSendinblue({
       MAIL_SENDER,
@@ -144,16 +144,20 @@ if (process.env.NODE_ENV === 'production') {
       console.log('Emails will be sent using Nodemailer');
     }
     sendEmail = emailer.sendEmail;
-    sendCampaignEmail = sendInBlue.sendCampaignEmail;
-    addContactsToMailingLists = sendInBlue.addContactsToMailingLists;
-    removeContactsFromMailingList = sendInBlue.removeContactsFromMailingList;
-    updateContactEmail = sendInBlue.updateContactEmail;
-    smtpBlockedContactsEmailDelete = sendInBlue.smtpBlockedContactsEmailDelete;
-    getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts;
-    getAllContacts = sendInBlue.getAllContacts;
-    getAllContactsFromList = sendInBlue.getAllContactsFromList;
-    unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
-    getContactInfo = sendInBlue.getContactInfo;
+    if (process.env.NODE_ENV === 'production') {
+      // in dev we still use fakeEmailService
+      sendCampaignEmail = sendInBlue.sendCampaignEmail;
+      addContactsToMailingLists = sendInBlue.addContactsToMailingLists;
+      removeContactsFromMailingList = sendInBlue.removeContactsFromMailingList;
+      updateContactEmail = sendInBlue.updateContactEmail;
+      smtpBlockedContactsEmailDelete =
+        sendInBlue.smtpBlockedContactsEmailDelete;
+      getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts;
+      getAllContacts = sendInBlue.getAllContacts;
+      getAllContactsFromList = sendInBlue.getAllContactsFromList;
+      unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
+      getContactInfo = sendInBlue.getContactInfo;
+    }
   } catch (e) {
     console.error(e);
     process.exit(1);
