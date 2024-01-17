@@ -12,7 +12,6 @@ import * as indexController from '@controllers/indexController';
 import * as resourceController from '@controllers/resourceController';
 import * as hookController from '@controllers/hookController';
 import * as pullRequestsController from '@controllers/pullRequestsController';
-import * as sentry from './lib/sentry';
 import EventBus from '@infra/eventBus/eventBus';
 import { MARRAINAGE_EVENTS_VALUES } from '@models/marrainage';
 import routes from './routes/routes';
@@ -41,6 +40,7 @@ import { corsOptions } from './utils/corsConfig';
 import { errorHandler } from './middlewares/errorHandler';
 import { setupSessionMiddleware } from './middlewares/sessionMiddleware';
 import { PUBLIC_ROUTES } from './config/jwt.config';
+import { initializeSentry, sentryErrorHandler } from './lib/sentry';
 
 export const app = express();
 app.set('trust proxy', 1);
@@ -53,6 +53,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, './views/templates')); // the code is running in directory "dist".
 
 // MIDDLEWARES
+initializeSentry(app);
 app.use(compression());
 setupStaticFiles(app);
 setupSessionMiddleware(app);
@@ -116,8 +117,7 @@ app.post(
   express.json({ type: '*/*' }),
   hookController.postToHook
 );
-
-sentry.initCaptureConsoleWithHandler(app);
+app.use(sentryErrorHandler);
 
 export default app.listen(config.port, () =>
   console.log(`Running on: ${config.protocol}://${config.host}:${config.port}`)
