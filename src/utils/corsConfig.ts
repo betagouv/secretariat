@@ -4,13 +4,15 @@ var whitelist = config.CORS_ORIGIN;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const isAllowed = whitelist.some((allowedOrigin: RegExp | string) => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      } else if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
+    const isAllowed = whitelist.some((allowedOrigin) => {
+      // Check if the whitelist entry is a string representation of a regex
+      if (allowedOrigin.startsWith('/') && allowedOrigin.endsWith('/')) {
+        const pattern = allowedOrigin.slice(1, -1); // Remove the slashes
+        const regex = new RegExp(pattern);
+        return regex.test(origin);
       }
-      return false;
+      // Handle normal string comparison
+      return origin === allowedOrigin;
     });
 
     if (isAllowed || process.env.NODE_ENV === 'test' || !origin) {
