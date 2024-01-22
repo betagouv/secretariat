@@ -4,11 +4,16 @@ var whitelist = config.CORS_ORIGIN;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (
-      whitelist.indexOf(origin) !== -1 ||
-      process.env.NODE_ENV === 'test' ||
-      !origin
-    ) {
+    const isAllowed = whitelist.some((allowedOrigin: RegExp | string) => {
+      if (typeof allowedOrigin === 'string') {
+        return origin === allowedOrigin;
+      } else if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return false;
+    });
+
+    if (isAllowed || process.env.NODE_ENV === 'test' || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
