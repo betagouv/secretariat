@@ -51,6 +51,8 @@ export const DOMAINE_OPTIONS = [
 export interface Member {
   id: string;
   fullname: string;
+  bio: string;
+  link: string;
   github?: string;
   email?: string;
   missions: Mission[];
