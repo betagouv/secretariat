@@ -15,7 +15,7 @@ services:
     ports:
       - '1080:80'
       - '1025:25'
-  redis:
+  redis: # sessions
     image: redis:alpine
     command: redis-server --requirepass localpwd
     hostname: redis

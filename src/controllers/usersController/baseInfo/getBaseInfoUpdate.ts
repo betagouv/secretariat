@@ -103,6 +103,10 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
       formData: {
         startups: userStartups || [],
         role: currentUser.userInfos.role,
+        link: currentUser.userInfos.link,
+        domaine: currentUser.userInfos.domaine,
+        fullname: currentUser.userInfos.fullname,
+        bio: currentUser.userInfos.bio,
         missions: currentUser.userInfos.missions,
         end: currentUser.userInfos.end,
         start: currentUser.userInfos.start,
