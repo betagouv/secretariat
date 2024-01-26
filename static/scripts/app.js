@@ -11,6 +11,35 @@
     })
   }
 
+  function initializeComprehensionCheckboxes() {
+    let checkboxes = document.querySelectorAll('.ensure-comprehension');
+
+    // parcourir toutes les cases à cocher
+    checkboxes.forEach(checkbox => {
+        // ajouter un gestionnaire d'événements pour l'événement change
+        checkbox.addEventListener('change', function(e) {
+            // trouver le bouton submit suivant
+            let nextSubmitButton = this.nextElementSibling;
+            while (nextSubmitButton && nextSubmitButton.tagName.toLowerCase() !== 'input' && nextSubmitButton.getAttribute('type').toLowerCase() !== 'submit') {
+                nextSubmitButton = nextSubmitButton.nextElementSibling;
+            }
+            
+            // vérifier si la case à cocher est cochée ou non
+            if (this.checked) {
+                // si la case à cocher est cochée, activer le bouton submit
+                if (nextSubmitButton) {
+                    nextSubmitButton.disabled = false;
+                }
+            } else {
+                // si la case à cocher n'est pas cochée, désactiver le bouton submit
+                if (nextSubmitButton) {
+                    nextSubmitButton.disabled = true;
+                }
+            }
+        });
+    });
+  }
+
   window.addEventListener('DOMContentLoaded', () => {
     initializeDrawerToggle()
     const hash = window.location.hash.replace('#', '')
