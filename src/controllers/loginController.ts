@@ -108,7 +108,7 @@ export async function postLoginApi(req, res) {
     username = emailSplit[0];
     if (
       username === undefined ||
-      !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)
+      !/^[a-z0-9_-]+\.[.a-z0-9_-]+$/.test(username)
     ) {
       return res
         .json({
@@ -125,7 +125,7 @@ export async function postLoginApi(req, res) {
 
   if (!dbResponse) {
     return res.status(404).json({
-      errors: `L'adresse email ${emailInput} n'est pas connue.`,
+      errors: `L'adresse email ${emailInput} est inconnue.`,
     });
   }
 
@@ -192,7 +192,7 @@ export async function postLogin(req, res) {
     if (username === undefined || !/^[a-z0-9_\-\.]+$/.test(username)) {
       req.flash(
         'error',
-        `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
+        `L'adresse email renseignée n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`
       );
       return res.redirect(`/login${next}`);
     }
@@ -214,7 +214,7 @@ export async function postLogin(req, res) {
   ) {
     req.flash(
       'error',
-      `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
+      `La personne liée à l'adresse ${emailInput} n'a pas de compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`
     );
     return res.redirect(`/login${next}`);
   }
