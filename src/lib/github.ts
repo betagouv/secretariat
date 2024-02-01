@@ -1,12 +1,12 @@
-import { Octokit } from "@octokit/rest";
-import config from "@config";
-import fm from "front-matter";
-import axios from "axios";
+import { Octokit } from '@octokit/rest';
+import config from '@config';
+import fm from 'front-matter';
+import axios from 'axios';
 import { request } from '@octokit/request';
 
 export interface PRInfo {
-  html_url: string,
-  number: number
+  html_url: string;
+  number: number;
 }
 
 function getURL(objectID) {
@@ -40,10 +40,14 @@ async function getAuthorFileList(hash) {
   const before: any = await getJson(getURL(`commits/${hash}`));
 
   const beforeRootTree: any = await getJson(before.commit.tree.url);
-  const contentObject = beforeRootTree.tree.find((element) => element.path === 'content');
+  const contentObject = beforeRootTree.tree.find(
+    (element) => element.path === 'content'
+  );
 
   const beforeContentTree: any = await getJson(contentObject.url);
-  const authorsObject = beforeContentTree.tree.find((element) => element.path === '_authors');
+  const authorsObject = beforeContentTree.tree.find(
+    (element) => element.path === '_authors'
+  );
 
   const fileList: any = await getJson(authorsObject.url);
 
@@ -86,23 +90,25 @@ function extractEndDates(item) {
   }, {});
 }
 
-export { extractEndDates }
+export { extractEndDates };
 
 async function fetchDetails(input) {
   const changes = await listChanges(input);
 
-  await Promise.all(changes.map(async (data) => {
-    const beforeMetadata: any = await getJson(data.before.url);
-    const afterMetadata: any = await getJson(data.url);
-    return {
-      data,
-      before: getContent(beforeMetadata.content),
-      after: getContent(afterMetadata.content),
-    };
-  }));
+  await Promise.all(
+    changes.map(async (data) => {
+      const beforeMetadata: any = await getJson(data.before.url);
+      const afterMetadata: any = await getJson(data.url);
+      return {
+        data,
+        before: getContent(beforeMetadata.content),
+        after: getContent(afterMetadata.content),
+      };
+    })
+  );
 }
 
-export { fetchDetails }
+export { fetchDetails };
 
 /**
  * Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.
@@ -110,14 +116,15 @@ export { fetchDetails }
  * @see https://github.com/join
  */
 function isValidGithubUserName(value) {
-  return !value || (/^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value));
+  return !value || /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(value);
 }
 
-export { isValidGithubUserName }
+export { isValidGithubUserName };
 
 const createOctokitAuth = () => {
   if (!config.githubOrgAdminToken) {
-    const errorMessage = 'Unable to launch github request without env var githubOrgAdminToken';
+    const errorMessage =
+      'Unable to launch github request without env var githubOrgAdminToken';
     console.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -126,22 +133,26 @@ const createOctokitAuth = () => {
 
 const getGithubMembersOfOrganization = (org, i) => {
   const octokit = createOctokitAuth();
-  return octokit.request('GET /orgs/{org}/members', {
-    org,
-    per_page: 100,
-    page: i,
-  }).then((resp) => resp.data);
+  return octokit
+    .request('GET /orgs/{org}/members', {
+      org,
+      per_page: 100,
+      page: i,
+    })
+    .then((resp) => resp.data);
 };
 
-export { getGithubMembersOfOrganization }
+export { getGithubMembersOfOrganization };
 
 const getPendingInvitations = (org, i) => {
   const octokit = createOctokitAuth();
-  return octokit.request('GET /orgs/{org}/invitations', {
-    org,
-    per_page: 100,
-    page: i,
-  }).then((resp) => resp.data);
+  return octokit
+    .request('GET /orgs/{org}/invitations', {
+      org,
+      per_page: 100,
+      page: i,
+    })
+    .then((resp) => resp.data);
 };
 
 export async function getAllPendingInvitations(org, i = 0) {
@@ -149,7 +160,10 @@ export async function getAllPendingInvitations(org, i = 0) {
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await exports.getAllPendingInvitations(org, i + 1);
+  const nextPageGithubUsers = await exports.getAllPendingInvitations(
+    org,
+    i + 1
+  );
   return [...githubUsers, ...nextPageGithubUsers];
 }
 
@@ -158,7 +172,10 @@ export async function getAllOrganizationMembers(org, i = 0) {
   if (!githubUsers.length) {
     return [];
   }
-  const nextPageGithubUsers = await exports.getAllOrganizationMembers(org, i + 1);
+  const nextPageGithubUsers = await exports.getAllOrganizationMembers(
+    org,
+    i + 1
+  );
   return [...githubUsers, ...nextPageGithubUsers];
 }
 
@@ -172,11 +189,14 @@ export function inviteUserByUsernameToOrganization(username, org) {
 
 export function addUserToTeam(username, org, team_slug) {
   const octokit = createOctokitAuth();
-  return octokit.request('PUT /orgs/{org}/teams/{team_slug}/memberships/{username}', {
-    org,
-    team_slug,
-    username,
-  });
+  return octokit.request(
+    'PUT /orgs/{org}/teams/{team_slug}/memberships/{username}',
+    {
+      org,
+      team_slug,
+      username,
+    }
+  );
 }
 
 export function removeUserByUsernameFromOrganization(username, org) {
@@ -187,22 +207,35 @@ export function removeUserByUsernameFromOrganization(username, org) {
   });
 }
 
-export function getPullRequestFiles(owner: string, repo: string, pull_number: number) {
+export function getPullRequestFiles(
+  owner: string,
+  repo: string,
+  pull_number: number
+) {
   const octokit = createOctokitAuth();
   return octokit.rest.pulls.listFiles({
     owner,
     repo,
     pull_number,
-  })
+  });
 }
 
-export function getPullRequests(owner: string, repo: string, state: 'all' | 'open' | 'closed') {
+export function getPullRequests(
+  owner: string,
+  repo: string,
+  state: 'all' | 'open' | 'closed'
+) {
   const octokit = createOctokitAuth();
-  return octokit.rest.pulls.list({
+  return octokit.rest.pulls
+    .list({
       owner,
       repo,
-      state
-  })
+      state,
+    })
+    .then((response) => {
+      const nonDraftPullRequests = response.data.filter((pr) => !pr.draft);
+      return nonDraftPullRequests;
+    });
 }
 
 export function getGithubMasterSha() {
@@ -222,7 +255,7 @@ export function deleteGithubBranch(branch) {
 }
 
 export function getLastCommitFromFile(path, branch) {
-  const url = `https://api.github.com/repos/${config.githubRepository}/commits?path=${path}&page=1&per_page=1`
+  const url = `https://api.github.com/repos/${config.githubRepository}/commits?path=${path}&page=1&per_page=1`;
   return requestWithAuth(`GET ${url}`, { branch });
 }
 
@@ -237,9 +270,9 @@ export function createGithubFile(path, branch, content, sha = undefined) {
   const message = `${
     sha ? 'Mise à jour' : 'Création'
   } de fichier ${path} sur la branche ${branch}`;
-  let base64EncodedContent = content
+  let base64EncodedContent = content;
   let regex = new RegExp(/[^\s]+(.*?).(jpg|jpeg|png|gif|JPG|JPEG|PNG|GIF)$/);
-  if (!regex.test(path)) {  
+  if (!regex.test(path)) {
     base64EncodedContent = Buffer.from(content, 'utf-8').toString('base64');
   }
 
@@ -263,4 +296,3 @@ export function makeGithubPullRequest(branch, title) {
     maintainer_can_modify: true,
   });
 }
-
