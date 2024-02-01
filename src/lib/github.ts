@@ -234,7 +234,7 @@ export function getPullRequests(
     })
     .then((response) => {
       const nonDraftPullRequests = response.data.filter((pr) => !pr.draft);
-      return nonDraftPullRequests;
+      return { data: nonDraftPullRequests };
     });
 }
 
