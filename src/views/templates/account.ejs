@@ -340,7 +340,7 @@
             <div class="collapse">
                 <h6 class="margin-10-0 collapse-header">
                     <button aria-expanded="false" id="redirect-email">
-                        Rediriger vers une autre adresse mail
+                        Rediriger vers une autre adresse mail (non recommandé)
                         <div class="icon fa fa-chevron-down"></div>
                     </button>
                 </h6>
@@ -366,7 +366,10 @@
                             <input type="checkbox" name="keep_copy" value="true">
                             <label>Garder une copie des emails si un compte existe</label>
                             </div>
-                            <button class="button no-margin" type="submit">Ajouter la redirection</button>
+                            <input type="checkbox" name="ensure-comprehension-redirect" class="ensure-comprehension" value="true">
+                            <label><strong>J'ai lu le warning et je comprends que je peux perdre des emails (notamment avec un renvoi vers Gmail par exemple)</strong></label>
+                            </div>    
+                            <button class="button no-margin" type="submit" disabled>Ajouter la redirection</button>
                         </form>
                     <% } else { %>
                         <% if (isExpired) { %>
